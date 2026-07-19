@@ -1,43 +1,97 @@
 <!-- SOT-MANIFEST
 federation_release: v2026.07.19-ZEN-CONVERGENCE
-last_verified: 2026-07-19T17:00Z
-live_commit: 88489b6
+last_verified: 2026-07-19T21:00Z
+live_commit: 5b59c6c
 organ: HERMES
-role: multi-modal-bridge
+role: multi-modal-bridge (organ 7 of 7)
 domain_law: BRIDGE_LAW
+ports: 8644 (Telegram operator edge, internal)
+authority: OBSERVE_ONLY — routes and bridges, never adjudicates
+truth_rule: tools/list + /health beat any static count in prose
 -->
 
 # 🔮 HERMES — Multi-Modal Bridge
 
+[![Federation](https://img.shields.io/badge/Federation-v2026.07.19-0a7b83)](https://arifos.arif-fazil.com)
+[![License](https://img.shields.io/github/license/ariffazil/HERMES?label=License)](LICENSE)
+
+> **HERMES routes. It never adjudicates.**
 > **DITEMPA BUKAN DIBERI — Forged, Not Given.**
 > **Organ 7 of 7 — arifOS Federation**
 
-## Role
+---
 
-HERMES is the multi-modal bridge organ of the arifOS Federation.
+## TL;DR
 
-- Telegram operator edge (port 8644)
-- Creative/media surface routing
-- Visual/audio signal ingestion
-- Multi-modal evidence routing to reasoning layer
+HERMES is the **multi-modal bridge** of the arifOS Federation. It routes signals between organs — Telegram ↔ arifOS ↔ agents — and manages the federation's skill catalog (31 arif-specific skills).
 
-## Constitutional Boundary
+---
 
-| Rule | Value |
-|------|-------|
-| **Mutation** | No — routes and bridges only |
-| **Adjudication** | No — evidence only; arifOS judges |
-| **Diagnosis** | No — REFLECT_ONLY for human signals |
+## 1. Role
 
-## Health
+| ✅ DOES | ❌ NEVER |
+|---------|---------|
+| Telegram operator edge | Adjudicates (→ arifOS) |
+| Creative/media surface routing | Executes mutations (→ A-FORGE) |
+| Visual/audio signal ingestion | Diagnoses (→ WELL) |
+| Multi-modal evidence routing | Self-authorizes |
+| Skill catalog management | Issues verdicts |
 
-Port 8644 (internal). Check via federation health probe.
+---
 
-## Git Remote
+## 2. Federation Position
 
 ```
-git@github.com:ariffazil/HERMES.git
+Arif (F13 SOVEREIGN)
+    ↓
+AAA / HERMES / OpenClaw (A2A edge)
+    ↓
+arifOS (:8088) — judges, seals, routes
+    ↓
+Domain Organs (GEOX :8081 · WEALTH :18082 · WELL :18083)
+    ↓
+A-FORGE (:7071) — executes after SEAL
+    ↓
+VAULT999 — immutable record
+```
+
+HERMES sits at the **edge** — it bridges external signals into the federation and routes creative/media evidence to the reasoning layer.
+
+---
+
+## 3. Federation Cross-Reference
+
+| Organ | Role | Port | Repo |
+|-------|------|------|------|
+| arifOS | Constitutional kernel | 8088 | [ariffazil/arifos](https://github.com/ariffazil/arifos) |
+| AAA | State + cockpit | 3001 | [ariffazil/AAA](https://github.com/ariffazil/AAA) |
+| A-FORGE | Execution shell | 7071/7072 | [ariffazil/A-FORGE](https://github.com/ariffazil/A-FORGE) |
+| GEOX | Earth intelligence | 8081 | [ariffazil/geox](https://github.com/ariffazil/geox) |
+| WEALTH | Capital intelligence | 18082 | [ariffazil/wealth](https://github.com/ariffazil/wealth) |
+| WELL | Vitality guard | 18083 | [ariffazil/well](https://github.com/ariffazil/well) |
+| **HERMES** | Multi-modal bridge | 8644 | ← you are here |
+
+---
+
+## 4. Quick Start
+
+```bash
+cd /root/HERMES
+# Health: probed via federation health check
+# Git remote: git@github.com:ariffazil/HERMES.git
 ```
 
 ---
-*Maintained under F13 SOVEREIGN. DITEMPA BUKAN DIBERI.*
+
+## 5. License & Sovereignty
+
+**AGPL-3.0.** HERMES routes under sovereign authority. It never adjudicates.
+
+**Muhammad Arif bin Fazil** is F13 SOVEREIGN. His word is final.
+
+```
+HERMES · Port 8644 · BRIDGE_LAW · Organ 7 of 7
+Routes, never adjudicates. DITEMPA BUKAN DIBERI.
+```
+
+> **SOT:** 2026-07-19 | **seal_seq:** N/A
