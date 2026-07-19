@@ -810,12 +810,12 @@
     "created_at": "2026-07-14T01:11:18.120858+00:00",
     "created_by": "agent",
     "last_patched_at": "2026-07-18T07:06:00.784284+00:00",
-    "last_used_at": "2026-07-19T20:01:02.461968+00:00",
+    "last_used_at": "2026-07-19T21:00:31.074881+00:00",
     "last_viewed_at": "2026-07-19T20:01:02.452412+00:00",
     "patch_count": 57,
     "pinned": false,
     "state": "active",
-    "use_count": 90,
+    "use_count": 91,
     "view_count": 52
   },
   "dark-explanatory-diagrams": {
