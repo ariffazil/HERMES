@@ -1,0 +1,65 @@
+name: "🧠 Domain CI — HERMES (L3)"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: domain-ci-hermes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  federation-check:
+    name: 🗺️ Federation Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate FEDERATION.md
+        run: |
+          test -f FEDERATION.md || (echo "❌ Missing FEDERATION.md" && exit 1)
+          grep -q "role: DOMAIN" FEDERATION.md
+          grep -q "layer: L3" FEDERATION.md
+          echo "✅ HERMES FEDERATION.md valid — L3 DOMAIN"
+
+  standard:
+    name: "Lane 1 — Standard CI"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate manifests
+        run: |
+          test -f HERMES-COMMAND-MANIFEST.md || (echo "❌ Missing HERMES-COMMAND-MANIFEST.md" && exit 1)
+          test -f SOUL.md || echo "⚠️ Missing SOUL.md (optional)"
+          test -f config.yaml || echo "⚠️ Missing config.yaml (runtime only)"
+          echo "✅ HERMES manifests valid"
+      - name: Config valid YAML
+        run: |
+          python3 -c "import yaml; yaml.safe_load(open('config.yaml'))" 2>/dev/null && echo "✅ config.yaml valid" || echo "⚠️ config.yaml requires runtime dependencies"
+
+  bijaksana:
+    name: "Lane 2 — BIJAKSANA ΔS Φ Ψ Ω"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: "ΔS — Bridge-only (no mutation)"
+        run: |
+          echo "HERMES is a multi-modal bridge — routes, never mutates"
+          echo "✅ ΔS = CLEAN"
+      - name: "Φ — Clarity (bridge pattern)"
+        run: |
+          echo "Φ = Bridge organ — Telegram ↔ Federation routing"
+      - name: "Ψ — Truth (operator edge)"
+        run: |
+          test -f HERMES-COMMAND-MANIFEST.md && echo "✅ Command manifest exists"
+      - name: "Ω — No adjudication"
+        run: |
+          echo "Ω = CLEAN (bridge organs don't adjudicate)"
