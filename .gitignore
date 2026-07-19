@@ -1,0 +1,63 @@
+# Runtime artifacts
+state.db
+state.db-shm
+state.db-wal
+sessions.db
+kanban.db
+kanban.db.dispatch.lock
+kanban.db.init.lock
+
+# Caches
+cache/
+audio_cache/
+audio-cache/
+image_cache/
+sticker_cache.json
+
+# Config backups
+config.yaml.bak.*
+*.bak
+
+# Auth / secrets
+auth.json
+auth.lock
+
+# Gateway runtime
+gateway.lock
+gateway.pid
+gateway_state.json
+
+# State & sessions
+state/
+state-snapshots/
+sessions/
+checkpoints/
+sandboxes/
+temporal/
+
+# Logs
+logs/
+*.log
+
+# Model caches
+models_dev_cache.json
+ollama_cloud_models_cache.json
+provider_models_cache.json
+
+# Runtime dirs
+pairing/
+platforms/
+plugins/
+mcp_servers/
+cron/
+memories/
+bin/
+hooks/
+pastes/
+plans/
+schemas/
+scripts/
+
+# IDE
+__pycache__/
+*.pyc
