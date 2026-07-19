@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TITLE_HERE — Scientific Geological Manuscript</title>
+<style>
+  @page { size: A4; margin: 2cm 1.8cm;
+    @top-center { content: "TITLE_HERE • GEOX-LC-001 • Arif (F13)"; font-size: 9pt; color: #555; font-family: 'Times New Roman', serif; }
+    @bottom-center { content: counter(page) " / " counter(pages); font-size: 9pt; color: #555; }
+    @bottom-right { content: "DITEMPA BUKAN DIBERI"; font-size: 8pt; color: #888; font-style: italic; }
+  }
+  body { font-family: 'Times New Roman', Georgia, serif; font-size: 11pt; line-height: 1.55; color: #111; max-width: 100%; }
+  h1 { font-size: 22pt; color: #1e3a5f; border-bottom: 3px solid #c44545; padding-bottom: 8px; margin-top: 12pt; }
+  h2 { font-size: 15pt; color: #1e3a5f; border-bottom: 1px solid #aaa; padding-bottom: 4px; margin-top: 22pt; page-break-after: avoid; }
+  h3 { font-size: 12.5pt; color: #2c5985; margin-top: 14pt; page-break-after: avoid; }
+  h4 { font-size: 11pt; color: #2c5985; margin-top: 10pt; page-break-after: avoid; }
+  .authors { font-size: 11pt; color: #333; margin: 4pt 0 8pt; font-style: italic; }
+  .abstract { background: #fff8e1; border-left: 4px solid #c44545; padding: 12pt 16pt; margin: 12pt 0; font-size: 10.5pt; }
+  .abstract-title { font-weight: bold; color: #1e3a5f; margin-bottom: 4pt; }
+  .figure { text-align: center; margin: 14pt 0; page-break-inside: avoid; }
+  .figure img { max-width: 100%; height: auto; border: 1px solid #ccc; }
+  .figure-caption { font-size: 9.5pt; color: #333; margin-top: 6pt; font-style: italic; line-height: 1.4; }
+  table { border-collapse: collapse; width: 100%; margin: 10pt 0; font-size: 10pt; page-break-inside: avoid; }
+  th { background: #1e3a5f; color: white; padding: 6pt 8pt; text-align: left; border: 1px solid #444; }
+  td { padding: 5pt 8pt; border: 1px solid #aaa; vertical-align: top; }
+  tr:nth-child(even) { background: #f5f5f0; }
+  .key-finding { background: #d4edda; border-left: 3px solid #28a745; padding: 6pt 10pt; margin: 6pt 0; font-size: 10.5pt; }
+  .warning { background: #f8d7da; border-left: 3px solid #c44545; padding: 6pt 10pt; margin: 6pt 0; font-size: 10.5pt; }
+  .note { background: #d1ecf1; border-left: 3px solid #17a2b8; padding: 6pt 10pt; margin: 6pt 0; font-size: 10pt; }
+  .receipts { font-family: 'Courier New', monospace; font-size: 8.5pt; background: #f4f4f4; border: 1px solid #ddd; padding: 8pt 12pt; margin: 10pt 0; word-break: break-all; }
+  code { font-family: 'Courier New', monospace; font-size: 9.5pt; background: #f4f4f4; padding: 1pt 4pt; }
+  .page-break { page-break-after: always; }
+  .small { font-size: 9pt; color: #555; }
+  ul { margin: 6pt 0; }
+  li { margin: 3pt 0; }
+</style>
+</head>
+<body>
+
+<!-- ====== TITLE PAGE ====== -->
+<h1 style="text-align: center; margin-top: 30pt;">TITLE_HERE</h1>
+<h2 style="text-align: center; border: none; font-size: 16pt; color: #444; margin-top: 6pt;">SUBTITLE_HERE</h2>
+
+<p class="authors" style="text-align: center; font-style: normal;">
+  <strong>AUTHOR_NAME</strong> (F13 SOVEREIGN — arifOS Federation)<br>
+  <em>AFFILIATION</em><br>
+  <span class="small">Hermes Agent — arifOS MCP :8088 · GEOX MCP :8081 · AAA :3001</span><br>
+  <span class="small">Receipt: DATE · GEOX Claim ID <code>CLAIM_ID_HERE</code></span>
+</p>
+
+<div class="abstract">
+<p class="abstract-title">Abstract</p>
+<p>ABSTRACT_TEXT_HERE</p>
+</div>
+
+<p class="small" style="text-align: center; margin-top: 14pt;">
+<strong>Keywords:</strong> KEYWORDS_HERE
+</p>
+
+<div class="page-break"></div>
+
+<!-- ====== §1 CORE FINDING ====== -->
+<h2>1. The Core Finding</h2>
+
+<p>INTRODUCTION_PARAGRAPH_HERE</p>
+
+<table>
+<thead>
+<tr><th>Hypothesis</th><th>Score</th><th>Verdict</th><th>Violations</th></tr>
+</thead>
+<tbody>
+<tr><td>Row 1</td><td>0.XX</td><td>Status</td><td>N</td></tr>
+<!-- more rows -->
+</tbody>
+</table>
+
+<div class="key-finding">
+<strong>Key finding:</strong> KEY_FINDING_TEXT_HERE
+</div>
+
+<!-- ====== §2 REGIONAL CONTEXT ====== -->
+<h2>2. Regional Tectonic Context</h2>
+
+<div class="figure">
+<img src="fig2_regional_map.png" alt="Regional tectonic map">
+<p class="figure-caption">
+<strong>Figure 1.</strong> FIGURE_CAPTION_HERE
+</p>
+</div>
+
+<h3>2.1 Plate boundaries</h3>
+<ul>
+<li>BOUNDARY_1</li>
+<li>BOUNDARY_2</li>
+</ul>
+
+<!-- ====== §3 CROSS-SECTION ====== -->
+<h2 class="caption-section">3. Geological Cross-Section A–A'</h2>
+
+<div class="figure">
+<img src="fig1_cross_section.png" alt="Geological cross-section through the study area">
+<p class="figure-caption">
+<strong>Figure 2.</strong> CROSS_SECTION_CAPTION_HERE
+</p>
+</div>
+
+<h3>3.1 Reading the section</h3>
+<p>SECTION_INTERPRETATION_HERE</p>
+
+<div class="warning">
+<strong>Geophysical discriminator:</strong> FALSIFICATION_TEST_HERE
+</div>
+
+<!-- ====== §4 ROCK PHYSICS ====== -->
+<h2 class="caption-section">4. Rock-Physics Contrast</h2>
+
+<div class="figure">
+<img src="fig4_rock_physics.png" alt="Rock physics bar charts">
+<p class="figure-caption">
+<strong>Figure 3.</strong> ROCK_PHYSICS_CAPTION_HERE
+</p>
+</div>
+
+<table>
+<thead>
+<tr><th>Property</th><th>Value 1</th><th>Value 2</th><th>Δ</th><th>Interpretation</th></tr>
+</thead>
+<tbody>
+<tr><td>Property 1</td><td>1.000</td><td>0.500</td><td>+100%</td><td>Meaning</td></tr>
+<!-- more rows -->
+</tbody>
+</table>
+
+<!-- ====== §5 EVOLUTION TIMELINE ====== -->
+<h2 class="caption-section">5. Step-by-Step Evolution</h2>
+
+<div class="figure">
+<img src="fig3_evolution_timeline.png" alt="Evolution timeline">
+<p class="figure-caption">
+<strong>Figure 4.</strong> TIMELINE_CAPTION_HERE
+</p>
+</div>
+
+<h3>Step 1 — STEP_NAME_1</h3>
+<p>STEP_1_TEXT_HERE</p>
+
+<h3>Step 2 — STEP_NAME_2</h3>
+<p>STEP_2_TEXT_HERE</p>
+
+<h3>Step 3 — STEP_NAME_3</h3>
+<p>STEP_3_TEXT_HERE</p>
+
+<!-- ====== §6 BIOSTRATIGRAPHIC ====== -->
+<h2 class="caption-section">6. Biostratigraphic Tie-In</h2>
+
+<p>BIOSTRAT_PARAGRAPH_HERE</p>
+
+<table>
+<thead>
+<tr><th>Biozone</th><th>Age (Ma)</th><th>Stratigraphic Interval</th><th>Relevance</th></tr>
+</thead>
+<tbody>
+<!-- biozone rows -->
+</tbody>
+</table>
+
+<div class="key-finding">
+<strong>Independent verification:</strong> BIOSTRAT_VERIFICATION_HERE
+</div>
+
+<!-- ====== §7 FALSIFICATION ====== -->
+<h2 class="caption-section">7. Falsification Framework</h2>
+
+<p>FALSIFICATION_PARAGRAPH_HERE</p>
+
+<table>
+<thead>
+<tr><th>Code</th><th>Hypothesis</th><th>Model Position</th></tr>
+</thead>
+<tbody>
+<!-- hypothesis rows -->
+</tbody>
+</table>
+
+<h3>7.1 Killer tests</h3>
+<ul>
+<li><strong>H1:</strong> KILLER_TEST_1</li>
+</ul>
+
+<h3>7.2 Acquisition sequence</h3>
+<ol>
+<li>STEP_1</li>
+<li>STEP_2</li>
+</ol>
+
+<!-- ====== §8 MODEL CONTRAST ====== -->
+<h2 class="caption-section">8. Model Contrast vs Published Models</h2>
+
+<div class="figure">
+<img src="fig5_model_comparison.png" alt="Model comparison matrix">
+<p class="figure-caption">
+<strong>Figure 5.</strong> MODEL_COMPARISON_CAPTION_HERE
+</p>
+</div>
+
+<!-- ====== §9 RECEIPTS ====== -->
+<h2 class="caption-section">9. Constitutional & Audit Receipts</h2>
+
+<h3>9.1 SHA256 fingerprint of source figure</h3>
+<div class="receipts">
+SOURCE:  /path/to/source.png
+SIZE:    N bytes
+SHA256:  HASH_HERE
+</div>
+
+<h3>9.2 GEOX claim receipt</h3>
+<div class="receipts">
+CLAIM_ID:  CLAIM_ID_HERE
+STATUS:     STATUS
+CONFIDENCE: 0.XX
+AUTHOR:     AUTHOR
+
+EVIDENCE_FOR (N):
+  EVIDENCE_ID_1  DESCRIPTION_1
+  ...
+
+EVIDENCE_AGAINST (N, as rivals):
+  EVIDENCE_ID_R1  DESCRIPTION_R1
+  ...
+</div>
+
+<h3>9.3 arifOS constitutional judgment</h3>
+<div class="receipts">
+INIT:      VERDICT
+ROUTE:     VERDICT
+OBSERVE:   VERDICT
+THINK:     VERDICT
+JUDGE:     VERDICT
+
+DECISION:  DECISION
+FLOOR:     FLOOR
+</div>
+
+<!-- ====== §10 CONCLUSIONS ====== -->
+<h2 class="caption-section">10. Conclusions</h2>
+
+<ol>
+<li>CONCLUSION_1</li>
+<li>CONCLUSION_2</li>
+</ol>
+
+<div class="warning">
+<strong>F13 Status:</strong> SEAL_STATUS_HERE
+</div>
+
+<!-- ====== REFERENCES ====== -->
+<h2 class="caption-section">11. References</h2>
+
+<ol class="small">
+<li>AUTHOR_YEAR. TITLE. JOURNAL, VOL, PAGES.</li>
+<!-- more refs -->
+</ol>
+
+<div style="margin-top: 30pt; padding-top: 10pt; border-top: 2px solid #1e3a5f; text-align: center;">
+<p class="small" style="color: #555;">
+<em>DITEMPA BUKAN DIBERI — Forged, Not Given</em><br>
+Manuscript generated DATE by Hermes Agent for Arif (F13 SOVEREIGN)<br>
+arifOS Federation · <a href="https://arifos.arif-fazil.com">arifos.arif-fazil.com</a>
+</p>
+</div>
+
+</body>
+</html>

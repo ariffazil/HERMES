@@ -1,0 +1,126 @@
+# ASI_READINESS_CONTRACT.yaml
+# Spec template — fill cells with YES/NO/UNCERTAIN + evidence path + falsification probe.
+# Default placement: AAA/contracts/ASI_READINESS_CONTRACT.yaml
+# Validated 2026-07-04. Sourced from asi-readiness-audit-contract skill.
+
+contract:
+  name: ASI_READINESS
+  version: 1.0.0
+  authority: F13 SOVEREIGN (Muhammad Arif bin Fazil)
+  ratified_on: YYYY-MM-DD
+  valid_until: YYYY-MM-DD  # SOT-MANIFEST discipline applies
+  source_skill: asi-readiness-audit-contract
+  pre_flight: scripts/asi_audit_pre_flight.sh
+
+# 7 organs × 7 dimensions = 49 cells
+# For each cell: {evidence_path} is REQUIRED. {falsification} is REQUIRED for YES.
+# NO cell: must state the missing artifact. UNCERTAIN cell: must state the gap.
+
+organs:
+  arifOS_Ω:
+    role: Constitutional kernel — F1-F13, 888 JUDGE, VAULT999
+    port: 8088
+    dimensions:
+      reality:
+        status: __ # YES | NO | UNCERTAIN
+        evidence: __  # path or probe-output snippet (50-200 chars)
+        falsification: __  # how to disprove this YES — a probe the auditor can run
+      governance:
+        status: __
+        evidence: __
+        falsification: __
+      civilization:
+        status: __
+        evidence: __
+        falsification: __
+      execution:
+        status: __
+        evidence: __
+        falsification: __
+      memory:
+        status: __
+        evidence: __
+        falsification: __
+      witness:
+        status: __
+        evidence: __
+        falsification: __
+      meaning:
+        status: __
+        evidence: __
+        falsification: __
+
+  AFORGE_⚒️:
+    role: Execution shell + MCP gateway
+    ports: [7071, 7072]
+    dimensions: { ...same 7 keys... }  # fill per organ
+
+  AAA_🖥️:
+    role: Control plane + A2A mesh + React cockpit
+    port: 3001
+    dimensions: { ...same 7 keys... }
+
+  GEOX_🌍:
+    role: Earth evidence, wells, seismic, petrophysics
+    port: 8081
+    dimensions: { ...same 7 keys... }
+
+  WEALTH_💰:
+    role: Capital intelligence (EVIDENCE_ONLY)
+    port: 18082
+    dimensions: { ...same 7 keys... }
+
+  WELL_🫀:
+    role: Human readiness (REFLECT_ONLY)
+    port: 18083
+    dimensions: { ...same 7 keys... }
+
+  OpenClaw_AGI:
+    role: Infra operator — bridge, NOT domain organ
+    port: 18789
+    dimensions: { ...same 7 keys... }
+    note: "OpenClaw audit contributes to meta-layer (scaling-discipline) not as 7-dim subject"
+
+# Meta-layer — federation-wide, not per-organ
+meta_layer:
+  identity_continuity:
+    status: __
+    evidence: grep SOT-MANIFEST valid_until across /root/*/AGENTS.md
+    failure_signature: SOT stale or goals drift or authority vacant
+
+  entropy_balance:
+    status: __
+    evidence: per-organ churn rate (git --shortstat rolling 30d)
+    failure_signature: churn-up without artifact-down
+
+  metacognition:
+    status: __
+    evidence: 888_JUDGE verdict + 888_HOLD rate over 30 days
+    failure_signature: zero holds (overconfident) OR zero audits (sleepwalking)
+
+  scaling_discipline:
+    status: __
+    evidence: tool count growth vs contracts/ governance artifact growth
+    failure_signature: governance-growth-rate < capability-growth-rate
+
+  human_at_boundary:
+    status: __
+    evidence: 888_HOLD class instances + F13 SOVEREIGN ratification count
+    failure_signature: rubber-stamps without delta OR conforms to vendor default
+
+# Verdict aggregation
+verdict_rules:
+  ASI_READY: all 49 cells YES OR (≤4 UNCERTAIN with falsification paths) AND meta-layer 5/5
+  ASI_CONDITIONAL: ≤8 cells NO OR meta-layer 1-2 axes CONDITIONAL
+  ASI_NOT_READY: ≥3 organs with ≥2 NO cells OR meta-layer ≥3 axes FAIL
+
+outputs:
+  sovereign_facing:
+    shape: "≤3 sentences, Penang BM-English, no preamble"
+    template: |
+      ASI-{VERDICT} — {N}/7 organs pass 7 dimensions, meta-layer {X}/5.
+      Gap: {3 worst failing cells}.
+      Receipt: {path}.
+
+  receipt_path: AAA/eval/outcomes/ASI_READINESS_{DATE}.json
+  vault_seal: arif_seal via caller-side (not verifier-side)

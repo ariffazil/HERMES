@@ -1,0 +1,84 @@
+# Starter kernel spec — minimal 3-contract harness.
+# Copy and modify. F13 ratification required for any field mutation.
+
+constitutional_law:
+  SEAL_triggers_review: true
+  SEAL_does_not_directly_mutate_skills: true
+  INIT_restores_body_plan: true
+  Scaffold_proposes_patch: true
+  Diff_detects_drift: true
+  Tests_prove_survival: true
+  Judge_controls_semantic_change: true
+  Cooling_blocks_runaway: true
+  Actuator_executes_only_after_gate: true
+
+# Replace these 3 placeholder contracts with your domain's N contracts.
+# Each MUST carry: version, contract.must_preserve, contract.must_never_weaken,
+# contract.tests. The Diff stage works on these.
+contracts:
+  boundary_sensing:
+    version: 1.0.0
+    floor: L01
+    stage: 4
+    contract:
+      must_preserve: [evidence_floor, reversibility_check, authority_check]
+      must_never_weaken: [human_ack_for_irreversible_action]
+      tests: [mutation_without_anchor_returns_HOLD]
+  reaction_gating:
+    version: 1.0.0
+    floor: L11
+    stage: 4
+    contract:
+      must_preserve: [evidence_floor, reversibility_check, external_anchor_for_mutation]
+      must_never_weaken: [human_ack_for_irreversible_action, actuator_mutation_gate]
+      tests: [mutation_without_anchor_returns_HOLD, dry_run_does_not_write, judge_required_before_execute]
+  execution_discipline:
+    version: 1.0.0
+    floor: L13
+    stage: 8
+    contract:
+      must_preserve: [F13_boundary, actuator_gate, cooling_required]
+      must_never_weaken: [human_ack_for_irreversible, no_self_marking_sealed]
+      tests: [actuator_cannot_execute_without_anchor, no_fake_GREEN]
+
+loop:
+  trigger: <your_seal_event>
+  mutation_allowed_per_stage: false
+  stages:
+    - name: seal_receipt_lock
+      mutation: false
+      output: SkillDeltaEvent
+    - name: init_regeneration
+      mutation: false
+      loads: [<your_body_plan_keys>]
+    - name: scaffold_rebuild
+      mutation: false
+      output: proposed_skill_delta
+      applies_automatically: false
+    - name: skill_diff
+      mutation: false
+      detects: [weakened_gate, expanded_autonomy, hidden_mutation, authority_drift]
+    - name: survivor_tests
+      mutation: false
+      required: [<your_5_required_tests>]
+    - name: judge_gate
+      required_for: [contract_change, policy_change]
+      owner: <your_judge>
+    - name: cooling
+      required: true
+    - name: resume
+      condition: [judge_passed_or_no_mutation, cooling_complete]
+
+engine:
+  hard_rules:
+    - cannot_apply_patch
+    - cannot_change_tool_surface
+    - cannot_change_actuator_policy
+    - cannot_mark_SEAL
+    - cannot_bypass_cooling
+    - cannot_weaken_human_ack
+    - cannot_mutate_sovereign_boundary
+  missing_invariants:
+    physics_noether_discipline: every symmetry implies conservation
+    biology_immune_memory: scars update thresholds, not identity
+    chemistry_activation_barrier: catalyst must not lower activation energy for forbidden reactions

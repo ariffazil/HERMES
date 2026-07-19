@@ -1,0 +1,31 @@
+{
+  "domain": "<machine-readable-name>",
+  "code": "<3-digit-code>",
+  "band": "<directory-name — e.g. 'math', 'physics', 'code'>",
+  "label": "<Human-Readable Title>",
+  "question": "<Core question in ALL-CAPS key concept + plain language>",
+  "description": "<2-4 sentences. Scope, applications, what depends on it, why it matters. Mention dependency chain if applicable.>",
+  "axioms": [
+    "<Named theorem or first principle — must be real, domain-significant>",
+    "<Include the actual mathematical/physical statement, not just the theorem name>",
+    "<7+ axioms for primary domains; 5+ for secondary>",
+    "Axiom n: ..."
+  ],
+  "reasoning_patterns": [
+    "<Characteristic reasoning mode of this domain>",
+    "... 5+ entries"
+  ],
+  "boundary_conditions": [
+    "<Known limit, impossibility, or common pitfall>",
+    "... 3+ entries"
+  ],
+  "dependencies": [
+    "<parent-1: code-domain — e.g. '444-algebra'>",
+    "<parent-2: ...>"
+  ],
+  "organs": [
+    "<federation organ that uses this domain — e.g. 'arifOS', 'GEOX', 'WEALTH', 'A-FORGE'>"
+  ],
+  "epistemic_floor": "<DERIVED|OBSERVED|INTERPRETED|SPECULATED>",
+  "reality_layer": "<epistemic|physical>"
+}

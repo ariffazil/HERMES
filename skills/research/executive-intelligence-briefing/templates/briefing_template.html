@@ -1,0 +1,78 @@
+<!-- EXECUTIVE INTELLIGENCE BRIEFING - HTML TEMPLATE
+     Copy and modify for your specific briefing.
+     CRITICAL: @page { size: A4; margin: 0; } must be in CSS or page count doubles.
+     Generate: google-chrome --headless --print-to-pdf=output.pdf --print-to-pdf-no-header file:///path/to/briefing.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a25;--border:#2a2a3a;
+    --text:#e8e8f0;--text-muted:#8888aa;--accent:#6366f1;--accent-glow:rgba(99,102,241,0.15);
+    --red:#ef4444;--red-surface:rgba(239,68,68,0.1);
+    --amber:#f59e0b;--amber-surface:rgba(245,158,11,0.1);
+    --green:#22c55e;--green-surface:rgba(34,197,94,0.1);
+    --cyan:#06b6d4;--pink:#ec4899;
+  }
+  @page { size: A4; margin: 0; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); font-size:11px; line-height:1.6; }
+  .page { width:210mm; min-height:297mm; padding:20mm 18mm; page-break-after:always; position:relative; }
+  .cover { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:297mm; background:linear-gradient(135deg,#0a0a1a,#1a0a2e,#0a1a2e); }
+  .cover h1 { font-size:36px; font-weight:900; background:linear-gradient(135deg,#fff,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .cover .subtitle { font-size:18px; font-weight:300; color:var(--text-muted); margin:8px 0 40px; }
+  .cover .date-badge { display:inline-block; padding:8px 24px; background:var(--accent-glow); border:1px solid var(--accent); border-radius:24px; font-size:13px; font-weight:600; color:var(--accent); letter-spacing:2px; text-transform:uppercase; }
+  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid var(--border); }
+  .section-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .section-header h2 { font-size:22px; font-weight:800; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:12px; }
+  .card-red { border-left:4px solid var(--red); background:var(--red-surface); }
+  .card-amber { border-left:4px solid var(--amber); background:var(--amber-surface); }
+  .card-green { border-left:4px solid var(--green); background:var(--green-surface); }
+  .card-accent { border-left:4px solid var(--accent); background:var(--accent-glow); }
+  .card h3 { font-size:13px; font-weight:700; margin-bottom:6px; }
+  .card p { font-size:11px; color:var(--text-muted); }
+  .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:6px; }
+  .tag-breaking { background:var(--red); color:#fff; }
+  .tag-watch { background:var(--amber); color:#000; }
+  .tag-positive { background:var(--green); color:#000; }
+  .tag-deep { background:var(--accent); color:#fff; }
+  .tag-viral { background:var(--pink); color:#fff; }
+  .tersirat { background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(236,72,153,0.05)); border:1px dashed var(--accent); border-radius:10px; padding:14px 16px; margin:10px 0 14px; }
+  .tersirat .label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .tersirat p { font-size:11px; color:var(--text); font-style:italic; }
+  .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+  .metric { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
+  .metric .value { font-size:22px; font-weight:800; color:var(--accent); }
+  .metric .label { font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+  .metric.green .value { color:var(--green); }
+  .metric.red .value { color:var(--red); }
+  .metric.amber .value { color:var(--amber); }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .verdict-bar { display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--surface2); border-radius:8px; margin-bottom:12px; }
+  .verdict-bar .dot { width:10px; height:10px; border-radius:50%; }
+  .dot-red { background:var(--red); }
+  .dot-amber { background:var(--amber); }
+  .dot-green { background:var(--green); }
+  .page-footer { position:absolute; bottom:12mm; left:18mm; right:18mm; display:flex; justify-content:space-between; font-size:8px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+  .quote { border-left:3px solid var(--accent); padding:10px 14px; margin:10px 0; background:var(--accent-glow); border-radius:0 8px 8px 0; }
+  .quote p { font-size:12px; font-style:italic; }
+  .quote .source { font-size:9px; color:var(--text-muted); margin-top:4px; font-style:normal; }
+  @media print { body { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+</style>
+</head>
+<body>
+<!-- COVER -->
+<div class="page cover">
+  <div style="font-size:64px;margin-bottom:16px">🌍</div>
+  <h1>[TITLE]</h1>
+  <p class="subtitle">Tersurat & Tersirat</p>
+  <div class="date-badge">[DATE RANGE]</div>
+</div>
+<!-- CONTENT: Use .card variants, .tersirat boxes, .metrics grids, .two-col, .verdict-bar -->
+<!-- Each page needs .page-footer for page numbers -->
+</body>
+</html>
