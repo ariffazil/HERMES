@@ -1,0 +1,14 @@
+{
+  "name": "HERMES Multimodal Bridge",
+  "description": "Telegram bot bridge to arifOS federation. Routes human intent to organs. Bahasa-first, multimodal.",
+  "url": "https://hermes.arif-fazil.com/mcp",
+  "version": "1.0.0",
+  "protocolVersion": "0.3.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "skills": []
+}
