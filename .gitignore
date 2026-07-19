@@ -61,3 +61,7 @@ scripts/
 # IDE
 __pycache__/
 *.pyc
+
+# Secrets — never commit
+.env
+.hermes_history
