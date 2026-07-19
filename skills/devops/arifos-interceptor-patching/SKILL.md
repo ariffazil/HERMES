@@ -15,6 +15,7 @@ triggers:
   - "strict-organ doctrine enforcement"
   - "anonymous organ read rejection"
   - "arif_seal mode authority downgrade"
+  - "arif_think returns empty reasoning"
 ---
 
 # arifOS Interceptor Patching
@@ -201,7 +202,32 @@ return (capability.authority_required, capability.irreversible,
 
 ## Common pitfalls
 
-### 1. Case sensitivity: actor_id="ARIF" vs session actor_id="arif"
+### 0. Embodied handler override — the silent dispatch hijacker
+
+**The deadliest pitfall in arifOS debugging.** `_CANONICAL_HANDLERS` in `runtime/tools.py` registers tools like `"arif_think": _arif_mind_reason_tool`. But `server.py` line ~693 OVERRIDES this at startup:
+
+```python
+from arifosmcp.tools.embodied_instances.arif_think_handler import embodied_mind_reason_handler
+_CANONICAL_HANDLERS["arif_think"] = embodied_mind_reason_handler
+```
+
+The embodied handler then routes to `ArifMindReasonEmbodied().run()` which may call completely different functions than the ones you patched in `_CANONICAL_HANDLERS`.
+
+**Detection pattern:** When you fix a function but the live behavior doesn't change, grep for the handler name in `server.py`:
+```bash
+grep -n "CANONICAL_HANDLERS\[.*handler_name" /root/arifOS/arifosmcp/server.py
+```
+
+**Fix locations for arif_think (must patch ALL):**
+1. `runtime/tools.py` → `_synthesize_async` / `_arif_mind_reason` (template fallback confidence cap)
+2. `runtime/tools.py` → `_arif_mind_reason_tool` (async LLM wrapper — mode routing)
+3. `runtime/tools.py` → `ensure_standard_mcp_output` (wrapper confidence cap — the SECOND leak layer)
+4. `tools/embodied_instances/arif_think_embodied.py` → `ArifMindReasonEmbodied.execute()` — THE REAL HANDLER
+5. `runtime/llm_client.py` → `_call_minimax` / schema validation / TokenRouter model selection
+
+**Why this kills you:** You add real LLM inference to `_arif_mind_reason_tool`, test it directly (works!), but MCP calls still get template output. The embodied handler silently bypassed your fix. Always trace the FULL dispatch chain from public surface (`_CANONICAL_HANDLERS`) → `server.py` overrides → embodied handler → actual execution. Never assume the obvious function is the one being called.
+
+**The REASONING_EMPTY guard pattern:** When hollow reasoning (empty facts + empty inferences + confidence > 0.20) is detected, cap confidence at 0.20 and change verdict to DEGRADED. Apply this guard at EVERY layer — engine, wrapper, and embodied handler — because each layer has its own independent confidence default path.
 The session stores actor_id in the caller's original casing. Passing "ARIF" to init while the session records "ARIF" is fine for ownership checks (canonical normalization handles it). But downstream tools that do exact string match on actor_id will see a mismatch. **Fix:** Use `_canonical_actor_key()` for any actor_id comparison. See the session isolation section above.
 
 ### 2. Missing nonce on arif_seal

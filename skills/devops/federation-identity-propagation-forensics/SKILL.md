@@ -199,6 +199,48 @@ chain_entry = {
 
 MCP connections arriving without a sovereign token create sessions with `openclaw-anon` from birth. The resolver can't find a real identity that was never injected. That's a transport-layer fix (OpenClaw side). Historical 10K+ receipts with anonymous identity need a sovereign decision — annotate or leave as-is.
 
+## Vector #7 — Routing Envelope SCT Propagation (2026-07-20)
+
+### Path D: cross-organ routing (newly discovered)
+
+A fourth propagation path was missed — the routing envelope. When `arif_route` calls `_bridge_geox/_bridge_wealth/_bridge_well`, it builds a federation envelope via `build_federation_envelope()`. Before Vector #7, `session_token` was accepted as a parameter but **dropped** in the transport envelope — only `session_id`, `actor_id`, and `trace_id` made it through. The envelope's `session.session_token` was always empty.
+
+```
+arif_route → transport _envelope → _bridge_* → build_federation_envelope
+  → session_token MISSING → organ defaults to OBSERVE_ONLY
+```
+
+**Impact:** An agent with FULL authority at arifOS was silently downgraded to OBSERVE_ONLY at every organ. No error, no log — just an empty SCT field.
+
+### The fix (kernel_canonical.py)
+
+4 patches in `arifosmcp/tools/kernel_canonical.py`:
+1. Transport envelope: added `"session_token": session_token` to the `_envelope` dict
+2. Bridge signatures: added `session_token` parameter to `_bridge_geox/wealth/well`
+3. Bridge calls: all three pass `session_token`
+4. Federation envelope: each bridge passes `session_token=session_token or arguments.get("session_token")` to `build_federation_envelope()`
+
+**Key files:**
+- `/root/arifOS/arifosmcp/tools/kernel_canonical.py` L815-1106 — `arif_route`, transport envelope, bridge calls
+- `/root/arifOS/arifosmcp/tools/kernel_canonical.py` L1750-2233 — `_bridge_geox`, `_bridge_wealth`, `_bridge_well`
+- `/root/arifOS/arifosmcp/federation/federation_envelope.py` L75-236 — `build_federation_envelope` (already supported `session_token`, just never received it)
+- `/root/arifOS/tests/test_cross_organ_sct_propagation.py` — 11 envelope-level tests
+
+### Verification
+
+Envelope-level structural tests (no live organs needed):
+```python
+env = build_federation_envelope(session_token="sct_v1.test", ...)
+assert env["session"]["session_token"] == "sct_v1.test"
+
+args = inject_envelope_into_call_args(args, env)
+assert args["_envelope"]["session_token"] == "sct_v1.test"
+```
+
+### Pitfall
+
+**The injection function was correct; the upstream was broken.** `inject_envelope_into_call_args()` already handled `session_token` propagation (lines 262-263, 278-281 in `federation_envelope.py`). The bug was that it never received a SCT to inject because `arif_route` never put one in the envelope. Always check the caller, not just the callee.
+
 ## Previous fix attempt (2026-07-09)
 
 Documented at `/root/A-FORGE/forge_work/2026-07-09/IDENTITY-PROPAGATION-FIX.md`. Fixed `_actor_for_response` and ingress middleware. **Worked briefly but regressed** because:

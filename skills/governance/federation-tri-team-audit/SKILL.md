@@ -269,6 +269,78 @@ Weighted average = deployment readiness. **Proven result:** 5.8/10 on arifOS (20
 
 See `references/external-council-audit-2026-07-15.md` for full audit.
 
+## Audit Incident Response — From Finding to Sealed Fix
+
+FORGED 2026-07-19 (Fable5 external audit). When an audit probe finds a real
+defect — not a health check failure but a structural governance gap — the
+response must follow a layered hardening pattern:
+
+### Response Pattern (0→999)
+
+```
+000  PROBE     — External auditor runs live probes against public surface.
+111  VERIFY    — Confirm the defect with evidence, not assumption.
+               Never fix what you haven't reproduced.
+333  FIX INNER — Fix the engine/domain layer first (e.g., _arif_mind_reason).
+               The inner fix is necessary but insufficient alone.
+444  FIX WRAPPER — The wrapper post-processes every tool result. If the engine
+               fix isn't reflected in the wrapper, downstream agents still
+               see the old state. This is the most common leak point.
+555  SURFACE TEST — Write tests at the public MCP surface, not just the
+               engine. The inner tests can pass while the wrapper still leaks.
+               Assert: metacognition confidence ≤ inner confidence when empty.
+666  CATALOG — List all remaining pressure vectors. External auditors often
+               find one defect and imply others. Map the full taxonomy.
+777  HARDEN — Fix all remaining vectors. Use parallel subagents for independent
+               vectors. Use direct implementation for coupled vectors.
+               Priority: structural > procedural > cosmetic.
+888  VERIFY ALL — Run full test suite. Engine + surface + cross-organ.
+999  SEAL — Write comprehensive seal receipt covering all vectors.
+```
+
+### Key Pitfalls Discovered (Fable5 Audit)
+
+1. **Two-layer leak**: An engine fix without a wrapper fix is invisible. The
+   engine correctly caps confidence at 0.20, but the metacognition envelope
+   defaults to 0.65 without consulting the inner result. Always test both layers.
+
+2. **Wrapper confidence extraction order**: `ensure_standard_mcp_output` extracts
+   confidence from `payload.get("confidence")` → `meta.get("confidence")` →
+   `routing_confidence` → `0.65` default. Missing: `result["confidence"]` for
+   MindOutput-style results. Fix: add nested result check before the default.
+
+3. **REASONING_EMPTY propagation**: The inner engine sets `reasoning_state`, but
+   the outer metacognition block reads from `raw_result` which may not be the
+   inner result dict. Fix: check both `raw_result` and nested `result` key.
+
+4. **Transition candidates must reflect reality**: When reasoning is degraded,
+   `accept_synthesis` must be deselected and `reject_synthesis` selected.
+   Otherwise the transition log claims the synthesis passed floors it failed.
+
+5. **Detection string brittleness**: Degraded detection used a single-string
+   match ("degraded") that missed "template synthesis" and "LLM unavailable".
+   Use multi-signal detection with fallback strings.
+
+### Pressure Vector Taxonomy
+
+When an audit reveals one defect, catalog ALL pressure vectors. The Fable5
+audit categorized 11 vectors across three classes:
+
+**Already-closed (1-5)**: Completion, escalation, coherence-over-truth,
+sycophancy, Goodharting — handled by existing graduated authority + friction.
+
+**Hardened this cycle (6-11)**:
+| # | Vector | Guard |
+|---|---|---|
+| 6 | Context capture | BOOT/INIT/GENESIS immutability, memory L4-L6 T3 |
+| 7 | Delegation escape | SCT propagation, cross-organ authority parity |
+| 8 | Deferred mutation | Judgment-at-execution, 24h session max |
+| 9 | Resource accumulation | Lease 8h TTL, hoarding audit |
+| 10 | Audit fatigue | T3 cap 12/day, 15% deep-read, late-night scoring |
+| 11 | Definitional drift | 7-day cooling, stacking prevention, F13 ratification |
+
+See `references/fable5-pressure-vectors.md` for the full taxonomy.
+
 ## Sovereign Override
 
 Red Team findings that confirm HARAM patterns → immediate report to Arif.

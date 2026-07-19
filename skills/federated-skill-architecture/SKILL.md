@@ -228,7 +228,11 @@ These are REAL LIMITS, not bugs. Design for them, don't pretend they don't exist
 - `/root/AAA/skills/FEDERATED_SKILLS_REGISTRY_V3.yaml` — 63 canonical skills
 - `/root/AAA/scripts/sign-manifest.sh` — signing script
 - `/root/.secrets/bootstrap/` — root keypair
-- `references/skills-vs-agents.md` — When to use A2A delegation vs loading a skill. Core architectural distinction from the 3-perspective conversation (Hermes/FORGE/OpenCode).
+- `references/skills-vs-agents.md` — When to use A2A delegation vs loading a skill
+- `references/salam-aaa-init-pattern.md` — Platform-agnostic agent bootstrap (SALAM ceremony, thin-wrappers, universal init)
+- `references/mcp-server-wiring-pattern.md` — Federation-wide MCP server deployment (5-step pattern from Hound deployment)
+- `references/session-artifact-inventory.md` — Session artifact inventory
+- `references/agent-card-alignment.md` — Agent card vs live config alignment
 
 ---
 

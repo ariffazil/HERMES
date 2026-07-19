@@ -242,6 +242,7 @@ curl -s -X POST http://localhost:8081/mcp -H "Content-Type: application/json" \
 - `references/kernel-vs-connector-diagnostic.md` — When external audits confuse connector drift with kernel failure (scar 2026-07-19)
 - `references/geox-conformance-workflow.md` — Full GEOX conformance build/fix pipeline
 - `references/delegate-agent-audit.md` — Verifying subagent claims against live state; agent fabrication detection (scar 2026-07-19): canonical manifest population, FastMCP 3.x AppConfig wiring, geox_list_apps fix, validator + test flow
+- `references/kernel-probe-as-evidence.md` — Using live arif_init/arif_think/arif_judge probes to verify or disprove external AI claims about kernel behavior; pre-existing test isolation via git stash (2026-07-19)
 
 ## Constitutional Compliance
 

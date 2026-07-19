@@ -109,6 +109,89 @@ If step 3 returns 401 → key env var name mismatch (most common cause). If 200 
 | Password stored as literal `"placeholder-gw-password"` / `"***"` after reading vault.env | Source vault files (e.g. `vault.env`) often contain placeholder strings — the real key is in the **running service's systemd `EnvironmentFile`** | See "Pitfall: probe the running service's systemd env, not the source vault" below. Always read `systemctl show <svc> --property=Environment` or the service's `EnvironmentFile` directly. |
 | LLM literal-mangling breaks the script | The linter or string parser replaces literal `***` with placeholder text (`"placeholder-gw-password"`), corrupting regex patterns that depend on the literal | Two workarounds: (a) split the sentinel into `KEYNAME + '='` and avoid `***` literals in source — the value comes after, parse with `line.split('=', 1)[1].strip()`; (b) when constructing the regex pattern as a string, build it from `'.*' * N` or use the variable name alone (e.g. `if KEYNAME in line:` instead of `if 'KEY=*** in line:`). Validate the actual extracted value with `len(pw) > 5` to catch the placeholder. |
 
+## Pitfall: hermes doctor checks wrong file — false negatives for credentials (2026-07-19)
+
+`hermes doctor` (and `hermes status`) scans `~/.hermes/.env` and `~/.hermes/config.yaml` for provider key env vars. It does NOT scan `/root/.secrets/vault.env`, systemd EnvironmentFiles, or runtime exported env vars. This produces **false negatives**:
+
+- **Symptom**: Doctor says "No credentials found for provider 'xiaomi'" but `curl` to the API endpoint returns HTTP 200 (auth is fine, key is real — just quota might be exhausted).
+- **Also**: Doctor may report the wrong `model.provider` — it claimed `mimo` on a machine where `grep model: ~/.hermes/config.yaml` showed `deepseek`. The doctor's provider read is not always the active model.
+- **Root cause**: The actual key lives in `/root/.secrets/vault.env` (or is exported at runtime), neither of which the doctor checks.
+
+**Fix**: Don't trust `hermes doctor` for credential verification. Verify credentials with a live API call:
+
+```bash
+source /root/.secrets/vault.env
+curl -sS --max-time 10 "${BASE_URL}/models" -H "Authorization: Bearer ${API_KEY}"
+# 200 → auth valid (quota may still be exhausted → 429 on /chat/completions)
+# 401 → key is actually missing/wrong
+```
+
+Doctor's role is structural health (config validity, file existence, tool surface) — not live credential verification. A key that authenticates but has exhausted quota will show as "missing" in doctor but works for auth.
+
+## Pitfall: Token Plan quota exhaustion is shared across VPSes with the same key (2026-07-19)
+
+Token Plan API keys are per-account, not per-machine. When two VPSes share the same key (e.g., both use `MIMO_API_KEY=tp-sleu41me6...`), they share the **same quota pool**. Exhaustion on one = exhaustion on both.
+
+**Before copying a key from another VPS:**
+
+```bash
+# Always compare — don't assume different keys
+ssh remote "grep MIMO_API_KEY /root/.secrets/vault.env | head -1"
+grep MIMO_API_KEY /root/.secrets/vault.env | head -1
+# Same key? → Same quota → Won't help. Need different provider or key refresh.
+```
+
+**Auth success ≠ usable quota**: `GET /models → 200` proves the key is real. `POST /chat/completions → 429 "quota exhausted"` proves the key has no tokens left. Both can be true simultaneously. Always test the inference endpoint, not just the auth endpoint.
+
+## Pitfall: OpenClaw provider rotation — clean stale model aliases, three places to edit (2026-07-19)
+
+When rotating OpenClaw's primary model away from a dead provider (e.g., MiMo → MiniMax), edit **three places** in `/root/.openclaw/openclaw.json`, not just the primary field:
+
+1. `agents.defaults.model.primary` — change to new working provider
+2. `agents.defaults.model.fallbacks` — remove dead provider entries; move working providers up
+3. `agents.defaults.models.*` — **remove model alias entries for the dead provider** (e.g., `"xiaomi-coding/mimo-v2.5-pro": {"alias": "MiMo Pro"}`)
+
+**Why #3 fails silently**: OpenClaw auto-detects plugins on startup from the `models` dict. Stale `xiaomi-coding` aliases cause the gateway to try loading the Xiaomi/OpenRouter plugin even though no provider in the fallback chain uses it. The plugin fails with `SecretRefResolutionError` ("OPENROUTER_API_KEY is missing") and **blocks the entire gateway startup** — even though the primary model is now a working MiniMax provider.
+
+**Restart must source secrets**: OpenClaw doesn't read `vault.env` itself. Any provider with a `key_env` reference (even if not in the active chain, even if just listed in the `models` aliases) requires the env var at startup:
+
+```bash
+source /root/.secrets/vault.env && /usr/bin/node /usr/lib/node_modules/openclaw/dist/index.js gateway
+```
+
+Without this, the gateway fails with `SecretRefResolutionError` and writes a `gateway.startup_failed.json` stability bundle.
+
+**Full rotation recipe:**
+
+```python
+import json
+with open('/root/.openclaw/openclaw.json') as f:
+    config = json.load(f)
+
+model = config['agents']['defaults']['model']
+models_dict = config['agents']['defaults'].get('models', {})
+
+# 1. Switch primary
+old_primary = model['primary']
+model['primary'] = 'minimax/MiniMax-M2.7'
+
+# 2. Clean fallbacks — drop dead providers
+model['fallbacks'] = [
+    f for f in model['fallbacks']
+    if 'xiaomi-coding' not in f and 'token-plan' not in f
+]
+
+# 3. Remove stale model aliases
+dead_aliases = [k for k in models_dict if 'xiaomi-coding' in k]
+for k in dead_aliases:
+    del models_dict[k]
+
+with open('/root/.openclaw/openclaw.json', 'w') as f:
+    json.dump(config, f, indent=2)
+```
+
+Verification: `curl -sf http://127.0.0.1:18789/health` should return `{"ok": true, "status": "live"}` within 10 seconds of restart.
+
 ## Pitfall: when the user says "execute all" — no menus, just execute (2026-07-04)
 
 When the user gives a direct forge command ("execute all", "do it", "run it", "wire everything"), the wrong reflex is to:

@@ -19,27 +19,38 @@ Edit, build, and deploy content on arif-fazil.com. The site is React 19 + Vite, 
 
 ## When to use
 
+- Arif drops an external AI audit/review (ChatGPT, Perplexity, etc.) on the site and says "fix this" or "reality verdict"
 - Arif shares external audit feedback on an essay and says "fix it"
 - Editing or adding MakcikGPT articles
-- Any content on arif-fazil.com needs updating
+- Editing React components (footer, header, pages) — not just essays
 - Building and deploying the site after changes
+- Fixing governance/canonical claims (seals, pseudo-metrics, stale version strings) that appear in the UI
 
 ## Site architecture
 
 ```
 /root/ARIF-SITES/
 ├── sites/arif-fazil.com/     ← React 19 + Vite (the only site that needs build)
-│   ├── src/data/essays/      ← Essay content as .ts files
-│   │   ├── index.ts          ← Essay registry
-│   │   ├── 02-i-have-trust-issues-with-agents.ts
-│   │   ├── 06-the-first-act-of-creation-is-naming.ts
-│   │   ├── 10-the-real-battle-in-ai-will-not-be-model-vs-model.ts
-│   │   └── ...
-│   ├── src/data/wealth/      ← Wealth/commodity dashboard data
-│   └── src/data/writings/    ← Other writings
-├── deploy-vps.sh             ← Deploy script
+│   ├── src/
+│   │   ├── pages/            ← Route-level pages (Home.tsx, Essays.tsx, Canon.tsx, etc.)
+│   │   ├── components/       ← Reusable components (ConstellationFooter.tsx, ConstellationHeader.tsx, etc.)
+│   │   ├── data/essays/      ← Essay content as .ts files
+│   │   │   ├── index.ts      ← Essay registry
+│   │   │   ├── 02-i-have-trust-issues-with-agents.ts
+│   │   │   └── ...
+│   │   ├── data/wealth/      ← Wealth/commodity dashboard data
+│   │   ├── data/makcikgpt/   ← MakcikGPT articles
+│   │   └── data/siteContent.ts ← Site-wide data (links, portfolio, organ doors)
+│   └── public/               ← Static HTML pages (gas/, arifos/, etc.)
+│       └── gas/index.html    ← Gas dashboard — static, not React
+├── deploy-vps.sh             ← Deploy script (builds + rsyncs all sites)
 └── config/sites.json         ← Site registry
 ```
+
+Key files for common edits:
+- **Footer:** `src/components/ConstellationFooter.tsx` — copyright, seal claims, federation links, human/machine badge separation
+- **Homepage:** `src/pages/Home.tsx` — hero, organ doors, governance bridge, wells portfolio
+- **Navigation:** `src/data/siteContent.ts` — primaryLinks[], organDoors[], ecosystemLinks[], arifosLinks[]
 
 ### Essay file structure
 
@@ -70,9 +81,19 @@ cd /root/ARIF-SITES && ./deploy-vps.sh --site arif-fazil.com
 
 Build output goes to `dist/`. Deploy syncs to `/var/www/html/arif/` and checks HTTP 200.
 
-## Feedback → Fix workflow
+## Governance Fix workflow (EXTERNAL AUDIT → REALITY VERDICT → FIX)
 
-When Arif shares external audit feedback on an essay:
+When Arif drops an external AI's audit/review (e.g., ChatGPT "fable5" session) and says "fix this" or "reality verdict":
+
+1. **Read the audit critically.** External AI reviews are ADVISORY ONLY — never treat as constitutional authority. Sort claims into: (a) testable (kernel bugs, deployment state, seal validity), (b) editorial opinion (structure, tone, ordering).
+2. **Probe live state first.** Test every testable claim against the actual system. Kernel state via `arif_init`/`arif_judge`, live site via `curl`, source files via `search_files`.
+3. **Give a reality verdict.** Structured table: what's correct, what's partially correct, what's wrong. Then offer to fix — "Nak aku patch apa-apa ke?" — don't assume, let Arif confirm.
+4. **Apply only validated fixes.** Ignore wrong/outdated audit claims. Fix what's real.
+5. **Build, deploy, verify.** Follow the build→deploy flow below. React SPAs cannot be verified via `curl` — `grep` the built JS bundle instead.
+
+The "fable5" reference = external AI session identifier. Treat as second opinion, never authority.
+
+## Feedback → Fix workflow (essay content)
 
 1. **Identify the essay** — match the feedback's references (title, quotes, section names) to a file in `src/data/essays/`
 2. **Extract the specific edits** — the audit usually names: (a) a claim to correct, (b) an argument to add/restructure, (c) a gap to fill. Map each to a specific location in the `html` string
@@ -104,19 +125,27 @@ MakcikGPT articles live under `/wealth/makcikgpt/<slug>` in the URL structure (n
 
 2. **The `html` field is one giant template literal.** Don't try to rewrite the whole file. Use targeted find-and-replace via `patch`.
 
-2. **Escaped quotes in HTML.** The HTML uses `\"` for quotes inside the template literal. When patching, match the escaped form.
+3. **Escaped quotes in HTML.** The HTML uses `\\\"` for quotes inside the template literal. When patching, match the escaped form.
 
-3. **Build is required before deploy.** The site is React SPA — `deploy-vps.sh` syncs from `dist/`, not `src/`.
+4. **Build is required before deploy.** The site is React SPA — `deploy-vps.sh` syncs from `dist/`, not `src/`.
 
-4. **The deploy script builds internally too.** `deploy-vps.sh` runs `npm run build` as part of its flow. You can skip the separate build step and just run deploy.
+5. **The deploy script builds internally too.** `deploy-vps.sh` runs `npm run build` as part of its flow. You can skip the separate build step and just run deploy.
 
-5. **Essay numbering is not sequential.** Files are numbered by creation order, not publication order. Don't assume `11-*.ts` is the 11th essay on the site.
+6. **npm peer dependency conflict.** The `vite-plugin-ssg@0.1.0` package requires `@vitejs/plugin-react@^4.0.0` but the project uses `^5.1.1`. If `npm install` fails with ERESOLVE, use `npm install --legacy-peer-deps`. This is a known state of the repo — don't try to resolve the conflict, just use the flag.
 
-6. **MakcikGPT articles are separate.** They live in different data structures than essays. Check `src/data/` for the right directory.
+7. **Essay numbering is not sequential.** Files are numbered by creation order, not publication order. Don't assume `11-*.ts` is the 11th essay on the site.
 
-8. **MakcikGPT URL structure is nested under /wealth/.** Article URLs are `/wealth/makcikgpt/<slug>`, not `/makcikgpt/<slug>`. The listing page is at `/makcikgpt/` though.
+8. **MakcikGPT articles are separate.** They live in different data structures than essays. Check `src/data/` for the right directory.
 
-9. **Medium cross-posted essays** have a `mediumUrl` field. Changes to arif-fazil.com don't update Medium — those are separate publications.
+9. **MakcikGPT URL structure is nested under /wealth/.** Article URLs are `/wealth/makcikgpt/<slug>`, not `/makcikgpt/<slug>`. The listing page is at `/makcikgpt/` though.
+
+10. **Medium cross-posted essays** have a `mediumUrl` field. Changes to arif-fazil.com don't update Medium — those are separate publications.
+
+11. **React SPA = curl verification useless.** `curl https://arif-fazil.com | grep "my change"` returns nothing because React renders client-side. After deploy, verify by grepping the built JS bundle: `grep -c "expected_string" dist/assets/*.js`. The deploy script's HTTP 200 check only confirms the shell loaded.
+
+12. **Human-machine register collision.** When editing the footer or any page that has both human narrative and machine telemetry (llms.txt, soul.json, observatory links, organ counts), always add a visual divider (border, section label like "Machine surface") between them. Never let infrastructure badges float directly under human prose.
+
+13. **Static HTML pages deployed separately.** Pages under `public/` (e.g., `public/gas/index.html`) are copied by `scripts/copy-static-html.js` during postbuild. They sync to the webroot via rsync like the React build. Changes to these files need the full build→deploy cycle.
 
 ## See Also
 
