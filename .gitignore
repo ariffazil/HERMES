@@ -65,3 +65,5 @@ __pycache__/
 # Secrets — never commit
 .env
 .hermes_history
+skills/.curator_backups/
+verification_evidence.db
