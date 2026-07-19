@@ -1,0 +1,373 @@
+{
+  "updated_at": "2026-07-19T17:04:19.901523",
+  "platforms": {
+    "telegram": [
+      {
+        "id": "267378578",
+        "name": "ARIF",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "8410138119",
+        "name": "ASI💃",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003815535761",
+        "name": "SADO",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "8727562763",
+        "name": "777 FORGE 🔥🧠⚒️🌎💎",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "8149595687",
+        "name": "🦞 AGI",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "1042200555",
+        "name": "No name",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:36572",
+        "name": "AAA / topic 36572",
+        "type": "group",
+        "thread_id": "36572"
+      },
+      {
+        "id": "-1003753855708:1",
+        "name": "AAA / topic 1",
+        "type": "group",
+        "thread_id": "1"
+      },
+      {
+        "id": "-1003753855708:36988",
+        "name": "AAA / topic 36988",
+        "type": "group",
+        "thread_id": "36988"
+      },
+      {
+        "id": "8324190535",
+        "name": "Wawa",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:41564",
+        "name": "AAA / topic 41564",
+        "type": "group",
+        "thread_id": "41564"
+      },
+      {
+        "id": "-1003753855708:37092",
+        "name": "AAA / topic 37092",
+        "type": "group",
+        "thread_id": "37092"
+      },
+      {
+        "id": "-1003753855708:36606",
+        "name": "AAA / topic 36606",
+        "type": "group",
+        "thread_id": "36606"
+      },
+      {
+        "id": "-1003521544074",
+        "name": "🅰❗️🅰",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "-1003721331017",
+        "name": "Al AMIN",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "6191189810",
+        "name": "Fahmi Amni",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:37069",
+        "name": "AAA / topic 37069",
+        "type": "group",
+        "thread_id": "37069"
+      },
+      {
+        "id": "2049604363",
+        "name": "The Reformation",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "1117475785",
+        "name": "Summer Bae",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "8798431893",
+        "name": "Amin Al",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003768847825",
+        "name": "Kanak-kanak",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "8900829116",
+        "name": "AGENT MERDEKA",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003792478194",
+        "name": "Dear NABILAH",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "267378578:108198",
+        "name": "ARIF / topic 108198",
+        "type": "dm",
+        "thread_id": "108198"
+      },
+      {
+        "id": "93372553",
+        "name": "BotFather",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "267378578:108109",
+        "name": "ARIF / topic 108109",
+        "type": "dm",
+        "thread_id": "108109"
+      },
+      {
+        "id": "267378578:108139",
+        "name": "ARIF / topic 108139",
+        "type": "dm",
+        "thread_id": "108139"
+      },
+      {
+        "id": "267378578:108158",
+        "name": "ARIF / topic 108158",
+        "type": "dm",
+        "thread_id": "108158"
+      },
+      {
+        "id": "267378578:108154",
+        "name": "ARIF / topic 108154",
+        "type": "dm",
+        "thread_id": "108154"
+      },
+      {
+        "id": "267378578:108060",
+        "name": "ARIF / topic 108060",
+        "type": "dm",
+        "thread_id": "108060"
+      },
+      {
+        "id": "267378578:107958",
+        "name": "ARIF / topic 107958",
+        "type": "dm",
+        "thread_id": "107958"
+      },
+      {
+        "id": "267378578:107839",
+        "name": "ARIF / topic 107839",
+        "type": "dm",
+        "thread_id": "107839"
+      },
+      {
+        "id": "267378578:107834",
+        "name": "ARIF / topic 107834",
+        "type": "dm",
+        "thread_id": "107834"
+      },
+      {
+        "id": "267378578:107821",
+        "name": "ARIF / topic 107821",
+        "type": "dm",
+        "thread_id": "107821"
+      },
+      {
+        "id": "267378578:107739",
+        "name": "ARIF / topic 107739",
+        "type": "dm",
+        "thread_id": "107739"
+      },
+      {
+        "id": "267378578:107715",
+        "name": "ARIF / topic 107715",
+        "type": "dm",
+        "thread_id": "107715"
+      },
+      {
+        "id": "267378578:107728",
+        "name": "ARIF / topic 107728",
+        "type": "dm",
+        "thread_id": "107728"
+      },
+      {
+        "id": "267378578:107693",
+        "name": "ARIF / topic 107693",
+        "type": "dm",
+        "thread_id": "107693"
+      },
+      {
+        "id": "267378578:107680",
+        "name": "ARIF / topic 107680",
+        "type": "dm",
+        "thread_id": "107680"
+      },
+      {
+        "id": "267378578:107668",
+        "name": "ARIF / topic 107668",
+        "type": "dm",
+        "thread_id": "107668"
+      },
+      {
+        "id": "267378578:107660",
+        "name": "ARIF / topic 107660",
+        "type": "dm",
+        "thread_id": "107660"
+      },
+      {
+        "id": "267378578:107602",
+        "name": "ARIF / topic 107602",
+        "type": "dm",
+        "thread_id": "107602"
+      },
+      {
+        "id": "267378578:107405",
+        "name": "ARIF / topic 107405",
+        "type": "dm",
+        "thread_id": "107405"
+      },
+      {
+        "id": "267378578:107474",
+        "name": "ARIF / topic 107474",
+        "type": "dm",
+        "thread_id": "107474"
+      },
+      {
+        "id": "267378578:107537",
+        "name": "ARIF / topic 107537",
+        "type": "dm",
+        "thread_id": "107537"
+      },
+      {
+        "id": "267378578:107364",
+        "name": "ARIF / topic 107364",
+        "type": "dm",
+        "thread_id": "107364"
+      },
+      {
+        "id": "267378578:107306",
+        "name": "ARIF / topic 107306",
+        "type": "dm",
+        "thread_id": "107306"
+      },
+      {
+        "id": "267378578:107338",
+        "name": "ARIF / topic 107338",
+        "type": "dm",
+        "thread_id": "107338"
+      },
+      {
+        "id": "267378578:107302",
+        "name": "ARIF / topic 107302",
+        "type": "dm",
+        "thread_id": "107302"
+      },
+      {
+        "id": "267378578:107269",
+        "name": "ARIF / topic 107269",
+        "type": "dm",
+        "thread_id": "107269"
+      },
+      {
+        "id": "267378578:107284",
+        "name": "ARIF / topic 107284",
+        "type": "dm",
+        "thread_id": "107284"
+      },
+      {
+        "id": "267378578:107066",
+        "name": "ARIF / topic 107066",
+        "type": "dm",
+        "thread_id": "107066"
+      },
+      {
+        "id": "267378578:107252",
+        "name": "ARIF / topic 107252",
+        "type": "dm",
+        "thread_id": "107252"
+      },
+      {
+        "id": "267378578:107159",
+        "name": "ARIF / topic 107159",
+        "type": "dm",
+        "thread_id": "107159"
+      },
+      {
+        "id": "267378578:107047",
+        "name": "ARIF / topic 107047",
+        "type": "dm",
+        "thread_id": "107047"
+      },
+      {
+        "id": "267378578:106802",
+        "name": "ARIF / topic 106802",
+        "type": "dm",
+        "thread_id": "106802"
+      },
+      {
+        "id": "267378578:106770",
+        "name": "ARIF / topic 106770",
+        "type": "dm",
+        "thread_id": "106770"
+      },
+      {
+        "id": "6907930063",
+        "name": "ID BOT",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "52504489",
+        "name": "User Info • Get ID • IDbot",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "1042200555:111175",
+        "name": "No name / topic 111175",
+        "type": "dm",
+        "thread_id": "111175"
+      },
+      {
+        "id": "267378578:106746",
+        "name": "ARIF / topic 106746",
+        "type": "dm",
+        "thread_id": "106746"
+      }
+    ]
+  }
+}
