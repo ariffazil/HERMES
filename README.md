@@ -1,7 +1,7 @@
 <!-- SOT-MANIFEST
 federation_release: v2026.07.19-ZEN-CONVERGENCE
 last_verified: 2026-07-19T17:00Z
-live_commit: 80882a2
+live_commit: 88489b6
 organ: HERMES
 role: multi-modal-bridge
 domain_law: BRIDGE_LAW
