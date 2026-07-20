@@ -72,7 +72,7 @@ mmx image generate --prompt "your prompt" --aspect-ratio 1:1 --non-interactive
 
 **Critical pitfall:** `--output` flag is **IGNORED** by `mmx image generate`. Files always save as `image_001.jpg`, `image_002.jpg`, etc. in the **current working directory** (not `minimax-output/`). After generation, find with `ls -lt | head` and `cp` to your desired path. Proven 2026-07-20.
 
-### Phenotype Grounding Rules (WAJIB)
+### 🧬 Phenotype
 
 MiniMax image-01 has the strongest SEA/Malay phenotype reading of all available models. When generating images of people:
 
@@ -93,7 +93,7 @@ MiniMax image-01 has the strongest SEA/Malay phenotype reading of all available 
 
 **Rule:** Never rely on the model inferring ethnicity from slang alone. Always add explicit "Southeast Asian Malay" or equivalent phenotype tokens.
 
-### Safety Alignment — Fitness/Body Prompts
+### 🛡️ Safety
 
 When prompt contains `shirtless`, `abang sado`, `bodybuilding`, `gym`, `fitness`:
 
@@ -104,7 +104,7 @@ When prompt contains `shirtless`, `abang sado`, `bodybuilding`, `gym`, `fitness`
 
 Both MiniMax and Pollinations enforce NSFW filters. MiniMax provides cleaner, more professional fitness-aesthetic results.
 
-### Contrast Test — "Abang Sado" (2026-07-20)
+### ⚖️ Contrast
 
 Same prompt `shirtless abang sado, Malay, realistic, studio lighting`:
 
@@ -121,7 +121,7 @@ Same prompt `shirtless abang sado, Malay, realistic, studio lighting`:
 
 ---
 
-## TTS Fallback Chain (Telegram voice messages)
+## 🎤 Speech
 
 When Arif requests voice messages (TTS), use this fallback order:
 
@@ -138,7 +138,7 @@ When Arif requests voice messages (TTS), use this fallback order:
 
 **When user says "voice" or "TTS":** try built-in first → if 429 → fall back to edge-tts immediately (no need to ask).
 
-## Music Generation Workflow (proven 2026-07-11)
+## 🎵 Music
 
 Full song generation from lyrics + genre tags. Two input files required:
 
@@ -213,7 +213,7 @@ Full evaluation toolkit at `/root/music-eval/` — genre scoring, somatic analys
 - `references/jina-reader-medium.md` — Reading Medium/Cloudflare-protected articles via Jina Reader
 - `references/cross-organ-wiring-pattern.md` — Wiring external engines into arifOS kernel (enforcement gates)
 
-### Vision for Trading Chart Analysis (PROVEN 2026-07-18)
+## 👁️ Vision
 
 ```bash
 # Auth (once per session — key is in vault.env)
@@ -231,7 +231,7 @@ mmx vision describe --file /path/to/chart.jpg --non-interactive 2>&1
 - Support/resistance zones
 - Pending orders (buy/sell limits, stop losses)
 
-### Pitfalls
+## ⚠️ Edge Cases
 
 - **Quota exhausted (429) — vision fallback chain.** (1) Anthropic API if `ANTHROPIC_API_KEY` has credits; (2) MiMo API if `MIMO_API_KEY` has Token Plan credits; (3) `tesseract` OCR as last resort.
 - 401 after login → set region manually: `mmx config set --key region --value global`

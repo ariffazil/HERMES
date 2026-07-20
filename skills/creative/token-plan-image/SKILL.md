@@ -90,7 +90,7 @@ Print to the user:
 - The model + size used
 - A one-line description of the image (re-read the prompt)
 
-## Notes
+## 📋 Notes
 
 - Token Plan image generation is billed from Credits at the same rate as text — no extra surcharge.
 - `qwen-image-2.0-pro` and `wan2.7-image-pro` are higher quality / slower; default `qwen-image-2.0` is fastest.
@@ -99,39 +99,13 @@ Print to the user:
 
 ---
 
-## Model Selection (Federation Policy, 2026-07-20)
+## 🧭 Route
 
+> **Canonical model-selection lives in [`minimax-cli`](../minimax-cli/SKILL.md#-image-generation--primary-for-malaysea--realism).**
 > **Policy:** `/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md`
-> Qwen Token Plan is ONE option — NOT always the best option.
 
-### When to use Qwen vs MiniMax vs Pollinations
+**When to use Qwen over MiniMax:** Text+image editing (`wan2.7-image-pro` — only model supporting image input). Generic prompts where phenotype doesn't matter. When MiniMax quota is exhausted.
 
-| Condition | Use | Why |
-|-----------|-----|-----|
-| Malay/SEA phenotype required | MiniMax image-01 | Strongest SEA phenotype reading |
-| Realism-critical / studio quality | MiniMax image-01 | Natural skin texture, stable anatomy |
-| Text+image editing (input + edit prompt) | Qwen wan2.7-image-pro | Only model supporting image input |
-| Generic, non-phenotype-specific | Qwen image-2.0 | Fast, good quality, same quota pool |
-| Free prototyping / quick draft | Pollinations | Zero cost |
+**Prompt decomposition for Malay slang:** See [`minimax-cli` 🧬 Phenotype](../minimax-cli/SKILL.md#-phenotype). Add explicit "Southeast Asian Malay" tokens. Never rely on slang alone.
 
-### Prompt Decomposition for Culturally-Loaded Prompts
-
-When receiving Malay/SEA slang, decompose into explicit attributes BEFORE calling the API:
-
-| Slang | Decomposition |
-|-------|--------------|
-| `abang sado` | {male, Southeast Asian Malay, muscular build, shirtless, fitness, gym or studio} |
-| `Melayu` | {Southeast Asian Malay ethnicity, natural skin texture, dark hair, brown eyes} |
-| `amoi` | {female, Southeast Asian Chinese/Malay phenotype, young adult} |
-| `mat rempit` | {male, Malay, young, motorcycle, street, urban Malaysia} |
-
-**Rule:** Never rely on the model inferring ethnicity from slang alone. Add explicit phenotype tokens.
-
-### Contrast Data — Why MiniMax Wins for Malay
-
-"Abang sado" test (2026-07-20): MiniMax produced 1024×1024, 184KB, strong SEA features. Pollinations produced 768×768, 73KB, Westernized generic output.
-
-**Default chain for federation surfaces:**
-1. MiniMax image-01 (Malay/SEA, realism)
-2. Qwen image-2.0-pro (generic high-quality)
-3. Pollinations (free, last resort)
+**Default chain:** MiniMax image-01 (SEA/realism) → Qwen image-2.0-pro (generic) → Pollinations (free).
