@@ -1,12 +1,13 @@
 ---
 name: lightweight-image-generation
-description: "Generate images without heavy local installs — free APIs, pre-generated galleries, and quick alternatives when ComfyUI/SD isn't available."
-version: 1.0.0
-tags: [image-generation, free-api, pollinations, ai-faces, lightweight, fallback]
+description: "Generate images without heavy local installs — free APIs (Pollinations.ai), pre-generated galleries (Generated Photos), and quick alternatives. MiniMax image-01 is now PRIMARY for Malay/SEA phenotype — this skill covers free fallbacks only."
+version: 2.0.0
+tags: [image-generation, free-api, pollinations, ai-faces, lightweight, fallback, malay-phenotype]
 metadata:
   hermes:
     category: creative
-    related_skills: [comfyui, minimax-cli]
+    related_skills: [comfyui, minimax-cli, token-plan-image]
+  forge_policy: "/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md"
 ---
 
 # Lightweight Image Generation
@@ -79,11 +80,59 @@ The SPA filter requires JavaScript interaction. Use `browser_click` on filter bu
 
 | Need | Tool | Install? |
 |------|------|----------|
+| Malay/SEA phenotype, realism | **MiniMax image-01** (`mmx image`) | npm install |
+| High-quality, specific style | MiniMax (`mmx image`) or Qwen Token Plan | npm / none |
+| Text+image editing | Qwen wan2.7-image-pro | none (curl) |
 | Quick image, any quality | Pollinations.ai | None |
 | AI-generated face (fake person) | Generated Photos | None (browser) |
-| High-quality, specific style | ComfyUI / SDXL | GPU + install |
 | Video generation | MiniMax (`mmx video`) | npm install |
-| Image from text, API | MiniMax (`mmx image`) | npm install |
+
+---
+
+## Model-Selection Heuristics (Federation Policy, 2026-07-20)
+
+> **Policy:** `/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md`
+
+### Capability Matrix
+
+| Model | Phenotype | Realism | Safety | Cost | Best For |
+|-------|-----------|---------|--------|------|----------|
+| **MiniMax image-01** | ⭐⭐⭐ Strong SEA | ⭐⭐⭐ Studio | ⭐⭐⭐ Clean | Quota | Malay/SEA, realism-critical |
+| Qwen image-2.0-pro | ⭐⭐ Moderate | ⭐⭐⭐ High | ⭐⭐⭐ Clean | Quota | Generic high-quality |
+| Pollinations | ⭐ Weak | ⭐⭐ Decent | ⭐⭐ OK | Free | Prototypes, drafts |
+| Generated Photos | ⭐ Weak (East Asian) | ⭐⭐⭐ Photo | ⭐⭐⭐ Clean | Free | Pre-gen faces only |
+
+### Selection Rules
+
+```
+Malay/SEA phenotype or realism-critical → MiniMax image-01 (mandatory)
+Generic, no ethnicity requirement → Qwen or Pollinations
+Free prototype, phenotype doesn't matter → Pollinations
+Text+image editing needed → Qwen wan2.7-image-pro
+```
+
+### "Abang Sado" Contrast Test (2026-07-20)
+
+Same prompt `shirtless abang sado, Malay, realistic, studio lighting`:
+
+| Dimension | MiniMax image-01 | Pollinations |
+|-----------|-----------------|--------------|
+| Resolution | 1024×1024 ✅ | 768×768 |
+| File size | 184KB ✅ | 73KB |
+| Malay phenotype | Strong SEA reading ✅ | Ambiguous/Westernized |
+| Realism | Studio-grade, natural ✅ | AI-exaggerated, plastic |
+| Prompt understanding | "Abang sado" nailed ✅ | Generic buff guy |
+
+**Conclusion:** For any prompt where Malay/SEA phenotype matters, MiniMax is mandatory, not optional.
+
+### Prompt Decomposition for Malay Slang
+
+| Slang | Explicit attributes |
+|-------|---------------------|
+| `abang sado` | male, Southeast Asian Malay, muscular, shirtless, fitness, gym/studio |
+| `Melayu` | Southeast Asian Malay ethnicity, natural skin texture, dark hair, brown eyes |
+
+Always add explicit phenotype tokens — don't rely on the model inferring ethnicity from slang.
 
 ## Pitfalls
 
