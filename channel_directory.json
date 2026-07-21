@@ -1,7 +1,31 @@
 {
-  "updated_at": "2026-07-19T21:24:30.690065",
+  "updated_at": "2026-07-21T01:55:58.369619",
   "platforms": {
     "telegram": [
+      {
+        "id": "-1003815535761",
+        "name": "SADO",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "1042200555",
+        "name": "No name",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:36572",
+        "name": "AAA / topic 36572",
+        "type": "group",
+        "thread_id": "36572"
+      },
+      {
+        "id": "267378578",
+        "name": "ARIF",
+        "type": "dm",
+        "thread_id": null
+      },
       {
         "id": "8410138119",
         "name": "ASI💃",
@@ -9,8 +33,14 @@
         "thread_id": null
       },
       {
-        "id": "267378578",
-        "name": "ARIF",
+        "id": "8727562763",
+        "name": "777 FORGE 🔥🧠⚒️🌎💎",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "8247664885",
+        "name": "Ismax",
         "type": "dm",
         "thread_id": null
       },
@@ -21,16 +51,10 @@
         "thread_id": "37092"
       },
       {
-        "id": "-1003753855708:36572",
-        "name": "AAA / topic 36572",
+        "id": "-1003753855708:1",
+        "name": "AAA / topic 1",
         "type": "group",
-        "thread_id": "36572"
-      },
-      {
-        "id": "8324190535",
-        "name": "Wawa",
-        "type": "dm",
-        "thread_id": null
+        "thread_id": "1"
       },
       {
         "id": "8149595687",
@@ -39,28 +63,10 @@
         "thread_id": null
       },
       {
-        "id": "-1003815535761",
-        "name": "SADO",
-        "type": "group",
-        "thread_id": null
-      },
-      {
-        "id": "8727562763",
-        "name": "777 FORGE 🔥🧠⚒️🌎💎",
+        "id": "8324190535",
+        "name": "Wawa",
         "type": "dm",
         "thread_id": null
-      },
-      {
-        "id": "1042200555",
-        "name": "No name",
-        "type": "dm",
-        "thread_id": null
-      },
-      {
-        "id": "-1003753855708:1",
-        "name": "AAA / topic 1",
-        "type": "group",
-        "thread_id": "1"
       },
       {
         "id": "-1003753855708:36988",

@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "session_id": "proc_af9cda2f71e5",
+    "command": "cd /root/paper_trading && python3 -m http.server 8765",
+    "pid": 2396738,
+    "pid_scope": "host",
+    "host_start_time": 29943542,
+    "cwd": "/root",
+    "started_at": 1784593131.770999,
+    "task_id": "default",
+    "session_key": "agent:main:telegram:group:-1003815535761:267378578",
+    "watcher_platform": "",
+    "watcher_chat_id": "",
+    "watcher_user_id": "",
+    "watcher_user_name": "",
+    "watcher_thread_id": "",
+    "watcher_message_id": "",
+    "watcher_interval": 0,
+    "notify_on_complete": false,
+    "watch_patterns": []
+  }
+]
