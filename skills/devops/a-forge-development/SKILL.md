@@ -451,6 +451,9 @@ sudo caddy validate --config /etc/caddy/Caddyfile && sudo caddy reload --config 
 
 ## References
 
+- `references/prl-forge-pattern.md` — **PRL (Precedent Retrieval Layer) forge patterns**: dual-gate architecture, P6 enrichment, outcomes.jsonl vs seal_chain.jsonl pitfall, Qdrant UUID format, BGE-M3 cosine calibration, backfill resilience, post-seal hook, Phase 2 Meta-Precedent Review.
+- `references/prl-derived-view-pattern.md` — **Derived semantic views over immutable data**: building enriched embeddings from sparse seal payloads without mutating cryptographic ledgers.
+- `references/cross-cutting-interface-change.md` — **Pattern: adding a field across executor + governance layers.**
 - `references/cross-cutting-interface-change.md` — **Pattern: adding a field across executor + governance layers.** Dependency order, per-file checklist, gotchas (import paths, tool names, computeSignature body, extendAAE carrier).
 - `references/nonce-replay-fix.md` — **NonceStore implementation pattern**: anti-replay protection for AAE v1. Integration points (verifyAAE, McpPolicyGate Layer 1b/5, validateLeaseForTool), test strategy, test isolation gotchas (disk-loaded policies, action_class requirements).
 - `references/authority-binding-audit-2026-07-18.md` — P0-D audit: nonce replay vulnerability, missing judgment reference, session binding gaps. Full 8-field analysis against required execution token fields.

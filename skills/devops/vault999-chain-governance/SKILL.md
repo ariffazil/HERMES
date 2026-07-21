@@ -434,6 +434,7 @@ line in the envelope fields section. Syntax check with `node --check seal_chain.
 - COOLING_RECEIPT spec: `/root/AAA/docs/contracts/COOLING_RECEIPT_SPEC_v1.md`
 - Cooling type extension pattern: `references/cooling-type-extension-pattern.md`
 - Identity propagation gap forensic trace: `references/identity-propagation-gap.md`
+- PRL forge patterns (Qdrant + embedding + dual-gate): `references/prl-forge-patterns.md`
 - Incident archive: `/root/VAULT999/` (per-date incident directories)
 - VAULT999 recovery package: `/root/A-FORGE/forge_work/2026-07-12/VAULT999_RECOVERY_2026_07/`
 

@@ -161,6 +161,31 @@ If still > 0, the server is being spawned from a different config source (Claude
 
 When you run `hermes portal`, on success Hermes auto-creates a `nous-portal` provider entry pointing at `https://portal.nousresearch.com/api/v1`. **You don't need to manually add it.** If you pre-added a stub like the one in this session, that's fine — it just gets overwritten with the live config on first login.
 
+### 6. Case-fix overrides: what looks like drift may be deliberate
+
+When systemd `WorkingDirectory` or `ExecStart` points to a path that disagrees with AGENTS.md (e.g., systemd uses `/root/GEOX` but AGENTS.md says `/root/geox` is canonical), **do not immediately flag as critical drift.** Check for override conf files that document the discrepancy:
+
+```bash
+ls /etc/systemd/system/<service>.service.d/
+grep -l "case\|capital\|workdir" /etc/systemd/system/<service>.service.d/*.conf
+```
+
+Real example (2026-07-20): `geox-mcp.service` points to `/root/GEOX` (uppercase) but AGENTS.md says `/root/geox` (lowercase) is canonical. The override `path-geox-casefix.conf` (dated 2026-07-12) explicitly documents: *"live tree is /root/GEOX (case). /root/geox path absent → restart would fail."* This is a deliberate workaround, not drift. Both paths had independent git repos — uppercase was operational, lowercase aspirational.
+
+**Rule:** Before re-pointing any systemd path based on AGENTS.md claims, check: (1) override files for documentation explaining the choice, (2) whether both paths exist with independent git repos, (3) `git log --oneline -3` in both to identify the live working tree. Only flag as drift if NONE of these explain the discrepancy. The AGENTS.md declaration may be aspirational; the systemd config is operational.
+
+### 7. TokenRouter model name diverge by component — not necessarily drift
+
+When each component in the chain uses a different default model (`deepseek-v4-pro` in Hermes primary, `gemini-3.5-flash` in arifOS LLM client via env override, `MiniMax-M3` in fallback), this is usually by design — not a consensus failure. Check for env var overrides before flagging:
+
+```bash
+# arifOS LLM client default vs actual
+grep 'TOKENROUTER_MODEL' /root/.secrets/tokenrouter.env
+grep 'DEFAULT_MODEL\|cfg\[.model.\]' /root/arifOS/arifosmcp/runtime/llm_client.py | head -5
+```
+
+The env var in `/root/.secrets/tokenrouter.env` overrides the code default. What looks like drift (code says `MiniMax-M3`, reality uses `gemini-3.5-flash`) is correct env-var-based configuration. Only flag divergence when comparing ALL surfaces — code defaults, env overrides, and config.yaml blocks — and none agree.
+
 ## Standard Reconciliation Receipt
 
 When reporting reconciliation work to Arif, deliver a compact diff table:
@@ -177,6 +202,7 @@ Then one sentence on next action ("after `hermes portal` login, provider count m
 ## Cross-References
 
 - `references/registry-drift-patterns.md` — Drift classes, enforcement script patterns, pitfalls (forged 2026-07-05)
+- `references/multi-organ-version-drift-scan.md` — Cross-organ version freshness, systemd path audit, and TokenRouter model consensus scan pattern (forged 2026-07-20)
 - `/root/AAA/docs/FEDERATION-SUBSTRATE-RULES.md` — Federation Substrate Partitioning Rules (canonical write paths, naming contract, ACL, enforcement)
 - `measure-before-acting/SKILL.md` — Failures 6, 10. Read this skill first; never propose reconciliation without measuring both sides first
 - `federation-organ-liveness-probe/SKILL.md` — Pitfalls 23-25. Stdio MCP quarantine + gateway restart patterns

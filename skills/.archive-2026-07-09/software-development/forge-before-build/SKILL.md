@@ -135,6 +135,12 @@ else:
 - **Monolith dispatch pattern:** When upgrading large codebases with mode-dispatch (e.g., `elif mode == "X"`), add new modes to the existing dispatch chain. Never create new directories/files alongside the monolith. Write the task instruction to explicitly say "NO NEW FILES — edit in-place."
 - **Don't trust agent self-reports:** Subagent summaries are self-reports, not verified facts. An agent that claims "file written" or "tests pass" may be wrong. Always verify: read the file, run the test, check the diff.
 
+- **Architecture déjà-vu (critical):** Before building a new module, class, or abstraction, explicitly ask: *"Does the existing architecture already encode this concept under a different name?"* The kernel may already have the properties you want — you just need vocabulary (new fields on existing models), not infrastructure (new module).
+
+  **Real example (2026-07-20):** Proposed a 525-line `dag_cognition.py` with DAGEngine, DAGNode, DAGSession, TriLayerArchitecture classes. Arif caught it: *"Why do I think we already have this?"* The kernel already had: `arif_seal` entries = DAG nodes (immutable, SHA-hashed, chain-linked, timestamped), `attribution_chain` = provenance DAG, `arif_init` sessions = DAG sessions, `arif_forge` with lease = subagent spawning. Fix: keep two fields (`evidence_sha`, `reversion_event`) on `SealOutput`, delete the module. 525 lines → 20 lines.
+
+  **Pattern:** If you're writing a new class that maps 1:1 to an existing concept, stop. Add a field, not a file. The EUREKA was real — but the architecture already had it. This is the zen form of forge-before-build: the baseline is the architecture itself.
+
 ## When NOT to use
 
 - The improvement is obviously better (just build it)
@@ -145,3 +151,4 @@ else:
 
 - `references/portfolio-optimization-findings.md` — Markowitz, Kelly, Robust comparison on Bursa assets
 - `references/apex-wealth-optimization-upgrades.md` — APEX Pillar IV upgrades to WEALTH EVOI, stock analysis, survival engine
+- `references/architecture-deja-vu-dag-cognition.md` — DAG Cognition Model case study: 525-line module killed, 20-line schema fix (2026-07-20)

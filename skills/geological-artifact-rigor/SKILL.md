@@ -118,13 +118,15 @@ Each blind spot needs: geological reasoning, evidence basis, test data required,
 | Mapped Limbayong→Block G, Bestari→Block X without verification | Assumed structural features map 1:1 to blocks | Only state what's confirmed; leave unconfirmed blank |
 | Plotted all coordinates from memory | Didn't search for GPS data first | Search before plot; tag as SPECULATED if no source |
 | Built cartoon cross-sections as "interpretation" | Started with template shapes, not data | Start with strat column; add structure on top |
+| Flat rectangular blocks used as geological layers | Used matplotlib Rectangle patches — violates Rule 2 cartoon geometry | Use wavy polygon helpers with noise (`layer_polygon` pattern); see `references/cross-section-generation.md` |
+| Cross-section reads as "infographic" not "scientific figure" | Dark background + smooth sine waves without geological detail | Add fault symbols (thrust sawteeth, normal ticks), Moho lines, depth scale, compass arrows, region labels. White background for journals; dark acceptable for public communication. |
 | Epistemic tags on empty content | Tags looked rigorous but wrapped nothing | Rule 8: framework ≠ finding |
 | Treated "L-B-P trend" as if it were a block | Conflated structural trend with contractual area | Distinguish trend names from block names explicitly |
 
 ## Reference Files
 
 - `references/sabah_strat_data.md` — verified stratigraphic data for NW Sabah deepwater (formations, ages, biostrat, reservoir properties, source rock)
-- `references/egs_claim_workflow.md` — GEOX EGS claim registration workflow (create → attach evidence → challenge)
+- `references/cross-section-generation.md` — proven Python/matplotlib pattern for generating professional geological cross-sections: wavy layer boundaries, fault symbols (thrust sawteeth, normal ticks), Moho/COB conventions, hatch pattern reference, dark vs light background guidance. Use when creating any code-generated geological visualization.
 - `references/sarawak_basin_strat_data.md` — Sarawak Basin geological reference: Baram Delta tectonics, Cycle I–VIII stratigraphy, petroleum system (source/reservoir/seal/trap), Central Luconia carbonate play, SK 309/311 field data, recent Baram Province discoveries (2021–2025). Use for any Sarawak offshore dossier or screening memo.
 
 ## Output Requirement

@@ -46,7 +46,9 @@ Two providers in the config:
 [models."kimi-code/<model-id>"]
 provider = "managed:kimi-code"
 model = "<model-id>"
-max_context_size = <262144 for Moderato / 1000000 for Allegretto+>
+max_context_size = <262144 for Moderato / 1048576 for Allegretto+>
+support_efforts = [ "low", "high", "max" ]
+default_effort = "high"
 capabilities = [ "thinking", "always_thinking", "image_in", "video_in", "tool_use" ]
 display_name = "<Human Name>"
 ```
@@ -65,10 +67,12 @@ display_name = "<Human Name>"
 ### Planning / Configuration
 
 - **🚨 TEST BEFORE DOCUMENTING**: The #1 pitfall — **Arif WILL say "context is wrong" if you skip this.** Do NOT change `default_model` and then immediately update AGENTS.md claiming the new model is active. Always run a test prompt first: `kimi -m <model> -p "what model are you?" --output-format text` and verify the model identity in the response. If the test fails (OAuth: `auth.login_required`, 404: `Model not exist`, 429: rate limit, or wrong model in response), REVERT the config change AND the AGENTS.md change immediately. Only update AGENTS.md after a successful test. **2026-07-18 case study**: Changed `default_model` to `kimi-code/k3` without verifying OAuth. Empty token = `auth.login_required`. Arif: "context is wrong u setup." Reverted both config.toml and AGENTS.md. Lesson: OAuth check FIRST.
-- **AGENTS.md OVERRIDES config.toml**: Kimi-code injects `/root/.arifos/agents/kimi/AGENTS.md` as system prompt. The `**Model:**` line there becomes the model identity the LLM sees, overriding `default_model` in config.toml. When switching models, update BOTH files. When testing, run from `/tmp` (no project AGENTS.md) to isolate config.toml behavior.
+- **AGENTS.md OVERRIDES config.toml + DOUBLE-STALE DRIFT**: Kimi-code injects `/root/.arifos/agents/kimi/AGENTS.md` as system prompt. The `**Model:**` line there becomes the model identity the LLM sees, overriding `default_model` in config.toml. When switching models, update BOTH files. When testing, run from `/tmp` (no project AGENTS.md) to isolate config.toml behavior. **AGENTS.md is the single highest-drift file** — in practice it's often TWO upgrades behind (e.g. `deepseek-v4-pro` while config is `MiniMax-M3`, or `MiniMax-M3` while config is `kimi-code/k3`). Always read AGENTS.md even when you think you only need to touch config.
 - **Ask plan tier before setting context**: K3 `max_context_size` is plan-tiered. Moderato=262144, Allegretto+=1000000, Andante=not supported. Never assume 1M. Ask: "What Kimi plan are you on?"
 - **K3 `always_thinking` is MANDATORY**: Without it in capabilities, K3 silently routes to K2.6. Docs say: "K3 / K2.7 without Thinking routes to K2.6."
+- **Config path resolution**: `/root/.kimi/config.toml` resolves to `/root/.arifos/agents/kimi/config.toml` (separate file, not a symlink). The checklist references `/root/.kimi/config.toml` which works, but the canonical source is under the agent home. grep both paths to be safe; both files must agree on `default_model`.
 - **Model must exist in [models]** before switching `default_model` to it.
+- **🚨 PATCH DRIFT — `default_model` CAN SILENTLY REVERT**: External processes (other agent sessions, kimi-code config refresh, v0.27.0 auto-refresh of model list) can overwrite `default_model` back to a prior value. **After ANY config.toml patch, always verify**: `head -1 /root/.kimi-code/config.toml` — confirm it says the intended model before moving on. **2026-07-20 case study**: Patched `default_model` to `kimi-code/k3`. Later verification showed it had reverted to `kimi-code/kimi-for-coding` mid-session. File was externally modified. Patch → verify → patch again if drift.
 
 ### OAuth & Auth
 
@@ -83,6 +87,7 @@ display_name = "<Human Name>"
 - **K3 capacity**: Upstream limited after release. May return 429 errors. If flaky, fall back.
 - **K3 `reasoning_effort`**: Only `max` supported (Jul 16 2026). Other levels promised, not available.
 - **`--no-sandbox` flag**: Does NOT exist in v0.26.0. Causes `error: unknown option`.
+- **`-y` (yolo) + `-p` (prompt) mutual exclusion (v0.27.0)**: Cannot combine `--yolo`/`-y` with `--prompt`/`-p`. Returns `error: Cannot combine --prompt with --yolo`. These are separate invocation modes — use `-y` alone for autonomous mode (no prompt arg, Kimi drives itself) or `-p "..."` for explicit prompting. They are not flags to stack.
 
 ### K3 Plan Tier / Alternative Paths
 
@@ -162,6 +167,22 @@ for f in /root/AAA/registries/AAA_AGENTS_REGISTRY.json \
 done
 ```
 All 11 files must agree on the current model. Zero references to stale K2.7/kimi-for-coding. Layer 2 files must all contain a kimi-code entry (gaps = registry drift). **ROOT_AGENT_CONFIG.yaml is the most common drift file** — verify `model` and `version` match live state.
+
+## K3 Direct API Key (for OpenCode / OpenClaw / Hermes)
+
+K3 can also be called directly via API key (sk-ki...) at `https://api.kimi.com/coding/v1` — this is the Chat Completions endpoint, **not** the OAuth-managed kimi-code provider. Use this to wire K3 into OpenCode, OpenClaw, or Hermes as a regular OpenAI-compatible provider.
+
+| Property | Value |
+|---|---|
+| Base URL | `https://api.kimi.com/coding/v1` |
+| Auth | `Bearer sk-ki...` (API key from Kimi platform console) |
+| Transport | `openai_chat` / `openai-completions` |
+| Models | `k3` (2.8T, 1M ctx), `kimi-for-coding` (256K), `kimi-for-coding-highspeed` (256K) |
+| `api.moonshot.cn` | ❌ Does NOT work with these keys — returns 401 |
+
+**Verify**: `curl -s https://api.kimi.com/coding/v1/models -H "Authorization: Bearer $KIMI_API_KEY"` — returns `k3`, `kimi-for-coding`, `kimi-for-coding-highspeed`.
+
+**Pitfall — K3 thinking consumes tokens before content**: K3 with `always_thinking` may return empty `content` on short `max_tokens` because all tokens go to reasoning. Use `max_tokens ≥ 200` for simple prompts, `≥ 4096` for coding tasks.
 
 ## Reference Files
 

@@ -143,6 +143,28 @@ Decision tree:
 3. Is the user waiting for entry? → Say "tunggu result dulu"
 4. Result released? → Apply hot/cold framework above
 
+## Paper Trading (Agent-Led)
+
+When Arif assigns paper trading with virtual capital, operate as the trader, not an analyst signaling from the sidelines. See `references/paper-trading-workflow.md` for the full cron architecture and ledger format.
+
+### Core Principle: Agentic, Not Passive
+- Arif expects the agent to **think and decide**, not wait for "perfect confirmation." ("Hang pandai2 LA fikir. Hang agentic intelligence kan" — 2026-07-20)
+- Consolidation at key levels IS confirmation. Waiting for "perfect rejection wick" while price already signals = paralysis.
+- Default posture: **evaluate evidence and act.** Only defer when genuinely ambiguous.
+
+### Paper Trading Rules
+- Max risk: 2% per trade
+- Max concurrent: 3 positions
+- R:R minimum 1:1.5
+- Always set SL on entry
+- Instruments: XAUUSD, Brent, WTI, Nat Gas
+- Ledger: `/root/paper_trading/ledger.md` — update on every trade
+
+### Zen Silence
+- All trading crons must be SILENT unless a trade is executed.
+- "No trade" = output "." and stop. No market commentary, no "watching" messages.
+- Only notify when: BUY executed, SELL/CLOSE executed, SL at risk warning.
+
 ## Pitfalls
 - Do NOT give exact entry price if price hasn't reached the zone yet — give the zone
 - Do NOT ignore CPI/news events — flag them if relevant
@@ -150,3 +172,5 @@ Decision tree:
 - Do NOT overcomplicate — user wants clean levels, not 15 indicators
 - Do NOT suggest "hold and hope" when structure breaks — exit discipline > hope
 - Do NOT push entries before news results — "tunggu result dulu" is the correct posture
+- Do NOT default to passive/waiting mode. If evidence supports entry, enter. Paralysis = failure. (2026-07-20)
+- Do NOT fabricate connections between unrelated context. Profile data must never be linked to current situations without explicit user confirmation. "Memandai ja sebut [X]. Macam BANGANG" — Arif, 2026-07-20.

@@ -12,7 +12,7 @@
 | **Parameters** | 2.8 trillion (MoE) |
 | **Active params** | ~16 of 896 experts (Stable LatentMoE) |
 | **Architecture** | KDA (Kimi Delta Attention) + Attention Residuals |
-| **Context window** | 1M tokens (plan-tiered) |
+| **Context window** | 1M tokens (plan-tiered); Allegretto+ = 1,048,576 (exact 1 MiB per docs) |
 | **Vision** | Native multimodal (image, video via base64/ms://) |
 | **Thinking** | Always-on; `reasoning_effort` only `max` (Jul 2026) |
 | **API model ID** | `k3` (kimi-code), `moonshotai/kimi-k3` (OpenRouter) |
@@ -40,20 +40,20 @@
 [models."kimi-code/k3"]
 provider = "managed:kimi-code"
 model = "k3"
-max_context_size = 262144  # Moderato; 1000000 for Allegretto+
+max_context_size = 262144  # Moderato; 1048576 for Allegretto+
 capabilities = [ "thinking", "always_thinking", "image_in", "video_in", "tool_use" ]
-display_name = "K3"
+display_name = "Kimi K3"
 support_efforts = [ "low", "high", "max" ]
-default_effort = "max"
+default_effort = "high"     # official docs: recommended = high
 ```
-
+**Reasoning effort mapping (per official docs):** `null/undefined → high`, `ultra/max/xhigh → max`, `high/medium → high`, `low/minimum/light → low`, `none → thinking disabled`. Default `high` gives best balance per docs.
 **CRITICAL:** `always_thinking` mandatory. Without it, K3 silently routes to K2.6.
 
 ## Availability Paths (tested 2026-07-18)
 
 | Path | Status | Context | Details |
 |---|---|---|---|
-| `kimi-code/k3` (managed:kimi-code OAuth) | ⚠️ Dormant | Plan-tiered | `kimi login` device-code flow. Token was empty, needs re-auth |
+| `kimi-code/k3` (managed:kimi-code OAuth) | ✅ Live (Allegretto) | 1M (1,048,576) | `kimi login` device-code flow. OAuth working. |
 | `openrouter/moonshotai/kimi-k3` | ✅ Working | Full 1M | OpenClaw auto-discovered. Bypasses plan limits |
 | `bailian-token-plan/kimi-k3` | ❌ 404 | — | Not on Alibaba Bailian. Don't add — returns "Model not exist" |
 | API direct (`api.moonshot.cn/v1`) | N/A | 1M | Needs `MOONSHOT_API_KEY` — Arif doesn't have one |

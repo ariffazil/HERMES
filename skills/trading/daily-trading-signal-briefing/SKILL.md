@@ -64,6 +64,8 @@ Features: candlesticks, EMA 20/50/200, S/R levels (max 2-3 clean), signal overla
 
 If chart_pro.py fails, fall back to the template at `templates/gold_signal_chart.py` (also matplotlib, same dark theme, slightly different layout).
 
+When `/root/trading/` is entirely missing, use the yfinance OHLC fallback chain documented in `references/chart-fallback-yfinance.md` (proven 2026-07-20).
+
 ### Chart Specification
 - **Theme**: Dark (#0d1117 background) — both chart AND PDF must use dark theme
 - **Size**: 14×8 inches, 150 DPI
@@ -211,6 +213,8 @@ curl -sf localhost:3456/api/gold/ticker
 
 **CRITICAL USER RULE:** Arif forbids creating new servers/repos. Always extend the existing gold-api. Never create a new MCP server, new port, or new service for trading features.
 
+**Command dependencies:** Not all endpoints need the `/root/trading` module. `ticker`, `history`, `signals`, `levels`, `macro`, `calendar` are self-contained. `signal_v2` and `apex` require the `trading` package. If those endpoints return HTTP 500, see `references/gold-api-command-dependencies.md` for the degraded-mode fallback.
+
 **Human-readable labels:** All user-facing text (gold site, Telegram messages to Syed) must use plain language. NO jargon like G, C_dark, dS, APEX, Φ. Use: Clarity, Risk, Trend Energy, Condition, Structure, Strength, Signal, Stability, Agreement, Momentum, Volume. State names: Clear Trend / Ranging / Choppy. Verdicts: Strong Signal / Good to Go / Wait / Hold Off.
 
 ## Pitfalls
@@ -234,6 +238,7 @@ curl -sf localhost:3456/api/gold/ticker
 - **CRON VENV PATH (proven 2026-07-16):** All cron-triggered Python scripts MUST use `/root/venv/bin/python3`, not bare `python3`. The shell wrapper in cron context tries to source arifOS auto-venv functions that don't exist, causing `command not found`. Affects: `price_alert.py`, `gold_engine.py`, `chart_pro.py`, any script run via `terminal()` in cron jobs.
 - If event day (CPI/FOMC/NFP), add prominent "WAIT FOR DATA" warning — don't suppress the signal, but gate it
 - **TradingConfig missing contract_multiplier (proven 2026-07-16):** `position_sizer.py` calls `cfg.contract_multiplier` but `TradingConfig` didn't have this field. Fix: added `contract_multiplier: float = 1.0` to `/root/trading/core/config.py`. If other config attributes fail with `AttributeError`, add them to the dataclass.
+- **GOLD-API MISSING TRADING MODULE (proven 2026-07-20):** `cmd_signal_v2` and `cmd_apex` in `fetch_gold.py` import from `trading.*` (lines 420-424, 515-521). If `/root/trading/` doesn't exist on the server, these endpoints return HTTP 500 with `"No module named 'trading'"`. The `cmd_ticker` function is SELF-CONTAINED (only uses yfinance + numpy/pandas directly) and works regardless. **Degraded-mode fallback for cron jobs:** When `curl -sf localhost:3456/api/gold/signal_v2` returns exit code 22 (HTTP error), check `systemctl status gold-api --no-pager -l` for the error. If it's "No module named 'trading'", fall back to ticker-only mode: use `curl -sf localhost:3456/api/gold/ticker` for price/RSI/EMAs/S/R levels, supplement with web search (hound mcp_smart_search + mcp_smart_fetch) for narrative context and concrete levels from FXEmpire/FXStreet. The ticker's built-in `signal` field and S/R arrays are sufficient for the decision gate. Chart/PDF generation still works if `/root/trading` has chart_pro.py — but check existence first with `test -f /root/trading/scripts/chart_pro.py`.
 
 ## Gold Signal Engine (Phase 1 Companion — Live)
 

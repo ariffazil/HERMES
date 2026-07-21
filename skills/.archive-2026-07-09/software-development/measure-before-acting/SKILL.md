@@ -1,10 +1,10 @@
 ---
 name: measure-before-acting
 description: "Probe live state BEFORE proposing fixes, additions, or changes. Read configs, test commands, check what exists — then act only on real gaps. Use ALWAYS. This is not optional. Arif corrected multiple times (2026-07-04, 2026-07-08, 2026-07-11) for proposing fixes to things that already worked, for citing stale audits as live state, and for accepting 'first time' / 'novel' / 'pick from N options' prompts without probing disk."
-version: 1.3.0
+version: 1.4.0
 author: Hermes-PRIME
 created: 2026-07-04
-updated: 2026-07-19
+updated: 2026-07-20
 tags: [discipline, epistemic, reality-check, measure-first, anti-hallucination, audit-reports]
 pinned: true
 ---
@@ -284,6 +284,9 @@ When you see suppression (trying to force ΔS < 0), switch to management or redi
 - Service diagnosis (probe live health endpoint, don't trust banner alone)
 - **Monolith code editing** (read dispatch map, grep for existing modes, never create new files without explicit approval — see Failure 15)
 - **Completion claims without execution evidence** — when someone (including Arif) claims a system or architecture is "complete", "done", "dah boleh baca mesin", ask "dah test mana satu?" before accepting. Specs without a passing run = ceremony, not delivery. YAML schemas, protocol designs, dispatch systems, architecture diagrams — all are CLAIMS until exercised end-to-end. Respect the work, challenge the claim. (Pattern: 2026-07-06 explorer dispatch protocol designed and written to repo, but not yet wired or tested against live tools.)
+- **Zen-before-code: does existing architecture already solve this? Before creating new files or modules, audit the kernel. See `references/zen-before-code.md`. (FORGED 2026-07-20)**
+- **Protocol-before-code: lock the routing protocol in documentation first, then write traffic code that satisfies it. See `references/protocol-before-code.md`. (FORGED 2026-07-20)**
+- **OpenCode auth volatility: always smoke-test models before delegating; after 2 failures, switch to Hermes direct tools. See `references/opencode-auth-volatility.md`. (FORGED 2026-07-20)**
 - **User-provided URL or doc reference** — when Arif points at a URL or says "read this page first," fetch and read it BEFORE composing any response. Do not assume from context or past knowledge. (See Failure 29 — twice in one session I was called out for assuming instead of reading.)
 
 ### Failure 15: Created new files/directories in monolith repo instead of editing in place (2026-07-06)

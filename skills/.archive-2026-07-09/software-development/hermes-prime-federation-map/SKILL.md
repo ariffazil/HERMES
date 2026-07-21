@@ -313,6 +313,45 @@ Then `hermes --yolo gateway restart` to pick it up.
 
 `/root/HERMES` is a symlink to `/root/.hermes` — same content, two paths. File writes can land on either depending on which path the tool resolves. `ls -la` to confirm before relying on path-based cleanup or monitoring scripts. Don't try to "consolidate" the two — it's already one filesystem.
 
+## AGENTMODELMAP.json — Canonical LLM Surface Registry (FORGED 2026-07-20)
+
+The federation's single-source-of-truth for all LLM surfaces lives at `/root/AAA/registries/AGENTMODELMAP.json`. It maps:
+
+| Section | Content |
+|---------|---------|
+| `providers[]` | 12 providers with jurisdiction, billing model, model counts |
+| `free_tiers[]` | 9 free tiers — permanent, prepaid, local — with expiry tracking |
+| `fallback_chains[]` | Named chains incl. `rm0-general-reasoning` (see below) |
+| `agents[]` | Hermes, OpenCode, OpenClaw, A-FORGE, arifOS kernel — each bound to cascade |
+| `cerebras_special` | Prepaid credit tracking ($5, expires Aug 20 2026) |
+| `live_health` | Health probe results at forge-time |
+
+**Usage:** Load this file to understand the governed capability surface — which models are available, which are free, which expire, and how the fallback cascade routes. Update it when a new provider is wired or a free tier changes. This is the registry that drift detection should compare against.
+
+## RM0 Cascade — Sovereign Fallback Chain
+
+The canonical $0/day reasoning fallback chain, encoded as `rm0-general-reasoning`:
+
+```
+TokenRouter → MiniMax → MiMo → Groq → Gemini → Cerebras → SEA-LION → Ollama → HOLD
+```
+
+| Position | Provider | Model | Role | Note |
+|----------|----------|-------|------|------|
+| 0 | TokenRouter | auto | Primary router | Smart routing across all backends |
+| 1 | MiniMax | M3 | Fallback multimodal | Censored on MY governance — skip for those |
+| 2 | MiMo | text | Fallback reasoning | Via TokenRouter |
+| 3 | Groq | llama-3.3-70b | Fallback speed | LPU inference, 1,000 RPD free |
+| 4 | Gemini | 2.5 Flash | Fallback multimodal | 1,500 RPD free, 1M context |
+| 5 | Cerebras | gpt-oss-120b | Fallback volume | 1M TPD free, 2,600 tok/s. **Expires Aug 20 2026** |
+| 6 | SEA-LION | qwen-v4-32b | Fallback BM-native | 10 RPM free, Southeast Asian languages |
+| 7 | Ollama | qwen2.5-coder:3b | Last resort local | Always available, no external deps |
+| 99 | Kernel | HOLD | Circuit breaker | Stop, do not degrade further |
+
+**Pitfall:** Cerebras is `PREPAID_ACTIVE` — $5 credit, expires Aug 20 2026. After expiry, position 5 drops out and the chain skips from Gemini (4) to SEA-LION (6). AGENTMODELMAP.json carries a `drift_warning` for this.
+
+**Complete free tier landscape reference:** `references/free-llm-api-landscape-2026-07.md` — every free LLM API tier active July 2026, what the federation has vs what's missing, rate limits, and monthly monitoring sources.
+
 ## Absorbed Federation Infra Fragments (2026-07-08)
 
 5 standalone federation skills consolidated into this map.
@@ -351,6 +390,9 @@ Then `hermes --yolo gateway restart` to pick it up.
 - **A2A protocol overview:** `references/a2a-protocol-overview.md` — what A2A is, governance (TSC, 8 companies), architecture (JSON-RPC 2.0, protobuf), key RPCs (`SendMessage`, `GetTask`, `SubscribeToTask`, etc.), task lifecycle states, A2A vs MCP comparison table, SDKs, and how arifOS implements it (AAA port 3001, 26 cards, constitutional extension, seal chain). Load when the conversation touches A2A as a protocol concept, not just operational card registration.
 - **arifOS three-layer A2A model:** `references/arifos-three-layer-a2a-model.md` — doctrinal framing: Transport (A2A) → Governance (F1-F13/888_JUDGE) → Intelligence (Domain Agents). Explains how arifOS differs from standard A2A by inserting a constitutional gate between communication and action. META-MESA passed 8/8 because we govern the connection, not just enable it. Load when explaining the federation architecture to someone or comparing arifOS to standard A2A.
 - **999 SEAL procedure:** `references/000-999-SEAL-PROCEDURE.md` — 11-stage pipeline, validity criteria, MCP transport notes, verified working 2026-07-10.
+- **Free LLM API landscape:** `references/free-llm-api-landscape-2026-07.md` — comprehensive catalog of every free LLM API tier active July 2026. Which free providers exist, rate limits, what the federation already has wired vs what's missing, and the monitoring sources to track monthly for new tiers or expiring credits. Load when evaluating new free tiers for the RM0 cascade or auditing the miskin stack.
+- **Federation provider integration:** `references/federation-provider-integration.md` — complete workflow for researching free API providers, cross-referencing against existing stack, and updating AGENTMODELMAP.json. Includes JSON templates, RM0 cascade tiering logic, safe execute_code-based update pattern, and common pitfalls (key-in-vault ≠ wired, credit expiry tracking, US jurisdiction for free tiers).
+- **PRL forge reference:** `references/prl-forge-reference.md` — **NEW 2026-07-20**. Precedent Retrieval Layer architecture, dual-gate design, Qdrant pitfalls (UUIDs, query_points API, 1024-dim BGE-M3), BGE-M3 cosine calibration (τ ≈ 0.77 baseline, 0.95 = near-verbatim only), Ollama backfill pattern, arif_seal pitfalls (Pydantic model, not dict), enrichment protocol, and honest carry-forward from the PRL Phase 1 forge session.
 
 
 ---

@@ -165,3 +165,4 @@ Single HTML file:
 ## Bundled Support Files
 
 - `templates/explanatory-guide-skeleton.html` — copy-and-modify starter with all 4 patterns wired up (anatomy SVG, timeline SVG, do/don't cards, signature quote). Replace `{{TEMPLATE}}` placeholders and ship.
+- `references/bm-family-medical-guide.md` — simpler CSS grid + emoji pattern for BM-family medical education guides. Use instead of SVG when audience is non-medical and mobile-first.

@@ -67,3 +67,10 @@ __pycache__/
 .hermes_history
 skills/.curator_backups/
 verification_evidence.db
+
+# Runtime state (added 2026-07-21) — agent drift, not source
+.update_check
+channel_directory.json
+processes.json
+config.yaml
+skills/.usage.json

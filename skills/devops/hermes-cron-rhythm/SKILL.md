@@ -54,8 +54,7 @@ The fix is never "make it visible." The fix is "make it matter."
 | weekly-reflection | Saturday 20:00 MYT | DM | LLM | news-research-briefing |
 | weekly-deep-brief | Sunday 23:00 MYT | DM | LLM | — |
 | well-biometric-feed-watchdog | 08:00/20:00 MYT | AAA group | script | — |
-| STEEL Machine Pulse | 06:00 MYT daily | AAA group | script | — |
-| SILICA Code Governance | 14:00 MYT daily | AAA group | script | — |
+|| STEEL Machine Pulse | 06:00 MYT daily | AAA group | script | — |
 | Gold Signal Briefing | 08:00 MYT Mon-Fri | SADO group | LLM+chart | chart_pro.py + gold_engine.py |
 | XAUUSD Price Alert | every hour Mon-Fri | SADO group | agent-driven LLM+chart | gold-api signal_v2 + apex + chart_pro.py |
 | XAUUSD Daily Gold Signal | 09:00 MYT Mon-Fri | SADO group | LLM | daily-trading-signal-briefing |
@@ -357,7 +356,7 @@ When OpenClaw cron jobs fail with `timeout (last phase: model-call-started)`, th
 |-----|--------|--------|
 | INTEL | Removed | Redundant — drift-alert covers critical signals |
 | STEEL | Migrated to Hermes `no_agent` | Script-only, no LLM needed |
-| SILICA | Migrated to Hermes `no_agent` | Bash data collection valuable; LLM sweep dropped |
+| SILICA | Migrated to Hermes, then removed (2026-07-17) | Script too heavy; drift-alert covers same signals. Must also remove from `openclaw cron remove` — OpenClaw's cron engine is the source of truth.
 
 **Key insight:** The OpenClaw wrapper's `no_agent` flag doesn't prevent the LLM routing — it's a wrapper-level behavior, not a script-level one. Hermes `no_agent` actually skips the model call.
 

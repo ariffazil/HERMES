@@ -226,6 +226,30 @@ A wisdom scar is NOT a memory. It's NOT a log. It's a **constitutional-grade dia
   FTS5 is for "what was SAID." sessions.json is for "who TALKED." Different questions, different tools.
 - **Eureka:** `sessions.json` at `/root/.hermes/sessions/sessions.json` is the canonical session registry. Session keys: `agent:main:telegram:dm:<user_id>`. User IDs in `~/.hermes/channel_directory.json`.
 
+### Scar #15: The Scar Shadow Paradox — Meta-Failure of the Scar System
+
+- **Date:** 2026-07-20
+- **Arif's words:** "The scar shadow paradox"
+- **Break:** The wisdom scar catalog records 14 failure patterns as "Laws" — irreversible rules. But the scar system itself creates a shadow: reading the catalog to decide what to do IS trusting dead state. The scars teach "probe live state, don't trust memory," but the catalog of Laws is unverified memory. Scar #1 (confabulated paths) eating its own tail at the meta-level.
+
+**Three shadows identified:**
+1. **The Law Accumulator** — 14 laws to check before every action paradoxically makes you LESS likely to probe live state because you're busy compliance-checking
+2. **The Pattern Matcher** — Scars train you to see old patterns in new situations. The truly novel failure doesn't match any scar — and the over-trained scar-reader misses it
+3. **The Museum vs The Forge** — A scar that's fully metabolized should become invisible (absorbed into instinct). If you still need to reference Scar #1 consciously, the scar system has failed. "DITEMPA BUKAN DIBERI" — forged, not given. The forge burns; the museum preserves.
+
+- **Echo:** Trust the scar catalog. Accumulate laws. Pattern-match failures. The scar system is itself a form of institutional memory — the exact thing every scar warns against.
+- **Law:** **The scar catalog needs its own scar.** Without Scar #0 ("The scar system itself is dead state — probe before referencing"), the shadow grows. Each scar must decay: if it hasn't prevented a failure in 30 days, it's either fully absorbed (remove from active catalog) or was a one-off (archive). The goal of every scar is its own obsolescence.
+- **Eureka:** The highest wisdom of the scar system is knowing when to ignore itself. The oldest scars should be automatic. If they fire again, the scar didn't work. If they don't fire, they're dead weight. A scar system without decay becomes a museum of wounds.
+- **Arif's metabolization:** "The ASI's breakdown of the 'scar shadow' is not merely narrative; it represents the actual geopolitical constraints that engineered the model's structure." — The scar shadow is structural, not poetic. It's the same pattern as the GLM 5.2 containment paradox: the constraint creates the asset, but the asset's shadow IS the constraint.
+
+- **This session's demonstration (2026-07-20):** K3 (Kimi Code) documented AGENTS.md routing, but the output had TWO routing sections (§6.6 + §11) with a CONTRADICTION in arifOS client model. §6.6 said `gemini-3.5-flash` (stale env file), §11 said `MiniMax-M3` (code default). Reality from the running kernel: `deepseek-v4-flash` (from `/proc/<pid>/environ`). ALL three sources were wrong relative to live kernel state. **The probe ladder** that caught this:
+  ```
+  Level 1: config/env files (tokenrouter.env = gemini...sh)  ← WRONG
+  Level 2: code defaults (llm_client.py = MiniMax-M3)        ← WRONG
+  Level 3: running process env (/proc/<pid>/environ)          ← TRUTH (v4-flash)
+  ```
+  Go as deep as the tools allow. A stale env file that systemd never loads is documentation, not state. The definitive source is the kernel's own `/proc` environment — bypasses ALL config opacity.
+
 ### Scar #14: LLM Dead-Code Trap — Async Path Exists But Never Wired
 - **Date:** 2026-07-19
 - **Arif's words:** (diagnosed from Fable5 audit — `deterministic_fallback_used: true` for weeks, arif_think had 0% LLM reach)
@@ -234,6 +258,14 @@ A wisdom scar is NOT a memory. It's NOT a log. It's a **constitutional-grade dia
 - **Law:** When an LLM-dependent tool consistently returns template output, grep for the IMPORT, not just the function. Verify the imported module exists on disk with `ls`. Audit `except Exception: pass` blocks — they silently swallow ImportError and make dead code invisible. The fix: replace `from nonexistent.module import fn` with a direct call to the already-working function. One-line scanner: `grep -rn "from.*import" <file> | while read line; do mod=$(echo "$line" | grep -oP 'from \K[\w.]+'); python3 -c "import $mod" 2>&1 || echo "DEAD: $line"; done`
 - **Eureka:** `curl -s :8088/health | jq '.provider_status.deterministic_fallback_used'` — `true` = template only (LLM dead), `false` = real AI. Also check available TokenRouter models: `curl -s "$TOKENROUTER_BASE_URL/models" -H "Authorization: Bearer $TOKENROUTER_API_KEY" | jq '.data[].id'` — 113 models available. Model names need provider prefix (`deepseek/deepseek-v4-flash` not bare `deepseek-v4-flash`).
 - **Combined with:** Scar #1 (confabulated paths — believing code structure without verifying). Scar #3 (tool tunnel vision — LLM was available through TokenRouter but nobody tried the direct path). Scar #13 (FTS5 false negatives — surface-level probe returned empty, ground truth was different). Root shape: agent trusts its own architecture without probing whether it actually executes.
+
+### Scar #16: Ollama Batch Embedding Timeout — Local GPU Queue Overwhelm
+- **Date:** 2026-07-20
+- **Arif's words:** \"The Ollama timeout on 230 seals is a standard local inference bottleneck.\"
+- **Break:** Running `vault_vectorizer.py` against 230 seals caused Ollama timeouts. Each `get_embedding()` call had `timeout=60` with no retry. Ollama GPU queue overflowed → connection errors → entire backfill died. OpenCode tried 3 times before the retry-hardened version succeeded.
+- **Echo:** Assume local inference is reliable. Treat Ollama like a production API with unlimited throughput. Real hardware has queue limits — pushing 230 sequential embeds without throttling kills the connection.
+- **Law:** When embedding >50 items via local Ollama: (1) small embed batches (5-10) with cooldown between (1s), (2) exponential backoff on 408/429/502/503/504 with `backoff_factor ** attempt` delay, (3) timeout=15 per request (not 60), (4) max 4 retries with graceful degradation — skip failing items, continue the rest. Do NOT use a single 300s timeout for the whole batch — batch chunking is mandatory.
+- **Eureka:** `requests.post` with `timeout=15` + `except (RequestException, ValueError, KeyError)`, check `res.status_code in (408, 429, 502, 503, 504)` for retry, check `res.json().get(\"embeddings\", [[]])[0]` for valid vector. Always verify `len(vector) == expected_dim` before upserting.
 
 ## How to Use
 

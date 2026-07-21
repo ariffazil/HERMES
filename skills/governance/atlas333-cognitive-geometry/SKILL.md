@@ -181,6 +181,32 @@ When closing a session on af-forge, also update:
 **Paradoxes active:** 3 (map≠territory — phantom tool namespace lied), 17 (model wrong but useful — 8-tool surface), 30 (audit trail traces — canon gate prevents recurrence), 31 (seal=irreversible — VAULT999 append-only)
 **Fix:** arifOS crash from phantom arif_vault_verify → lowered to arif_seal mode=verify_chain. vault_chain.py hardened against 1947 legacy non-JSON lines. VAULT999_PATH corrected. Canon gate added to deploy-release.sh.
 
+---
+
+## WAJIB geometry — 2026-07-19 (post-readiness audit)
+
+After ARIFOS-READINESS-2026-07-20 (58/100), 11 WAJIB actions define the substrate hardening path. Each maps to paradox tension ATLAS333 can navigate:
+
+| WAJIB | Paradox tension | Geometric reading |
+|---|---|---|
+| 0 Freeze expansion | P30 (identity theater) + P33 (positive binding ≠ closed) | Claim of completion against actual substrate state — the federation must hold posture, not advance |
+| 1 Negative conformance | P17 (model wrong but useful) + P30 | Tests-as-absence is theater; tests-as-strict-xfail stay visible |
+| 2 Independent verification lane | P26 + P31 | The plan/execute/verify same-chain is the seal-violation pattern; needs new role |
+| 3 Normalize kernel state | P3 (map≠territory) | Two fields disagree (LIMITED_MUTATE vs OBSERVE_ONLY) — single canonical object required |
+| 4 Delegation attenuation | P16 (parent contains child) + P33 | `child_authority ⊆ parent_authority` is the constitutional subset invariant |
+| 5 Fire-time reauth | P22 (time invalidates intent) | Write-time ≠ fire-time; deferred mutations must re-judge |
+| 6 WELL session bridge | P30 | Session-incomplete state still labeled healthy — false green |
+| 7 Organ disagreement doctrine | P13 (competing goods) | Three organs are not interchangeable voters — constraint first, optimization second |
+| 8 Context-capture governance | P18 (memory becomes law) + P30 | Agent-authored docs in privileged paths = policy mutation via documentation |
+| 9 RSI calibration | P26 + P31 | 3× false-PROCEED penalty unverified against held-out data |
+| 10 End-to-end canary | P33 | Federation is component-proven, not system-proven — needs full-pipeline seal |
+
+**Reading:** Most WAJIBs collapse onto the **identity-theater** paradox (P30). The federation has many pieces that *claim* constitutional behavior; the substrate gap is proving the claim via tests + receipts.
+
+**Active paradoxes after this session seal:** 3, 16, 18, 26, 30, 31, 33.
+
+**Next geometric move:** xfail(strict=true) for the 14 missing must-never-happen tests. Visible failure is closer to closure than invisible absence.
+
 ## The One Sentence
 
 > The 33 paradoxes are the minimum viable self-knowledge — they prevent the agent's confidence from becoming noise, and its knowledge from becoming certainty.

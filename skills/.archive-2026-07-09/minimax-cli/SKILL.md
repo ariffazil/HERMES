@@ -192,6 +192,7 @@ echo "$RESULT" | python3 -c "import json,sys; print(json.load(sys.stdin)['conten
 
 - **Quota exhausted (429) — vision fallback chain.** When `mmx vision describe` returns 429 (quota limit), try: (1) Anthropic API if `ANTHROPIC_API_KEY` has credits, direct `curl` to `/v1/messages` with base64 image; (2) MiMo API if `MIMO_API_KEY` has Token Plan credits; (3) `tesseract` OCR as last resort — extracts text (price levels, labels) but not candle patterns. Proven 2026-07-18: MiMo 429, Anthropic credit exhausted, but OCR successfully read XAUUSD chart levels from MT5 screenshot.
 - 401 after login → set region manually: `mmx config set --key region --value global`
+- **`mmx image generate --output` is ignored** — The `--output` flag on `mmx image generate` does NOT work. Files always save as `image_001.jpg`, `image_002.jpg`, etc. in the **current working directory** (not `minimax-output/`). After generation, find the file with `find /root -name "image_001.jpg" -newer /tmp/some_recent_file` or check `ls -lt` in the session cwd, then `cp` to your desired path. Proven 2026-07-20: specified `--output /tmp/abang_sado_minimax.jpg` but file landed at `/root/WELL/image_001.jpg`.
 - Key prefix `sk-cp-` = Token Plan (subscription), not pay-as-you-go
 - Video is async — poll with `mmx video task get --task-id <id>`, then download
 - `npx skills add MiniMax-AI/cli -y -g` fails with "PromptScript does not support global skill installation" → manual symlink: `ln -sf ~/.hermes/skills/minimax-cli/SKILL.md ~/.claude/skills/minimax-cli.md` and same for `~/.openclaw/skills/`

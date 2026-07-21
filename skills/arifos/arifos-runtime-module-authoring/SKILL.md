@@ -10,6 +10,8 @@ Canonical reference for creating new `arifosmcp/runtime/*.py` modules.
 ## Trigger
 Use when the user asks to create a new arifOS runtime Python module — audit, fatigue, scoring, validation, or any governed utility.
 
+**If the task requires Qdrant vector indexing, dual-gate architecture, blast-radius classification, or EMD pipeline integration, use `arifos-organ-forging` instead — this skill is for simple ~250-line runtime utilities only.**
+
 ## Pre-flight
 1. Read the canonical template: `arifosmcp/runtime/rsi_audit.py` — docstring structure, imports, Pydantic v2 patterns, logger, module-level instances.
 2. Check `arifosmcp/models/verdicts.py` for verdict enums (SealType, VerdictState).

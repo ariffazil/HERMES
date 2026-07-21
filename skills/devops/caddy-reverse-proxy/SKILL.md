@@ -204,6 +204,35 @@ systemctl start <service>.service
 systemctl status <service>.service
 ```
 
+### Common Pitfall: Standalone `.html` Files at Root Return 404 (PROVEN 2026-07-20)
+
+When you place a standalone `.html` file at `/var/www/html/arif/some-file.html`, requesting `https://arif-fazil.com/some-file.html` returns 404 even though the file exists. This is because the SPA fallback at the end of the `arif-fazil.com` block catches all unmatched paths and routes them to the React SPA, which doesn't recognize the path as a valid route.
+
+**Symptom:** `curl -sI https://arif-fazil.com/file.html` → `HTTP/2 404`. File exists on disk at `/var/www/html/arif/file.html`.
+
+**Root cause:** The SPA catch-all `try_files {path} /index.html` in the final `handle` block intercepts every path that isn't explicitly handled. Standalone `.html` files need a `handle` block with `file_server` to be served.
+
+**Quick fix — use an existing file_server path:** Place the file under `/verify/`, `/data/`, `/assets/`, or `/connect/` — these paths already have `file_server` handlers:
+
+```bash
+cp file.html /var/www/html/arif/verify/file.html
+# Now serves at: https://arif-fazil.com/verify/file.html (200, text/html)
+```
+
+**Trade-off:** `/data/*` sets `Content-Type: application/json` — avoid for HTML files. `/assets/*` has long cache (`max-age=31536000`) — avoid for frequently updated files. `/verify/*` is the best fit for ad-hoc HTML delivery.
+
+**Permanent fix — add explicit handle:** If the file needs to live at root:
+```caddyfile
+# BEFORE the SPA fallback
+handle /file.html {
+    root * /var/www/html/arif
+    file_server
+}
+# Then: caddy validate && caddy reload
+```
+
+**Verification:** `curl -sI https://arif-fazil.com/verify/file.html | head -3` should return `200` and `text/html`.
+
 ## Existing arif-fazil.com Route Map
 
 Reference — routes already configured in the main site block (as of 2026-07-14):

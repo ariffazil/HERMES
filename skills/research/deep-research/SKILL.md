@@ -19,6 +19,14 @@ triggers:
   - "[NOC] Q[1-4] financial results"
   - "[company] segment breakdown"
   - "what's [NOC/state-owned company] doing financially"
+  - "what makes an institution intelligent"
+  - "institutional intelligence"
+  - "governance theory"
+  - "what does the literature say about [governance/institutional/civilizational]"
+  - "Ostrom"
+  - "Douglass North"
+  - "civilizational learning"
+  - "polycentric governance"
   - "redo another loop"
   - "refine the forecast"
   - "validate with external data"
@@ -270,6 +278,40 @@ When research needs to be mapped onto an existing framework (e.g., optimization 
 
 This is the "spawn for synthesis" pattern — see `references/synthesis-delegation.md` for prompt construction.
 
+## Institutional Governance Theory Research
+
+When the user asks about institutional design, governance theory, civilizational intelligence, or "what makes institutions work/collapse" — run a multi-tradition research synthesis combining literature + WEALTH organ analysis. See `references/institutional-intelligence-framework.md` for the full six-tradition spine.
+
+**Research traditions to cover (prioritized by relevance):**
+1. **Ostrom's 8 CDPs** (empirical gold standard) — Hound: "Ostrom design principles polycentric governance"
+2. **North's institutional economics** (credible commitment, social orders) — Hound: "Douglass North institutions credible commitment"
+3. **Sanchez Borboa's derivation** (first-principles explanation of WHY CDPs hold) — Hound: "Ostrom design principles derivation ethical geometry"
+4. **Mnemoria civilization model** (5-level nested learning) — Hound: smart_fetch mnemoria.org/system-properties/adaptation
+5. **Organizational intelligence** (ContextGraph, MultiA) — Hound: "institutional intelligence organizational learning"
+6. **Dalio's principles** (practitioner lens) — Hound: "Ray Dalio principles institutional"
+
+**WEALTH integration (run in parallel with literature):**
+- `arif_init(mode="init")` to get session token (WEALTH now requires session_id)
+- `capital_diagnose(mode="stress_index")` for institutional stress scoring
+- `capital_entropy(mode="power_consequence_map")` for power/benefit analysis
+- `capital_wisdom(mode="wisdom")` for 6-dimension wisdom scoring
+
+**Output structure:**
+1. **Core Finding** — The one convergence across all traditions
+2. **Research Tradition Summary Table** — Who, what, key insight, how it maps
+3. **Deep tradition breakdown** (Ostrom CDPs as table, North's framework, etc.)
+4. **Synthesis** — The convergent properties (memory over intelligence, separation of powers, feedback loops, immutable audit, built-in challenge, proportional equivalence)
+5. **WEALTH Analysis** — Computational findings from WEALTH organ
+6. **Crosswalk to User's System** — Table: Literature Requirement → System Implementation → Verdict (✅/⚠️/❌/🔄)
+7. **What's Missing** — Gaps in both the literature and the user's system
+
+**Pitfalls:**
+- Tavily (web_search) may fail with 432 — use Hound MCP (mcp__hound__mcp_smart_search + smart_fetch) as primary web research tool
+- Crosswalk scoring: be honest. Score as LIVE/PARTIAL/NOT BUILT — not "we have that" when it's aspirational docs only
+- WEALTH wisdom often returns all-neutral for abstract proposals — treat as UNCLEAR, not balanced
+
+Proven: 2026-07-20 — Arif asked "what makes an institution intelligent for civilization, what's the literature said?" → 6-tradition synthesis with WEALTH analysis + AAA crosswalk. 8 hours of research synthesized into 8-section deliverable.
+
 ## Personal-Name Research Protocol
 
 When the user asks "research [personal name]" — handle it as a witness test, not a freeform lookup. Pattern proven 2026-07-08 with "Freddy Layang anak Bakon".
@@ -351,6 +393,7 @@ Proven: 2026-07-08 — Tier C hybrid, 3 parallel queries found SPE 196314-MS, SP
 - `references/news-feed-bias-diagnosis.md` — Expanded methodology for diagnosing algorithmic bias when user asks "why does Google/YouTube suggest this?" Covers: content type classification, feed signal identification, contrasting signal sourcing (3 signals per content piece), source diversification recommendations. Proven 2026-07-13: Arif's Google News (PETRONAS PR served as news) and YouTube (Tailscale beginner guide for Level 5 user) diagnosis.
 - `references/datapack-gap-filling.md` — Systematic method for identifying and filling knowledge gaps after initial research deliverable. Covers: gap listing, impact prioritization, targeted search per gap, reconciliation with existing model, structured JSON output. Proven 2026-07-13: PETRONAS 4 gaps filled (dividend cut reason, Gentari PAT, fiscal dependency, Petros-Sarawak status).
 - `references/research-tool-fallback-ladder.md` — 8-step fallback ladder when Tavily-backed tools (web_search, web_extract) fail with 432/402. Wikipedia API → browser console JS → browser snapshot → platform doc pages → curl + JSON-LD/schema.org extraction → pdftotext for government PDFs → domain-specific MCP tools (WEALTH capital_market, GEOX) → direct article URL navigation. Includes anti-patterns for search engine CAPTCHAs. Proven 2026-07-18: Malaysia economic research (Tavily 432, all search engines CAPTCHAd — fell through to curl+JSON-LD on malaysia4u.com + pdftotext on MOF PDF + WEALTH capital_market for live FX/commodities).
+- `references/institutional-intelligence-framework.md` — Six-tradition research spine for institutional/governance theory questions. Covers: Ostrom's 8 CDPs, North's institutional economics, Sanchez Borboa's syntegrity derivation, Mnemoria's 5-level civilizational learning, ContextGraph/MultiA organizational intelligence, Dalio's principles. Includes WEALTH organ integration pattern, crosswalk mapping technique, and the "six convergent properties of intelligent institutions" synthesis template. Proven 2026-07-20: Arif asked "what makes an institution intelligent for civilization" → 6-tradition synthesis with WEALTH + AAA crosswalk.
 
 ## Templates
 

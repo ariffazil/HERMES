@@ -7,6 +7,7 @@ triggers:
   - quarantine or cleanup of root or project directories
   - duplicate directories (lowercase UPPERCASE pairs)
   - stale venvs or node_modules accumulating
+  - post-zen pass — after a zen/cleanup loop completes, scan for residual surfaces the loop missed
 ---
 
 # Filesystem Entropy Audit
@@ -18,8 +19,35 @@ triggers:
 - Duplicate directories exist (e.g., `wealth/` vs `WEALTH/`)
 - Stale virtualenvs, node_modules, or output directories accumulate
 - Periodic hygiene (monthly recommended)
+- **Post-zen pass:** after any zen/cleanup loop is declared complete, scan for residual surfaces the loop missed
 
 **For system-level optimization** (memory hogs, OS packages, Docker, swap, services, full dossier): use `vps-machine-health`. This skill handles directory trees only.
+
+### Post-Zen Pass (targeted residual scan)
+
+After a zen loop completes (prompt dedup, file consolidation, symlink creation), a second pass catches what the loop operator may have overlooked. Zen loops focus on the declared target — they rarely audit the archive tail, forge work accumulation, or SOT manifest expiry. Run these probes in parallel:
+
+```bash
+# 1. Stale archive bloat — large _archive dirs that could be compressed or verified
+du -sh /root/_archive/*/ 2>/dev/null | sort -rh | head -10
+
+# 2. Forge work date-bucket sprawl — count .md artifacts per bucket
+find /root/A-FORGE/forge_work -name "*.md" | wc -l
+du -sh /root/A-FORGE/forge_work/*/ 2>/dev/null | sort -rh
+
+# 3. Expired SOT manifests — AGENTS.md/CLAUDE.md with past valid_until dates
+grep -rl "valid_until: 202" /root --include="AGENTS.md" --include="CLAUDE.md" 2>/dev/null | head -20
+
+# 4. AGENTS.md/CLAUDE.md sprawl — total copies across the tree (exclude _archive and .git)
+find /root -name "AGENTS.md" -not -path "*/_archive/*" -not -path "*/.git/*" | wc -l
+find /root -name "CLAUDE.md" -not -path "*/_archive/*" -not -path "*/.git/*" | wc -l
+
+# 5. Stray top-level dirs conflicting with organ conventions
+# e.g., /root/forge_work/ should live under A-FORGE/, not at root
+ls -d /root/forge_work /root/reports /root/sado 2>/dev/null
+```
+
+**Post-zen report format:** Present findings as a compact table with size/count and action recommendation. All T1 (no mutations) unless user says "jalan terus."
 
 ## Workflow
 
@@ -84,6 +112,24 @@ Write report to `_quarantine/YYYY-MM-DD/REVIEW-REPORT.md` with:
 
 ### Don't delete — quarantine
 Always `mv` to `_quarantine/`, never `rm`. User can restore if a classification was wrong.
+
+### Cross-check self-reported counts from zen loops — probe live state
+
+Zen/cleanup loops self-report counts (e.g., "27 AGENTS.md copies," "12 stale files") that are frequently wrong. Agents undercount their own sprawl because they audit only the surfaces they *know about*, not the ones they don't. Always spot-check 1-2 reported numbers against live `find` / `du` / `wc -l` before accepting a loop as complete.
+
+**Example (2026-07-20):** Loop 2 reported 27 AGENTS.md copies. A live `find /root -name "AGENTS.md" | wc -l` returned 85+ total, 30+ in federation directories outside `_archive` and `.git`. The undercount was real and material — stale backups, `_archive/` dirs, and `.openclaw` workspace copies were invisible to the loop's scope.
+
+**Minimum cross-checks after any zen loop report:**
+```bash
+# AGENTS.md count vs reported
+find /root -name "AGENTS.md" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l
+
+# Actual disk freed vs claimed
+du -sh /root/_quarantine/$(date +%Y-%m-%d)/ 2>/dev/null
+
+# Stale dirs still present that the loop should have caught
+ls -d /root/_archive/*stale* /root/.backups/20* 2>/dev/null
+```
 
 ### Check systemd before quarantining
 If a directory might be a systemd service's `WorkingDirectory` or `ExecStart` path, check `systemctl list-units` before moving. Breaking a live service is worse than leaving stale dirs.
