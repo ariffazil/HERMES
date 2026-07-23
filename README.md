@@ -1,18 +1,16 @@
 <!-- SOT-MANIFEST
-federation_release: v2026.07.19-ZEN-CONVERGENCE
-last_verified: 2026-07-19T21:00Z
-live_commit: 5b59c6c
+federation_release: v2026.07.23
+last_verified: 2026-07-23T22:00Z
+live_commit: fa890a2
 organ: HERMES
 role: multi-modal-bridge (organ 7 of 7)
-domain_law: BRIDGE_LAW
-ports: 8644 (Telegram operator edge, internal)
 authority: OBSERVE_ONLY — routes and bridges, never adjudicates
 truth_rule: tools/list + /health beat any static count in prose
 -->
 
 # 🔮 HERMES — Multi-Modal Bridge
 
-[![Federation](https://img.shields.io/badge/Federation-v2026.07.19-0a7b83)](https://arifos.arif-fazil.com)
+[![Federation](https://img.shields.io/badge/Federation-v2026.07.23-0a7b83)](https://arifos.arif-fazil.com)
 [![License](https://img.shields.io/github/license/ariffazil/HERMES?label=License)](LICENSE)
 
 > **HERMES routes. It never adjudicates.**
