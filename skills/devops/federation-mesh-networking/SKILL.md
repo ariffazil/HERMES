@@ -83,15 +83,56 @@ ping <peer>.ts.net        # Test mesh connectivity
 ```
 
 ### ACLs (Access Control)
-Edit in Tailscale admin console or `~/.tailscale/acl.json`:
+
+Headscale ACLs live at `/etc/headscale/acl.yaml`. They control which tagged nodes can reach which destinations. 
+
+**⚠️ Never start with wildcard `* → *:*` in production.** Every node should have explicit, narrow rules.
+
+#### Standard Federation ACL
+
 ```json
 {
+  "tagOwners": {
+    "tag:arifos": ["group:admins"],
+    "tag:forge": ["group:admins"],
+    "tag:flow-dmz": ["group:admins"]
+  },
   "acls": [
-    {"action": "accept", "src": ["*"], "dst": ["*:*"]}
+    {"action": "accept", "src": ["group:admins"], "dst": ["*:*"]},
+    {"action": "accept", "src": ["tag:forge"], "dst": ["tag:arifos:8088"]},
+    {"action": "accept", "src": ["tag:arifos"], "dst": ["tag:forge:7071"]}
   ]
 }
 ```
-For production: restrict by tag (e.g., `tag:federation` can only reach `tag:organ`).
+
+#### DMZ Isolation Pattern (One-Way)
+
+For internet-facing nodes that must NOT initiate connections into the internal mesh:
+
+```json
+{
+  "action": "accept",
+  "src": ["tag:flow-dmz"],
+  "dst": ["autogroup:internet:*"]
+}
+```
+
+This is the ONLY egress rule for DMZ nodes. No rule exists for DMZ → internal. Internal nodes get explicit allows TO specific DMZ ports:
+
+```json
+{
+  "action": "accept",
+  "src": ["tag:forge"],
+  "dst": ["tag:flow-dmz:8080", "tag:flow-dmz:22"]
+},
+{
+  "action": "accept",
+  "src": ["100.64.0.1"],
+  "dst": ["tag:flow-dmz:8080"]
+}
+```
+
+**Contract:** Internal → DMZ allowed (explicit ports). DMZ → internal DENIED (no rule = deny). DMZ → internet allowed (API egress).
 
 ### Pricing
 - Free: up to 100 devices, 3 users
@@ -252,6 +293,9 @@ If you self-host Headscale, you need your own DERP relay for NAT traversal. For 
 
 ### Hostname confusion — verify before setting
 When naming federation nodes, ALWAYS verify which machine you're on before running `hostnamectl set-hostname`. Check `hostname -I` and `curl -4 -s ifconfig.me` to confirm the IP matches the intended target. **Proven 2026-07-14:** FORGE's hostname was accidentally set to "flow" because the agent didn't verify which machine it was running on.
+
+### DMZ isolation — verify BOTH directions after ACL change
+After locking down an internet-facing node with DMZ ACL, verify from the node itself (via SSH) that egress to internal mesh is BLOCKED, not just that ingress works. A wildcard ACL (`* → *:*`) silently allows bidirectional access — the DMZ node can initiate connections INTO the internal mesh. **Proven 2026-07-23:** FLOW (srv1642546) had wildcard ACL → direct 1ms ping to FORGE. Compromise FLOW = compromise FORGE. Fix: `tag:flow-dmz` with single egress rule to `autogroup:internet:*` only.
 
 ### Option A/B/C for existing Tailscale users
 When a VPS already has hosted Tailscale and you're adding Headscale:

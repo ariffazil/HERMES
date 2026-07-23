@@ -70,7 +70,18 @@ mmx image generate --prompt "your prompt" --aspect-ratio 1:1 --non-interactive
 
 **Aspect ratios:** `1:1` (default), `16:9`, `9:16`, `4:3`, `3:4`
 
-**Critical pitfall:** `--output` flag is **IGNORED** by `mmx image generate`. Files always save as `image_001.jpg`, `image_002.jpg`, etc. in the **current working directory** (not `minimax-output/`). After generation, find with `ls -lt | head` and `cp` to your desired path. Proven 2026-07-20.
+**Critical pitfall:** `--output` flag is **IGNORED** by `mmx image generate`. Every call saves to `image_001.jpg` in the **current working directory** (not `minimax-output/`). A second call **overwrites** `image_001.jpg` — it does NOT auto-increment to `image_002.jpg`. The CLI warns `overwriting existing file: image_001.jpg` on collision.
+
+**Workflow for multiple generations:**
+```bash
+mmx image generate --prompt "..." --aspect-ratio 1:1 --non-interactive
+cp image_001.jpg /tmp/logo_v1.jpg   # save BEFORE next generation
+
+mmx image generate --prompt "..." --aspect-ratio 1:1 --non-interactive
+cp image_001.jpg /tmp/logo_v2.jpg   # now safe
+```
+
+Proven 2026-07-20, overwrite behavior confirmed 2026-07-23.
 
 ### 🧬 Phenotype
 
@@ -137,6 +148,23 @@ When Arif requests voice messages (TTS), use this fallback order:
 3. **`mmx speech synthesize`** — MiniMax TTS, quota-based but high quality.
 
 **When user says "voice" or "TTS":** try built-in first → if 429 → fall back to edge-tts immediately (no need to ask).
+
+### 🗣️ BM Voice Note Responses ("jawab dalam voice note")
+
+When Arif explicitly says "jawab dalam voice note" or the response is clearly for a voice message to another person:
+
+1. **Go directly to edge-tts** — skip built-in text_to_speech. Malay quality is the priority, not speed.
+2. **Voice:** `ms-MY-OsmanNeural` (male, BM casual). This is Arif's preferred voice for himself.
+3. **Text style for voice notes:**
+   - Concise BM casual — 30-60 seconds spoken (roughly 100-200 words)
+   - No markdown formatting (it's spoken, not read)
+   - Conversational tone, direct address to the listener
+   - Short sentences — easier to follow when spoken
+   - No parentheticals, no citations, no table structures — pure speech flow
+4. **Verify before sending:** always `ls -lh` and `file` to confirm the MP3 is valid
+5. **Send with:** `MEDIA:/tmp/<filename>.mp3`
+
+**Pitfall:** Don't try to speak markdown tables, code blocks, or formatted structures in a voice note. Rewrite as conversational explanation.
 
 ## 🎵 Music
 

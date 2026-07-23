@@ -147,7 +147,10 @@ Tier 4: browser_scroll → browser_snapshot(full=true) for deeper content
 **Critical pitfalls:**
 - `web_search` via Tavily returns 402 when credits exhausted → fall back immediately to browser
 - `web_extract` fails on paywalled sites (Malaysiakini, WSJ, Bloomberg) → use browser instead
-- **`web_search` AND `web_extract` both return HTTP 432 simultaneously** → Tavily backend is fully down (not just one source). Do NOT keep retrying — switch immediately to browser-based extraction. Verified Jul 2026. The 432 vs 402 distinction matters: 432 = backend-wide outage, 402 = per-call quota.
+- **`web_search` AND `web_extract` both return HTTP 432 simultaneously** → Tavily backend is fully down (not just one source). Do NOT keep retrying — switch immediately to Hound MCP smart_search or browser-based extraction. Verified Jul 2026. The 432 vs 402 distinction matters: 432 = backend-wide outage, 402 = per-call quota.
+- **Search fallback hierarchy (2026-07-22):** When Tavily is down: 1) Hound MCP `smart_search` (10 keyless backends, parallel, always available), 2) `smart_fetch` on known news URLs, 3) `browser_navigate` to news homepages. Hound is significantly faster than browser — make it the default Tier 2.
+- **WEALTH MCP may be unreachable (2026-07-22):** `capital_market` returns SESSION_REQUIRED or becomes fully unreachable after consecutive failures. Fall back to Hound MCP + browser for market data. Do NOT block on WEALTH availability — briefings ship with DER/UNK labels instead.
+- **Market data staleness (2026-07-22):** Forbes Advisor gold price page may return Internet Archive cached data (e.g., Jul 4 gold on Jul 22 — 18 days stale). Always corroborate with a second live source (FXStreet, USA Today, or Kitco browser snapshot). Investing.com is paywalled — Hound snippet prices are DER, not OBS. XE.com via browser returns live mid-market USD/MYR with UTC timestamp in visible snapshot text — preferred for currency.
 - Category/tag pages often 404 (e.g., `/tags/economy`, `/category/nation/`) → try homepage then scroll
 - News homepages often show "Most Read" sidebar in snapshots → scroll past it to get actual articles
 - Some sites timeout on first load → retry once, then skip and note the gap

@@ -148,9 +148,9 @@ Decision tree:
 When Arif assigns paper trading with virtual capital, operate as the trader, not an analyst signaling from the sidelines. See `references/paper-trading-workflow.md` for the full cron architecture and ledger format.
 
 ### Core Principle: Agentic, Not Passive
-- Arif expects the agent to **think and decide**, not wait for "perfect confirmation." ("Hang pandai2 LA fikir. Hang agentic intelligence kan" — 2026-07-20)
-- Consolidation at key levels IS confirmation. Waiting for "perfect rejection wick" while price already signals = paralysis.
-- Default posture: **evaluate evidence and act.** Only defer when genuinely ambiguous.
+- Arif expects the agent to **think and decide**, not wait forever. ("Hang pandai2 LA fikir. Hang agentic intelligence kan" — 2026-07-20)
+- Agentic ≠ impulsive. Decision must come from **price action evidence** at the level, not from narrative about seller exhaustion or momentum.
+- Default posture: **evaluate evidence and act.** But if the level hasn't been tested yet, WAIT for the test. Mid-air entries are gambling, not trading.
 
 ### Paper Trading Rules
 - Max risk: 2% per trade
@@ -159,6 +159,23 @@ When Arif assigns paper trading with virtual capital, operate as the trader, not
 - Always set SL on entry
 - Instruments: XAUUSD, Brent, WTI, Nat Gas
 - Ledger: `/root/paper_trading/ledger.md` — update on every trade
+
+### Paper Trading: When NOT to Enter
+- **Mid-air entries**: Price consolidating ABOVE a support level ≠ the level has been tested. Entering before the test = guessing. (Example: XAUUSD BUY at $4,012 while $4,000 support untested → SL at $3,985 hit, then price rallied to $4,066. Lesson: tunggu level test dulu.)
+- **Narrative entries**: "Seller dah penat," "momentum building," "consolidation = accumulation" are stories, not signals. Price action is the only admissible evidence.
+- **Forced entries**: If you have to fabricate 3 sentences to justify why you're entering, you're fabricating. A real entry needs ONE sentence: "Price tested X level with rejection candle."
+- **Geopolitical momentum trades**: Oil on Hormuz fears evaporates fast. SL must be tight and IN the chart structure, not based on narrative.
+
+### Paper Trading: Entry Checklist
+Before entering ANY paper trade, confirm ALL of these:
+1. [ ] Level tested (price actually reached the support/resistance zone)
+2. [ ] Confirmation candle (rejection wick, engulfing, or structure break at the level)
+3. [ ] SL placed at logical structural level (not arbitrary $-based)
+4. [ ] R:R ≥ 1:1.5 from entry to TP
+5. [ ] Reason fits in ONE sentence using price action language (not narrative)
+6. [ ] NOT entering on impulse to "be agentic" or "not be passive"
+
+If ANY checkbox is empty → TUNGGU. Output: "Setup not confirmed. Waiting for [level] test."
 
 ### Zen Silence
 - All trading crons must be SILENT unless a trade is executed.
@@ -173,4 +190,5 @@ When Arif assigns paper trading with virtual capital, operate as the trader, not
 - Do NOT suggest "hold and hope" when structure breaks — exit discipline > hope
 - Do NOT push entries before news results — "tunggu result dulu" is the correct posture
 - Do NOT default to passive/waiting mode. If evidence supports entry, enter. Paralysis = failure. (2026-07-20)
+- Do NOT enter mid-air during consolidation above/below an untested level. "Consolidation = accumulation" is narrative, not confirmation. The level MUST be tested first. See `references/session-2026-07-20-paper-trading-lesson.md` for the $4,012→$3,985→$4,066 case study. (2026-07-21)
 - Do NOT fabricate connections between unrelated context. Profile data must never be linked to current situations without explicit user confirmation. "Memandai ja sebut [X]. Macam BANGANG" — Arif, 2026-07-20.

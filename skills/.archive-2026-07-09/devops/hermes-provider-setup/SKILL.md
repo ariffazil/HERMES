@@ -94,7 +94,7 @@ If step 3 returns 401 → key env var name mismatch (most common cause). If 200 
 | Provider not in picker after edit | Wrote to config via `write_file`/`patch` (silently no-op'd) | Re-do via `hermes config edit`; manually paste block. **EXCEPTION**: writing `~/.hermes/config.yaml` via a Python helper that reads → mutates → YAML-validates → writes back is allowed and is the standard pattern for agent-loop setups. The block is on the `write_file` tool's heuristic, not on file mutation per se. |
 | "Invalid API key" in Telegram | Key env var was set in shell, but Hermes gateway runs as a different user / from a service with stripped env | Put key in `~/.hermes/.env`; restart gateway service |
 | Picker shows provider but every model returns "model not found" | `models[].id` must match what the upstream returns from `/v1/models` EXACTLY (case-sensitive, version stamps included). Common doc-vs-API divergence: OpenCode Zen docs show `opencode/<id>` but API serves bare `<id>`. | `curl …/v1/models` to get the canonical id list and copy verbatim. Or run `scripts/probe_provider.py` to do this automatically. |
-| Works on CLI, not in Telegram | Telegram gateway is a separate process — it cached config at boot | `hermes --yolo gateway restart` (gateway self-reload) or `/restart` slash command |
+| Works on CLI, not in Telegram | Telegram gateway is a separate process — it cached config at boot | `hermes --yolo gateway restart` (gateway self-reload) or `/restart` slash command. If `hermes gateway restart` times out (>15s) in agent subprocess, use `systemctl --user restart hermes-gateway` directly — returns immediately. |
 | `hermes config set providers.<slug>` returns "key not found" | `config set` only handles scalar keys, not nested dicts | Use `hermes config edit` for nested blocks |
 | Catalog `model-catalog.json` doesn't list the provider even after `hermes model --refresh` | Catalog is curated to ~2 providers for `/api/v1/models` exposure | Manually register via `providers:` block — catalog is for the public-facing aggregated picker, not for local installs |
 | Treating a vendor "tier" as a separate provider | Marketing names (Free / Pro / Go / Enterprise) often share one endpoint and one key | Check vendor's API docs for `<base>/v1/models` — if all tiers serve the same endpoint with the same auth, register ONCE and just buy the tier at the billing site |
@@ -357,6 +357,48 @@ hermes.chmod(0o600)
 ```
 
 **Bit twice in one session** (2026-07-18): 6 keys were in vault but missing from hermes.env. Five out of seven fallback tiers were dead. Run this sync as part of any multi-tool provider wiring.
+
+## Pitfall: `patch()` tool truncates API keys in vault.env — use Python inline script (2026-07-24)
+
+The `patch()` tool (and `write_file`) apply Hermes's secret-redaction filter to both the `old_string` and `new_string` parameters. When your `old_string` contains a real API key like `sk-TARMh6SjR4lN2vukSAk81Uo9fQt7rGwjPXV4qhZQPXtsiiZxOdC0T7EZYIZHOYSf`, the tool's redaction layer replaces the key body with `...` before comparison, turning it into `sk-TAR...OYSf`. The patch succeeds but writes the REDACTED form (`sk-TAR...OYSf`) as the literal content — corrupting the key to 43 bytes instead of the original ~125 bytes.
+
+**Symptom:** After `patch()` on `vault.env`, the API key line shrinks from ~125 bytes to ~43 bytes. `grep OPENCODE_GO /root/.secrets/vault.env` shows `sk-TAR...OYSf` (truncated). The real key survives in `~/.hermes/.env` (which wasn't touched by the patch), so recovery is possible.
+
+**Detection:**
+```bash
+python3 -c "
+with open('/root/.secrets/vault.env') as f:
+    for line in f:
+        if 'OPENCODE_GO' in line:
+            print(f'len={len(line.encode())}')
+"  # Should be ~125, not ~43
+```
+
+**Fix — recover from `.env`:**
+```bash
+python3 -c "
+import re
+with open('/root/.hermes/.env') as f:
+    env = f.read()
+with open('/root/.secrets/vault.env') as f:
+    vault = f.read()
+
+# Extract full key from .env
+m = re.search(r'OPENCODE_GO_API_KEY=\\\"(sk-[^\\\"]+)\\\"', env)
+if m:
+    full_key = m.group(1)
+    # Replace the truncated form with full key
+    vault = vault.replace(
+        'export OPENCODE_GO_API_KEY=\\\"sk-TAR...OYSf\\\"',
+        f'export OPENCODE_GO_API_KEY=\\\"{full_key}\\\"'
+    )
+    with open('/root/.secrets/vault.env', 'w') as f:
+        f.write(vault)
+    print(f'Restored key len={len(full_key)}')
+"
+```
+
+**Prevention:** Never use `patch()` or `write_file` on files containing API keys. Use Python inline scripts via `terminal()` for any mutation of `vault.env` or `.env`. The `scripts/inject_provider_key.py` in this skill's scripts/ directory handles this safely.
 
 ## Pitfall: vault env extraction in shell — strip `export ` prefix (2026-07-18)
 
@@ -768,33 +810,30 @@ If you copy the doc format into `providers.x.models[].id`, the picker shows the 
 
 ## Pitfall: "tier" ≠ "separate provider" — BUT OpenCode Go ≠ OpenCode Zen
 
-OpenCode has TWO registered providers in Hermes with DIFFERENT endpoints and DIFFERENT model catalogs:
+OpenCode has TWO **built-in** registered providers in Hermes's `PROVIDER_REGISTRY` (`hermes_cli/auth.py`) with DIFFERENT endpoints and DIFFERENT model catalogs:
 
-| Provider slug | Plugin endpoint | Models available | Key env var |
+| Provider slug | Endpoint | Models available | Key env var |
 |---|---|---|---|
-| `opencode-zen` | `https://opencode.ai/zen/v1` | 50 models (full: Claude, GPT, Gemini, DeepSeek, MiniMax, Kimi, GLM, Qwen, MiMo, Grok) | `OPENCODE_ZEN_API_KEY` |
-| `opencode-go` | `https://opencode.ai/zen/v1` | 22 open-source models only (NO Claude, GPT, Gemini, Grok) | `OPENCODE_GO_API_KEY` |
+| `opencode-zen` | `https://opencode.ai/zen/v1` | 57 models (Claude, GPT, Gemini, DeepSeek, MiniMax, Kimi, GLM, Qwen3.6/3.5, MiMo, Grok; NO qwen3.7-plus/max — those are Go-only) | `OPENCODE_ZEN_API_KEY` |
+| `opencode-go` | `https://opencode.ai/zen/go/v1` | 23 open-source models only (NO Claude, GPT, Gemini; includes qwen3.7-plus/max, grok-4.5, hy3) | `OPENCODE_GO_API_KEY` |
 
-**Verified 2026-07-06:** The actual Hermes config uses `https://opencode.ai/zen/v1` for opencode-go — the SAME endpoint as opencode-zen. Server-side tier routing determines which models are available based on subscription (Go vs Zen). The `/zen/go/v1` path documented in older source code may have been consolidated. Always probe the actual endpoint.
+> **⚠️ PITFALL (2026-07-23): Go routing bug.** The published docs say Go serves MiniMax/Qwen via `/v1/messages` (Anthropic SDK). Live probe shows they return 401 on that endpoint — only `/v1/chat/completions` works. Hermes source (`hermes_cli/models.py` `opencode_model_api_mode()`) was routing Go MiniMax/Qwen through `anthropic_messages`. Patched to return `chat_completions` for ALL Go models. If 401 on Go with these models, verify the fix is in place. Full details: `references/opencode-zen-and-go.md`.
 
-**OpenCode Go verified model list (from pricing page, 2026-07-06):**
+**Built-in shortcut (no custom `providers:` block needed):** Because opencode-zen and opencode-go are in `PROVIDER_REGISTRY`, you can configure them with just three steps — no YAML block to paste:
+```bash
+# 1. Set the key in .env
+echo 'OPENCODE_GO_API_KEY=sk-***' >> ~/.hermes/.env
 
-| Model | Requests/5h | Notes |
-|-------|-------------|-------|
-| Big Pickle | 200 | Free tier |
-| GLM-5.2 | 880 | |
-| Qwen3.7 Max | 950 | |
-| Kimi K2.7 Code | 1,150 | |
-| MiniMax M3 | 3,200 | |
-| MiMo-V2.5-Pro | 3,250 | |
-| DeepSeek V4 Pro | 3,450 | |
-| Qwen3.7 Plus | 4,300 | |
-| MiMo-V2.5 | 30,100 | Multimodal |
-| DeepSeek V4 Flash | 31,650 | |
+# 2. Switch provider + model
+hermes config set model.provider opencode-go
+hermes config set model.default deepseek-v4-pro
 
-Plus free models: DeepSeek V4 Flash Free, MiMo-V2.5 Free, Nemotron 3 Ultra Free, North Mini Code Free. Also available: qwen3.6-plus, qwen3.5-plus, kimi-k2.6, kimi-k2.5, minimax-m2.7, minimax-m2.5, glm-5.1, glm-5.
+# 3. Done. Hermes auto-routes api_mode per model (chat_completions / anthropic_messages / codex_responses).
+```
 
-**NOT on Go** (Zen-only): All Claude, GPT, Gemini, Grok models. If these appear in `opencode-go` config, they're phantom entries from a Zen-tier config that leaked in.
+The custom `providers:` block pattern in this skill is for providers NOT in `PROVIDER_REGISTRY` (Xiaomi MiMo, custom vLLM, self-hosted, etc.). For Zen and Go, the built-in registration handles base URL, model catalog fetching, and per-model API surface routing (`opencode_model_api_mode()` in `hermes_cli/models.py`).
+
+**Verified 2026-07-24:** The live `auth.py` has `inference_base_url="https://opencode.ai/zen/go/v1"` for opencode-go — the `/go/v1` path IS real and distinct from `/zen/v1`. The consolidation claim from earlier sessions was incorrect. Server-side tier routing determines which models are available based on subscription, but the endpoints themselves are different paths.
 
 **Rule for MoA presets and model selection:**
 - Use `opencode-go` for all open-source models (MiMo, DeepSeek, Qwen, Kimi, GLM, MiniMax)
@@ -1130,7 +1169,7 @@ Then in Telegram: `/model mimo-v2.5-pro` — Hermes resolves provider = `xiaomi-
 
 ## Working example (OpenCode Zen — full catalog endpoint)
 
-**Key fact (verified 2026-07-03):** OpenCode has TWO providers in Hermes — `opencode-zen` (`/zen/v1`, 50 models) and `opencode-go` (`/zen/go/v1`, 20 models). Use `opencode-zen` for Claude/GPT/Gemini models. See `references/moa-opencode-provider-matrix.md` for the full model-by-provider breakdown.
+openCode has TWO providers in Hermes — `opencode-zen` (`/zen/v1`, 57 models) and `opencode-go` (`/zen/go/v1`, 23 models). See `references/opencode-zen-and-go.md` for full endpoint tables, tier config, and routing. See `references/opencode-live-probe-2026-07-23.md` for live probe results (39 alive / 41 dead across both). See `references/canonical-picker-fail-closed-gate.md` for fail-closed gate injection, model-picker.yaml single-truth pattern, and weekly re-probe cron contract.
 
 ```yaml
 providers:
@@ -1149,7 +1188,8 @@ providers:
       - { id: kimi-k2.7-code,     name: "Kimi K2.7 Code" }
       - { id: mimo-v2.5-pro,      name: "MiMo-V2.5-Pro" }
       - { id: mimo-v2.5,          name: "MiMo-V2.5" }
-      - { id: qwen3.7-max,        name: "Qwen3.7 Max" }
+      - { id: qwen3.6-plus,       name: "Qwen3.6 Plus" }
+      - { id: qwen3.5-plus,       name: "Qwen3.5 Plus" }
       - { id: deepseek-v4-pro,    name: "DeepSeek V4 Pro" }
       - { id: grok-build-0.1,     name: "Grok Build 0.1" }
       - { id: big-pickle,         name: "Big Pickle" }
@@ -1172,8 +1212,8 @@ The Hermes plugin registers TWO separate providers:
 
 | Provider | Endpoint | Models | Key env var |
 |---|---|---|---|
-| `opencode-zen` | `https://opencode.ai/zen/v1` | 50 (full catalog) | `OPENCODE_ZEN_API_KEY` |
-| `opencode-go` | `https://opencode.ai/zen/go/v1` | 20 (subset — no Claude/GPT/Gemini) | `OPENCODE_GO_API_KEY` |
+| `opencode-zen` | `https://opencode.ai/zen/v1` | 57 (full catalog) | `OPENCODE_ZEN_API_KEY` |
+| `opencode-go` | `https://opencode.ai/zen/go/v1` | 23 (subset — no Claude/GPT/Gemini; includes qwen3.7-plus/max, grok-4.5) | `OPENCODE_GO_API_KEY` |
 
 The same physical API key from `https://opencode.ai/auth` works on both endpoints. Billing tier (Free/Go/Zen/Enterprise) is determined server-side. The `/go/` in the opencode-go URL is real — it's the plugin-registered base_url, not a 404.
 
@@ -1416,7 +1456,10 @@ The ~6 point lift confirms that aggregating a second perspective helps on hard t
 - `references/hermes-config-quirks.md` — environment-specific gotchas (BOM, snapshots, etc.) if this skill gets extended.
 - `references/opencode-zen-and-go.md` — full notes on registering OpenCode Zen AND Go as separate providers (DIFFERENT endpoints: `/zen/v1` vs `/zen/go/v1`). Covers the model catalog split, auth key handling, and env-var naming.
 - `references/moa-opencode-provider-matrix.md` — MoA-specific provider selection rules. Which models are on which endpoint. Recommended presets (default/code/fast). Verification recipe for confirming MoA actually runs. CreditsError vs AuthError diagnosis.
-- `references/provider-quick-reference-2026-07.md` — verbatim verified facts for Xiaomi MiMo (token-plan SGP endpoint, `api-key:` header format, live model IDs) and OpenCode Zen/Go (real endpoint, bare model IDs, alias `api.opencode.ai/go/*` behavior). Use this BEFORE re-probing — if a session is asking about these two providers, the endpoints and auth patterns are already settled here.
+- `references/opencode-model-lists-2026-07-24.md` — live-verified model lists from `GET /v1/models` on both Zen (57 models) and Go (23 models) endpoints. Includes api_mode routing table with test results. qwen3.7-plus/max confirmed Go-only (not on Zen, despite published docs).
+- `references/opencode-live-probe-2026-07-23.md` — full probe results (39 alive, 41 dead), 4-tier assignment, routing bug discovered.
+- `references/canonical-picker-fail-closed-gate.md` — model-picker.yaml single-truth pattern, fail-closed gate injection points in Hermes source, weekly re-probe cron contract, anti-mahal rule.
+- `references/provider-quick-reference-2026-07.md` — verbatim verified facts for Xiaomi MiMo
 - `references/non-interactive-config-append.md` — script-based pattern for adding `providers:` blocks when `$EDITOR` is unavailable (agent loop, headless setup, no human at terminal). Includes the tirith-clean Python append template + `~/.hermes/.env` write helper. Use this when `hermes config edit` would hang or when shell heredoc / `echo >>` gets blocked by the security scanner.
 - `references/federation-mcp-bridge-2026-07-04.md` — proven recipe for wiring OpenClaw, OpenCode, or any installed agent binary as a Hermes `mcp_servers:` entry. Includes T₁ probe pattern, systemd-env password sourcing, MCP-handshake compatibility check, Python-write-of-config pattern, arifOS constitutional seal route, and receipt template. Use this whenever the user says "wire X as MCP server", "bridge Hermes to Y", or "make Hermes call Z".
 - `references/autonomous-execute-pattern-2026-07-04.md` — the "execute all" / "do it" / "run it" reflex. When the user gives a direct forge command, probe silently → execute with `hermes --yolo gateway restart` → report → seal. Don't menu, don't ask, just cut. Documents the `--yolo` flag semantics, the activation sequence, and the arifOS seal-as-receipt pattern.

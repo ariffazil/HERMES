@@ -152,3 +152,4 @@ else:
 - `references/portfolio-optimization-findings.md` — Markowitz, Kelly, Robust comparison on Bursa assets
 - `references/apex-wealth-optimization-upgrades.md` — APEX Pillar IV upgrades to WEALTH EVOI, stock analysis, survival engine
 - `references/architecture-deja-vu-dag-cognition.md` — DAG Cognition Model case study: 525-line module killed, 20-line schema fix (2026-07-20)
+- `references/multi-phase-forge-cycle.md` — Full EUREKA→Instrument→Analyze→Engine→Test→Zen→Verify cycle (2026-07-21 Agentic World Models session)

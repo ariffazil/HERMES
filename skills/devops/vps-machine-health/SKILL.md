@@ -195,6 +195,27 @@ A `python3` process running for 3 days with 2% memory is probably legitimate. On
 ### Stuck AI/LLM processes are the #1 cause of VPS overload
 **Proven 2026-07-14:** grok process at 93% CPU for 20+ hours (1238 min CPU time) caused load average 163 on an 8-core machine. Two opencode processes at 47.9% + 19.4% CPU. Three duplicate capability_index MCP servers at 157MB each. Total: machine was drowning.
 
+### Agent session orphans — the most common recurring pattern (proven 2026-07-19, 2026-07-23)
+When agent sessions close (Hermes, OpenClaw, Kimi Code), their child processes survive as orphans. The most common culprits:
+- **github-mcp-server ×3–4** — one spawned per agent session at 58% CPU each, never cleaned up
+- **kimi + kimi-code** — stale subprocesses from Kimi Code sessions, 25-42% CPU each
+- **stale pytest** — abandoned test runs in D-state (uninterruptible I/O), can hold 9GB+ RAM
+- **MainThr+ (browser)** — orphaned Chromium/browser processes at 33-75% CPU
+
+**Rapid detection pattern:**
+```bash
+top -b -n 1 -o %CPU | head -15   # The top offenders in 1 second
+# Key signatures:
+#   github-mcp-server stdio — 3+ instances = dead sessions
+#   pytest tests/ -q — running in /root/GEOX or /root/arifOS = abandoned
+#   kimi / kimi-code — no parent session = orphan
+#   MainThr+ — >30% CPU, no matching session = orphan browser
+```
+
+**Fix:** `kill -9` all identified orphans in one burst. They have no parent to return to. systemd-managed services (arifos, OpenClaw, GEOX) are safe — they restart automatically if accidentally killed.
+
+**Prevention:** This is a structural gap — nothing cleans up child processes when agent sessions die. Until a session-cleanup hook exists, the diagnostic pattern above is the fastest recovery path when load alerts fire.
+
 **Detection pattern:**
 ```bash
 ps aux --sort=-%cpu | head -10  # Find the offender

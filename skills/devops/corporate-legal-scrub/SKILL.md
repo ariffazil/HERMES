@@ -9,6 +9,12 @@ triggers:
   - "PETRONAS"
   - "scrub repo"
   - "clean company names"
+  - "dirty repositories"
+  - "credential in repo"
+  - "P0 audit"
+  - "gitleaks finding"
+  - "redact credential"
+  - "gitignore credential"
 args: []
 ---
 
@@ -114,6 +120,7 @@ chmod 600 /root/.private/<entity>-memory/*
 Adapt the mapping to the specific entity being scrubbed.
 
 → `references/petronas-scrub-mapping.md` — full mapping, file list, and commit receipt from the 2026-07-14 PETRONAS scrub.
+→ `references/credential-hygiene-protocol.md` — P0/P1/P2 classification, credential redaction pattern, gitignore protection, and constitutional boundary violation response from the 2026-07-18 18-repo dirty audit.
 
 ## Pitfalls
 

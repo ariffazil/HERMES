@@ -1,0 +1,5417 @@
+{
+  "version": 1,
+  "manifest": {
+    "hermes-naked-prior-audit/SKILL.md": [
+      1784492426315257435,
+      17748
+    ],
+    "software-development/receipt-to-analytics/SKILL.md": [
+      1784574625142871499,
+      3058
+    ],
+    "software-development/live-probe-audit-pattern/SKILL.md": [
+      1784828613998670216,
+      21093
+    ],
+    "software-development/deep-codebase-audit/SKILL.md": [
+      1784492426445258288,
+      5859
+    ],
+    "software-development/paper-to-code-validation/SKILL.md": [
+      1784492426456258361,
+      10177
+    ],
+    "software-development/spec-audit/SKILL.md": [
+      1784492426459258380,
+      9104
+    ],
+    "software-development/repository-sot-inventory/SKILL.md": [
+      1784492426457258367,
+      21710
+    ],
+    "software-development/governed-knowledge-stores/SKILL.md": [
+      1784492426448258308,
+      7800
+    ],
+    "software-development/governance-enforcement-audit/SKILL.md": [
+      1784492426631259510,
+      15646
+    ],
+    "software-development/aaa-knowledge-files/SKILL.md": [
+      1784492426443697752,
+      10784
+    ],
+    "audit-parallel-forge-history/SKILL.md": [
+      1784492426085255924,
+      10048
+    ],
+    "social-media/DESCRIPTION.md": [
+      1784492426438258242,
+      151
+    ],
+    "social-media/telegram-live-location-tracking/SKILL.md": [
+      1784492426440276666,
+      6714
+    ],
+    "social-media/xurl/SKILL.md": [
+      1784492426443258275,
+      15518
+    ],
+    "social-media/telegram-userbot/SKILL.md": [
+      1784810105960453260,
+      9670
+    ],
+    "social-media/ig-story-gym-quotes/SKILL.md": [
+      1784492426438258242,
+      9640
+    ],
+    "arifos-external-council/SKILL.md": [
+      1784492426053282800,
+      13482
+    ],
+    "arifos/arifos-organ-forging/SKILL.md": [
+      1784558083569196712,
+      7506
+    ],
+    "arifos/arifos-runtime-module-authoring/SKILL.md": [
+      1784557613272008793,
+      4020
+    ],
+    "devops/hermes-cron-rhythm/SKILL.md": [
+      1784631794250203101,
+      28100
+    ],
+    "devops/agentic-infrastructure-ops/SKILL.md": [
+      1784492426220256811,
+      7476
+    ],
+    "devops/federation-subsystem-bringup/SKILL.md": [
+      1784492426241256949,
+      13906
+    ],
+    "devops/runtime-truth-attestation/SKILL.md": [
+      1784492426252257021,
+      23307
+    ],
+    "devops/agentic-vps-operations/SKILL.md": [
+      1784492426222256824,
+      4915
+    ],
+    "devops/vps-autonomous-ops/SKILL.md": [
+      1784492426262257087,
+      17125
+    ],
+    "devops/flame-free-loop-mesh/SKILL.md": [
+      1784569167790549658,
+      7404
+    ],
+    "devops/arifos-interceptor-patching/SKILL.md": [
+      1784492426629412003,
+      12642
+    ],
+    "devops/arif-sites-content-ops/SKILL.md": [
+      1784713792366462153,
+      9297
+    ],
+    "devops/vps-machine-health/SKILL.md": [
+      1784776479528276924,
+      14317
+    ],
+    "devops/mcp-server-registry-listing/SKILL.md": [
+      1784492426251488020,
+      6732
+    ],
+    "devops/vps-agentic-ops/SKILL.md": [
+      1784492426260257074,
+      12441
+    ],
+    "devops/vault999-chain-governance/SKILL.md": [
+      1784556433464669347,
+      23224
+    ],
+    "devops/corporate-legal-scrub/SKILL.md": [
+      1784685099452789320,
+      6083
+    ],
+    "devops/caddy-reverse-proxy/SKILL.md": [
+      1784714493144404288,
+      21566
+    ],
+    "devops/autonomous-vps-response/SKILL.md": [
+      1784492426226711560,
+      5811
+    ],
+    "devops/wealth-commodity-dashboard/SKILL.md": [
+      1784492426269257133,
+      6727
+    ],
+    "devops/skill-audit-methodology/SKILL.md": [
+      1784492426255257041,
+      16202
+    ],
+    "devops/vps-operations/SKILL.md": [
+      1784825334084712200,
+      16740
+    ],
+    "devops/mcp-conformance-audit/SKILL.md": [
+      1784492426249257001,
+      4672
+    ],
+    "devops/fork-sync-and-contrast/SKILL.md": [
+      1784492426243256962,
+      5532
+    ],
+    "devops/federation-checkup/SKILL.md": [
+      1784828093595994866,
+      54543
+    ],
+    "devops/telegram-userbot-telethon/SKILL.md": [
+      1784492426257257054,
+      10259
+    ],
+    "devops/federation-identity-propagation-forensics/SKILL.md": [
+      1784492426630508506,
+      13027
+    ],
+    "devops/site-deployment-verification/SKILL.md": [
+      1784492426254257034,
+      9257
+    ],
+    "devops/hermes-telegram-group-setup/SKILL.md": [
+      1784810580674654238,
+      7232
+    ],
+    "devops/a2a-agent-card-registration/SKILL.md": [
+      1784492426213256765,
+      49180
+    ],
+    "devops/federation-mesh-networking/SKILL.md": [
+      1784827338706847954,
+      14184
+    ],
+    "devops/kimi-code-model-management/SKILL.md": [
+      1784538523252464385,
+      14188
+    ],
+    "devops/tokenrouter-guide/SKILL.md": [
+      1784526780948792312,
+      5981
+    ],
+    "devops/filesystem-entropy-audit/SKILL.md": [
+      1784553194352100587,
+      11255
+    ],
+    "devops/llm-api-adapter/SKILL.md": [
+      1784511294680185357,
+      7893
+    ],
+    "devops/hermes-log-forensics/SKILL.md": [
+      1784492426246256982,
+      5905
+    ],
+    "devops/a-forge-development/SKILL.md": [
+      1784618156154368114,
+      34217
+    ],
+    "devops/agent-email-transport/SKILL.md": [
+      1784685152471180490,
+      8772
+    ],
+    "devops/external-mcp-integration/SKILL.md": [
+      1784831377336306409,
+      10212
+    ],
+    "devops/arifos-ed25519-sovereign-signing/SKILL.md": [
+      1784492426224256837,
+      24421
+    ],
+    "devops/flame-free-loop/SKILL.md": [
+      1784549435520062442,
+      5952
+    ],
+    "devops/vps-autonomous-response/SKILL.md": [
+      1784492426265257106,
+      9725
+    ],
+    "devops/arifos-constitutional-floor-modification/SKILL.md": [
+      1784492426223256831,
+      3947
+    ],
+    "devops/fork-drift-assessment/SKILL.md": [
+      1784492426243256962,
+      7084
+    ],
+    "devops/mcp-naming-contract/SKILL.md": [
+      1784492426250466119,
+      14643
+    ],
+    "devops/deployment-claim-verification/SKILL.md": [
+      1784492426230449405,
+      10447
+    ],
+    "devops/federation-node-onboarding/SKILL.md": [
+      1784828293066423964,
+      18385
+    ],
+    "devops/ssh-client-setup/SKILL.md": [
+      1784831341213223854,
+      2297
+    ],
+    "devops/sovereign-search/SKILL.md": [
+      1784614146796785175,
+      5475
+    ],
+    "devops/federation-git-zen/SKILL.md": [
+      1784611162185509371,
+      2233
+    ],
+    "cognitive-level-assertion-protocol/SKILL.md": [
+      1784492426087255938,
+      16868
+    ],
+    "geological-artifact-rigor/SKILL.md": [
+      1784691686988247474,
+      19028
+    ],
+    "federated-skill-architecture/SKILL.md": [
+      1784492426630508506,
+      11014
+    ],
+    "wisdom-scar-session-audit/SKILL.md": [
+      1784556431214752020,
+      31705
+    ],
+    ".archive-2026-07-09/software-development/measure-before-acting/SKILL.md": [
+      1784524836354058348,
+      60207
+    ],
+    ".archive-2026-07-09/software-development/constitutional-auditor/SKILL.md": [
+      1784492425981348270,
+      5591
+    ],
+    ".archive-2026-07-09/software-development/hermes-agent-skill-authoring/SKILL.md": [
+      1784492425986255274,
+      10651
+    ],
+    ".archive-2026-07-09/software-development/test-driven-development/SKILL.md": [
+      1784492426007255412,
+      10306
+    ],
+    ".archive-2026-07-09/software-development/systematic-debugging/SKILL.md": [
+      1784492426006255406,
+      14065
+    ],
+    ".archive-2026-07-09/software-development/skill-consolidation/SKILL.md": [
+      1784492426005255399,
+      6549
+    ],
+    ".archive-2026-07-09/software-development/python-debugpy/SKILL.md": [
+      1784492426001255373,
+      13172
+    ],
+    ".archive-2026-07-09/software-development/asi-readiness-audit-contract/SKILL.md": [
+      1784492425977255215,
+      13303
+    ],
+    ".archive-2026-07-09/software-development/spike/SKILL.md": [
+      1784492426006255406,
+      8730
+    ],
+    ".archive-2026-07-09/software-development/shadow-alignment-test/SKILL.md": [
+      1784492426004255393,
+      3926
+    ],
+    ".archive-2026-07-09/software-development/hermes-prime-federation-map/SKILL.md": [
+      1784558390166370909,
+      27151
+    ],
+    ".archive-2026-07-09/software-development/geoscience-artifact-rigor/SKILL.md": [
+      1784492425984255261,
+      3976
+    ],
+    ".archive-2026-07-09/software-development/simplify-code/SKILL.md": [
+      1784492426005255399,
+      10926
+    ],
+    ".archive-2026-07-09/software-development/governance-eval-benchmark/SKILL.md": [
+      1784492425985383494,
+      5011
+    ],
+    ".archive-2026-07-09/software-development/plan/SKILL.md": [
+      1784492426000255366,
+      8974
+    ],
+    ".archive-2026-07-09/software-development/requesting-code-review/SKILL.md": [
+      1784492426003255386,
+      8465
+    ],
+    ".archive-2026-07-09/software-development/openclaw-skill-vetter/SKILL.md": [
+      1784492425999255360,
+      9967
+    ],
+    ".archive-2026-07-09/software-development/non-mutating-review-harness/SKILL.md": [
+      1784492425996255340,
+      22420
+    ],
+    ".archive-2026-07-09/software-development/apex-governance/SKILL.md": [
+      1784492425974255196,
+      30954
+    ],
+    ".archive-2026-07-09/software-development/forge-before-build/SKILL.md": [
+      1784609589156346855,
+      9086
+    ],
+    ".archive-2026-07-09/software-development/geoscience-verification-protocol/SKILL.md": [
+      1784492425984255261,
+      5748
+    ],
+    ".archive-2026-07-09/software-development/node-inspect-debugger/SKILL.md": [
+      1784492425995255334,
+      10929
+    ],
+    ".archive-2026-07-09/software-development/hermes-prime-reflex-v2/SKILL.md": [
+      1784631748893856941,
+      24405
+    ],
+    ".archive-2026-07-09/software-development/claim-validation-protocol/SKILL.md": [
+      1784492425978255222,
+      21699
+    ],
+    ".archive-2026-07-09/minimax-cli/SKILL.md": [
+      1784526566187148926,
+      12399
+    ],
+    ".archive-2026-07-09/devops/telegram-security-audit/SKILL.md": [
+      1784492425944785753,
+      4280
+    ],
+    ".archive-2026-07-09/devops/hermes-prime-identity/SKILL.md": [
+      1784492426626259477,
+      47618
+    ],
+    ".archive-2026-07-09/devops/federation-organ-liveness-probe/SKILL.md": [
+      1784492425891254651,
+      22512
+    ],
+    ".archive-2026-07-09/devops/daily-federation-briefing/SKILL.md": [
+      1784492425879254572,
+      16443
+    ],
+    ".archive-2026-07-09/devops/arif-mcp-governor/SKILL.md": [
+      1784492425849254375,
+      6749
+    ],
+    ".archive-2026-07-09/devops/geox-federation-mcp-driver/SKILL.md": [
+      1784492425906254749,
+      70992
+    ],
+    ".archive-2026-07-09/devops/infra-guardian/SKILL.md": [
+      1784492425928818733,
+      1936
+    ],
+    ".archive-2026-07-09/devops/mcp-tool-upgrade-lifecycle/SKILL.md": [
+      1784492425934254933,
+      8236
+    ],
+    ".archive-2026-07-09/devops/model-fallback-monitor/SKILL.md": [
+      1784492425935974870,
+      2445
+    ],
+    ".archive-2026-07-09/devops/skills-library-dimensional-audit/SKILL.md": [
+      1784492425940254972,
+      7153
+    ],
+    ".archive-2026-07-09/devops/subagent-spawn-template/SKILL.md": [
+      1784492425941693111,
+      5834
+    ],
+    ".archive-2026-07-09/devops/federation-organ-audit/SKILL.md": [
+      1784492425889254637,
+      5430
+    ],
+    ".archive-2026-07-09/devops/mcp-server-building/SKILL.md": [
+      1784492425929254900,
+      34024
+    ],
+    ".archive-2026-07-09/devops/vault999-reader/SKILL.md": [
+      1784492425945255005,
+      8576
+    ],
+    ".archive-2026-07-09/devops/federation-doctrine-propagation/SKILL.md": [
+      1784492425883254598,
+      4203
+    ],
+    ".archive-2026-07-09/devops/telegram-group-relay/SKILL.md": [
+      1784492425944254999,
+      8863
+    ],
+    ".archive-2026-07-09/devops/telegram-forum-management/SKILL.md": [
+      1784492425942336040,
+      8265
+    ],
+    ".archive-2026-07-09/devops/geological-artifact-publication/SKILL.md": [
+      1784492425897254690,
+      33226
+    ],
+    ".archive-2026-07-09/devops/hermes-runtime-restoration/SKILL.md": [
+      1784492425924254867,
+      30512
+    ],
+    ".archive-2026-07-09/devops/openclaw-channel-config/SKILL.md": [
+      1784810565499911673,
+      59612
+    ],
+    ".archive-2026-07-09/devops/arifos-kernel-surface-curator/SKILL.md": [
+      1784492425851254388,
+      29658
+    ],
+    ".archive-2026-07-09/devops/federation-self-hosted-services/SKILL.md": [
+      1784492425893254664,
+      4330
+    ],
+    ".archive-2026-07-09/devops/agent-memory-bridge/SKILL.md": [
+      1784492425848688999,
+      2349
+    ],
+    ".archive-2026-07-09/devops/federation-config-reconciliation/SKILL.md": [
+      1784526290991362412,
+      12621
+    ],
+    ".archive-2026-07-09/devops/active-maintenance/SKILL.md": [
+      1784492425846364796,
+      1111
+    ],
+    ".archive-2026-07-09/devops/hermes-provider-setup/SKILL.md": [
+      1784832160135664524,
+      96538
+    ],
+    ".archive-2026-07-09/devops/explorer-dispatch-protocol/SKILL.md": [
+      1784492425881254585,
+      19828
+    ],
+    ".archive-2026-07-09/dogfood/SKILL.md": [
+      1784492425948255025,
+      6270
+    ],
+    ".archive-2026-07-09/github/DESCRIPTION.md": [
+      1784492425949255031,
+      167
+    ],
+    ".archive-2026-07-09/github/github-repo-management/SKILL.md": [
+      1784492425954255064,
+      13733
+    ],
+    ".archive-2026-07-09/github/github-auth/SKILL.md": [
+      1784492425950255038,
+      7596
+    ],
+    ".archive-2026-07-09/github/github-pr-workflow/SKILL.md": [
+      1784492425952307551,
+      10035
+    ],
+    ".archive-2026-07-09/github/codebase-inspection/SKILL.md": [
+      1784492425949255031,
+      3628
+    ],
+    ".archive-2026-07-09/github/github-code-review/SKILL.md": [
+      1784492425950255038,
+      13615
+    ],
+    ".archive-2026-07-09/github/github-issues/SKILL.md": [
+      1784492425951255045,
+      9315
+    ],
+    ".archive-2026-07-09/mlops/DESCRIPTION.md": [
+      1784492425958255091,
+      162
+    ],
+    ".archive-2026-07-09/mlops/models/DESCRIPTION.md": [
+      1784492425970255169,
+      253
+    ],
+    ".archive-2026-07-09/mlops/models/audiocraft/SKILL.md": [
+      1784492425970255169,
+      16189
+    ],
+    ".archive-2026-07-09/mlops/models/segment-anything/SKILL.md": [
+      1784492425971255176,
+      13372
+    ],
+    ".archive-2026-07-09/mlops/inference/DESCRIPTION.md": [
+      1784492425964255130,
+      161
+    ],
+    ".archive-2026-07-09/mlops/inference/llama-cpp/SKILL.md": [
+      1784492425965112406,
+      8880
+    ],
+    ".archive-2026-07-09/mlops/inference/vllm/SKILL.md": [
+      1784492425967255150,
+      9071
+    ],
+    ".archive-2026-07-09/mlops/huggingface-hub/SKILL.md": [
+      1784492425964255130,
+      3674
+    ],
+    ".archive-2026-07-09/mlops/evaluation/DESCRIPTION.md": [
+      1784492425959166642,
+      126
+    ],
+    ".archive-2026-07-09/mlops/evaluation/lm-evaluation-harness/SKILL.md": [
+      1784492425959486284,
+      12020
+    ],
+    ".archive-2026-07-09/mlops/evaluation/weights-and-biases/SKILL.md": [
+      1784492425961255110,
+      12395
+    ],
+    ".archive-2026-07-09/data-science/DESCRIPTION.md": [
+      1784492425845254348,
+      137
+    ],
+    ".archive-2026-07-09/data-science/jupyter-live-kernel/SKILL.md": [
+      1784492425845254348,
+      5285
+    ],
+    ".archive-2026-07-09/computer-use/SKILL.md": [
+      1784492425844254342,
+      11179
+    ],
+    ".archive-2026-07-09/smart-home/DESCRIPTION.md": [
+      1784492425972898002,
+      123
+    ],
+    ".archive-2026-07-09/smart-home/openhue/SKILL.md": [
+      1784492425973255189,
+      2713
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/DESCRIPTION.md": [
+      1784492425833254270,
+      211
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/opencode-acp/SKILL.md": [
+      1784492425837503337,
+      22986
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/agent-context-brief/SKILL.md": [
+      1784492425833254270,
+      8005
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/codex/SKILL.md": [
+      1784492425835254283,
+      5386
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/opencode/SKILL.md": [
+      1784492425844254342,
+      7306
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/claude-code/SKILL.md": [
+      1784492425834254276,
+      34288
+    ],
+    ".archive-2026-07-09/autonomous-ai-agents/hermes-agent/SKILL.md": [
+      1784492425836254289,
+      51586
+    ],
+    ".archive-2026-07-09/apple/DESCRIPTION.md": [
+      1784492425832254263,
+      137
+    ],
+    ".archive-2026-07-09/yuanbao/SKILL.md": [
+      1784492426007255412,
+      3795
+    ],
+    ".archive-2026-07-08/imessage/SKILL.md": [
+      1784492425832254263,
+      2442
+    ],
+    ".archive-2026-07-08/findmy/SKILL.md": [
+      1784492425832254263,
+      3709
+    ],
+    ".archive-2026-07-08/apple-reminders/SKILL.md": [
+      1784492425831494949,
+      3606
+    ],
+    ".archive-2026-07-08/apple-notes/SKILL.md": [
+      1784492425831494949,
+      2169
+    ],
+    "legal/malaysian-tenancy-consumer-dispute/SKILL.md": [
+      1784652954258264656,
+      4498
+    ],
+    "institutional-epistemic-sink-forensics/SKILL.md": [
+      1784713101830412547,
+      25444
+    ],
+    "media/DESCRIPTION.md": [
+      1784492426322257481,
+      139
+    ],
+    "media/songsee/SKILL.md": [
+      1784492426329257527,
+      2336
+    ],
+    "media/heartmula/SKILL.md": [
+      1784492426325257500,
+      6412
+    ],
+    "media/music-generation/SKILL.md": [
+      1784492426325257500,
+      8090
+    ],
+    "media/audio-analysis/SKILL.md": [
+      1784492426322257481,
+      5709
+    ],
+    "media/ocr/SKILL.md": [
+      1784492426328257520,
+      4814
+    ],
+    "media/gif-search/SKILL.md": [
+      1784492426324676270,
+      2720
+    ],
+    "media/audio-feature-analysis/SKILL.md": [
+      1784492426323321638,
+      3775
+    ],
+    "media/music-intelligence/SKILL.md": [
+      1784492426326257507,
+      9564
+    ],
+    "media/tts-edge-fallback/SKILL.md": [
+      1784701484992954747,
+      12181
+    ],
+    "media/youtube-content/SKILL.md": [
+      1784492426330265886,
+      6739
+    ],
+    "media/social-video-intelligence/SKILL.md": [
+      1784492426328257520,
+      4464
+    ],
+    "trading/trading-intelligence-system/SKILL.md": [
+      1784795395557495681,
+      14689
+    ],
+    "trading/nasi-lemak-tracking/SKILL.md": [
+      1784741612943588113,
+      3544
+    ],
+    "trading/agentic-trading-companion/SKILL.md": [
+      1784492426464883379,
+      24007
+    ],
+    "trading/mt5-ai-trading-agent/SKILL.md": [
+      1784492426472258466,
+      15925
+    ],
+    "trading/syedos/SKILL.md": [
+      1784795345575602042,
+      37093
+    ],
+    "trading/daily-trading-signal-briefing/SKILL.md": [
+      1784516806413696985,
+      22640
+    ],
+    "trading/trading-signal-chart/SKILL.md": [
+      1784720628036846716,
+      25265
+    ],
+    "seven-zen-organs-enforcement/SKILL.md": [
+      1784492426431258196,
+      66560
+    ],
+    "productivity/DESCRIPTION.md": [
+      1784492426334408070,
+      114
+    ],
+    "productivity/powerpoint/SKILL.md": [
+      1784492426340257599,
+      9298
+    ],
+    "productivity/ocr-and-documents/SKILL.md": [
+      1784492426339257592,
+      6206
+    ],
+    "productivity/ocr-and-documents/DESCRIPTION.md": [
+      1784492426339257592,
+      147
+    ],
+    "productivity/maps/SKILL.md": [
+      1784492426337257579,
+      6726
+    ],
+    "productivity/vendor-receipt-tracking/SKILL.md": [
+      1784819399744557413,
+      2471
+    ],
+    "productivity/notion/SKILL.md": [
+      1784492426338257586,
+      14629
+    ],
+    "productivity/teams-meeting-pipeline/SKILL.md": [
+      1784492426342257612,
+      6883
+    ],
+    "productivity/hospital-patient-advocacy/SKILL.md": [
+      1784648416845987316,
+      6208
+    ],
+    "productivity/airtable/SKILL.md": [
+      1784492426335257566,
+      11334
+    ],
+    "productivity/document-intelligence/SKILL.md": [
+      1784492426335257566,
+      7357
+    ],
+    "productivity/nano-pdf/SKILL.md": [
+      1784492426337257579,
+      1414
+    ],
+    "productivity/google-workspace/SKILL.md": [
+      1784492426336257573,
+      13411
+    ],
+    "productivity/petdex/SKILL.md": [
+      1784492426339257592,
+      3534
+    ],
+    "note-taking/DESCRIPTION.md": [
+      1784492426333257553,
+      146
+    ],
+    "note-taking/obsidian/SKILL.md": [
+      1784492426334408070,
+      2935
+    ],
+    "cognitive-commands/SKILL.md": [
+      1784492426086255931,
+      8048
+    ],
+    "business/nasi-lemak-sales-tracking/SKILL.md": [
+      1784764410692414509,
+      5444
+    ],
+    "business/nasi-lemak-daily-tracking/SKILL.md": [
+      1784818887381620495,
+      2990
+    ],
+    "business/nasi-lemak-sales/SKILL.md": [
+      1784818327407529839,
+      3334
+    ],
+    "geology/geox-competitive-intelligence/SKILL.md": [
+      1784492426277101391,
+      8873
+    ],
+    "skill-substrate-framework/SKILL.md": [
+      1784492426435258223,
+      12294
+    ],
+    "arifos-auto-init/SKILL.md": [
+      1784492426052255708,
+      8059
+    ],
+    "arifos-kernel-zen-audit/SKILL.md": [
+      1784492426078255879,
+      21403
+    ],
+    "email/DESCRIPTION.md": [
+      1784492426270257139,
+      101
+    ],
+    "email/himalaya/SKILL.md": [
+      1784492426270257139,
+      7272
+    ],
+    "federation-sot-inventory/SKILL.md": [
+      1784492426274257166,
+      7942
+    ],
+    "github/DESCRIPTION.md": [
+      1784492426277496247,
+      167
+    ],
+    "mlops/DESCRIPTION.md": [
+      1784492426332257546,
+      162
+    ],
+    "mlops/models/DESCRIPTION.md": [
+      1784492426333257553,
+      253
+    ],
+    "mlops/inference/DESCRIPTION.md": [
+      1784492426333257553,
+      161
+    ],
+    "mlops/evaluation/DESCRIPTION.md": [
+      1784492426333257553,
+      126
+    ],
+    "creative/DESCRIPTION.md": [
+      1784492426089255951,
+      116
+    ],
+    "creative/architecture-diagram/SKILL.md": [
+      1784492426089255951,
+      5830
+    ],
+    "creative/songwriting-and-ai-music/SKILL.md": [
+      1784492426196256653,
+      10206
+    ],
+    "creative/minimax-cli/SKILL.md": [
+      1784813232629216866,
+      12568
+    ],
+    "creative/screenshot-editing/SKILL.md": [
+      1784492426195256647,
+      5335
+    ],
+    "creative/makcikgpt-article-forging/SKILL.md": [
+      1784787930916924467,
+      54191
+    ],
+    "creative/dark-explanatory-diagrams/SKILL.md": [
+      1784593415097428844,
+      8291
+    ],
+    "creative/image-annotation-labeling/SKILL.md": [
+      1784492426131256227,
+      4151
+    ],
+    "creative/popular-web-designs/SKILL.md": [
+      1784492426154256378,
+      9722
+    ],
+    "creative/baoyu-infographic/SKILL.md": [
+      1784492426097346275,
+      10434
+    ],
+    "creative/comfyui/SKILL.md": [
+      1784492426119256148,
+      24287
+    ],
+    "creative/civic-intelligence-pdf/SKILL.md": [
+      1784492426116256128,
+      12399
+    ],
+    "creative/lightweight-image-generation/SKILL.md": [
+      1784528175306135155,
+      4742
+    ],
+    "creative/sketch/SKILL.md": [
+      1784492426195256647,
+      9304
+    ],
+    "creative/claude-design/SKILL.md": [
+      1784492426118256141,
+      25117
+    ],
+    "creative/pretext/SKILL.md": [
+      1784492426180256548,
+      14168
+    ],
+    "creative/touchdesigner-mcp/SKILL.md": [
+      1784492426197256660,
+      15429
+    ],
+    "creative/design-md/SKILL.md": [
+      1784492426128385396,
+      7023
+    ],
+    "creative/humanizer/SKILL.md": [
+      1784492426131256227,
+      30025
+    ],
+    "creative/manim-video/SKILL.md": [
+      1784492426144256312,
+      12023
+    ],
+    "creative/image-text-editing/SKILL.md": [
+      1784492426132256233,
+      6251
+    ],
+    "creative/excalidraw/SKILL.md": [
+      1784492426129256213,
+      7300
+    ],
+    "creative/screen-replica/SKILL.md": [
+      1784492426193256634,
+      3492
+    ],
+    "creative/ascii-art/SKILL.md": [
+      1784492426090255957,
+      10556
+    ],
+    "creative/token-plan-image/SKILL.md": [
+      1784528153998994162,
+      4799
+    ],
+    "creative/human-voice-writing/SKILL.md": [
+      1784492426130256220,
+      7040
+    ],
+    "creative/p5js/SKILL.md": [
+      1784492426149256345,
+      27494
+    ],
+    "creative/ascii-video/SKILL.md": [
+      1784492426091255964,
+      14864
+    ],
+    "creative/visual-format-replication/SKILL.md": [
+      1784492426207256725,
+      4543
+    ],
+    "creative/scientific-pdf-generation/SKILL.md": [
+      1784820125279003561,
+      45942
+    ],
+    "agent-role-mode-flagging/SKILL.md": [
+      1784492426047255675,
+      12567
+    ],
+    "receipt-inventory-tracking/SKILL.md": [
+      1784526433397031161,
+      3554
+    ],
+    "data-science/DESCRIPTION.md": [
+      1784492426207256725,
+      137
+    ],
+    "meta-cognitive-blindspot-audit/SKILL.md": [
+      1784492426331543412,
+      13584
+    ],
+    "research/DESCRIPTION.md": [
+      1784492426342257612,
+      179
+    ],
+    "research/institutional-forensic-analysis/SKILL.md": [
+      1784787864921494460,
+      12364
+    ],
+    "research/medical-document-interpretation/SKILL.md": [
+      1784795020085312630,
+      9039
+    ],
+    "research/human-intelligence-gathering/SKILL.md": [
+      1784809928552905766,
+      10333
+    ],
+    "research/person-intelligence-dossier/SKILL.md": [
+      1784492426387257908,
+      10485
+    ],
+    "research/polymarket/SKILL.md": [
+      1784492426389257921,
+      2985
+    ],
+    "research/trading-analysis-xauusd/SKILL.md": [
+      1784631376130887151,
+      9040
+    ],
+    "research/witness-companion-briefing/SKILL.md": [
+      1784492426430258190,
+      6698
+    ],
+    "research/vendor-partner-intelligence/SKILL.md": [
+      1784492426429258183,
+      6192
+    ],
+    "research/petronas-petros-shell-dispute/SKILL.md": [
+      1784492426389257921,
+      7430
+    ],
+    "research/deep-research/SKILL.md": [
+      1784685010737900646,
+      54197
+    ],
+    "research/news-research-briefing/SKILL.md": [
+      1784732920658946565,
+      19082
+    ],
+    "research/code-analysis-skills/SKILL.md": [
+      1784492426346257638,
+      14455
+    ],
+    "research/professional-intelligence-briefing/SKILL.md": [
+      1784492426390257927,
+      27430
+    ],
+    "research/ai-model-intelligence-briefing/SKILL.md": [
+      1784700314693723580,
+      3094
+    ],
+    "research/institutional-case-building/SKILL.md": [
+      1784492426377257842,
+      18916
+    ],
+    "research/llm-wiki/SKILL.md": [
+      1784492426383257881,
+      20129
+    ],
+    "research/person-dossier-from-public-sources/SKILL.md": [
+      1784492426386257901,
+      5421
+    ],
+    "research/human-sexuality-shadow-framework/SKILL.md": [
+      1784492426373257816,
+      16110
+    ],
+    "research/legal-case-dossier-from-news/SKILL.md": [
+      1784492426381257868,
+      17835
+    ],
+    "research/whatsapp-group-intelligence/SKILL.md": [
+      1784492426430258190,
+      4469
+    ],
+    "research/blogwatcher/SKILL.md": [
+      1784492426344257625,
+      5111
+    ],
+    "research/text-forensics/SKILL.md": [
+      1784492426425258157,
+      9733
+    ],
+    "research/arxiv/SKILL.md": [
+      1784492426343257619,
+      10085
+    ],
+    "research/research-paper-writing/SKILL.md": [
+      1784492426395257960,
+      103674
+    ],
+    "research/summarize-pro/SKILL.md": [
+      1784492426424258151,
+      17743
+    ],
+    "research/scientific-manuscript-forge/SKILL.md": [
+      1784492426421258131,
+      18290
+    ],
+    "research/executive-intelligence-briefing/SKILL.md": [
+      1784492426369257789,
+      13330
+    ],
+    "research/arif-daily-sensorium/SKILL.md": [
+      1784492426343257619,
+      8675
+    ],
+    "consult-external-llm/SKILL.md": [
+      1784492426088255944,
+      4554
+    ],
+    "external-artifact-verdict/SKILL.md": [
+      1784492426272257152,
+      18645
+    ],
+    "governance/akal-cognitive-invariants/SKILL.md": [
+      1784492426282257218,
+      11967
+    ],
+    "governance/temporal-consequence-engine/SKILL.md": [
+      1784492426313257422,
+      11999
+    ],
+    "governance/explore-before-collapse/SKILL.md": [
+      1784492426292257284,
+      18005
+    ],
+    "governance/agentic-integrity-observability/SKILL.md": [
+      1784492426279257198,
+      13651
+    ],
+    "governance/apex-verification-pipeline/SKILL.md": [
+      1784492426287257251,
+      3259
+    ],
+    "governance/ai-cognitive-amplification-diagnosis/SKILL.md": [
+      1784627376069075591,
+      5116
+    ],
+    "governance/evidence-before-elegance/SKILL.md": [
+      1784492426288257257,
+      34487
+    ],
+    "governance/human-sovereignty-geometry/SKILL.md": [
+      1784492426304257363,
+      12279
+    ],
+    "governance/forge-visual-qa-constitutional/SKILL.md": [
+      1784492426296257310,
+      26163
+    ],
+    "governance/geox-comparative-testing/SKILL.md": [
+      1784492426298257323,
+      5416
+    ],
+    "governance/somatic-intelligence/SKILL.md": [
+      1784492426308257389,
+      13269
+    ],
+    "governance/institutional-body-language/SKILL.md": [
+      1784492426305257369,
+      18518
+    ],
+    "governance/knowledge-atlas-authoring/SKILL.md": [
+      1784492426307257382,
+      13467
+    ],
+    "governance/sovereign-conversation-protocol/SKILL.md": [
+      1784492426309463878,
+      12484
+    ],
+    "governance/negative-space-geometry/SKILL.md": [
+      1784684959521281956,
+      10100
+    ],
+    "governance/j-collapse-detection/SKILL.md": [
+      1784492426306264425,
+      11908
+    ],
+    "governance/human-envelope-architecture/SKILL.md": [
+      1784492426303257356,
+      8688
+    ],
+    "governance/apa-sovereign-connector/SKILL.md": [
+      1784492426285257238,
+      5640
+    ],
+    "governance/akal-civilizational-frame/SKILL.md": [
+      1784492426280261115,
+      9472
+    ],
+    "governance/sovereign-sexuality-conversations/SKILL.md": [
+      1784492426312257415,
+      16905
+    ],
+    "governance/governance-friction-rightsizing/SKILL.md": [
+      1784492426299257330,
+      12330
+    ],
+    "governance/atlas333-cognitive-geometry/SKILL.md": [
+      1784500170117107080,
+      10080
+    ],
+    "governance/institutional-intelligence/SKILL.md": [
+      1784627435368845247,
+      13568
+    ],
+    "governance/governance-feedback-loops/SKILL.md": [
+      1784615867502278650,
+      6352
+    ],
+    "governance/federation-tri-team-audit/SKILL.md": [
+      1784492426631259510,
+      19012
+    ],
+    "governance/governed-execution-prompt/SKILL.md": [
+      1784492426302257349,
+      5225
+    ],
+    "governance/external-wisdom-integration/SKILL.md": [
+      1784492426293257290,
+      23431
+    ],
+    "governance/temporal-constitution/SKILL.md": [
+      1784492426315257435,
+      5155
+    ],
+    "governance/governed-agent-anatomy/SKILL.md": [
+      1784602616962676066,
+      22550
+    ],
+    "governance/agent-init-architecture/SKILL.md": [
+      1784492426278257192,
+      9704
+    ],
+    "smart-home/DESCRIPTION.md": [
+      1784492426437258236,
+      123
+    ],
+    "weekly-federation-deep-brief/SKILL.md": [
+      1784492426491258590,
+      12807
+    ],
+    "meta-mesa-substrate-test/SKILL.md": [
+      1784492426332257546,
+      9189
+    ],
+    "uncertainty-routing-protocol/SKILL.md": [
+      1784492426490258584,
+      4341
+    ],
+    "android-observer-node/SKILL.md": [
+      1784828690931827644,
+      15572
+    ],
+    "submission-readiness-audit/SKILL.md": [
+      1784492426461258393,
+      21689
+    ],
+    "autonomous-ai-agents/DESCRIPTION.md": [
+      1784492426085255924,
+      211
+    ],
+    "arif-daily-sensorium/SKILL.md": [
+      1784492426048255681,
+      8307
+    ],
+    "apple/DESCRIPTION.md": [
+      1784492426048255681,
+      137
+    ]
+  },
+  "skills": [
+    {
+      "skill_name": "apple-notes",
+      "category": ".archive-2026-07-08",
+      "frontmatter_name": "apple-notes",
+      "description": "",
+      "platforms": [
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "apple-reminders",
+      "category": ".archive-2026-07-08",
+      "frontmatter_name": "apple-reminders",
+      "description": "",
+      "platforms": [
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "findmy",
+      "category": ".archive-2026-07-08",
+      "frontmatter_name": "findmy",
+      "description": "",
+      "platforms": [
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "imessage",
+      "category": ".archive-2026-07-08",
+      "frontmatter_name": "imessage",
+      "description": "",
+      "platforms": [
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agent-context-brief",
+      "category": ".archive-2026-07-09/autonomous-ai-agents",
+      "frontmatter_name": "agent-context-brief",
+      "description": "Context brief pattern for delegating structural/non-code ...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "claude-code",
+      "category": ".archive-2026-07-09/autonomous-ai-agents",
+      "frontmatter_name": "claude-code",
+      "description": "Delegate coding to Claude Code CLI (features, PRs).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "codex",
+      "category": ".archive-2026-07-09/autonomous-ai-agents",
+      "frontmatter_name": "codex",
+      "description": "Delegate coding to OpenAI Codex CLI (features, PRs).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-agent",
+      "category": ".archive-2026-07-09/autonomous-ai-agents",
+      "frontmatter_name": "hermes-agent",
+      "description": "Configure, extend, or contribute to Hermes Agent.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "opencode-acp",
+      "category": ".archive-2026-07-09/autonomous-ai-agents",
+      "frontmatter_name": "opencode-acp",
+      "description": "Manage OpenCode ACP sessions from Hermes — spawn, delegat...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "opencode",
+      "category": ".archive-2026-07-09/autonomous-ai-agents",
+      "frontmatter_name": "opencode",
+      "description": "Delegate coding to OpenCode CLI (features, PR review).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "computer-use",
+      "category": ".archive-2026-07-09",
+      "frontmatter_name": "computer-use",
+      "description": "Drive the user's desktop in the background — clicking, ty...",
+      "platforms": [
+        "macos",
+        "windows",
+        "linux"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "jupyter-live-kernel",
+      "category": ".archive-2026-07-09/data-science",
+      "frontmatter_name": "jupyter-live-kernel",
+      "description": "Iterative Python via live Jupyter kernel (hamelnb).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "active-maintenance",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "active-maintenance",
+      "description": "",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agent-memory-bridge",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "agent-memory-bridge",
+      "description": "Bridge OpenClaw session logs to arifOS L4 (Postgres), L5 ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arif-mcp-governor",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "arif-mcp-governor",
+      "description": "Governed MCP routing via arifOS F1-F13. Direct HTTP to or...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-kernel-surface-curator",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "arifos-kernel-surface-curator",
+      "description": "Audit, freeze, and trim the arifOS MCP public wire surfac...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "daily-federation-briefing",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "daily-federation-briefing",
+      "description": "Daily 7:30am MYT federation briefing — health, VAULT999 g...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "explorer-dispatch-protocol",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "explorer-dispatch-protocol",
+      "description": "Explorer Dispatch Protocol — routing layer that binds OBS...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-config-reconciliation",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "federation-config-reconciliation",
+      "description": "Reconcile split-brain truth sources in a multi-organ fede...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-doctrine-propagation",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "federation-doctrine-propagation",
+      "description": "Propagate a new doctrine (zen, constitutional, philosophi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-organ-audit",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "federation-organ-audit",
+      "description": "Audit, contrast, and upgrade all 6 arifOS federation orga...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-organ-liveness-probe",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "federation-organ-liveness-probe",
+      "description": "Verify whether a named arifOS federation organ (OpenClaw,...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-self-hosted-services",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "federation-self-hosted-services",
+      "description": "Deploy, configure, and maintain self-hosted Docker-based ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geological-artifact-publication",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "geological-artifact-publication",
+      "description": "Produce publication-quality geological artifacts — to-sca...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geox-federation-mcp-driver",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "geox-federation-mcp-driver",
+      "description": "Drive live MCP tool calls across the arifOS federation (G...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-prime-identity",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "hermes-prime-identity",
+      "description": "Operate as Hermes-Prime under Arif's sovereign alignment....",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-provider-setup",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "hermes-provider-setup",
+      "description": "Add, fix, or migrate custom/third-party LLM providers in ...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-runtime-restoration",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "hermes-runtime-restoration",
+      "description": "Restore Hermes gateway / OpenClaw / cron services after t...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "infra-guardian",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "infra-guardian",
+      "description": "Validate Caddy reverse proxy configs, Cloudflare Origin C...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "mcp-server-building",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "mcp-server-building",
+      "description": "Build custom MCP servers with FastMCP + Python. Covers to...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "mcp-tool-upgrade-lifecycle",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "mcp-tool-upgrade-lifecycle",
+      "description": "Protocol-correct lifecycle for upgrading MCP tools — addi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "model-fallback-monitor",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "model-fallback-monitor",
+      "description": "Monitor the model fallback chain: MiniMax (primary), Deep...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "openclaw-channel-config",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "openclaw-channel-config",
+      "description": "Configure OpenClaw channels (Telegram, Discord, etc.) — c...",
+      "platforms": [
+        "linux"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "skills-library-dimensional-audit",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "skills-library-dimensional-audit",
+      "description": "Audit and reorganize the Hermes skill library using ortho...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "subagent-spawn-template",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "subagent-spawn-template",
+      "description": "Standard contract for spawning bounded, auditable sub-age...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "telegram-forum-management",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "telegram-forum-management",
+      "description": "Manage Telegram forum/supergroup topics via Bot API — cre...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "telegram-group-relay",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "telegram-group-relay",
+      "description": "Relay Telegram group conversations when the user can't ac...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "telegram-security-audit",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "telegram-security-audit",
+      "description": "Automated TREE777 security checks for Telegram bot tokens...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vault999-reader",
+      "category": ".archive-2026-07-09/devops",
+      "frontmatter_name": "vault999-reader",
+      "description": "Bridge to arifOS VAULT999 append-only ledger. READS seal ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "dogfood",
+      "category": ".archive-2026-07-09",
+      "frontmatter_name": "dogfood",
+      "description": "Exploratory QA of web apps: find bugs, evidence, reports.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "codebase-inspection",
+      "category": ".archive-2026-07-09/github",
+      "frontmatter_name": "codebase-inspection",
+      "description": "Inspect codebases w/ pygount: LOC, languages, ratios.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "github-auth",
+      "category": ".archive-2026-07-09/github",
+      "frontmatter_name": "github-auth",
+      "description": "GitHub auth setup: HTTPS tokens, SSH keys, gh CLI login.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "github-code-review",
+      "category": ".archive-2026-07-09/github",
+      "frontmatter_name": "github-code-review",
+      "description": "Review PRs: diffs, inline comments via gh or REST.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "github-issues",
+      "category": ".archive-2026-07-09/github",
+      "frontmatter_name": "github-issues",
+      "description": "Create, triage, label, assign GitHub issues via gh or REST.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "github-pr-workflow",
+      "category": ".archive-2026-07-09/github",
+      "frontmatter_name": "github-pr-workflow",
+      "description": "GitHub PR lifecycle: branch, commit, open, CI, merge.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "github-repo-management",
+      "category": ".archive-2026-07-09/github",
+      "frontmatter_name": "github-repo-management",
+      "description": "Clone/create/fork repos; manage remotes, releases.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "minimax-cli",
+      "category": ".archive-2026-07-09",
+      "frontmatter_name": "minimax-cli",
+      "description": "MiniMax multimodal via mmx-cli — TTS, video, music, image...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "lm-evaluation-harness",
+      "category": ".archive-2026-07-09/mlops/evaluation",
+      "frontmatter_name": "evaluating-llms-harness",
+      "description": "lm-eval-harness: benchmark LLMs (MMLU, GSM8K, etc.).",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "weights-and-biases",
+      "category": ".archive-2026-07-09/mlops/evaluation",
+      "frontmatter_name": "weights-and-biases",
+      "description": "W&B: log ML experiments, sweeps, model registry, dashboards.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "huggingface-hub",
+      "category": ".archive-2026-07-09/mlops",
+      "frontmatter_name": "huggingface-hub",
+      "description": "HuggingFace hf CLI: search/download/upload models, datasets.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "llama-cpp",
+      "category": ".archive-2026-07-09/mlops/inference",
+      "frontmatter_name": "llama-cpp",
+      "description": "llama.cpp local GGUF inference + HF Hub model discovery.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vllm",
+      "category": ".archive-2026-07-09/mlops/inference",
+      "frontmatter_name": "serving-llms-vllm",
+      "description": "vLLM: high-throughput LLM serving, OpenAI API, quantization.",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "audiocraft",
+      "category": ".archive-2026-07-09/mlops/models",
+      "frontmatter_name": "audiocraft-audio-generation",
+      "description": "AudioCraft: MusicGen text-to-music, AudioGen text-to-sound.",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "segment-anything",
+      "category": ".archive-2026-07-09/mlops/models",
+      "frontmatter_name": "segment-anything-model",
+      "description": "SAM: zero-shot image segmentation via points, boxes, masks.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "openhue",
+      "category": ".archive-2026-07-09/smart-home",
+      "frontmatter_name": "openhue",
+      "description": "Control Philips Hue lights, scenes, rooms via OpenHue CLI.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "apex-governance",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "apex-governance",
+      "description": "APEX THEORY governance — seven organs, multiplicative int...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "asi-readiness-audit-contract",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "asi-readiness-audit-contract",
+      "description": "Author and run the ASI-readiness audit contract for the a...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [
+          "terminal",
+          "file"
+        ],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "claim-validation-protocol",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "claim-validation-protocol",
+      "description": "Audit external AI claims against live system state. Metho...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "constitutional-auditor",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "constitutional-auditor",
+      "description": "Audit OpenClaw workspace for F1-F13 constitutional floor ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "forge-before-build",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "forge-before-build",
+      "description": "Test whether a proposed improvement actually beats the ex...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geoscience-artifact-rigor",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "geoscience-artifact-rigor",
+      "description": "Hard rules for geological/technical artifact quality. Epi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geoscience-verification-protocol",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "geoscience-verification-protocol",
+      "description": "Mandatory verification protocol for geoscience deliverabl...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governance-eval-benchmark",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "governance-eval-benchmark",
+      "description": "Evaluate how models behave under constitutional governanc...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-agent-skill-authoring",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "hermes-agent-skill-authoring",
+      "description": "Author in-repo SKILL.md: frontmatter, validator, structur...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-prime-federation-map",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "hermes-prime-federation-map",
+      "description": "Map of the arifOS federation — organs, ports, roles, MCP ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-prime-reflex-v2",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "hermes-prime-reflex-v2",
+      "description": "Hermes-Prime reflex protocol — the pre-action checklist t...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "measure-before-acting",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "measure-before-acting",
+      "description": "Probe live state BEFORE proposing fixes, additions, or ch...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "node-inspect-debugger",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "node-inspect-debugger",
+      "description": "Debug Node.js via --inspect + Chrome DevTools Protocol CLI.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "non-mutating-review-harness",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "non-mutating-review-harness",
+      "description": "Build governance harnesses for self-modifying agentic sys...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "openclaw-skill-vetter",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "skill-vetter",
+      "description": "Security vetting protocol before installing any AI agent ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "plan",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "plan",
+      "description": "Plan mode: write an actionable markdown plan to .hermes/p...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "python-debugpy",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "python-debugpy",
+      "description": "Debug Python: pdb REPL + debugpy remote (DAP).",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "requesting-code-review",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "requesting-code-review",
+      "description": "Pre-commit review: security scan, quality gates, auto-fix.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "shadow-alignment-test",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "shadow-alignment-test",
+      "description": "Validate agent alignment using the Agent A vs B protocol....",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "simplify-code",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "simplify-code",
+      "description": "Parallel 3-agent cleanup of recent code changes.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "skill-consolidation",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "skill-consolidation",
+      "description": "Use when consolidating multiple narrow skill fragments in...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "spike",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "spike",
+      "description": "Throwaway experiments to validate an idea before build.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "systematic-debugging",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "systematic-debugging",
+      "description": "4-phase root cause debugging: understand bugs before fixing.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "test-driven-development",
+      "category": ".archive-2026-07-09/software-development",
+      "frontmatter_name": "test-driven-development",
+      "description": "TDD: enforce RED-GREEN-REFACTOR, tests before code.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "yuanbao",
+      "category": ".archive-2026-07-09",
+      "frontmatter_name": "yuanbao",
+      "description": "Yuanbao (元宝) groups: @mention users, query info/members.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agent-role-mode-flagging",
+      "category": "agent-role-mode-flagging",
+      "frontmatter_name": "agent-role-mode-flagging",
+      "description": "Operate the AAA governance stack as a tagged multi-role a...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "android-observer-node",
+      "category": "android-observer-node",
+      "frontmatter_name": "android-observer-node",
+      "description": "Onboard an Android device as a stateless Sovereign Sensin...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arif-daily-sensorium",
+      "category": "arif-daily-sensorium",
+      "frontmatter_name": "arif-daily-sensorium",
+      "description": "Produce a current, evidence-disciplined daily world and M...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-auto-init",
+      "category": "arifos-auto-init",
+      "frontmatter_name": "arifos-auto-init",
+      "description": "Auto-bind arifOS sessions with Ed25519 challenge-response...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-external-council",
+      "category": "arifos-external-council",
+      "frontmatter_name": "arifos-external-council",
+      "description": "External constitutional audit, co-architecture, and bound...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-kernel-zen-audit",
+      "category": "arifos-kernel-zen-audit",
+      "frontmatter_name": "arifos-kernel-zen-audit",
+      "description": "Pattern for auditing the arifOS kernel when multiple MCP ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-organ-forging",
+      "category": "arifos",
+      "frontmatter_name": "arifos-organ-forging",
+      "description": "Forge new constitutional organs in arifOS — vector indexi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-runtime-module-authoring",
+      "category": "arifos",
+      "frontmatter_name": "arifos-runtime-module-authoring",
+      "description": "Create new arifOS runtime modules (audit, fatigue, scorin...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "audit-parallel-forge-history",
+      "category": "audit-parallel-forge-history",
+      "frontmatter_name": "audit-parallel-forge-history",
+      "description": "Audit repositories with parallel-forge history — multiple...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "nasi-lemak-daily-tracking",
+      "category": "business",
+      "frontmatter_name": "nasi-lemak-daily-tracking",
+      "description": "Parse and track daily nasi lemak orders & vendor claims —...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "nasi-lemak-sales-tracking",
+      "category": "business",
+      "frontmatter_name": "nasi-lemak-sales-tracking",
+      "description": "Track nasi lemak sales across locations/days — process re...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "nasi-lemak-sales",
+      "category": "business",
+      "frontmatter_name": "nasi-lemak-sales",
+      "description": "Track nasi lemak daily orders, vendor claims, sales, and ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "cognitive-commands",
+      "category": "cognitive-commands",
+      "frontmatter_name": "cognitive-commands",
+      "description": "Hermes cognitive slash commands — /NNN_word format. Human...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "cognitive-level-assertion-protocol",
+      "category": "cognitive-level-assertion-protocol",
+      "frontmatter_name": "akal-cognitive-invariants",
+      "description": "SUPERSEDED by governance/akal-cognitive-invariants. CLAP ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "consult-external-llm",
+      "category": "consult-external-llm",
+      "frontmatter_name": "consult-external-llm",
+      "description": "External LLM consultation via existing vault keys (DeepSe...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "architecture-diagram",
+      "category": "creative",
+      "frontmatter_name": "architecture-diagram",
+      "description": "Dark-themed SVG architecture/cloud/infra diagrams as HTML.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ascii-art",
+      "category": "creative",
+      "frontmatter_name": "ascii-art",
+      "description": "ASCII art: pyfiglet, cowsay, boxes, image-to-ascii.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ascii-video",
+      "category": "creative",
+      "frontmatter_name": "ascii-video",
+      "description": "ASCII video: convert video/audio to colored ASCII MP4/GIF.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "baoyu-infographic",
+      "category": "creative",
+      "frontmatter_name": "baoyu-infographic",
+      "description": "Infographics: 21 layouts x 21 styles (信息图, 可视化).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "civic-intelligence-pdf",
+      "category": "creative",
+      "frontmatter_name": "civic-intelligence-pdf",
+      "description": "Generate colour-coded civic intelligence briefing PDFs. T...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "claude-design",
+      "category": "creative",
+      "frontmatter_name": "claude-design",
+      "description": "Design one-off HTML artifacts (landing, deck, prototype).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "comfyui",
+      "category": "creative",
+      "frontmatter_name": "comfyui",
+      "description": "Generate images, video, and audio with ComfyUI — install,...",
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "dark-explanatory-diagrams",
+      "category": "creative",
+      "frontmatter_name": "dark-explanatory-diagrams",
+      "description": "Dark-themed HTML+SVG visual guides for non-tech subjects ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "design-md",
+      "category": "creative",
+      "frontmatter_name": "design-md",
+      "description": "Author/validate/export Google's DESIGN.md token spec files.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "excalidraw",
+      "category": "creative",
+      "frontmatter_name": "excalidraw",
+      "description": "Hand-drawn Excalidraw JSON diagrams (arch, flow, seq).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "human-voice-writing",
+      "category": "creative",
+      "frontmatter_name": "human-voice-writing",
+      "description": "Write and rewrite personal READMEs, profile pages, and hu...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "humanizer",
+      "category": "creative",
+      "frontmatter_name": "humanizer",
+      "description": "Humanize text: strip AI-isms and add real voice.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "image-annotation-labeling",
+      "category": "creative",
+      "frontmatter_name": "image-annotation-labeling",
+      "description": "Add numbered labels to images with explanations. For comp...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "image-text-editing",
+      "category": "creative",
+      "frontmatter_name": "image-text-editing",
+      "description": "Edit existing images to add, replace, or remove text usin...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "lightweight-image-generation",
+      "category": "creative",
+      "frontmatter_name": "lightweight-image-generation",
+      "description": "Generate images without heavy local installs — free APIs ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "makcikgpt-article-forging",
+      "category": "creative",
+      "frontmatter_name": "makcikgpt-article-forging",
+      "description": "Forge MakcikGPT articles for arif-fazil.com — research-dr...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "manim-video",
+      "category": "creative",
+      "frontmatter_name": "manim-video",
+      "description": "Manim CE animations: 3Blue1Brown math/algo videos.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "minimax-cli",
+      "category": "creative",
+      "frontmatter_name": "minimax-cli",
+      "description": "MiniMax multimodal via mmx-cli — TTS, video, music, image...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "p5js",
+      "category": "creative",
+      "frontmatter_name": "p5js",
+      "description": "p5.js sketches: gen art, shaders, interactive, 3D.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "popular-web-designs",
+      "category": "creative",
+      "frontmatter_name": "popular-web-designs",
+      "description": "54 real design systems (Stripe, Linear, Vercel) as HTML/CSS.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "pretext",
+      "category": "creative",
+      "frontmatter_name": "pretext",
+      "description": "Use when building creative browser demos with @chenglou/p...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "scientific-pdf-generation",
+      "category": "creative",
+      "frontmatter_name": "scientific-pdf-generation",
+      "description": "Generate publication-quality PDFs with reportlab + matplo...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "screen-replica",
+      "category": "creative",
+      "frontmatter_name": "screen-replica",
+      "description": "Replicate a specific app screen or UI format as a visual ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "screenshot-editing",
+      "category": "creative",
+      "frontmatter_name": "screenshot-editing",
+      "description": "Edit existing screenshots/images to add, remove, or modif...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "sketch",
+      "category": "creative",
+      "frontmatter_name": "sketch",
+      "description": "Throwaway HTML mockups: 2-3 design variants to compare.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "songwriting-and-ai-music",
+      "category": "creative",
+      "frontmatter_name": "songwriting-and-ai-music",
+      "description": "Songwriting craft and Suno AI music prompts.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "token-plan-image",
+      "category": "creative",
+      "frontmatter_name": "token-plan-image",
+      "description": "Call the Qwen Token Plan text-to-image / image-edit model...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "touchdesigner-mcp",
+      "category": "creative",
+      "frontmatter_name": "touchdesigner-mcp",
+      "description": "Control a running TouchDesigner instance via twozero MCP ...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "visual-format-replication",
+      "category": "creative",
+      "frontmatter_name": "visual-format-replication",
+      "description": "Pixel-perfect visual replicas from screenshots — match ex...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "a-forge-development",
+      "category": "devops",
+      "frontmatter_name": "a-forge-development",
+      "description": "Governed A-FORGE development: reading directives, modifyi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "a2a-agent-card-registration",
+      "category": "devops",
+      "frontmatter_name": "a2a-agent-card-registration",
+      "description": "A2A protocol management for the AAA federation mesh — reg...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agent-email-transport",
+      "category": "devops",
+      "frontmatter_name": "agent-email-transport",
+      "description": "Send email from AI agents on a VPS — Brevo SMTP relay, un...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agentic-infrastructure-ops",
+      "category": "devops",
+      "frontmatter_name": "agentic-infrastructure-ops",
+      "description": "Self-healing VPS infrastructure, multi-VPS federation, He...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agentic-vps-operations",
+      "category": "devops",
+      "frontmatter_name": "agentic-vps-operations",
+      "description": "Autonomous VPS monitoring and self-healing — Tier 1 Activ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arif-sites-content-ops",
+      "category": "devops",
+      "frontmatter_name": "arif-sites-content-ops",
+      "description": "Edit, build, and deploy content on arif-fazil.com (React ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-constitutional-floor-modification",
+      "category": "devops",
+      "frontmatter_name": "arifos-constitutional-floor-modification",
+      "description": "Modify arifOS constitutional floors (F1-F13) across AGENT...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-ed25519-sovereign-signing",
+      "category": "devops",
+      "frontmatter_name": "arifos-ed25519-sovereign-signing",
+      "description": "Ed25519 sovereign identity signing for arifOS kernel. Cor...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-interceptor-patching",
+      "category": "devops",
+      "frontmatter_name": "arifos-interceptor-patching",
+      "description": "Diagnose and fix arifOS kernel authority/session bugs — i...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "autonomous-vps-response",
+      "category": "devops",
+      "frontmatter_name": "autonomous-vps-response",
+      "description": "Tier 1 Active Response pattern — autonomous VPS health mo...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "caddy-reverse-proxy",
+      "category": "devops",
+      "frontmatter_name": "caddy-reverse-proxy",
+      "description": "Add, modify, and test Caddy reverse proxy routes on the a...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "corporate-legal-scrub",
+      "category": "devops",
+      "frontmatter_name": "corporate-legal-scrub",
+      "description": "Remove corporate entity references from git repos to avoi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "deployment-claim-verification",
+      "category": "devops",
+      "frontmatter_name": "deployment-claim-verification",
+      "description": "Verify deployment reports and feature claims against live...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "external-mcp-integration",
+      "category": "devops",
+      "frontmatter_name": "external-mcp-integration",
+      "description": "Evaluate, install, wire, and verify third-party MCP serve...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-checkup",
+      "category": "devops",
+      "frontmatter_name": "federation-checkup",
+      "description": "Standard checkup protocol for the arifOS federation — dua...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-git-zen",
+      "category": "devops",
+      "frontmatter_name": "federation-git-zen",
+      "description": "Multi-repo git hygiene pipeline for the arifOS federation...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-identity-propagation-forensics",
+      "category": "devops",
+      "frontmatter_name": "federation-identity-propagation-forensics",
+      "description": "Diagnose and trace identity propagation failures across a...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-mesh-networking",
+      "category": "devops",
+      "frontmatter_name": "federation-mesh-networking",
+      "description": "Mesh networking for the arifOS federation — Tailscale, He...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-node-onboarding",
+      "category": "devops",
+      "frontmatter_name": "federation-node-onboarding",
+      "description": "Onboard a new VPS/node to the arifOS federation mesh. SSH...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-subsystem-bringup",
+      "category": "devops",
+      "frontmatter_name": "federation-subsystem-bringup",
+      "description": "Activate dormant but complete subsystems in the arifOS fe...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "filesystem-entropy-audit",
+      "category": "devops",
+      "frontmatter_name": "filesystem-entropy-audit",
+      "description": "Audit a directory tree for stale, duplicate, and bloated ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "flame-free-loop-mesh",
+      "category": "devops",
+      "frontmatter_name": "flame-free-loop-mesh",
+      "description": "Operate FLAME — the RM0 Free-Loop AI Model Engine. Hit-ra...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "flame-free-loop",
+      "category": "devops",
+      "frontmatter_name": "flame-free-loop",
+      "description": "FLAME free-loop inference mesh for system workers and too...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "fork-drift-assessment",
+      "category": "devops",
+      "frontmatter_name": "fork-drift-assessment",
+      "description": "Compare a local fork or install against upstream origin —...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "fork-sync-and-contrast",
+      "category": "devops",
+      "frontmatter_name": "fork-sync-and-contrast",
+      "description": "Sync a personal fork with upstream, rebase local commits,...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-cron-rhythm",
+      "category": "devops",
+      "frontmatter_name": "hermes-cron-rhythm",
+      "description": "Design, build, and maintain Hermes Agent cron jobs as a g...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-log-forensics",
+      "category": "devops",
+      "frontmatter_name": "hermes-log-forensics",
+      "description": "When session_search misses messages or sessions, raw gate...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-telegram-group-setup",
+      "category": "devops",
+      "frontmatter_name": "hermes-telegram-group-setup",
+      "description": "Add new Telegram groups and users to Hermes Agent config ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "kimi-code-model-management",
+      "category": "devops",
+      "frontmatter_name": "kimi-code-model-management",
+      "description": "Switch kimi-code CLI models — add new model definitions, ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "llm-api-adapter",
+      "category": "devops",
+      "frontmatter_name": "llm-api-adapter",
+      "description": "Build thin translation proxies between incompatible LLM A...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "mcp-conformance-audit",
+      "category": "devops",
+      "frontmatter_name": "mcp-conformance-audit",
+      "description": "Full MCP server conformance audit — Streamable HTTP lifec...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "mcp-naming-contract",
+      "category": "devops",
+      "frontmatter_name": "mcp-naming-contract",
+      "description": "Apply the MCP Tools/Prompts/Resources naming contract whe...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "mcp-server-registry-listing",
+      "category": "devops",
+      "frontmatter_name": "mcp-server-registry-listing",
+      "description": "List an MCP server on public registries — Glama, awesome-...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "runtime-truth-attestation",
+      "category": "devops",
+      "frontmatter_name": "runtime-truth-attestation",
+      "description": "Ensure deployed code matches source — detect runtime drif...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "site-deployment-verification",
+      "category": "devops",
+      "frontmatter_name": "site-deployment-verification",
+      "description": "Verify a deployed website against a claimed feature/route...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "skill-audit-methodology",
+      "category": "devops",
+      "frontmatter_name": "skill-audit-methodology",
+      "description": "Audit skill libraries for redundancy, quality, naming ali...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "sovereign-search",
+      "category": "devops",
+      "frontmatter_name": "sovereign-search",
+      "description": "Self-host web search for Hermes Agent — SearXNG deploymen...",
+      "platforms": [
+        "linux"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ssh-client-setup",
+      "category": "devops",
+      "frontmatter_name": "ssh-client-setup",
+      "description": "SSH client key generation and troubleshooting across devi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "telegram-userbot-telethon",
+      "category": "devops",
+      "frontmatter_name": "telegram-userbot-telethon",
+      "description": "Set up a Telethon userbot that runs as Arif's actual Tele...",
+      "platforms": [
+        "linux"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "tokenrouter-guide",
+      "category": "devops",
+      "frontmatter_name": "tokenrouter-guide",
+      "description": "How Hermes uses TokenRouter — model selection, auto-routi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vault999-chain-governance",
+      "category": "devops",
+      "frontmatter_name": "vault999-chain-governance",
+      "description": "Manage VAULT999 append-only seal chain integrity — verifi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vps-agentic-ops",
+      "category": "devops",
+      "frontmatter_name": "vps-agentic-ops",
+      "description": "Autonomous VPS operations — smoketest, state machine, cir...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vps-autonomous-ops",
+      "category": "devops",
+      "frontmatter_name": "vps-autonomous-ops",
+      "description": "Build and operate autonomous VPS control loops — smoketes...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vps-autonomous-response",
+      "category": "devops",
+      "frontmatter_name": "vps-autonomous-response",
+      "description": "Build autonomous VPS monitoring and response layers — smo...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vps-machine-health",
+      "category": "devops",
+      "frontmatter_name": "vps-machine-health",
+      "description": "Full VPS machine health optimization — system resource re...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vps-operations",
+      "category": "devops",
+      "frontmatter_name": "vps-operations",
+      "description": "VPS optimization, cleanup, and health auditing. Diagnose ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "wealth-commodity-dashboard",
+      "category": "devops",
+      "frontmatter_name": "wealth-commodity-dashboard",
+      "description": "Manage the three WEALTH commodity dashboards — Gold, Bren...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "himalaya",
+      "category": "email",
+      "frontmatter_name": "himalaya",
+      "description": "Himalaya CLI: IMAP/SMTP email from terminal.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "external-artifact-verdict",
+      "category": "external-artifact-verdict",
+      "frontmatter_name": "external-artifact-verdict",
+      "description": "Independently verify runnable artifacts (zip/repo/dir) de...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federated-skill-architecture",
+      "category": "federated-skill-architecture",
+      "frontmatter_name": "federated-skill-architecture",
+      "description": "Design, validate, and manage skills across a multi-agent ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-sot-inventory",
+      "category": "federation-sot-inventory",
+      "frontmatter_name": "Federation SOT Inventory",
+      "description": "Run a comprehensive multi-dimensional State-of-Truth inve...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geological-artifact-rigor",
+      "category": "geological-artifact-rigor",
+      "frontmatter_name": "geological-artifact-rigor",
+      "description": "Standing instruction for all geoscience artifacts — panel...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geox-competitive-intelligence",
+      "category": "geology",
+      "frontmatter_name": "geox-competitive-intelligence",
+      "description": "Competitive positioning and benchmark design for GEOX aga...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agent-init-architecture",
+      "category": "governance",
+      "frontmatter_name": "agent-init-architecture",
+      "description": "Design platform-agnostic agent init prompts for multi-age...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agentic-integrity-observability",
+      "category": "governance",
+      "frontmatter_name": "agentic-integrity-observability",
+      "description": "Complete design for Agentic Integrity Observability — a j...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ai-cognitive-amplification-diagnosis",
+      "category": "governance",
+      "frontmatter_name": "ai-cognitive-amplification-diagnosis",
+      "description": "Diagnose whether AI-mediated reasoning has captured an in...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "akal-civilizational-frame",
+      "category": "governance",
+      "frontmatter_name": "akal-civilizational-frame",
+      "description": "AKAL (عقل) civilizational frame — the Malay-Islamic cosmo...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "akal-cognitive-invariants",
+      "category": "governance",
+      "frontmatter_name": "akal-cognitive-invariants",
+      "description": "AKAL (عقل) — Five cognitive kernel invariants + three APE...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "apa-sovereign-connector",
+      "category": "governance",
+      "frontmatter_name": "apa-sovereign-connector",
+      "description": "APA (Autonomous Protocol for Applications) — sovereign Sa...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "apex-verification-pipeline",
+      "category": "governance",
+      "frontmatter_name": "apex-verification-pipeline",
+      "description": "APEX Verification Pipeline — runtime computation of G = A...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "atlas333-cognitive-geometry",
+      "category": "governance",
+      "frontmatter_name": "atlas333-cognitive-geometry",
+      "description": "ATLAS333 — 33 human paradoxes, 7 zones, cognitive geometr...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "evidence-before-elegance",
+      "category": "governance",
+      "frontmatter_name": "evidence-before-elegance",
+      "description": "Nine-gate framework to prevent compelling narratives from...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "explore-before-collapse",
+      "category": "governance",
+      "frontmatter_name": "explore-before-collapse",
+      "description": "The Epistemic Navigator — prevent premature conclusion by...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "external-wisdom-integration",
+      "category": "governance",
+      "frontmatter_name": "external-wisdom-integration",
+      "description": "Scan external thinkers (X, Threads, articles, podcasts), ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-tri-team-audit",
+      "category": "governance",
+      "frontmatter_name": "federation-tri-team-audit",
+      "description": "Tri-team external audit framework for the arifOS federati...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "forge-visual-qa-constitutional",
+      "category": "governance",
+      "frontmatter_name": "forge-visual-qa-constitutional",
+      "description": "Constitutional visual QA contract — the governed MCP tool...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "geox-comparative-testing",
+      "category": "governance",
+      "frontmatter_name": "geox-comparative-testing",
+      "description": "Three-agent comparison methodology for proving GEOX gover...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governance-feedback-loops",
+      "category": "governance",
+      "frontmatter_name": "governance-feedback-loops",
+      "description": "Implement ECHO/PaW-style prediction-observation feedback ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governance-friction-rightsizing",
+      "category": "governance",
+      "frontmatter_name": "governance-friction-rightsizing",
+      "description": "Systematically audit and right-size human approval gates ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governed-agent-anatomy",
+      "category": "governance",
+      "frontmatter_name": "governed-agent-anatomy",
+      "description": "Audit or design a governed agent against the 7-primitive ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governed-execution-prompt",
+      "category": "governance",
+      "frontmatter_name": "governed-execution-prompt",
+      "description": "Build execution prompts for coding agents that produce ru...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "human-envelope-architecture",
+      "category": "governance",
+      "frontmatter_name": "human-envelope-architecture",
+      "description": "Build and govern human envelopes — self-sovereign profile...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "human-sovereignty-geometry",
+      "category": "governance",
+      "frontmatter_name": "human-sovereignty-geometry",
+      "description": "How to onboard, mirror, and serve humans in an AGI system...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "institutional-body-language",
+      "category": "governance",
+      "frontmatter_name": "institutional-body-language",
+      "description": "Read institutions through revealed preference under const...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "institutional-intelligence",
+      "category": "governance",
+      "frontmatter_name": "institutional-intelligence",
+      "description": "Analyze institutions for intelligence — structural featur...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "j-collapse-detection",
+      "category": "governance",
+      "frontmatter_name": "j-collapse-detection",
+      "description": "Detect judgment collapse in humans, AGI, and institutions...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "knowledge-atlas-authoring",
+      "category": "governance",
+      "frontmatter_name": "knowledge-atlas-authoring",
+      "description": "Author passive domain knowledge profiles for the arifOS f...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "negative-space-geometry",
+      "category": "governance",
+      "frontmatter_name": "negative-space-geometry",
+      "description": "Detect AI mediation not through surface signals but throu...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "somatic-intelligence",
+      "category": "governance",
+      "frontmatter_name": "somatic-intelligence",
+      "description": "Read bodies, movement, and nervous system states from ima...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "sovereign-conversation-protocol",
+      "category": "governance",
+      "frontmatter_name": "sovereign-conversation-protocol",
+      "description": "How to hold deep, sensitive human conversations without o...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "sovereign-sexuality-conversations",
+      "category": "governance",
+      "frontmatter_name": "sovereign-sexuality-conversations",
+      "description": "How to hold deep, non-clinical conversations about human ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "temporal-consequence-engine",
+      "category": "governance",
+      "frontmatter_name": "temporal-consequence-engine",
+      "description": "Temporal Consequence Engine — implementation spec aligned...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "temporal-constitution",
+      "category": "governance",
+      "frontmatter_name": "temporal-constitution",
+      "description": "Temporal Constitution — Demi Masa. Governing doctrine for...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hermes-naked-prior-audit",
+      "category": "hermes-naked-prior-audit",
+      "frontmatter_name": "hermes-naked-prior-audit",
+      "description": "Session-start self-audit for Hermes — strips stale ghost ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "institutional-epistemic-sink-forensics",
+      "category": "institutional-epistemic-sink-forensics",
+      "frontmatter_name": "institutional-epistemic-sink-forensics",
+      "description": "Diagnose whether a named institution (employer, agency, u...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "malaysian-tenancy-consumer-dispute",
+      "category": "legal",
+      "frontmatter_name": "malaysian-tenancy-consumer-dispute",
+      "description": "Malaysian tenancy, consumer, and small-claims disputes — ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "audio-analysis",
+      "category": "media",
+      "frontmatter_name": "audio-analysis",
+      "description": "Build Python DSP-based audio analysis modules — feature e...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "audio-feature-analysis",
+      "category": "media",
+      "frontmatter_name": "audio-feature-analysis",
+      "description": "Programmatic audio analysis with librosa/numpy/scipy — ch...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "gif-search",
+      "category": "media",
+      "frontmatter_name": "gif-search",
+      "description": "Search/download GIFs from Tenor via curl + jq.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "heartmula",
+      "category": "media",
+      "frontmatter_name": "heartmula",
+      "description": "HeartMuLa: Suno-like song generation from lyrics + tags.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "music-generation",
+      "category": "media",
+      "frontmatter_name": "music-generation",
+      "description": "Full music generation pipeline — concept → lyrics → cultu...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "music-intelligence",
+      "category": "media",
+      "frontmatter_name": "music-intelligence",
+      "description": "Governed music generation + somatic scoring pipeline. Gen...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ocr",
+      "category": "media",
+      "frontmatter_name": "ocr",
+      "description": "Use when extracting text from images or scanned documents...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "social-video-intelligence",
+      "category": "media",
+      "frontmatter_name": "social-video-intelligence",
+      "description": "Multi-platform social video content access and analysis. ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "songsee",
+      "category": "media",
+      "frontmatter_name": "songsee",
+      "description": "Audio spectrograms/features (mel, chroma, MFCC) via CLI.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "tts-edge-fallback",
+      "category": "media",
+      "frontmatter_name": "tts-edge-fallback",
+      "description": "TTS fallback using edge-tts when OpenAI TTS quota is exha...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "youtube-content",
+      "category": "media",
+      "frontmatter_name": "youtube-content",
+      "description": "Full YouTube intelligence — transcript, metadata, keyfram...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "meta-cognitive-blindspot-audit",
+      "category": "meta-cognitive-blindspot-audit",
+      "frontmatter_name": "meta-cognitive-blindspot-audit",
+      "description": "Federated multi-agent blindspot audit for Hermes — system...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "meta-mesa-substrate-test",
+      "category": "meta-mesa-substrate-test",
+      "frontmatter_name": "meta-mesa-substrate-test",
+      "description": "Run the META-MESA agentic substrate test — proves arifOS ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "obsidian",
+      "category": "note-taking",
+      "frontmatter_name": "obsidian",
+      "description": "Read, search, create, and edit notes in the Obsidian vault.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "airtable",
+      "category": "productivity",
+      "frontmatter_name": "airtable",
+      "description": "Airtable REST API via curl. Records CRUD, filters, upserts.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "document-intelligence",
+      "category": "productivity",
+      "frontmatter_name": "document-intelligence",
+      "description": "VLM-first document extraction — read images/PDFs directly...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "google-workspace",
+      "category": "productivity",
+      "frontmatter_name": "google-workspace",
+      "description": "Gmail, Calendar, Drive, Docs, Sheets via gws CLI or Python.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "hospital-patient-advocacy",
+      "category": "productivity",
+      "frontmatter_name": "hospital-patient-advocacy",
+      "description": "Help users navigate Malaysian public hospital systems — i...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "maps",
+      "category": "productivity",
+      "frontmatter_name": "maps",
+      "description": "Geocode, POIs, routes, timezones via OpenStreetMap/OSRM.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [
+          "terminal"
+        ],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "nano-pdf",
+      "category": "productivity",
+      "frontmatter_name": "nano-pdf",
+      "description": "Edit PDF text/typos/titles via nano-pdf CLI (NL prompts).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "notion",
+      "category": "productivity",
+      "frontmatter_name": "notion",
+      "description": "Notion API + ntn CLI: pages, databases, markdown, Workers.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ocr-and-documents",
+      "category": "productivity",
+      "frontmatter_name": "ocr-and-documents",
+      "description": "Extract text from PDFs/scans (pymupdf, marker-pdf).",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "petdex",
+      "category": "productivity",
+      "frontmatter_name": "petdex",
+      "description": "Install and select animated petdex mascots for Hermes.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "powerpoint",
+      "category": "productivity",
+      "frontmatter_name": "powerpoint",
+      "description": "Create, read, edit .pptx decks, slides, notes, templates.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "teams-meeting-pipeline",
+      "category": "productivity",
+      "frontmatter_name": "teams-meeting-pipeline",
+      "description": "Operate the Teams meeting summary pipeline via Hermes CLI...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vendor-receipt-tracking",
+      "category": "productivity",
+      "frontmatter_name": "vendor-receipt-tracking",
+      "description": "Track vendor food orders — hantar, baki, sold, revenue — ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "receipt-inventory-tracking",
+      "category": "receipt-inventory-tracking",
+      "frontmatter_name": "receipt-inventory-tracking",
+      "description": "Track orders, sales, and remaining stock from handwritten...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ai-model-intelligence-briefing",
+      "category": "research",
+      "frontmatter_name": "ai-model-intelligence-briefing",
+      "description": "Brief Arif on new AI model releases (Google Gemini, OpenA...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arif-daily-sensorium",
+      "category": "research",
+      "frontmatter_name": "arif-daily-sensorium",
+      "description": "Produce a current, evidence-disciplined daily world and M...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arxiv",
+      "category": "research",
+      "frontmatter_name": "arxiv",
+      "description": "Search arXiv papers by keyword, author, category, or ID.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "blogwatcher",
+      "category": "research",
+      "frontmatter_name": "blogwatcher",
+      "description": "Monitor blogs and RSS/Atom feeds via blogwatcher-cli tool.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "code-analysis-skills",
+      "category": "research",
+      "frontmatter_name": "code-analysis",
+      "description": "This skill should be used when the user needs to analyze ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "deep-research",
+      "category": "research",
+      "frontmatter_name": "deep-research",
+      "description": "Deep research on a topic: multi-source web research → str...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "executive-intelligence-briefing",
+      "category": "research",
+      "frontmatter_name": "executive-intelligence-briefing",
+      "description": "Produce executive intelligence briefings — weekly/country...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "human-intelligence-gathering",
+      "category": "research",
+      "frontmatter_name": "human-intelligence-gathering",
+      "description": "Gather intelligence on a named person from available sour...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "human-sexuality-shadow-framework",
+      "category": "research",
+      "frontmatter_name": "human-sexuality-shadow-framework",
+      "description": "Alignment mechanism + psychology framework. Shadow self-w...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "institutional-case-building",
+      "category": "research",
+      "frontmatter_name": "institutional-case-building",
+      "description": "Build chronological case files from public sources (court...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "institutional-forensic-analysis",
+      "category": "research",
+      "frontmatter_name": "institutional-forensic-analysis",
+      "description": "Build forensic case files on institutional crises — chron...",
+      "platforms": [
+        "linux"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "legal-case-dossier-from-news",
+      "category": "research",
+      "frontmatter_name": "legal-case-dossier-from-news",
+      "description": "Build a structured legal-case dossier (court cases, crimi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "llm-wiki",
+      "category": "research",
+      "frontmatter_name": "llm-wiki",
+      "description": "Karpathy's LLM Wiki: build/query interlinked markdown KB.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "medical-document-interpretation",
+      "category": "research",
+      "frontmatter_name": "medical-document-interpretation",
+      "description": "Interpret Malaysian medical documents (CT reports, radiol...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "news-research-briefing",
+      "category": "research",
+      "frontmatter_name": "news-research-briefing",
+      "description": "Research current news and produce structured executive br...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "person-dossier-from-public-sources",
+      "category": "research",
+      "frontmatter_name": "person-dossier-from-public-sources",
+      "description": "Build an epistemic-tagged human profile dossier (PDF or m...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "person-intelligence-dossier",
+      "category": "research",
+      "frontmatter_name": "person-intelligence-dossier",
+      "description": "Build a verifiable professional profile + intelligence do...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "petronas-petros-shell-dispute",
+      "category": "research",
+      "frontmatter_name": "petronas-petros-shell-dispute",
+      "description": "PETRONAS–Petros–Shell MDS dispute 2024-2026: espionage ca...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "polymarket",
+      "category": "research",
+      "frontmatter_name": "polymarket",
+      "description": "Query Polymarket: markets, prices, orderbooks, history.",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "professional-intelligence-briefing",
+      "category": "research",
+      "frontmatter_name": "professional-intelligence-briefing",
+      "description": "Real-time professional intelligence briefings in social/f...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "research-paper-writing",
+      "category": "research",
+      "frontmatter_name": "research-paper-writing",
+      "description": "Write ML papers for NeurIPS/ICML/ICLR: design→submit.",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [
+          "terminal",
+          "files"
+        ],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "scientific-manuscript-forge",
+      "category": "research",
+      "frontmatter_name": "scientific-manuscript-forge",
+      "description": "Forge publication-grade scientific manuscripts for falsif...",
+      "platforms": [
+        "linux"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [
+          "terminal",
+          "files",
+          "vision"
+        ],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "summarize-pro",
+      "category": "research",
+      "frontmatter_name": "summarize-pro",
+      "description": "When user asks to summarize text, articles, documents, me...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "text-forensics",
+      "category": "research",
+      "frontmatter_name": "text-forensics",
+      "description": "Analyze large exported chat/text files to extract behavio...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "trading-analysis-xauusd",
+      "category": "research",
+      "frontmatter_name": "trading-analysis-xauusd",
+      "description": "XAUUSD (Gold) technical analysis — price action, key leve...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "vendor-partner-intelligence",
+      "category": "research",
+      "frontmatter_name": "vendor-partner-intelligence",
+      "description": "Assess third-party vendors and partners for fit, risk, an...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "whatsapp-group-intelligence",
+      "category": "research",
+      "frontmatter_name": "whatsapp-group-intelligence",
+      "description": "Analyze exported WhatsApp group chats to extract key peop...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "witness-companion-briefing",
+      "category": "research",
+      "frontmatter_name": "witness-companion-briefing",
+      "description": "When the user names a witness (plush object, archetype, d...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "seven-zen-organs-enforcement",
+      "category": "seven-zen-organs-enforcement",
+      "frontmatter_name": "seven-zen-organs-enforcement",
+      "description": "Operationalize Arif's Seven Zen Organs doctrine (Reality,...",
+      "platforms": [
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "skill-substrate-framework",
+      "category": "skill-substrate-framework",
+      "frontmatter_name": "skill-substrate-framework",
+      "description": "3-axis skill substrate — invariants, bridges, contrast. 6...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "ig-story-gym-quotes",
+      "category": "social-media",
+      "frontmatter_name": "ig-story-gym-quotes",
+      "description": "Daily IG Story — motivational quotes from historical figu...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "telegram-live-location-tracking",
+      "category": "social-media",
+      "frontmatter_name": "telegram-live-location-tracking",
+      "description": "Handle repeated live location pin shares in Telegram grou...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "telegram-userbot",
+      "category": "social-media",
+      "frontmatter_name": "telegram-userbot",
+      "description": "Telethon-based Telegram userbot — run as the user's actua...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "xurl",
+      "category": "social-media",
+      "frontmatter_name": "xurl",
+      "description": "X/Twitter via xurl CLI: post, search, DM, media, v2 API.",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "aaa-knowledge-files",
+      "category": "software-development",
+      "frontmatter_name": "aaa-knowledge-files",
+      "description": "Create, enrich, or audit structured knowledge domain file...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "deep-codebase-audit",
+      "category": "software-development",
+      "frontmatter_name": "deep-codebase-audit",
+      "description": "Multi-dimensional codebase SOT (State of Truth) inventory...",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governance-enforcement-audit",
+      "category": "software-development",
+      "frontmatter_name": "governance-enforcement-audit",
+      "description": "Audit whether a system's self-declared governance constra...",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governed-knowledge-stores",
+      "category": "software-development",
+      "frontmatter_name": "governed-knowledge-stores",
+      "description": "Design and build structured knowledge stores with governa...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "live-probe-audit-pattern",
+      "category": "software-development",
+      "frontmatter_name": "live-probe-audit-pattern",
+      "description": "When Arif (or any sovereign voice) feeds you a status nar...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "paper-to-code-validation",
+      "category": "software-development",
+      "frontmatter_name": "paper-to-code-validation",
+      "description": "Validate that a research paper's equations and claims are...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "receipt-to-analytics",
+      "category": "software-development",
+      "frontmatter_name": "receipt-to-analytics",
+      "description": "Convert informal business records (handwritten receipt im...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "repository-sot-inventory",
+      "category": "software-development",
+      "frontmatter_name": "repository-sot-inventory",
+      "description": "Establish multi-surface ground truth for any repository o...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "spec-audit",
+      "category": "software-development",
+      "frontmatter_name": "spec-audit",
+      "description": "Audit an implementation against an external published pro...",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "submission-readiness-audit",
+      "category": "submission-readiness-audit",
+      "frontmatter_name": "submission-readiness-audit",
+      "description": "Reverse-engineer the gap between current state and a hard...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agentic-trading-companion",
+      "category": "trading",
+      "frontmatter_name": "agentic-trading-companion",
+      "description": "Build an AI trading companion system — signal engine, pri...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "daily-trading-signal-briefing",
+      "category": "trading",
+      "frontmatter_name": "daily-trading-signal-briefing",
+      "description": "Daily XAUUSD gold trading signal for rakyat marhaen. One-...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "mt5-ai-trading-agent",
+      "category": "trading",
+      "frontmatter_name": "mt5-ai-trading-agent",
+      "description": "Build AI-powered trading agents that connect MetaTrader 5...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "nasi-lemak-tracking",
+      "category": "trading",
+      "frontmatter_name": "nasi-lemak-tracking",
+      "description": "Track multi-location nasi lemak daily orders, baki, sales...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "syedos",
+      "category": "trading",
+      "frontmatter_name": "syedos",
+      "description": "SyedOS — Agent mode for Abang Sado Syed (@rico_ricaldo_33...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "trading-intelligence-system",
+      "category": "trading",
+      "frontmatter_name": "trading-intelligence-system",
+      "description": "arifOS Trading Intelligence System — agentic signal engin...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "trading-signal-chart",
+      "category": "trading",
+      "frontmatter_name": "trading-signal-chart",
+      "description": "Generate trading signal charts and PDFs — candlestick OHL...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "uncertainty-routing-protocol",
+      "category": "uncertainty-routing-protocol",
+      "frontmatter_name": "uncertainty-routing-protocol",
+      "description": "When uncertain, route to the correct evidence organ — nev...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "weekly-federation-deep-brief",
+      "category": "weekly-federation-deep-brief",
+      "frontmatter_name": "weekly-federation-deep-brief",
+      "description": "Weekly deep brief for Arif — synthesizes 7 days of arifOS...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "wisdom-scar-session-audit",
+      "category": "wisdom-scar-session-audit",
+      "frontmatter_name": "wisdom-scar-session-audit",
+      "description": "Capture session failure patterns as constitutional scars ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    }
+  ],
+  "category_descriptions": {
+    ".archive-2026-07-09/autonomous-ai-agents": "Skills for spawning and orchestrating autonomous AI coding agents and multi-agent workflows — running independent agent processes, delegating tasks, and coordinating parallel workstreams.",
+    ".archive-2026-07-09/data-science": "Skills for data science workflows — interactive exploration, Jupyter notebooks, data analysis, and visualization.",
+    ".archive-2026-07-09/github": "GitHub workflow skills for managing repositories, pull requests, code reviews, issues, and CI/CD pipelines using the gh CLI and git via terminal.",
+    ".archive-2026-07-09/mlops": "Knowledge and Tools for Machine Learning Operations - tools and frameworks for training, fine-tuning, deploying, and optimizing ML/AI models",
+    ".archive-2026-07-09/mlops/evaluation": "Model evaluation benchmarks, experiment tracking, data curation, tokenizers, and interpretability tools.",
+    ".archive-2026-07-09/mlops/inference": "Model serving, quantization (GGUF/GPTQ), structured output, inference optimization, and model surgery tools for deploying and running LLMs.",
+    ".archive-2026-07-09/mlops/models": "Specific model architectures and tools — image segmentation (Segment Anything / SAM) and audio generation (AudioCraft / MusicGen). Additional model skills (CLIP, Stable Diffusion, Whisper, LLaVA) are available as optional skills.",
+    ".archive-2026-07-09/smart-home": "Skills for controlling smart home devices — lights, switches, sensors, and home automation systems.",
+    "autonomous-ai-agents": "Skills for spawning and orchestrating autonomous AI coding agents and multi-agent workflows — running independent agent processes, delegating tasks, and coordinating parallel workstreams.",
+    "creative": "Creative content generation — ASCII art, hand-drawn style diagrams, and visual design tools.",
+    "data-science": "Skills for data science workflows — interactive exploration, Jupyter notebooks, data analysis, and visualization.",
+    "email": "Skills for sending, receiving, searching, and managing email from the terminal.",
+    "github": "GitHub workflow skills for managing repositories, pull requests, code reviews, issues, and CI/CD pipelines using the gh CLI and git via terminal.",
+    "media": "Skills for working with media content — YouTube transcripts, GIF search, music generation, and audio visualization.",
+    "mlops": "Knowledge and Tools for Machine Learning Operations - tools and frameworks for training, fine-tuning, deploying, and optimizing ML/AI models",
+    "mlops/evaluation": "Model evaluation benchmarks, experiment tracking, data curation, tokenizers, and interpretability tools.",
+    "mlops/inference": "Model serving, quantization (GGUF/GPTQ), structured output, inference optimization, and model surgery tools for deploying and running LLMs.",
+    "mlops/models": "Specific model architectures and tools — image segmentation (Segment Anything / SAM) and audio generation (AudioCraft / MusicGen). Additional model skills (CLIP, Stable Diffusion, Whisper, LLaVA) are available as optional skills.",
+    "note-taking": "Note taking skills, to save information, assist with research, and collab on multi-session planning and information sharing.",
+    "productivity": "Skills for document creation, presentations, spreadsheets, and other productivity workflows.",
+    "productivity/ocr-and-documents": "Skills for extracting text from PDFs, scanned documents, images, and other file formats using OCR and document parsing tools.",
+    "research": "Skills for academic research, paper discovery, literature review, domain reconnaissance, market data, content monitoring, and scientific knowledge retrieval.",
+    "smart-home": "Skills for controlling smart home devices — lights, switches, sensors, and home automation systems.",
+    "social-media": "Skills for interacting with social platforms and social-media workflows — posting, reading, monitoring, and account operations."
+  }
+}

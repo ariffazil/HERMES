@@ -122,7 +122,23 @@ playwright install chromium
 - **External shell**: Separate SSH session or tmux pane.
 - **Wait for next `/new`**: Tools available on next session without restart.
 
-### 6. Verify
+### 6. Validate-After-Write
+
+**CRITICAL RULE: After any config write, immediately validate.** The third time an agent writes a broken config is the symptom of a missed invariant. Apply the cheapest validation available for each runtime:
+
+| Runtime | Validate command | Schema pitfall |
+|---------|-----------------|----------------|
+| Hermes config.yaml | `hermes config get` | CLI wrapper handles quoting |
+| OpenCode opencode.json | `opencode run "test"` | `tools` must be OBJECT `{"name": true}`, not array `["name"]` |
+| OpenClaw openclaw.json | `systemctl restart openclaw-gateway.service` | SecretRefResolutionError if env var missing |
+| Kimi Code config.toml | `kimi-code --help` or headless launch | model_id string must match provider key |
+| Agent mcp.json | Launch MCP server and probe `tools/list` | JSON schema may differ per agent |
+
+**Ghost tool detection:** The runtime may accept config with phantom tool names. Always probe actual MCP servers via `tools/list` after wiring and compare tool IDs against what the config references. Tool names from MCP servers do NOT carry provider prefixes — `understand_image` from minimax MCP, NOT `minimax_understand_image`.
+
+**Rollback protocol:** `cp <config>.bak-$(date +%s) <config>` before editing. If validate fails, `cp <bak> <config>` to restore.
+
+### 7. Verify
 
 After wiring, test end-to-end:
 
@@ -217,7 +233,7 @@ Do NOT declare a key "wired" without a live API test. "Quota exhausted" = not us
 - **PEP 668**: Prefer pipx. Fall back to `--break-system-packages`.
 - **Playwright unsupported OS warning**: Safe to ignore on Ubuntu 24.04.
 - **Gateway restart from within**: Use `kill` + `nohup` for OpenClaw; Hermes needs external shell or `/new`.
-- **Tool prefix mismatches**: Always verify via `tools/list` — some servers use `mcp_` prefix.
+- **Tool prefix mismatches**: Always verify via `tools/list` — some servers use `mcp_` prefix. **Crucially: MCP servers expose tools WITHOUT provider prefixes.** The minimax MCP exposes `understand_image`, NOT `minimax_understand_image`. The cloudflare MCP exposes `ai_image_generation`, NOT `cloudflare_ai_image_generation`. Agents that guess prefixed names will reference ghost tools. Probe first, reference exact names.
 - **Config write protection**: Use `hermes mcp add` or `hermes config set`.
 - **Cross-VPS key auth**: Ensure Ed25519 key accepted on remote first.
 - **Provider key_env mismatch**: A provider pointing to empty/wrong env var fails silently — always live-test.
@@ -227,3 +243,4 @@ Do NOT declare a key "wired" without a live API test. "Quota exhausted" = not us
 
 - `references/hound.md` — Hound-specific evaluation, tools, federation wiring, and cross-VPS notes.
 - `references/mimo-token-plan.md` — MiMo Token Plan vs Platform API endpoints, keys, provider wiring across Hermes + OpenClaw.
+- `references/opencode-agent-config.md` — OpenCode config schema (tools→object), MCP tool name discovery via JSON-RPC, ghost tool detection, and the validate-after-write pattern.

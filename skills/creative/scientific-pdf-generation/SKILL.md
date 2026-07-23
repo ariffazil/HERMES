@@ -30,6 +30,10 @@ triggers:
   - "marketing pdf"
   - "proposal pdf"
   - "dark theme pitch"
+  - "Walter Isaacson-style biography"
+  - "full Isaacson biography"
+  - "full biography of [person]"
+  - "map their shadow and scars"
 tags:
   - pdf
   - reportlab
@@ -280,6 +284,8 @@ HTML(filename='manuscript.html', base_url='/tmp/figures/').write_pdf('output.pdf
 
 **Proven 2026-07-13:** PETRONAS analyst-grade report (14 pages, 8 figures, peer-comp + scenario tables, retrospective calibration block all rendered cleanly with HTML+CSS).
 
+**Proven 2026-07-21:** Walter Isaacson-style biography — Tengku Muhammad Taufik (19 pages, 94KB, two versions). HTML+weasyprint, Georgia serif, 20 chapters, cover epigraphs, TOC. Pure text, no figures. See `references/isaacson-biography-pattern.md` for full template and spine.
+
 ### Path 3: reportlab (programmatic)
 
 Use when you need canvas-level control (running headers, page templates, dynamic content).
@@ -384,6 +390,10 @@ Use accent colors (#f0a500 for highlights, #3fb950 for positive, #f85149 for ris
 6. **Disclaimer** — center-aligned, dim, gold rule above
 
 **Proven:** 2026-07-07 — Block P Deepwater Sabah Geological Dossier (10 pages, 6 figures, 946 KB). Dark theme with gold accents. Delivered as professional intelligence document.
+**Proven:** 2026-07-21 — PETRONAS Rightsizing Dossier: Tengku Taufik AI-Mediated Cognitive Camouflage Analysis (10 pages, 12+ tables, callout boxes, 30KB). Mode B reportlab, pure text — no matplotlib figures needed. Perfect for corporate/institutional intelligence briefings on the MRT.
+**Proven:** 2026-07-22 — Kelp Deep-1 Intelligence Dossier (13 pages, 163KB, weasyprint HTML). Geological/technical dossier with dragon risk cards, severity-coded callouts, status strips, epistemic badges. For PETRONAS basin geologist. See `references/dark-theme-css-components.md` for reusable CSS patterns.
+
+**Proven:** 2026-07-22 — Gemini Flash Competitive Intelligence Briefing (8 pages, 60KB, weasyprint HTML). Dark theme dossier on tech industry model releases — comparative tables, bull/bear cases, competitive landscape, epistemic tags. Proves Mode B works for non-geological tech/policy briefings shared peer-to-peer. See `references/gemini-tech-briefing-manuscript.html` for the working HTML template.
 
 ### Mode B — Marketing Pitch Deck (sub-pattern)
 
@@ -391,7 +401,14 @@ For personal pitch decks, product proposals, and lifestyle-brand documents targe
 
 → Full spec with code patterns: `references/mode-b-marketing-deck.md`
 
+### Mode B — Contrast Marketing Deck (sub-pattern)
+
+For evidence-heavy competitive comparison PDFs ("Why X beats Y"): exploit tables, contrast tables, stat pairs, failure mode cards, quote blocks. Dark/indigo-cyan palette. Uses Platypus flowables (not direct canvas). Best when the audience needs to see the evidence chain, not just the conclusion.
+
+→ Full spec: `references/contrast-marketing-deck.md`
+
 **Proven:** 2026-07-14 — Abang Sado × AI trading agent pitch deck (6 pages, landscape A4, dark/gold theme, card layouts, zigzag flow diagram, before/after lifestyle panels). 12KB output, all pages visually verified.
+**Proven:** 2026-07-22 — "Why Kernel Beats Sandbox" (7 pages, dark/indigo-cyan, Pillar Security evidence, contrast tables, stat pairs, exploit tables). 13.8KB.
 
 ## Mode D: Trading Signal (Candlestick Chart)
 
@@ -524,11 +541,14 @@ doc.addPageTemplates([
 - **`Paragraph(<b>...<b>...</b></b>)` nested bold tags crash reportlab with `Parse error: saw </b> instead of expected </para>`.** Pattern proven 2026-07-13 PETRONAS analyst PDF: outer `<b>...</b>` with a literal `<b>...</b>` substring inside causes the parser to mis-parse. Fix: ensure the OUTER `<b>` tag is closed BEFORE any inner `<b>` tags. The safe pattern: `<b>Outer text</b> middle text <b>inner highlight</b>.` (close outer first, then open inner). Or use span-level ParagraphStyle with `fontName='Helvetica-Bold'` for outer emphasis and inline `<b>...</b>` only for inline highlights.
 - **Use `weasyprint` HTML for analyst-grade (UOB/CIMB/kenanga-style) sell-side reports.** HTML+CSS gives the closest match to institutional format: cover rating box, colored callouts, multi-section TOC, side-by-side peer-comp tables, scenario probability distribution, sensitivity bands, methodology & limitations section, sources/disclaimer. **Proven 2026-07-13 PETRONAS 1H 2026 report — 14 pages, 8 figures, peer-comp + scenario tables, retrospective calibration block all rendered cleanly.** Standard spine: cover → TOC → 12 numbered sections → sources → disclaimer. Triggers: "UOB-style", "CIMB-style", "analyst-grade", "institutional sell-side format", "broker report", or naming any ASEAN broker (UOB KayHian, Kenanga, CIMB, Maybank IB, RHB, Affin Hwang, PublicInvest).
 - **`reportlab` IS viable for Mode C when paired with the proven template.** Pure Python gives you programmatic control over the recommendation banner colour, page template header/footer, and table styling. Slightly more verbose than weasyprint HTML but no CSS escape pain. Trade-off: weasyprint for 14+ page reports with complex tables; reportlab for 8-12 page reports where you need exact pixel control. **Proven 2026-07-13:** PETRONAS analyst PDF generated via reportlab — 15 pages, 780 KB, 8 figures, 14 tables, recommendation banner colour-coded.
+- **reportlab `HRFlowable` width must be a number, not a string with units.** `HRFlowable(width=f"{TW}pt", ...)` crashes with `ValueError: could not convert string to float: '481.889...pt'`. Fix: pass width as a plain number — `HRFlowable(width=TW, ...)` where TW is a float in points since reportlab uses points natively. Also: don't use a mutable default like `def gold_rule(w=TW, ...)` — TW is a float, fine as default, but safer to use `def gold_rule(w=None, ...): if w is None: w = TW`. Proven 2026-07-21: PETRONAS Rightsizing Dossier (10 pages, Mode B, 30KB).
+- **Nested quotes in Python strings require care.** When building reportlab Paragraphs with HTML attributes inside Python strings, the combination of `<font color="#xyz">` with quoted text inside can create syntax errors. Pattern: use double quotes for the Python string and escape inner double quotes with backslash: `B("<font color=\"#f85149\">\"quoted text\"</font>")`. Single quotes inside the HTML text are fine in a double-quoted Python string.
 - **DejaVu Serif registration required for reportlab (Mode A only).** reportlab does NOT recognize "DejaVu Serif" (with space) as a built-in font. You must register TTF files explicitly before using them. **For Mode C (sell-side) skip this step entirely** — use Helvetica and DejaVu Sans (both built-in) throughout. Proven 2026-07-07 for Mode A; 2026-07-13 confirmed Mode C doesn't need any font registration.
 - **TableStyle TEXTCOLOR per-row requires separate commands.** You cannot pass a list of colors to a single TEXTCOLOR command for different rows. This crashes with `AssertionError` in `colors.toColor`. Use one command per row. Proven 2026-07-07.
 - **`ax.broken_barh` does NOT accept a `(color, hatch_string)` tuple in `facecolors`.** It crashes with `ValueError: Invalid RGBA argument: '//'`. Workaround: use `ax.barh()` with `hatch='//'` (hatch is a separate kwarg). Proven 2026-07-09.
 - **PYROLITE.MPLSTYLE warning is cosmetic, not fatal.** Every matplotlib call prints `Bad key legend.bbox_to_anchor in file /root/.config/matplotlib/stylelib/pyrolite.mplstyle, line 27 ('legend.bbox_to_anchor : (1, 1)')`. Ignore — figures still render correctly.
 - **`mplstyle` warnings can be silenced** by setting `MPLCONFIGDIR=/tmp/.mpl` before importing matplotlib, or explicitly call `plt.style.use('default')`.
+- **reportlab `HexColor` objects crash matplotlib `color=` params.** `HexColor("#e6edf3")` is a reportlab object — matplotlib rejects it with `ValueError: Color(.901961,.929412,.952941,1) is not a valid value for color`. **Fix:** define TWO sets of color constants — plain strings for matplotlib (`BG_S = "#0d1117"`, `TEXT_S = "#e6edf3"`, etc.) and `HexColor` objects for reportlab (`BG = HexColor(BG_S)`, etc.). Use the `_S` suffix variants everywhere in matplotlib figure code, the non-suffix variants in reportlab Paragraphs/Tables. Never pass one library's color object to the other. **Proven 2026-07-22:** Sabah PSM dossier — 3 failed runs (sed patching, indentation corruption) solved by clean rewrite with separate color namespaces. Also: aggressive `sed` patching to fix color references causes indentation errors — when this pitfall fires, rewrite the script fresh with the two-namespace pattern rather than sed-patching the broken one.
 - **`execute_code` sandbox does NOT have matplotlib** even when system `python3` does. The hermes_tools sandbox uses a different venv from `/usr/bin/python3`. Symptom: `ModuleNotFoundError: No module named 'matplotlib'`. Fix: switch to a terminal `python3` invocation with `MPLCONFIGDIR` set, instead of using `execute_code`. Proven 2026-07-09.
 - **`pip install --break-system-packages --quiet <pkg>` is the correct install pattern on this VM.** PEP 668 blocks system pip with `error: externally-managed-environment`. `--break-system-packages` is the documented escape hatch and is what was used successfully to install reportlab + matplotlib for the PETRONAS analyst PDF (2026-07-13). For new installs of reportlab, matplotlib, weasyprint, or similar in this environment, prefix the install with this flag.
 
@@ -581,6 +601,8 @@ weasyprint rejects `vh` units in some contexts. Use `padding-top: 200px` or omit
 
 - **For dark-themed HTML→PDF via weasyprint**, see `executive-intelligence-briefing` skill's `references/dark-theme-html-template.md` — complete CSS component library (signal boxes, color-coded tables, epistemic tags, summary strips) for intelligence dossiers. That template uses weasyprint; this skill's Mode B uses reportlab. Choose based on whether you need programmatic control (reportlab) or fast styled layout (weasyprint HTML).
 
+- **⚠️ CHART LABELS MUST NOT BLOCK CANDLES (proven 2026-07-21).** When generating matplotlib charts for trading/portfolio review: labels, annotations, info boxes, and `ax.annotate()` text in the price area will be rejected by the user ("Weii hang tutup price dengan label. Buat balik."). Fix: (1) Main chart = candles + S/R lines + EMA overlays + current price dot ONLY. (2) All labels/data go in a RIGHT-SIDE LEGEND PANEL using `fig.text(x=0.74, ...)`. (3) Use `fig.add_gridspec(N, 1, right=0.72)` to reserve 28% of figure width for the legend column. (4) No `ax.annotate()` with text inside price area. P&L badges, R:R data, info boxes → side panel. This applies to Mode D trading charts and any multi-asset portfolio review chart.
+
 ## Mobile-First Financial Charts (LESSON LEARNED 2026-07-14)
 
 When generating trading signal PDFs or financial charts for mobile consumption:
@@ -607,6 +629,16 @@ When generating trading signal PDFs or financial charts for mobile consumption:
 
 **See `trading-signal-chart` skill for the full candlestick chart template.**
 
+## Epistemic Discipline for Intelligence Briefings (Tri-Witness Correction)
+
+When generating Mode B/C dossiers with competitive/industry claims:
+
+1. **Never let narrative outrun F2 grounding.** If you lack P≥0.99 confirmation on a competitive claim (e.g., "X is delayed," "Y is behind"), downgrade it from OBS to INT or UNKNOWN. The reader should be able to trace every assertive claim to a primary source.
+2. **Tag forward-looking claims explicitly.** Competitive positioning ("Google is behind"), timeline judgments ("fourth straight month delayed"), and brain-drain narratives are SPEC — not OBS. Label them.
+3. **Self-reported benchmarks ≠ verified.** When using vendor-published benchmark numbers (e.g., Google's own DeepSWE scores), note "self-reported, independent verification pending."
+4. **Tri-Witness protocol:** If challenged, the 3-channel verification (Human × AI × External) must hold. A claim that collapses under any channel is inadmissible.
+5. **The correction that triggered this pitfall:** Hermes framed Gemini 3.5 Pro as "STILL DELAYED" with language implying internal failure. F2 validation showed the May 2026 announcement said "rolling out" — not "failed." The truth class should have been UNKNOWN, not OBS. Do not let punchy narrative overwrite epistemic precision.
+
 ## Verification
 
 After generating:
@@ -625,13 +657,18 @@ After generating:
 - `templates/sell_side_analyst_report.py` — Mode C scaffold: UOBKH/CIMB/Maybank IB-style broker report with reportlab, navy/gold house style, recommendation banner, segment tables, scenario analysis, AC disclaimer. Proven 2026-07-13 (PETRONAS 1H 2026 report).
 - `references/figure-white-theme-patterns.md` — matplotlib white-theme rcParams, muted color palette, figure patterns (tectonic map, cross-section, cooling path, kill matrix), Unicode glyph pitfalls.
 - `references/figure-dark-theme-patterns.md` — matplotlib dark-theme rcParams for Mode B intelligence dossiers.
+- `references/isaacson-biography-pattern.md` — Walter Isaacson-style biography generation via HTML+weasyprint: Georgia serif typography, 20-chapter spine, cover epigraphs, TOC, reconstructed free speech blocks, poetry codas. Pure text — no matplotlib needed. Proven 2026-07-21: Tengku Muhammad Taufik biography (19 pages, 94KB, two versions in one session).
 - `references/sell-side-analyst-style.md` — Mode C visual specification: UOBKH/CIMB/Maybank IB house style, color codes, table patterns, recommendation banner, scenario probability distributions, peer-comp boxes, AC disclaimer language. Proven 2026-07-13.
 - `references/financial-trading-signal-charts.md` — Mode D visual specification: candlestick OHLC rendering, EMA overlays, buy/sell zones, R:R visualization, dark theme OANDA-style, zoom-to-relevance, mobile-first chart layout, data sources. Proven 2026-07-14.
 - `references/geological-dossier-figures.md` — 5 reusable matplotlib figure patterns for geological intelligence dossiers: regional map, stratigraphic column, timeline, play types, hub-and-spoke strategy.
 - `references/tectono-stratigraphic-panels.md` — multi-column × multi-row geological evolution diagrams: grid layout, color semantics for lithologies, polygon fills, process arrows, depth panels. Proven 2026-07-07 (NSPW mud canopy evolution, 5 stages × 3 panels).
 - `references/deepwater-sabah-geology.md` — domain reference bank: verified PSC blocks, three toe-thrust trends, NSPW mud canopy, crustal architecture, PTTEP competitive intelligence, reservoir architecture, petroleum system risks, bilingual talking points, coordinate verification protocol. Use when generating geological dossiers for NW Sabah.
+- `references/psm-dossier-workflow.md` — rapid Petroleum System Modeling dossier generation: 5-stage pipeline (research→figures→PDF), 6 standard figures, epistemic discipline, competitive framing vs TemisFlow/PetroMod. Proven 2026-07-22 (2 dossiers, 12 figures, 0 failures).
 - `references/mode-b-marketing-deck.md` — Mode B sub-pattern for marketing pitch decks: direct canvas construction, card layouts with numbered circles, flow diagrams with color-coded boxes, before/after comparison panels, landscape A4 orientation, pdftoppm visual verification. Proven 2026-07-14.
+- `references/dark-theme-css-components.md` — Reusable HTML+CSS component library for Mode B intelligence dossiers (weasyprint): dragon risk cards (.dragon-grid), severity-coded callouts (warning/info/intel/gold), status strips (.strip), verdict boxes (.verdict), epistemic badges (.badge). No matplotlib needed. Proven 2026-07-22 Kelp Deep-1 dossier (13 pages, 163 KB).
 - `references/geological-artifact-figures.md` — reusable matplotlib patterns for **geological deliverable figures**: well correlation panels, 5-track petrophysical log panels, structural cross-sections with trap analysis, well penetration summaries, play fairway thickness maps. Proven 2026-07-09, MBR 2026 GEOX bid proposal.
+
+- `references/business-receipt-template.md` — Quick weasyprint HTML template for vendor claim receipts / business invoices. Proven 2026-07-23. Navy/gold 7-column table (Vendor|Item|Hantar|Baki|Sold|Harga|Jualan). Title convention: "CLAIM VENDOR — V005". Render: `weasyprint file.html file.pdf`. Always include TOTAL row.
 
 ## Related Skills
 

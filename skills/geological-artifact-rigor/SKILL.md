@@ -79,7 +79,7 @@ See skill: `geox-competitive-intelligence` for full benchmark design and competi
 
 Before building any geoscience artifact, execute this sequence:
 
-1. **Probe GEOX first** — call `geox_basin` for the target region. If it returns "Basin data not found," DON'T retry. Pivot: run `geox_map_context_scene` for spatial context, then use `web_search` + `web_extract` for published literature (GSM Bulletins, Springer, AAPG). Note the GEOX gap in output. Published literature is often richer than what GEOX returns for non-standard basins. (2026-07-11: Sarawak Basin — GEOX had no profile, web research produced full strat column + petroleum system.)
+1. **Probe GEOX first** — call `geox_basin` for the target region. If it returns "Basin data not found" or `LANE_ENFORCEMENT` (governed session required), DON'T retry. Pivot: use `web_search` + `web_extract` for published literature (GSM Bulletins, Springer, AAPG). Note the GEOX gap in output. Published literature is often richer than what GEOX returns for non-standard basins. For PSM-specific deliverables, forward-model burial curves, Ro gradients, and generation timing from published data — the workflow is proven. (2026-07-11: Sarawak Basin — GEOX had no profile, web research produced full strat column + petroleum system. 2026-07-22: Sabah PSM — GEOX LANE_ENFORCEMENT, built complete 6-figure dossier from published data.)
 2. **Research first** — search for actual published data (formation names, ages, properties). Never start with a template and fill in "TBD."
 3. **Verify every entity name** — cross-check block names, structural trend names, field names against published literature. "Block P" was used for a structural feature that isn't a PSC block. This wasted an entire dossier iteration.
 4. **Verify every coordinate** — GPS/published map only. "From memory" coordinates were 0.34–0.67° off (Lipad, Maliau, Ranau). In geoscience, this = wrong well = dry hole.
@@ -128,6 +128,7 @@ Each blind spot needs: geological reasoning, evidence basis, test data required,
 - `references/sabah_strat_data.md` — verified stratigraphic data for NW Sabah deepwater (formations, ages, biostrat, reservoir properties, source rock)
 - `references/cross-section-generation.md` — proven Python/matplotlib pattern for generating professional geological cross-sections: wavy layer boundaries, fault symbols (thrust sawteeth, normal ticks), Moho/COB conventions, hatch pattern reference, dark vs light background guidance. Use when creating any code-generated geological visualization.
 - `references/sarawak_basin_strat_data.md` — Sarawak Basin geological reference: Baram Delta tectonics, Cycle I–VIII stratigraphy, petroleum system (source/reservoir/seal/trap), Central Luconia carbonate play, SK 309/311 field data, recent Baram Province discoveries (2021–2025). Use for any Sarawak offshore dossier or screening memo.
+- `references/psm-figure-patterns.md` — reusable matplotlib patterns for petroleum system modeling deliverables: burial history curves, Ro vs depth plots, hydrocarbon generation timing charts, stratigraphic columns, basin cross-sections, PSM toolchain diagrams. Proven 2026-07-22 GEOX PSM Sabah dossier (6 figures, Mode B dark theme). Use for any PSM showcase or basin modeling artifact.
 
 ## Output Requirement
 
@@ -209,5 +210,6 @@ What a working geologist will push you to do next once the data room opens:
 | "NO BID" without geological rationale | Risk register omitted | §9.5: name the dragons or admit the basin isn't calibrated |
 | "Comprehensive bid" with no data room access implied | Pretended to have real block coordinates | §10: tag every coordinate source, never claim `GPS_VERIFIED` from MBR listing |
 | GEOX basin "not found" for target region | GEOX registry doesn't have all basins loaded (Sarawak, Balingian, etc.) | Don't retry. Pivot to `geox_map_context_scene` + web research. Note gap in output. Published literature often richer anyway. |
+| GEOX tools return LANE_ENFORCEMENT (session_id required) | Tools in reasoning lane need governed session via `arif_init(mode=init)` | Same pivot as "basin not found" — web research + published data. The PSM workflow still works from published data alone (burial curves, Ro gradients, generation timing can be forward-modeled). See references/psm-figure-patterns.md. |
 | WEALTH MCP session validator crash | arifosmcp dependency broken in WEALTH organ | Fall back to `web_search` for market/pricing data. Note the WEALTH gap. |
 | Dossier output only in chat, not saved | Didn't write to disk | Always write dossiers to `forge_work/YYYY-MM-DD/<BLOCK>-DOSSIER.md` — user will reference later |

@@ -18,9 +18,27 @@ sticker_cache.json
 config.yaml.bak.*
 *.bak
 
+# Sensitive content — never push
+*caregiver*
+*dm-logs*
+
 # Auth / secrets
 auth.json
 auth.lock
+
+# Code-review quarantine (2026-07-22) — never track
+/root/.secrets/quarantine/
+
+# Brevo / SMTP auth references (live creds must be in env only)
+*brevo-auth-details*
+
+# Openclaw pre-purge credential backups — never track
+*.bak-pre-purge*
+.openclaw/openclaw.json.bak-pre-purge*
+
+# Generic credential-bearing files
+*credential*secret*
+*.openclaw.json.bak*
 
 # Gateway runtime
 gateway.lock

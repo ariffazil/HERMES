@@ -117,7 +117,7 @@ Workflow for reading/digesting published articles:
 3. **Read each article** via `browser_navigate` + `browser_snapshot(full=true)`
 4. For bulk digest (10+ articles), delegate to a subagent to avoid context flooding
 
-MakcikGPT articles live under `/wealth/makcikgpt/<slug>` in the URL structure (not `/makcikgpt/<slug>`).
+MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (not `/makcikgpt/<slug>`). The listing page is at `/makcikgpt/`.
 
 ## Pitfalls
 
@@ -137,7 +137,7 @@ MakcikGPT articles live under `/wealth/makcikgpt/<slug>` in the URL structure (n
 
 8. **MakcikGPT articles are separate.** They live in different data structures than essays. Check `src/data/` for the right directory.
 
-9. **MakcikGPT URL structure is nested under /wealth/.** Article URLs are `/wealth/makcikgpt/<slug>`, not `/makcikgpt/<slug>`. The listing page is at `/makcikgpt/` though.
+9. **MakcikGPT URL structure is nested under /world/.** Article URLs are `/world/makcikgpt/<slug>`, not `/wealth/makcikgpt/<slug>`. The listing page is at `/makcikgpt/`. Correct as of 2026-07-22 (routing was `/world/` not `/wealth/` per App.tsx).
 
 10. **Medium cross-posted essays** have a `mediumUrl` field. Changes to arif-fazil.com don't update Medium — those are separate publications.
 

@@ -287,6 +287,36 @@ Always include a confirmation section:
   set `ax.set_xlim(-4, n+8)` to give enough left margin. Otherwise text is invisible.
   Proven 2026-07-14.
 
+### 15. PORTFOLIO REVIEW CHARTS — Labels Side Panel, NOT On Candles ⚠️
+
+**User correction (2026-07-21):** "Weii hang tutup price dengan label. Buat balik."
+This is a HARD rule for any multi-chart portfolio review or comparison layout.
+
+**What FAILED (rejected):** Labels, annotations, info boxes, and P&L badges placed on the chart area itself (via `ax.text()`, `ax.annotate()`) — they block the candlestick bodies that Syed needs to see.
+
+**What WORKED (approved):**
+1. **Main chart area = candles ONLY.** Only horizontal S/R lines, EMA overlays, and current price dot.
+2. **All labels, levels, analysis go in a RIGHT-SIDE LEGEND PANEL.** Use `fig.text(x=0.74, y=...)` or `fig.add_subplot(gs[:, 1])` for a dedicated column.
+3. **Figure layout:** `gs = fig.add_gridspec(N, 1, right=0.72)` — leaves 28% of figure width for legend panel.
+4. **Level labels:** Draw dashed horizontal lines on the chart (no text), then explain each level in the side panel as a text entry with its color+label.
+5. **Info boxes, R:R data, P&L badges** — ALL in the side panel. Never overlaid on candles.
+6. **Y-axis price labels** must stay in the margin — don't overlap with rightmost candles.
+
+**Side panel content pattern (proven 2026-07-21):**
+```
+fig.text(0.74, y, 'ABANG SADO PORTFOLIO REVIEW', fontsize=14, color=GOLD)
+fig.text(0.74, y-Δ, '21 JUL 2026  21:51 MYT', fontsize=9, color=DIM)
+
+# Per-asset legend
+fig.text(0.74, y_asset, '❶ ASSET — Position #N', fontsize=11, color=GOLD)
+for each (color, label) in asset_data:
+    fig.text(0.745, y_line, label, fontsize=8.5, color=color, family='monospace')
+
+fig.text(0.74, y_action, '→ ACTION RECOMMENDATION', fontsize=9.5, color=GREEN)
+```
+
+**Pitfall:** `ax.annotate(' $91.27', xy=(n-1, 91.27), ...)` places text ON the chart area. Only use `ax.plot()` for the price dot. All text goes in the side panel.
+
 ### 11. S/R LEVEL DETECTION — Pivot-Based Within Visible Range
 
 Don't use rolling window extremes on full 60-day data — that produces S/R levels
@@ -381,7 +411,7 @@ ax_rsi.text(len(x)-0.5, rsi, f'{rsi:.0f}', color=GOLD, fontsize=8, fontweight='b
 
 - **Plotly+kaleido too slow for cron.** Takes 60s+ to render a single chart. Use matplotlib instead (3-5s). kaleido dependency also heavier to install. Proven 2026-07-16.
 - **S/R levels: less is more.** User rejected charts with 6+ S/R levels. Max 2-3 per side, labeled cleanly. Clutter kills readability on mobile. Focus on levels NEAR current price. Proven 2026-07-16.
-- **chart_pro.py is the current standard.** `/root/trading/scripts/chart_pro.py` — matplotlib-based, 180 DPI, dark theme, EMA 20/50/200, bias pill, zone shading, RSI panel, bottom verdict banner. Use this for all Telegram chart delivery. Replaces older xauusd_chart_pdf.py for signal charts. Proven 2026-07-16.
+- **Gold API (`:3456`) is the primary data source.** Use `http://localhost:3456/api/gold/history?period=3d` for chart data. Returns candles (flat OHLCV dicts), EMA20/50/200, and RSI as `[{time, value}]` dict-arrays. Extract `.value` before plotting — see `references/gold-api-internal-data-shape.md` for timestamp-alignment when candle/indicator counts differ. Proven 2026-07-22.
 - **WEALTH Gold Dashboard exists.** Live at arif-fazil.com/wealth/gold with superior quality (technical focus, world context, decision gate). Don't rebuild — use existing. API at /wealth/gold/api/gold/*. Proven 2026-07-14.
 - **Chart zone shading matters.** User feedback: profit zone (green) + risk zone (red) shading makes trade setup instantly visible. Always include for signal charts. Proven 2026-07-16.
 - **Bias pill in header.** BULLISH/BEARISH/NEUTRAL badge + confidence % in chart header gives instant context. Add to all signal charts. Proven 2026-07-16.
@@ -433,12 +463,39 @@ Full briefing checklist for retail-trader voice notes: `references/gold-api-inte
 
 ## Live Implementation
 
-**Working script:** `/root/trading/scripts/xauusd_chart_pdf.py`
-- Fetches XAUUSD via yfinance (GC=F), calculates EMA 20/50, RSI 14, S/R
-- Renders dark-theme H1 candlestick chart with overlays
-- Outputs landscape A4 PDF with reportlab
-- Usage: `python3 xauusd_chart_pdf.py [--output path.pdf]`
-- Used by daily briefing cron (job `2258f1b3fa0e`)
+**Primary data source:** gold-api on `:3456` (Node.js, systemd `gold-api.service`).
+Fetches from `/api/gold/history?period=3d` (48 H1 candles) or `?period=7d` (117 candles).
+Returns candles as flat OHLCV dicts, EMA20/50/200 and RSI as `[{time: ts, value: v}]`
+dict-arrays. Flatten before plotting:
+```python
+ema20 = [d['value'] for d in data['ema20']]
+rsi   = [d['value'] for d in data['rsi']]
+```
+
+**Quick chart pipeline (proven 2026-07-22, ~3s render):**
+```bash
+# 1. Fetch + flatten
+curl -s 'http://localhost:3456/api/gold/history?period=3d' | python3 -c "
+import json,sys; d=json.load(sys.stdin)
+out={'opens':[c['open'] for c in d['candles']],
+     'highs':[c['high'] for c in d['candles']],
+     'lows':[c['low'] for c in d['candles']],
+     'closes':[c['close'] for c in d['candles']],
+     'times':[c['time'] for c in d['candles']],
+     'ema20':[e['value'] for e in d['ema20']],
+     'ema50':[e['value'] for e in d['ema50']],
+     'rsi':[e['value'] for e in d['rsi']]}
+json.dump(out,open('/tmp/gold_flat.json','w'))
+print(f'{len(out[\"closes\"])} candles, {out[\"closes\"][-1]:.1f}, RSI {out[\"rsi\"][-1]:.0f}')
+"
+
+# 2. Render chart (matplotlib dark theme, candlesticks + EMA + RSI)
+python3 chart_script.py  # reads /tmp/gold_flat.json → /tmp/gold_chart.png
+```
+
+**Web dashboard:** https://arif-fazil.com/wealth/gold (TradingView lightweight-charts,
+Node.js API on port 3456). This is the live interactive version — the PDF/PNG pipeline
+above is for Telegram delivery and cron briefings.
 
 ## References
 

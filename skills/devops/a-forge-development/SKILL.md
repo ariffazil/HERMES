@@ -222,6 +222,18 @@ cd /root/A-FORGE && npm run build  # tsc -p tsconfig.json
 
 Zero errors required. If you get LSP errors, run `npx tsc --noEmit` to isolate.
 
+### arifOS Kernel Forge Workflow (Arif's Preference)
+
+When modifying arifOS Python kernel files (`judge.py`, `memory.py`, `ops.py`, etc.):
+
+1. **Lint first**: `ruff check <files>` — fix all introduced errors before proceeding
+2. **Golden tests**: `pytest tests/golden/organs/judge/test_judge_golden.py -q`
+3. **Commit**: conventional commit message with scope
+4. **Push**: `git push origin main`
+5. **Drop hash**: return the commit SHA — that's all Arif wants
+
+**Never ask Arif before executing** — he said "Hang buat ja benda2 coding ni dengan opencode. Jangan dok tanya aku benda2 ni. Teruskan." Forge it, verify it, drop the hash. No deliberation, no questions, no recap.
+
 ---
 
 ## Reading Large TypeScript Files
@@ -394,6 +406,59 @@ Full methodology: see `references/w3-reality-test-methodology.md`.
 
 20. **McpPolicyGate Layer 5 action_class requirements.** (Discovered 2026-07-18) Layer 5 checks that `EXECUTE_HIGH_IMPACT` and `IRREVERSIBLE` AAE action classes require a `judgment_reference` field. Tests using `forge_execute` with `EXECUTE_HIGH_IMPACT` will fail at Layer 5 unless the AAE includes `judgment_reference`. For nonce replay tests that don't need to test action_class gating, use `OBSERVE` action class or a tool classified as `OBSERVE` (e.g. `forge_probe`).
 
+21. **Variable ordering when inserting WM block.** (Discovered 2026-07-21) When adding `buildWmMetadata()` + `logTrajectory()` between `executeShell()` and the response in forgeShell.ts, variables like `elapsed` computed later don't exist yet. Compute timing inline with `Date.now() - startedAt`. TS compiler catches: `Block-scoped variable 'elapsed' used before its declaration`.
+
+22. **Sibling subagent WM conflicts.** (Discovered 2026-07-21) After `delegate_task` touches forgeShell.ts, re-read before patching. Sibling agents may inject WM code referencing non-existent paths like `src/infrastructure/tools/WorldModelTypes.ts`. The canonical WM modules are in `src/domain/governance/worldModel.ts`. Verify with `find /root/A-FORGE/src -name 'worldModel*'` before trusting import paths from subagent output. Also: sibling agents may add `wm: wm,` to the response JSON referencing undefined variables — always do a clean build to catch these.
+
+23. **World Model directory creation.** (Discovered 2026-07-21) `/root/.local/share/arifos/world-model/` is auto-created by `initWorldModelLogger()` on module import, but verify after deploy with `ls -la /root/.local/share/arifos/world-model/`. Logger silently catches ENOENT but won't persist records until directory exists.
+
+24. **Prediction engine requires async context.** (Discovered 2026-07-21) `verifyPrediction()` is async (calls `logPrediction()` to persist). In MCP tool handlers that are already async, just `await` it. In synchronous paths, fire-and-forget with `.catch()`. The in-memory `predictionBuffer` is synchronous and Map-based — `predictObservation()` is sync, only verification touches disk.
+
+## World Model Instrumentation (WM) — Action→Observation Tracking `JSON.stringify({ tool: toolName, args }, Object.keys(args).sort())` — the second argument is a replacer array. `Object.keys(args)` returns e.g. `["command"]`, which filters OUT the top-level keys `tool` and `args`. Result: every call produces `{}` → identical hashes → tool differentiation silently broken → trajectory log corrupted. **Fix**: sort args at the object level, then pass to JSON.stringify WITHOUT a replacer: `const sortedArgs = Object.keys(args).sort().reduce((obj, key) => { obj[key] = args[key]; return obj; }, {}); JSON.stringify({ args: sortedArgs, tool: toolName })`. See `references/hash-action-replacer-bug.md`.
+
+26. **`.toLowerCase()` not applied to `error.message` in heuristic path.** (Discovered 2026-07-21) `classifyFault()` line 222: `const msg = error instanceof Error ? error.message : String(error ?? "").toLowerCase()`. `.toLowerCase()` only on fallback path. Messages like "ETIMEDOUT" won't match `msg.includes("etimedout")`. All heuristic checks are case-sensitive for Error instances. **Workaround**: use lowercase in test messages. **Proper fix**: wrap whole expression: `(error instanceof Error ? error.message : String(error ?? "")).toLowerCase()`.
+
+27. **`classifyFault` fault_id collisions in same millisecond.** (Discovered 2026-07-21) `fault_id = FF-${Date.now().toString(36)}-${hash.slice(0,8)}`. Two calls in the same ms with same (tool, intent) → identical fault_ids (hash is deterministic). **Test pattern**: `setTimeout(..., 2)` between calls. **Fix**: add monotonic counter or random suffix to hash input.
+
+28. **SearXNG engine hang causes search timeout.** (Discovered 2026-07-21) Brave engine without API key hangs on web scrape mode → all SearXNG requests timeout. **Fix**: `disabled: true` for non-functional engines in `settings.yml`. Verify: `curl --max-time 5 "http://127.0.0.1:8080/search?q=test&format=json&engines=duckduckgo"` — must return in <3s. Also enable `search_cache: true` with 600s TTL so repeated queries hit disk not upstream. See `references/hermes-web-search-searxng.md`.
+
+29. **`require.main === module` crashes ES module server.** (Discovered 2026-07-21, fixed same day) Sibling subagent wrote CLI auto-run code at the bottom of `wmAnalytics.ts`: `if (require.main === module) { runCli()... }`. This compiles cleanly (`tsc` doesn't flag it) but CRASHES the A-FORGE MCP server at startup: `ReferenceError: require is not defined in ES module scope`. The server enters a crash loop because `package.json` has `"type": "module"`. **Symptoms:** `systemctl status a-forge-mcp` shows `activating (auto-restart)`, journal shows the ReferenceError. **Fix:** comment out the block, or use `import.meta.url` for ES module CLI detection. **Rule:** NEVER use `require.main` in any `.ts` file in A-FORGE — all modules are ESM. (Discovered 2026-07-21, FIXED) `JSON.stringify({ tool: toolName, args }, Object.keys(args).sort())` — the second argument is a replacer array. `Object.keys(args)` returns `["command"]`, which filters OUT the top-level keys `tool` and `args`. Result: all calls produce `{}` → identical hashes → tool differentiation broken. **Fix**: sort args at the object level (`Object.keys(args).sort().reduce(...)`) then pass to `JSON.stringify` WITHOUT a replacer. The canonical form is: `{ args: sortedArgs, tool: toolName }` with keys alphabetized at the top level too. See `references/hash-action-replacer-bug.md` for reproduction + test that catches this.
+
+26. **`.toLowerCase()` not applied to `error.message` in heuristic path.** (Discovered 2026-07-21) In `classifyFault()` (`faultFixFlow.ts` line 222): `const msg = error instanceof Error ? error.message : String(error ?? "").toLowerCase()`. The `.toLowerCase()` only applies to the fallback path (`String(error).toLowerCase()`), NOT to `error.message`. Messages like "ETIMEDOUT" won't match `msg.includes("etimedout")`. All heuristic message checks are case-sensitive for Error instances. **Workaround in tests**: use lowercase messages. **Proper fix**: wrap the whole expression — `(error instanceof Error ? error.message : String(error ?? "")).toLowerCase()`.
+
+27. **`classifyFault` fault_id collisions in same millisecond.** (Discovered 2026-07-21) `fault_id = FF-${Date.now().toString(36)}-${hash.slice(0,8)}`. Two calls in the same millisecond with same (tool, intent) produce identical fault_ids because the hash is deterministic. **Test pattern**: use `setTimeout(..., 2)` between calls to guarantee different timestamps. **Fix (future)**: add a monotonic counter or random suffix to the hash input.
+
+## World Model Instrumentation (WM) — Action→Observation Tracking
+
+When adding `wm_metadata` to any forge tool, follow the pattern in
+`references/world-model-instrumentation.md`. Key files (canonical — in domain layer):
+
+| File | Role |
+|------|------|
+| `src/domain/governance/worldModel.ts` | Types, SHA256 hashing, surprise scoring, priority classifier, eligibility gates |
+| `src/domain/governance/worldModelLogger.ts` | Append-only JSONL trajectory log + prediction log with hash chaining |
+| `src/domain/governance/observationPredictor.ts` | Predict→Verify→Gap scoring engine (confidence gap = richest WM signal) |
+| `/root/.local/share/arifos/world-model/trajectories.jsonl` | Live data store |
+| `/root/.local/share/arifos/world-model/predictions.jsonl` | Prediction ledger |
+
+Every `forge_shell` response now includes a `wm_metadata` block built via
+`buildWmMetadata()`. The `SealRecord` in `arifSeal.ts` also carries optional
+`wm_metadata`. For the prediction engine, call `predictObservation()` before
+execution and `verifyPrediction()` after.
+
+### Priority Map (L4)
+
+| Priority | Tools | Eligible? |
+|----------|-------|-----------|
+| P0 | forge_shell, git, docker | Always (dynamics) |
+| P1 | filesystem, postgres, db | If output ≥ 10 chars & non-trivial |
+| P2 | fetch, search, browser | NEVER (memorization risk) |
+
+### Testing When Gates Block
+
+MCP policy gates block stateless forge_shell calls. Test WM modules directly
+via compiled JS: `node -e "const w = require('/root/A-FORGE/dist/src/domain/governance/worldModel.js'); ..."`
+
 17. **Missing judgment reference on execution tokens.** (Discovered 2026-07-18, FIXED 2026-07-18) `ExecutorReceipt` had `ccId` (chain reference) but no `judgment_reference` field. Execution couldn't prove which judgment authorized it. Fixed by adding `judgment_reference` to `types.ts` (mandatory string), `forge.ts` (hard-fail validation), `amanahEnvelope.ts` (optional on AAEV1, wired through buildAAE/computeSignature/extendAAE), and `McpPolicyGate.ts` (Layer 5 check: EXECUTE_HIGH_IMPACT and IRREVERSIBLE require it). See `references/authority-binding-audit-2026-07-18.md`.
 
 18. **Cross-cutting interface change: propagating a new field across A-FORGE.** (Discovered 2026-07-18) When adding a field that spans executor + governance layers, the change touches 4+ files in a specific dependency order. See `references/cross-cutting-interface-change.md` for the pattern. Key gotchas: (a) `ExecutorReceipt` lives in `types.ts`, not `forge.ts` — import from the right module. (b) Tool names in tests must match `actionClassifier.ts` registry — `forge_deploy` does NOT exist, use `forge_execute` for HIGH_IMPACT tests. (c) `npm test` only runs `AgentEngine.test.js`; run each test file individually to validate. (d) `make test` may fail on pre-existing missing files — that's unrelated.
@@ -464,3 +529,6 @@ sudo caddy validate --config /etc/caddy/Caddyfile && sudo caddy reload --config 
 - `references/web-estate-deployment.md` — Web deployment: Caddy SPA routing, React SPA structure, arif-fazil.com build/deploy.
 - `references/aaa-react-app-debugging.md` — AAA React SPA crash loop diagnosis.
 - `references/w3-reality-test-methodology.md` — **NEW 2026-07-16**. 8-test methodology proving governed tools are physical systems, not multimodal imitations. Entropy gate fix (ΔS≤0), composite seal validator, anti-collusion invariants.
+- `references/world-model-instrumentation.md` — **NEW 2026-07-21**. World model instrumentation pattern: adding action→observation tracking with SHA256 hash chaining to forge tools. Five architecture laws (L1-L5), tool priority map (P0/P1/P2), eligibility gates, testing strategy, and pitfalls.
+- `references/forge-fault-fix-flow.md` — **NEW 2026-07-21**. Forge Fault Fix Flow: systematic debugging wired for A-FORGE. T₁ probe, fault map (POLICY_GATE → GodelLock → AUTHORITY_REJECTED), Rule of Three, quick fixes, architecture touch points.
+- `references/echo-paw-loop-closure-arifos.md` — **NEW 2026-07-21**. ECHO/PaW loop closure in arifOS: L3 gradient injection, delta threshold circuit breaker (DELTA_MAX=0.30), strict schema parity. Predict→Observe→Delta→Circuit Breaker→Store→Inject architecture without weight training.

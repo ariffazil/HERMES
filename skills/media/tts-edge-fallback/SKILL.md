@@ -191,11 +191,16 @@ When user seems mobile (in car, parking, gym, outdoors) and the response is info
 - **Character limit**: edge-tts handles long text well, but keep under ~5000 chars per call for reliability
 - **Malay pronunciation**: `ms-MY-OsmanNeural` handles Manglish/Malay mix reasonably well, but it's Standard BM — not Penang
 - **File cleanup**: Files in `/tmp/` are ephemeral — fine for one-shot delivery
-- **Telegram voice**: edge-tts outputs MP3, MiMo outputs WAV — both render as voice bubble natively
+- **Telegram voice**: Telegram renders `.ogg` (Opus in OGG container) as voice bubbles with waveform UI. MP3 and WAV send as regular audio files — NOT voice bubbles. Always convert to OGG for voice notes:
+  ```bash
+  ffmpeg -y -i /tmp/output.mp3 -c:a libopus -b:a 32k -ac 1 /tmp/output.ogg
+  ```
+  Then deliver with `MEDIA:/tmp/output.ogg`. Proven 2026-07-22: two BM voice notes delivered successfully as OGG voice bubbles.
 - **"Penang voice" expectation management**: edge-tts cannot do Penang. Honest framing beats pretending — tell user what's actually possible and what path gets closest (MiMo voicedesign with Penang description, or voiceclone with sample). Don't claim you'll deliver Penang when the underlying model is Standard BM.
 - **MiMo `voicedesign` description quality matters more than length**: 1-2 sentences with specific dialect cues ("Penang", "northern Malaysian", "conversational casual") beats a 200-word essay. Test iteratively.
 - **MiMo is free "for a limited time"** per their docs (verified 2026-07-08). Don't promise permanent free access.
 
 ## Reference
 
-- `references/mimo-tts-api-quirks.md` — full MiMo V2.5 TTS API quirks: the 400-error trap with `audio.voice` for voicedesign, base64-decoding recipe, working curl + Python examples, style control tokens for Penang voice, Hermes config integration, known limitations, and provider choice matrix.
+- `references/mimo-tts-api-quirks.md` — full MiMo V2.5 TTS API quirks
+- `references/arif-voice-note-proxy.md` — Arif voice note proxy pattern: speaking to a third party in the room via voice note: the 400-error trap with `audio.voice` for voicedesign, base64-decoding recipe, working curl + Python examples, style control tokens for Penang voice, Hermes config integration, known limitations, and provider choice matrix.

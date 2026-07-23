@@ -89,12 +89,15 @@ date,day,location,jenis,order_qty,baki,sold,price_rm,revenue_rm
 - The user may split one receipt's items across multiple messages; keep a running tally
 - "Telur masin" on a receipt may map to "telur mata" in the user's category system — ask
 - Some receipts list items the user later says "buang" (discard) — adjust accordingly
-- Don't compute revenue for berlauk unless user confirms the price
+- Don't compute revenue for berlauk unless user confirms the price. **"Berlauk xyah"** = exclude entirely.
 - **Location code aliases**: The same station may appear under different abbreviations on different days. DSW and BSW may be the same station; DSP and DP may be the same station. The user's verbal naming is authoritative — don't split into separate tracking buckets unless the user explicitly does.
 - **Only sold revenue ("yang abis sahaja")**: When user says compute revenue for sold only, exclude all pending/unknown-baki rows. Revenue tables must only include variants with confirmed sold counts.
 - **Multi-day span**: User often provides data across multiple consecutive days in one conversation. Cross-reference only when asked; keep daily summaries separate unless user requests a combined view.
 - **Topic interrupts**: If user switches to personal/medical matters mid-tracking, handle the new topic immediately but preserve all tracked business data in-memory. Resume tracking only when user returns to it — don't re-ask already-provided data.
 - **Price comes from user**: The user will say "telur mata darab 1.5, telur rebus n telur dadar darab 1.2". Apply these explicitly; never assume pricing.
+- **Two-layer pricing**: User buys from supplier at RM 1.50 (mata) / RM 1.20 (rebus/dadar) and sells to customers at RM 3.00 / RM 2.50. Ask which price layer to use for calculations.
+- **Sequential percentage deductions**: User may say "tolak setiap jenis 20%" then "tolak lagi 5%" — apply sequentially. Compute unsold count, then compute x-abis per-kedai average.
+- **Per-kedai breakdown**: User tracks per-physical-kedai, not per-location. MAMAK 2 = 2 kedai, LRT S = 3 kedai. Divide totals accordingly when computing averages.
 
 ## References
 

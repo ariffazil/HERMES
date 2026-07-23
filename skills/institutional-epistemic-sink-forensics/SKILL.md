@@ -339,6 +339,7 @@ The audit pattern deliberately lands at **YELLOW band** rather than GREEN/RED:
 - **`references/wealth-tool-body-language-gaps.md`** — WEALTH tool capabilities vs 8-channel gaps. Load when running WEALTH tools against an institution.
 - **`references/witness-before-analyze.md`** — CRITICAL: when NOT to decode. The over-cynical pitfall, witness-before-analyze protocol, MSS moment pattern, recalibration protocol. Load this FIRST when Arif shares a personal/vulnerable moment.
 - **`references/people-research-and-cultural-decoding.md`** — institutional people forensics, communication style decoding, PETRONAS DNA context
+- **`references/media-contradiction-mapping.md`** — Lightweight media contradiction mapping + PR narrative forensics. 6-phase pipeline: internal intelligence → external sweep → contradiction grid → timeline reconstruction → PR coordination detection → "prove me wrong" test. Use when the question is "what is media saying and who is coordinating it?" (vs the WEALTH-tool financial audit path below). Proven on SEARAH Eni-PETRONAS audit 2026-07-22. No WEALTH tools required.
 - **`wealth-capital-thermodynamics`** — for pure capital allocation questions
 - **`wealth-law-anthropology`** — when the collapse touches legal doctrine (pusaka / corporate / regulatory)
 - **`geox-federation-mcp-driver`** — for the FastMCP Python client pattern, schema discovery via Pydantic errors, evidence/claim workflows

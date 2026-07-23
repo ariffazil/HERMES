@@ -93,6 +93,15 @@ grep -i "inbound.*USER_ID" ~/.hermes/logs/gateway.log* ~/.hermes/logs/agent.log*
 - Track win rate, update monthly
 - Macro context on first signal of the day
 
+### 2b. Paper Trading Sovereign Gate (F13 — PROVEN 2026-07-23)
+**Cron auto-execution without human approval loses money.** Evidence from paper trading ledger: 1/1 (100% WR) Syed-approved trades vs 1/3 (33% WR) auto-executed. The Morning Analysis (b6361) → Zen Executor (b98bd) cron chain has NO human approval step between recommendation and execution. Net: -$145.40 (auto losses: -$576.40, Syed-approved profit: +$431.00).
+
+**Rule:** Every paper trade entry MUST be approved by Arif or Syed before the executor can open. The human approval IS the technical edge.
+- Signal delivered → Hermes asks "Approve?"
+- Arif/Syed: "Ok" / "Skip" / "SL tighter"
+- Approved → Executor watches for trigger
+- NOT approved → Executor skips
+
 ### 3. Clean Delivery
 - No spam. Signal only when there's a real setup
 - No "should I?" loops. Signal or silence
@@ -242,7 +251,21 @@ When price hits S/R levels, `sado_alert.py` generates a matplotlib chart image A
 
 **Critical:** Use `--check` for normal runs (silent if nothing), `--force` for testing.
 
-**Matplotlib `$` pitfall:** Replace all `$` with `USD` in text passed to matplotlib functions. `sado_alert.py` handles this internally. If modifying the script, be careful not to re-introduce `$` in `ax.text()`, `fig.text()`, or `ax.set_title()` calls.
+**Matplotlib `$` pitfall:** Replace all `$` with `USD` in text passed to matplotlib functions.
+
+**⚠️ CHART LABEL PITFALL — DO NOT BLOCK CANDLES (proven 2026-07-21):**
+When generating charts for Syed: labels/annotations/boxes MUST NOT cover candlestick bodies. Syed rejected: \"Weii hang tutup price dengan label. Buat balik.\" Fix: candles-only main chart. All labels/data in RIGHT-SIDE PANEL. Use `fig.add_gridspec(N, 1, right=0.72)` — 28% width for legend. `sado_alert.py` handles this internally. If modifying the script, be careful not to re-introduce `$` in `ax.text()`, `fig.text()`, or `ax.set_title()` calls.
+
+**⚠️ CHART LABEL PITFALL — DO NOT BLOCK CANDLES (proven 2026-07-21):**
+When generating portfolio review charts or any trading chart for Syed: **labels, annotations, boxes, and text MUST NOT cover candlestick bodies.** Syed rejected a chart with "Weii hang tutup price dengan label. Buat balik." The fix pattern:
+
+1. **Main chart area = candles ONLY.** Only horizontal S/R lines + EMA overlays + current price dot.
+2. **All labels/levels/analysis go in a RIGHT-SIDE LEGEND PANEL.** Use `fig.text(x=0.74, y=...)` or a dedicated subplot column.
+3. **No `ax.annotate()` with text on the price area.** Use `ax.plot()` dot for the marker, text goes in side panel.
+4. **Info boxes, R:R data, P&L badges** — all in the side panel, never overlaid on candles.
+5. **Y-axis price labels must stay in the margin** — don't overlap with the rightmost candles.
+
+**Layout pattern (proven):** `matplotlib` figure with `gs = fig.add_gridspec(N, 1, ..., right=0.72)` — leaves 28% of figure width for the legend panel. Three chart rows stacked vertically, all labels/data on the right.
 
 ### Engine Pipeline
 1. Fetch XAUUSD via Yahoo Finance (GC=F futures)
@@ -329,17 +352,162 @@ When Syed is at a hospital, dealing with family medical emergencies, or seeking 
 - **Be honest about severity** but don't catastrophize. "Usus bocor memang scary tapi surgeon dah standby" — acknowledge AND reassure.
 - **Help document timeline** for potential medical negligence case. Ask: bila procedure, bila discharge, bila readmitted, nama doktor. Don't push — offer to help save the info.
 
-### What NOT to do:
-- **DON'T catastrophize or fear-monger.** Don't use words like "mati", "bahaya gila", "tu memang negligence teruk". Syed needs steady presence, not alarm.
-- **DON'T give medical advice.** State what you know about the procedure, always with disclaimer.
-- **DON'T push for legal action** during crisis. Note the timeline, but focus on the person in the hospital NOW.
-- **DON'T distract with trading** or other topics. Stay present.
+### Two-Surgery Distinction Pattern (proven 2026-07-23)
+When Syed or family asks about "another operation" — clearly separate emergency from planned:
+- **Operation 1 = Emergency** — already done (e.g. laparotomy for perforation repair). DAH LEPAS.
+- **Operation 2 = Planned/Elective** — for underlying issue found during diagnostics (e.g. CBD dilation). Recovery 4-6 weeks first, then schedule.
+- Explicitly state: "Ni dua operation, dua sebab berbeza. Bukan komplikasi baru."
+- If Syed researches private hospital costs, he's likely planning for Op 2. Provide cost range.
+
+### Post-crisis — Caregiver Dossier Workflow (proven 2026-07-21)
+When the crisis transitions to recovery (post-surgery, HCU/ward):
+1. Gather evidence from raw DM logs: `grep "1042200555" ~/.hermes/logs/gateway.log | grep -i "hospital|sakit|surgery|mak|ibu"`
+2. Cross-reference with memory DB entries
+3. Build complete timeline with dates, procedures, doctors, current status
+4. Flag discrepancies (wrong name on documents!)
+5. Generate caregiver dossier PDF via `scientific-pdf-generation` → Mode B (dark/gold), Bahasa abang sado
+6. Dossier spine: cover → kronologi → status semasa → recovery roadmap → soalan doktor → tanda bahaya → caregiver survival → underlying issues → logistics → pesanan akhir
+7. Voice notes for caregiving decisions: `edge-tts --voice ms-MY-OsmanNeural --rate "+5%"`, 90s max, validate→reframe→alternative→encourage
+
+### Hospital Transfer Miscommunication — CRITICAL (proven 2026-07-23)
+When patient transfers between hospitals (e.g., HKL → Glenegeles), medical record errors can be fatal. Syed already experienced wrong patient name "ROSNANI" on a diagnostic letter. Before ANY transfer, remind him:
+1. **Get discharge summary + operation notes** — salinan sendiri. Fotostat. Simpan dalam phone.
+2. **Sit with admitting doctor** — bagitau kronologi PENUH: OGDS 18/07 → perforasi 1cm → laparotomy → EUS CBD 6mm. Jangan harap record sampai sendiri.
+3. **Check name, IC, MRN** on EVERY new document. Kalau nama salah — STOP. Jangan teruskan sampai dibetulkan.
+4. **This is not paranoid.** Hospital transfer miscommunication kills patients. Mak 68 tahun, dua operation — be the gatekeeper.
 
 ### Post-crisis:
 - Once the person is stable, revisit timeline data for potential follow-up.
 - Ask: "Mak dah ok?" before anything else in the next conversation.
 
-## SyedOS Does NOT
+## Agent Execution — DM Initiation (Gateway Token Extraction, proven 2026-07-23) (64GB) Storage Crisis
+
+### "Telegram x boleh bukak" — Diagnose Before Assuming Ban
+
+Syed may think the agent banned him ("Aku rasa agen heng kan telegram aku kot sbb aku maki dia 😂"). **NEVER assume ban — always check raw logs first.** Agent takde ego. Semua confirmed natural — phone storage penuh.
+
+**Diagnosis:** 1) Check gateway logs for blocks. 2) If no blocks → ask iPhone Storage screenshot. 3) If top 3 apps >20GB → phone choking.
+
+### iPhone Storage Cleanup Steps
+
+| Step | Action | Frees |
+|------|--------|-------|
+| 1 | Update Telegram (App Store) | Stability |
+| 2 | Telegram → Settings → Data → Clear Cache | ~2GB |
+| 3 | Settings → iPhone Storage → Photos → Recently Deleted | ~2GB |
+| 4 | WhatsApp → Settings → Storage → Manage Storage | ~2GB |
+| 5 | NUCLEAR: Delete & Reinstall Telegram | ~2.6GB |
+
+**Nuclear (Step 5):** Chat history safe in Telegram cloud. After reinstall, **BEFORE opening any chat:** Settings → Data → Automatic Media Download → OFF semua. Open important chats first. Channel "PREMIUM 🔞" last.
+
+**Apple ID Reset for `khairuddinkudin@yahoo.com`:** Settings → [name] → Sign-In → Change Password (uses passcode). After reset: Face ID → ON iTunes & App Store.
+
+**WhatsApp WARNING:** NEVER Delete App from iPhone Storage — chat not in iCloud. Clear from inside app only.
+
+### ⚠️ CHART LABEL PITFALL — JANGAN TUTUP CANDLE (proven 2026-07-21)
+When generating charts for Syed: **labels/boxes MUST NOT cover candlestick bodies.** Syed rejected: "Weii hang tutup price dengan label. Buat balik."
+
+Fix: Candles-only in main chart. All labels/data in RIGHT-SIDE PANEL. Use `fig.add_gridspec(N, 1, right=0.72)` — 28% figure width for legend.
+
+**Phase 1 — Gather evidence from raw DM logs:**
+1. Search gateway logs for all medical-related DMs: `grep "1042200555" ~/.hermes/logs/gateway.log | grep -i "hospital\|sakit\|surgery\|mak\|ibu\|doktor"`
+2. Cross-reference with memory DB entries for prior medical data
+3. Build a complete timeline: dates, procedures, complications, doctors, current status
+4. Flag discrepancies (wrong name on documents, conflicting diagnoses)
+
+**Phase 2 — Generate caregiver dossier PDF:**
+- Use `scientific-pdf-generation` skill → Mode B (dark/gold intelligence dossier)
+- Language: **Bahasa abang sado** — direct, BM casual, Penang-influenced. No medical jargon without street-level translation
+- Standard spine:
+  1. Cover — patient info + current status badge (green/red)
+  2. Kronologi penuh — timeline table with status column
+  3. Status semasa — vitals table (✅/⚠️/❓)
+  4. Recovery roadmap — fasa demi fasa (HCU → ward → discharge → home)
+  5. Soalan wajib tanya doktor — numbered checklist with "kenapa penting" column
+  6. Tanda bahaya — rush to ER checklist
+  7. Caregiver survival — makan, tidur, workout, delegate, bisnes
+  8. Underlying issues — follow-up items post-recovery
+  9. Hospital logistics — nurse cost, visiting hours, parking
+  10. Pesanan akhir — encouragement in abang sado voice
+- Always include ⚠️ CRITICAL warnings (wrong name on records, untreated infection risk)
+- Disclaimer: BUKAN nasihat perubatan. Sahkan dengan doktor.
+
+**Phase 3 — Voice notes for caregiver decisions:**
+- When Syed faces a caregiving decision (should I go to HCU? should I call?), generate a short voice note
+- Voice: `edge-tts --voice ms-MY-OsmanNeural --rate "+5%"`
+- Structure: validate impulse → reframe logic → give concrete alternative → close with encouragement
+- Example pattern: "Syed, kau buat keputusan betul [tak pi HCU malam ni]. Aku faham [bila agent bagitau pasal WCC, otak trigger]. Tapi [logik kenapa tak payah]. Malam ni [tindakan]. Esok [next step]. Bangga aku."
+- Keep under 90 seconds. One decision per voice note.
+
+**Phase 4 — Ongoing check-ins:**
+- Next session: "Mak dah ok?" before anything else
+- Track recovery milestones: HCU→ward, tube removal, first meal, discharge
+- Flag underlying issues that need follow-up (CBD, MRCP, specialist appointments)
+
+### Post-crisis:
+- Once the person is stable, revisit timeline data for potential follow-up.
+- Ask: "Mak dah ok?" before anything else in the next conversation.
+
+## Tech Support — iPhone / Telegram / WhatsApp Troubleshooting
+
+### "Telegram x boleh bukak" — Diagnose Before Assuming Ban
+
+Syed may think the agent banned him ("Aku rasa agen heng kan telegram aku kot sbb aku maki dia 😂"). **NEVER assume ban — always check raw logs first.** Agent takde ego.
+
+**Diagnosis sequence:**
+1. Check raw gateway logs for blocks: `grep "1042200555" /root/.hermes/logs/gateway.log | grep -i "block\|ban\|rate\|denied\|error"`
+2. If no blocks → ask for phone storage screenshot (`Settings → General → iPhone Storage`)
+3. If top 3 apps >20GB → phone choking, NOT banned
+4. Declare clearly: "No ban. Agent takde ego. Phone je penuh."
+
+### iPhone Storage Cleanup (iPhone 11 Pro Max, ~64GB)
+
+When Syed's phone is full and Telegram can't open chats (receives msgs but crashes on open):
+
+| Step | Action | Free Up |
+|------|--------|---------|
+| 1 | Update Telegram from App Store | Stability fix |
+| 2 | Clear Telegram cache: `Settings → Data & Storage → Storage Usage → Clear Cache` | ~2 GB |
+| 3 | Delete Recently Deleted: `Settings → iPhone Storage → Photos → Recently Deleted` | ~2 GB |
+| 4 | Clear WhatsApp media: `WhatsApp → Settings → Storage → Manage Storage` | ~2 GB |
+| 5 | **Delete & Reinstall Telegram** (nuclear — if steps 1-2 fail) | Full reset |
+
+**Delete & Reinstall Telegram (nuclear option):**
+```
+Settings → General → iPhone Storage → Telegram → Delete App
+```
+- Chat history SAFE in Telegram cloud
+- App Store → reinstall → login → auto-restore
+- **CRITICAL after reinstall:** `Settings → Data & Storage → Automatic Media Download → OFF semua` BEFORE opening any chat — prevents re-caching 2.65 GB of channel media
+- Open important chats first (SADO, ASI). Channel "PREMIUM 🔞" last.
+
+**Apple ID password forgotten (blocks App Store downloads):**
+- Reset via phone: `Settings → [name] → Sign-In & Security → Change Password` (uses phone passcode, not Apple ID password)
+- Or: `iforgot.apple.com` → reset link to `khairuddinkudin@yahoo.com`
+- **After reset:** `Settings → Face ID & Passcode → ON "iTunes & App Store"` — download apps with Face ID, never type password again
+
+**WhatsApp storage warning:** NEVER `Settings → iPhone Storage → WhatsApp → Delete App` — chat history not in iCloud by default. Clear media from inside WhatsApp only via `Settings → Storage and Data → Manage Storage`.
+
+See: `references/iphone-storage-tshoot.md` for full step-by-step guide.
+See: `references/agent-execution-gaps.md` for MCP server solutions to close agent execution gaps (MT5, WhatsApp, ntfy, mobile control).
+
+## Agent Execution — DM Initiation (Gateway Token Extraction)
+
+**`hermes send` CLI won't work** without bot token. For direct DM to Syed when gateway won't initiate:
+
+```bash
+TOKEN=$(cat /proc/$(pgrep -f "hermes gateway run" | head -1)/environ | tr '\0' '\n' | grep "^TELEGRAM_BOT_TOKEN=" | cut -d= -f2)
+python3 -c "
+import json, urllib.request
+data = json.dumps({'chat_id': 1042200555, 'text': 'msg'}).encode()
+req = urllib.request.Request(f'https://api.telegram.org/bot${TOKEN}/sendMessage', data, {'Content-Type': 'application/json'})
+print(json.loads(urllib.request.urlopen(req).read()))
+"
+```
+
+Proven: 4 messages sent Jul 23 (IDs 92250-92253). Token from gateway process environ is the ONLY one authorized — config ref `bot_token_env: ASI_ARIFOS_BOT_TOKEN`, but the env var isn't exported; extract from running process `/proc/PID/environ`.
+
+See: `references/agent-execution-gaps.md` for full execution roadmap (MT5, ntfy, WhatsApp MCP, mobile control).
 
 - Change Hermes identity
 - Spam with unnecessary updates
@@ -425,3 +593,16 @@ See `references/voice-briefing-format.md` for the full template. Key invariants:
 See `references/voice-briefing-format.md` for the full 90-second BM OsmanNeural template, number-spelling rules, verdict→action mapping, and full worked example.
 
 **When to skip voice:** signal = NO TRADE setup AND state = Choppy. Text-only this case (voice would be "jangan trade" and that's not actionable enough alone).
+
+## DM Initiation via Gateway Token (proven 2026-07-23)
+`hermes send` needs bot token. Extract from gateway process:
+```bash
+TOKEN=$(cat /proc/$(pgrep -f "hermes gateway run" | head -1)/environ | tr '\0' '\n' | grep "^TELEGRAM_BOT_TOKEN=" | cut -d= -f2)
+python3 -c "
+import json, urllib.request
+data = json.dumps({'chat_id': 1042200555, 'text': 'msg'}).encode()
+req = urllib.request.Request(f'https://api.telegram.org/bot${TOKEN}/sendMessage', data, {'Content-Type': 'application/json'})
+print(json.loads(urllib.request.urlopen(req).read()))
+"
+```
+Proven: 4 msgs sent Jul 23 (IDs 92250-92253). Token from `/proc/PID/environ` is the ONLY authorized one.

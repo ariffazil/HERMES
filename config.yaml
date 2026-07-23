@@ -4,8 +4,8 @@ agent:
   clarify_timeout: 600
   coding_context: auto
   disabled_toolsets:
-  - minimax-coding-plan-mcp
-  - serena-mcp
+    - minimax-coding-plan-mcp
+    - serena-mcp
   environment_hint: ''
   environment_probe: true
   gateway_auto_continue_freshness: 3600
@@ -20,8 +20,8 @@ agent:
   stdio_mcp_quarantine:
     enabled: true
     list:
-    - serena-mcp
-    - minimax-coding-plan-mcp
+      - serena-mcp
+      - minimax-coding-plan-mcp
     migration_target: streamable-http on localhost (per-organ)
     opt_in_via: add to active toolset at call time
     reason: Structural memory leak — opt-in per call, not spawn-at-load
@@ -49,14 +49,12 @@ auxiliary:
     provider: auto
     timeout: 120
   compression:
-    # FLAME_ELIGIBLE: Category A worker — free-tier summarization, no sovereign data
     api_key: ''
     base_url: ''
     model: ''
     provider: auto
     timeout: 120
   curator:
-    # FLAME_ELIGIBLE: Category A worker — knowledge pruning, no constitutional content
     api_key: ''
     base_url: ''
     model: ''
@@ -93,21 +91,18 @@ auxiliary:
     provider: auto
     timeout: 60
   profile_describer:
-    # FLAME_ELIGIBLE: Category A worker — user profile summarization, no PII
     api_key: ''
     base_url: ''
     model: ''
     provider: auto
     timeout: 60
   skills_hub:
-    # FLAME_ELIGIBLE: Category A worker — skill catalog indexing, no sovereign context
     api_key: ''
     base_url: ''
     model: ''
     provider: auto
     timeout: 30
   title_generation:
-    # FLAME_ELIGIBLE: Category A worker — conversation title generation, no judgment
     api_key: ''
     base_url: ''
     language: ''
@@ -175,8 +170,8 @@ checkpoints:
 code_execution:
   mode: project
 command_allowlist:
-- script execution via heredoc
-- script execution via -e/-c flag
+  - script execution via heredoc
+  - script execution via -e/-c flag
 compression:
   abort_on_summary_failure: false
   codex_gpt55_autoraise: true
@@ -258,11 +253,11 @@ discord:
   voice_fx:
     ack_enabled: true
     ack_phrases:
-    - Let me look into that.
-    - One moment.
-    - Checking on that now.
-    - Give me a sec.
-    - On it.
+      - Let me look into that.
+      - One moment.
+      - Checking on that now.
+      - Give me a sec.
+      - On it.
     ambient_enabled: true
     ambient_gain: 0.18
     ambient_path: ''
@@ -302,34 +297,34 @@ display:
         command_menu:
           max_commands: 80
           priority:
-          - 000_salam
-          - 111_tengok
-          - 222_fikir
-          - 333_jalan
-          - 444_apa
-          - 555_betul
-          - 666_rasa
-          - 777_faham
-          - 888_adil
-          - 999_ingat
-          - ask_curious
-          - tell_share
-          - dream_what
-          - feel_state
-          - learn_today
-          - see_world
-          - rest_now
-          - grow_better
-          - flow_alive
-          - brief_now
-          - seal_it
-          - think_deep
-          - start
-          - help
-          - new
-          - stop
-          - status
-          - model
+            - 000_salam
+            - 111_tengok
+            - 222_fikir
+            - 333_jalan
+            - 444_apa
+            - 555_betul
+            - 666_rasa
+            - 777_faham
+            - 888_adil
+            - 999_ingat
+            - ask_curious
+            - tell_share
+            - dream_what
+            - feel_state
+            - learn_today
+            - see_world
+            - rest_now
+            - grow_better
+            - flow_alive
+            - brief_now
+            - seal_it
+            - think_deep
+            - start
+            - help
+            - new
+            - stop
+            - status
+            - model
           priority_mode: prepend
       streaming: true
   reasoning_full: false
@@ -343,9 +338,9 @@ display:
   runtime_footer:
     enabled: false
     fields:
-    - model
-    - context_pct
-    - cwd
+      - model
+      - context_pct
+      - cwd
   show_cost: false
   show_reasoning: false
   skin: default
@@ -362,30 +357,30 @@ display:
     first_lines: 2
     last_lines: 2
 fallback_providers:
-- model: deepseek/deepseek-v4-pro
-  provider: tokenrouter
-  timeout: 20
-- model: llama-3.1-8b-instant
-  provider: groq
-  timeout: 20
-- model: aisingapore/Qwen-SEA-LION-v4-32B-IT
-  provider: sea-lion
-  timeout: 20
-- model: gemini-2.5-flash
-  provider: gemini
-  timeout: 20
-- model: gemma-4-31b
-  provider: cerebras
-  timeout: 20
-- model: MiniMax-M3
-  provider: tokenrouter
-  timeout: 20
-- model: z-ai/glm-5.2
-  provider: tokenrouter
-  timeout: 20
-- model: qwen2.5-coder:3b
-  provider: ollama
-  timeout: 20
+  - model: deepseek/deepseek-v4-pro
+    provider: tokenrouter
+    timeout: 20
+  - model: llama-3.1-8b-instant
+    provider: groq
+    timeout: 20
+  - model: aisingapore/Qwen-SEA-LION-v4-32B-IT
+    provider: sea-lion
+    timeout: 20
+  - model: gemini-2.5-flash
+    provider: gemini
+    timeout: 20
+  - model: gemma-4-31b
+    provider: cerebras
+    timeout: 20
+  - model: MiniMax-M3
+    provider: tokenrouter
+    timeout: 20
+  - model: z-ai/glm-5.2
+    provider: tokenrouter
+    timeout: 20
+  - model: qwen2.5-coder:3b
+    provider: ollama
+    timeout: 20
 federation:
   router:
     default: arif_route
@@ -421,9 +416,9 @@ gateway:
     max_concurrent_runs: 10
   max_inbound_media_bytes: 134217728
   media_delivery_allow_dirs:
-  - /var/arifos/artifacts/outbox
-  - /tmp
-  - /root/forge_work
+    - /var/arifos/artifacts/outbox
+    - /tmp
+    - /root/forge_work
   message_timestamps:
     enabled: false
   persona_policy:
@@ -457,13 +452,13 @@ hooks:
     type: intent_route
   pre_tool_call:
     applies_to_toolsets:
-    - federation
-    - mcp
-    - arifos
-    - aforge
-    - geox
-    - wealth
-    - well
+      - federation
+      - mcp
+      - arifos
+      - aforge
+      - geox
+      - wealth
+      - well
     cache_routes: true
     cache_ttl_seconds: 300
     enabled: true
@@ -557,10 +552,10 @@ moa:
       max_tokens: 4096
       reference_max_tokens: 600
       reference_models:
-      - model: mimo-v2.5-pro
-        provider: mimo-platform
-      - model: mimo-v2.5-pro-ultraspeed
-        provider: mimo-platform
+        - model: mimo-v2.5-pro
+          provider: mimo-platform
+        - model: mimo-v2.5-pro-ultraspeed
+          provider: mimo-platform
       reference_temperature: 0.6
     multimodal:
       aggregator:
@@ -571,16 +566,16 @@ moa:
       max_tokens: 4096
       reference_max_tokens: 600
       reference_models:
-      - model: mimo-v2.5
-        provider: mimo-platform
-      - model: minimax-m3
-        provider: minimax
+        - model: mimo-v2.5
+          provider: mimo-platform
+        - model: minimax-m3
+          provider: minimax
       reference_temperature: 0.5
 model:
   context_length: 1048576
-  default: deepseek-v4-pro
+  default: grok-4.5
   max_tokens: 131072
-  provider: deepseek
+  provider: opencode
   supports_vision: false
   timeout: 20
   request_timeout: 20
@@ -614,81 +609,81 @@ providers:
     api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
     key_env: QWEN_API_KEY
     models:
-    - id: qwen3.7-max
-      name: Qwen 3.7 Max
-    - id: qwen3.7-plus
-      name: Qwen 3.7 Plus
-    - id: qwen3.6-plus
-      name: Qwen 3.6 Plus
-    - id: qwen3.6-flash
-      name: Qwen 3.6 Flash
-    - id: kimi-k2.7-code
-      name: Kimi K2.7 Code
-    - id: glm-5.2
-      name: GLM 5.2
-    - id: deepseek-v4-pro
-      name: DeepSeek V4 Pro
-    - id: deepseek-v4-flash
-      name: DeepSeek V4 Flash
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max
+      - id: qwen3.7-plus
+        name: Qwen 3.7 Plus
+      - id: qwen3.6-plus
+        name: Qwen 3.6 Plus
+      - id: qwen3.6-flash
+        name: Qwen 3.6 Flash
+      - id: kimi-k2.7-code
+        name: Kimi K2.7 Code
+      - id: glm-5.2
+        name: GLM 5.2
+      - id: deepseek-v4-pro
+        name: DeepSeek V4 Pro
+      - id: deepseek-v4-flash
+        name: DeepSeek V4 Flash
     name: Bailian Singapore (Qwen/Kimi/DeepSeek/GLM)
     transport: openai_chat
   mimo-platform:
     api: https://api.xiaomimimo.com/v1
     key_env: MIMO_PLATFORM_API_KEY
     models:
-    - id: mimo-v2.5-pro-ultraspeed
-      name: MiMo V2.5 Pro UltraSpeed (DEFAULT — 1000 tok/s)
-    - id: mimo-v2.5-pro
-      name: MiMo V2.5 Pro (deep thinking, 1M ctx)
-    - id: mimo-v2.5
-      name: MiMo V2.5 multimodal (image/audio/video)
+      - id: mimo-v2.5-pro-ultraspeed
+        name: MiMo V2.5 Pro UltraSpeed (DEFAULT — 1000 tok/s)
+      - id: mimo-v2.5-pro
+        name: MiMo V2.5 Pro (deep thinking, 1M ctx)
+      - id: mimo-v2.5
+        name: MiMo V2.5 multimodal (image/audio/video)
     name: MiMo Platform (pay-per-usage)
     transport: openai_chat
   minimax:
     api: https://api.minimax.io/v1
     key_env: MINIMAX_API_KEY
     models:
-    - id: minimax-m3
-      name: MiniMax M3 (multimodal, 1M ctx)
-    - id: MiniMax-M1
-      name: MiniMax M1
+      - id: minimax-m3
+        name: MiniMax M3 (multimodal, 1M ctx)
+      - id: MiniMax-M1
+        name: MiniMax M1
     name: MiniMax Token Plan
     transport: openai_chat
   opencode-go:
     api: https://opencode.ai/zen/v1
     key_env: OPENCODE_GO_API_KEY
     models:
-    - id: mimo-v2.5-free
-      name: MiMo V2.5 Free
-    - id: deepseek-v4-flash-free
-      name: DeepSeek V4 Flash Free
+      - id: mimo-v2.5-free
+        name: MiMo V2.5 Free
+      - id: deepseek-v4-flash-free
+        name: DeepSeek V4 Flash Free
     name: OpenCode Go ($10/mo, free models)
     transport: openai_chat
   tokenrouter:
     api: https://api.tokenrouter.com/v1
     capabilities:
-    - chat
-    - function_calling
-    - reasoning
+      - chat
+      - function_calling
+      - reasoning
     cost_band: medium
     key_env: TOKENROUTER_API_KEY
     models:
-    - id: deepseek/deepseek-v4-pro
-      name: DeepSeek V4 Pro (TR)
-    - id: deepseek/deepseek-v4-flash
-      name: DeepSeek V4 Flash (TR)
-    - id: MiniMax-M3
-      name: MiniMax M3 (TR)
-    - id: xiaomi/mimo-v2.5-pro
-      name: MiMo V2.5 Pro (TR)
-    - id: openai/gpt-5.6-sol
-      name: GPT 5.6 Sol (TR)
-    - id: moonshotai/kimi-k3
-      name: Kimi K3 (TR)
-    - id: z-ai/glm-5.2
-      name: GLM 5.2 (TR — FREE tier available)
-    - id: google/gemini-3.5-flash
-      name: Gemini 3.5 Flash (TR)
+      - id: deepseek/deepseek-v4-pro
+        name: DeepSeek V4 Pro (TR)
+      - id: deepseek/deepseek-v4-flash
+        name: DeepSeek V4 Flash (TR)
+      - id: MiniMax-M3
+        name: MiniMax M3 (TR)
+      - id: xiaomi/mimo-v2.5-pro
+        name: MiMo V2.5 Pro (TR)
+      - id: openai/gpt-5.6-sol
+        name: GPT 5.6 Sol (TR)
+      - id: moonshotai/kimi-k3
+        name: Kimi K3 (TR)
+      - id: z-ai/glm-5.2
+        name: GLM 5.2 (TR — FREE tier available)
+      - id: google/gemini-3.5-flash
+        name: Gemini 3.5 Flash (TR)
     name: TokenRouter (Unified Gateway — ALL models, single key)
     notes: "CANONICAL UNIFIED ROUTER (F13 ratified 2026-07-19).\nSingle API key. 80+\
       \ models. Central billing. \nGLM 5.2 FREE tier available through July 25, 2026.\n\
@@ -700,10 +695,10 @@ providers:
     api: https://token-plan-sgp.xiaomimimo.com/v1
     key_env: MIMO_API_KEY
     models:
-    - id: mimo-v2.5-pro
-      name: MiMo V2.5 Pro (Token Plan)
-    - id: mimo-v2.5
-      name: MiMo V2.5 multimodal (Token Plan)
+      - id: mimo-v2.5-pro
+        name: MiMo V2.5 Pro (Token Plan)
+      - id: mimo-v2.5
+        name: MiMo V2.5 multimodal (Token Plan)
     name: MiMo Token Plan SGP (backup key)
     transport: openai_chat
   groq:
@@ -712,46 +707,46 @@ providers:
     key_env: GROQ_API_KEY
     transport: openai_chat
     models:
-    - id: llama-3.1-8b-instant
-      name: Llama 3.1 8B (560t/s, 14K/d)
-    - id: llama-3.3-70b-versatile
-      name: Llama 3.3 70B (280t/s, 1K/d)
-    - id: openai/gpt-oss-20b
-      name: GPT-OSS 20B (1000t/s, 1K/d)
-    - id: openai/gpt-oss-120b
-      name: GPT-OSS 120B (500t/s, 1K/d)
-    - id: qwen/qwen3.6-27b
-      name: Qwen 3.6 27B (500t/s, 1K/d)
+      - id: llama-3.1-8b-instant
+        name: Llama 3.1 8B (560t/s, 14K/d)
+      - id: llama-3.3-70b-versatile
+        name: Llama 3.3 70B (280t/s, 1K/d)
+      - id: openai/gpt-oss-20b
+        name: GPT-OSS 20B (1000t/s, 1K/d)
+      - id: openai/gpt-oss-120b
+        name: GPT-OSS 120B (500t/s, 1K/d)
+      - id: qwen/qwen3.6-27b
+        name: Qwen 3.6 27B (500t/s, 1K/d)
   sea-lion:
     api: https://api.sea-lion.ai/v1
     key_env: SEA_LION_API_KEY
     models:
-    - id: aisingapore/Qwen-SEA-LION-v4-32B-IT
-      name: Qwen SEA-LION v4 32B (FREE — 10 req/min, BM/Malay native)
-    - id: aisingapore/Llama-SEA-LION-v3-70B-IT
-      name: Llama SEA-LION v3 70B (FREE — strongest reasoning)
-    - id: aisingapore/Gemma-SEA-LION-v4-27B-IT
-      name: Gemma SEA-LION v4 27B (FREE — fast + light)
+      - id: aisingapore/Qwen-SEA-LION-v4-32B-IT
+        name: Qwen SEA-LION v4 32B (FREE — 10 req/min, BM/Malay native)
+      - id: aisingapore/Llama-SEA-LION-v3-70B-IT
+        name: Llama SEA-LION v3 70B (FREE — strongest reasoning)
+      - id: aisingapore/Gemma-SEA-LION-v4-27B-IT
+        name: Gemma SEA-LION v4 27B (FREE — fast + light)
     name: SEA-LION (AI Singapore — FREE trial, SEA-localized)
     transport: openai_chat
   gemini:
     api: https://generativelanguage.googleapis.com/v1beta/openai
     key_env: GEMINI_API_KEY
     models:
-    - id: gemini-2.5-flash
-      name: Gemini 2.5 Flash (FREE — 1.5K/day, 1M ctx)
+      - id: gemini-2.5-flash
+        name: Gemini 2.5 Flash (FREE — 1.5K/day, 1M ctx)
     name: Google Gemini (FREE tier — 1.5K req/day)
     transport: openai_chat
   cerebras:
     api: https://api.cerebras.ai/v1
     key_env: CEREBRAS_API_KEY
     models:
-    - id: gemma-4-31b
-      name: Gemma 4 31B (Cerebras — $5 credit, multimodal)
-    - id: gpt-oss-120b
-      name: GPT-OSS 120B (Cerebras — $5 credit, coding)
-    - id: zai-glm-4.7
-      name: GLM 4.7 (Cerebras — $5 credit, agentic)
+      - id: gemma-4-31b
+        name: Gemma 4 31B (Cerebras — $5 credit, multimodal)
+      - id: gpt-oss-120b
+        name: GPT-OSS 120B (Cerebras — $5 credit, coding)
+      - id: zai-glm-4.7
+        name: GLM 4.7 (Cerebras — $5 credit, agentic)
     name: Cerebras ($5 free credit — expires Aug 20 2026)
     transport: openai_chat
   kimi-moonshot:
@@ -760,12 +755,12 @@ providers:
     key_env: KIMI_API_KEY
     transport: openai_chat
     models:
-    - id: k3
-      name: Kimi K3 (2.8T, 1M ctx)
-    - id: kimi-for-coding
-      name: Kimi K2.7 Code
-    - id: kimi-for-coding-highspeed
-      name: Kimi K2.7 Code HighSpeed
+      - id: k3
+        name: Kimi K3 (2.8T, 1M ctx)
+      - id: kimi-for-coding
+        name: Kimi K2.7 Code
+      - id: kimi-for-coding-highspeed
+        name: Kimi K2.7 Code HighSpeed
 secrets:
   bitwarden:
     access_token_env: BWS_ACCESS_TOKEN
@@ -831,12 +826,14 @@ stt:
   provider: openai
 telegram:
   allowed_chats:
-  - '-1003753855708'
-  - '-1003792478194'
-  - '-1003768847825'
-  - '-1003521544074'
-  - '-1003815535761'
-  - '-1003721331017'
+    - '-1003753855708'
+    - '-1003792478194'
+    - '-1003768847825'
+    - '-1003521544074'
+    - '-1003815535761'
+    - '-1003721331017'
+    - '-1004446358629'
+    - '-5561731065'
   bot_token_env: ASI_ARIFOS_BOT_TOKEN
   bot_username: '@ASI_arifos_bot'
   enabled: true
@@ -844,17 +841,19 @@ telegram:
     rich_drafts: false
     rich_messages: false
   free_response_chats:
-  - '-1003792478194'
-  - '-1003768847825'
-  - '-1003521544074'
-  - '-1003815535761'
-  - '1042200555'
-  - '267378578'
-  - '-1003753855708'
-  - '-1003721331017'
-  - '5316953867'
-  - '5250473787'
-  - '8798431893'
+    - '-1003792478194'
+    - '-1003768847825'
+    - '-1003521544074'
+    - '-1003815535761'
+    - '1042200555'
+    - '267378578'
+    - '-1003753855708'
+    - '-1003721331017'
+    - '5316953867'
+    - '5250473787'
+    - '8798431893'
+    - '-1004446358629'
+    - '-5561731065'
   reactions: false
   require_mention: false
 terminal:
@@ -906,7 +905,7 @@ tools:
     search_default_limit: 5
     threshold_pct: 10
 toolsets:
-- hermes-cli
+  - hermes-cli
 tts:
   edge:
     voice: en-US-AriaNeural
@@ -955,9 +954,9 @@ voice:
   silence_duration: 3.0
   silence_threshold: 200
 web:
-  backend: ''
-  extract_backend: ''
-  search_backend: ''
+  backend: searxng
+  extract_backend: searxng
+  search_backend: searxng
 x_search:
   model: grok-4.20-reasoning
   retries: 2
@@ -967,10 +966,35 @@ fallback_retry:
   retry_delay: 0
   fail_fast: true
   triggers:
-  - 429
-  - 402
-  - 403
-  - 500
-  - 502
-  - 503
-  - 504
+    - 429
+    - 402
+    - 403
+    - 500
+    - 502
+    - 503
+    - 504
+search:
+  search_backend: searxng
+  backend: searxng
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

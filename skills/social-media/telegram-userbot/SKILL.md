@@ -113,9 +113,57 @@ Send the public URL (http://<VPS_IP>:<port>) to the user via Telegram. They open
 
 **After auth succeeds, shut down the web server and close the port.** The session file persists — no need to re-auth unless the session file is deleted.
 
+## Session Expiry
+
+Telethon sessions **expire silently**. A stale `.session` file still connects but fails on any real operation. Always guard:
+
+```python
+client = TelegramClient(SESSION, API_ID, API_HASH)
+await client.connect()
+if not await client.is_user_authorized():
+    print("❌ Session expired — needs re-auth")
+    await client.disconnect()
+    return
+me = await client.get_me()  # safe now
+```
+
+**Never use `client.start()` in non-interactive scripts** — it prompts for phone/code on stdin and hangs. Always `connect()` + `is_user_authorized()` guard. If expired, run the web form re-auth flow.
+
+## Creating Groups with Users
+
+```python
+from telethon.tl.functions.messages import CreateChatRequest
+
+# entity must already be resolved (user must be in contacts/dialogs)
+result = await client(CreateChatRequest(users=[entity], title="Group Name"))
+# result.chats[0].id is the new chat ID
+```
+
+### Resolving Users from `t.me/contact/` Links
+
+**CRITICAL**: The hash in `t.me/contact/<user_id>:<hash>` (e.g. `12ivBOOsRdnokBdd`) is **NOT** the MTProto `access_hash`. It is a contact-sharing token — a different format entirely. You CANNOT decode it to get the access_hash. Attempts (base64, base62, base36) will produce values outside the 64-bit signed integer range that MTProto requires.
+
+The ONLY reliable way to resolve a user from a `t.me/contact/` link is:
+
+1. **Manual**: User opens the link on their phone → Telegram opens "Add Contact" dialog → user taps Add
+2. **Programmatic after manual add**: Once the contact is added (appears in dialogs), scan for them:
+   ```python
+   dialogs = await client.get_dialogs()
+   for d in dialogs:
+       if d.entity.id == TARGET_USER_ID:
+           entity = d.entity  # now usable for CreateChatRequest
+           break
+   ```
+3. Re-run the script — the entity will resolve because the user is now in the dialog list
+
 ## Session File
 
 Telethon saves the session as a `.session` file (SQLite). Location: `/root/userbot/ari_session.session`. This file IS the authentication — protect it like a password. If deleted, re-auth required.
+
+## References
+
+- `references/telegram-code-blocking.md` — why Telegram blocks codes shared in chat
+- `references/contact-links-and-qr.md` — `t.me/contact/` link format, QR code decoding, and scam investigation pipeline
 
 ## Integration with Hermes
 
@@ -141,6 +189,8 @@ Telegram Cloud ←→ Bot API (@ASI_arifos_bot) ←→ Hermes Agent
 ## Pitfalls
 
 - **NEVER share login codes via Telegram chat** — Telegram blocks the login. Use web form or SSH terminal.
+- **Session expires silently** — always check `is_user_authorized()` after `connect()`. Expired session → `get_me()` returns None → `AttributeError: 'NoneType' object has no attribute 'first_name'`.
+- **Never use `client.start()` in scripts** — it prompts interactively on stdin and hangs in non-TTY contexts. Use `connect()` + auth guard.
 - **phone_code_hash is one-time** — must be saved between send_code and sign_in steps. Can't reuse.
 - **Codes expire in ~2 minutes** — user must enter quickly. Tell them to have browser ready before you send the code.
 - **Session file = credentials** — treat `/root/userbot/ari_session.session` like a private key. Don't commit to git.
@@ -148,6 +198,9 @@ Telegram Cloud ←→ Bot API (@ASI_arifos_bot) ←→ Hermes Agent
 - **Firewall port** — the auth web form port must be open. Close it after auth is done.
 - **Two-step auth** — Telethon's `client.start()` handles the flow automatically in interactive mode, but in non-interactive/server mode you MUST split into send_code + sign_in with saved phone_code_hash.
 - **2FA accounts** — if the user has 2FA enabled, `sign_in` will need the password too. Use `client.sign_in(password=...)` after the code step.
+- **Phone number MUST be the real full number** — auth scripts with redacted placeholders like `+601****0258` will fail. Keep the actual number in the script (the session dir is root-only). If you find redacted numbers in existing auth scripts, extract the real number from memory/AGENTS.md and patch it in.
+- **`t.me/contact/<id>:<hash>` is NOT an access_hash** — the hash after the colon is a contact-sharing token, not the MTProto access_hash. No amount of base64/base62/base36 decoding will produce a valid 64-bit access_hash. The user MUST manually open the link on their phone to add the contact; only then can Telethon resolve the entity via `get_dialogs()`.
+- **Privacy-restricted users can't be resolved without prior interaction** — if `get_entity(user_id)` fails with "Could not find the input entity", the user has privacy settings that block discovery. They must be in your contacts/dialogs first. After manual add via phone, rescan dialogs.
 
 ## Cleanup Checklist
 

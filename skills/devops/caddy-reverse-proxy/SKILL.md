@@ -235,10 +235,11 @@ handle /file.html {
 
 ## Existing arif-fazil.com Route Map
 
-Reference — routes already configured in the main site block (as of 2026-07-14):
+Reference — routes already configured in the main site block (as of 2026-07-22):
 
 | Path | Backend | Notes |
 |------|---------|-------|
+| `/images/*` | static (`/var/www/html/arif/images/`) | Static media — ADDED 2026-07-22 |
 | `/api/*` | `127.0.0.1:8088` | arifOS kernel |
 | `/mcp*` | `127.0.0.1:8088` | MCP endpoint |
 | `/wealth/gold/*` | static + `localhost:3456` | Gold chart app |
@@ -246,6 +247,10 @@ Reference — routes already configured in the main site block (as of 2026-07-14
 | `/canon/*` | static SPA | |
 | `/assets/*` | static (immutable cache) | Built assets |
 | `/_shared/*` | `/var/www/html/_shared` | Shared assets |
+
+### Pitfall: `/images/*` handler was MISSING (added 2026-07-22)
+
+The `handle /images/* { file_server }` block did NOT exist. When articles embedded `<img src="/images/...">`, Caddy had no handler → fell through to SPA fallback → returned `index.html` instead of the image. Symptom: `curl -sI https://arif-fazil.com/images/foo.jpg` returns `text/html`. Fix: add the handler BEFORE the `/assets/*` block. Any new static directory needs its own `handle` block — Caddy doesn't auto-discover subdirectories.
 
 ## Federation Chrome — shared_assets snippet
 
@@ -325,6 +330,78 @@ done
 ```
 
 **Pitfall variant — file does not exist anywhere:** If the file doesn't exist in EITHER root, the discovery claim itself is wrong. Remove the claim from the audit report rather than fabricate a file. Audit narrative "fixed discovery files" without verifying file existence produces phantom receipts (F2 TRUTH violation).
+
+### Common Pitfall: `try_files` Falls Back to SPA `index.html` Even When Static File Exists (PROVEN 2026-07-22)
+
+When static assets live at nested paths (e.g., `/wealth/gold/vendor/library.js`), the standard SPA pattern `try_files {path} /index.html` may serve `index.html` **even when the file exists on disk**. The response returns HTTP 200 with `text/html` — no error in Caddy logs, no 404.
+
+**Symptom:** `curl -s https://arif-fazil.com/wealth/gold/vendor/lib.js | head -1` returns `<!DOCTYPE html>`. File exists at `/var/www/html/gold/vendor/lib.js` (verified with `ls -la`). Response size matches `index.html` exactly.
+
+**Root cause:** With `uri strip_prefix /wealth/gold` and `root * /var/www/html/gold`, the path should resolve to the correct file. But `try_files` + `file_server` interaction can cause the fallback to always fire for certain path structures. The `{path}` placeholder may not resolve the rewritten path as expected.
+
+**Fix — add a dedicated `file_server` handler BEFORE the catch-all:**
+
+```caddyfile
+# BEFORE the catch-all SPA handler — serve static vendor files directly
+handle /wealth/gold/vendor/* {
+    uri strip_prefix /wealth/gold
+    root * /var/www/html/gold
+    file_server
+}
+handle /wealth/gold/* {
+    uri strip_prefix /wealth/gold
+    root * /var/www/html/gold
+    try_files {path} /index.html
+    file_server
+}
+```
+
+**Verification:** `curl -s https://arif-fazil.com/wealth/gold/vendor/lib.js | head -1` should return the actual JS (not `<!DOCTYPE html>`). File size should match `wc -c /var/www/html/gold/vendor/lib.js`.
+
+**Alternative — use CDN instead of local vendor files:** If the file exists on a CDN (e.g., `cdn.jsdelivr.net`), update the HTML `<script src>` to point there. This bypasses Caddy routing entirely. Verify the CDN URL is in the CSP `script-src`.
+
+### Common Pitfall: Cloudflare Edge Cache Masks VPS Fixes (PROVEN 2026-07-22)
+
+When you fix a broken file on the VPS but the browser still sees the broken version, Cloudflare's edge cache is serving a stale copy.
+
+**Diagnostic headers to check:**
+
+```bash
+curl -sI 'https://arif-fazil.com/path/to/file' | grep -i 'cf-cache\|age\|cache-control'
+```
+
+| Header | Value | Meaning |
+|---|---|---|
+| `cf-cache-status: HIT` | Cached | Served from Cloudflare edge, NOT your origin |
+| `cf-cache-status: MISS` | Fresh | Just fetched from origin, or cache expired |
+| `age: 325` | Seconds | How long this copy has been cached |
+| `cache-control: max-age=14400` | 4 hours | Cache expires 14,400 seconds after fetch |
+
+**Quick diagnosis — origin vs edge:**
+
+```bash
+# With cache-buster (bypasses Cloudflare, hits origin fresh)
+curl -s 'https://arif-fazil.com/path?cb=1' -o /dev/null -w "Size: %{size_download}\n"
+
+# Without cache-buster (may hit stale Cloudflare cache)
+curl -s 'https://arif-fazil.com/path' -o /dev/null -w "Size: %{size_download}\n"
+```
+
+If `?cb=1` returns the correct size but the clean URL returns old size → **Cloudflare cache, not your VPS fix.**
+
+**Workarounds (when purge is unavailable):**
+- **Cache-busting query params:** `<script src="file.js?v=2">` — creates unique cache key. Immediate effect for all future visitors.
+- **Meta no-cache:** `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">` in HTML `<head>`. Forces browser to always revalidate.
+- **Wait:** `max-age=14400` = 4 hours. Cache expires naturally.
+
+**Permanent fix — Cloudflare API purge:**
+```bash
+source /root/.secrets/vault.env
+curl -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/purge_cache" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data '{"files":["https://arif-fazil.com/path/to/file"]}'
+```
 
 ### Pitfall: `redir @match` shorthand breaks `@ai-bot` markdown bypass ordering (PROVEN 2026-07-19, /wealth/makcikgpt/<slug>)
 

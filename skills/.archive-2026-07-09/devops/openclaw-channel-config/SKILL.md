@@ -17,7 +17,8 @@ Manage OpenClaw's channel settings — Telegram custom commands, DM/group polici
 
 ## When to load
 
-- User says "add slash commands", "configure the bot", "set up Telegram commands"
+- User says "add Telegram commands", "configure the bot", "set up Telegram commands"
+- User says "add channel", "wire channel", "full admin access", "give access to channel"
 - User wants to change DM policy, group allowlists, webhook URLs
 - User wants to modify heartbeat schedule or target
 - Any mutation touching `channels.*` in OpenClaw config
@@ -122,6 +123,36 @@ Returns `type`, `properties`, `items` — use this to validate your structure be
 | `messages.groupChat.mentionPatterns` | Array of regex patterns — bot only responds to messages matching these in groups |
 | `messages.groupChat.unmentionedInbound` | `user_request` (default), `room_event` (quiet unless mentioned), `respond` (reply to all in allowed groups) |
 | `messages.groupChat.visibleReplies` | `message_tool` (agent must use message tool) or `automatic` (normal replies post directly) |
+
+## Telegram Channel vs Group (Critical Distinction)
+
+Telegram has two distinct chat types, and configuration differs:
+
+| | Group | Channel |
+|---|---|---|
+| **Communication** | Two-way — all members talk | One-way broadcast — only admins post |
+| **Bot sees messages** | All messages (if member) | Only its own posts + commands |
+| **`groups` dict** | Same config path (`channels.telegram.groups`) | Same config path |
+| **Binding `peer.kind`** | `"group"` | `"channel"` |
+| **`unmentionedInbound`** | Applies — controls response behavior | N/A — bot can't receive others' messages |
+| **`free_response_chats`** | Applies — controls @mention requirement | Doesn't matter — one-way |
+| **Bot rights needed** | Member (basic) or admin | **Admin** — must be added as channel administrator |
+
+**Channel wiring is simpler than group wiring** — channels are broadcast, so layers 3-5 from the group diagnostic don't apply. You only need:
+1. OpenClaw: channel ID in `groups` dict + binding with `peer.kind: "channel"`
+2. Hermes: channel ID in `allowed_chats` (and `free_response_chats` for completeness)
+3. 777-FORGE: patch `bot.py` to add channel ID + `post_to_channel()` helper → restart service
+4. **Arif must add bot as admin** in Telegram (for 777-FORGE, since it uses a separate token)
+
+Verification is always via direct Telegram API curl, never via `hermes send` (token mismatch risk):
+```bash
+source /root/.secrets/vault.flat.env
+curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  -d "chat_id=<channel_id>" -d "text=test" | python3 -c \
+  "import json,sys; r=json.load(sys.stdin); print('✅' if r.get('ok') else f'❌ {r.get(\"description\")}')"
+```
+
+Full three-system wiring recipe: `references/telegram-channel-three-system-wiring.md`
 
 ## Group Mention Rules (AAA multi-bot pattern)
 
@@ -366,6 +397,22 @@ Then restart: `mcp_openclaw_gateway(action='restart', reason='Added Telegram IDs
 **Lesson (2026-07-07):** Agent used sed to add 4 groups to `free_response_chats`. Result had mixed indentation. YAML parsed items as nested sub-items. Had to rewrite entire telegram section with Python.
 
 **Safe pattern for bulk edits:** Backup → read with Python → `json.loads` guard on list fields → deduplicate → make ALL changes in memory → write ONCE → verify → restart. Don't chain multiple sed calls. See `references/hermes-side-telegram-config.md` §"yaml.dump serializes lists as JSON strings" for the full serialization pitfall.
+
+## Pitfall: `hermes send` fails with "You must pass the token" despite valid config
+
+**Symptom:** `hermes send -t telegram:<id> "test"` returns `Telegram send failed: You must pass the token you received from https://t.me/Botfather!` even though the gateway is working and `bot_token_env` is correctly set in `~/.hermes/config.yaml`.
+
+**Root cause:** `hermes send` CLI reads `TELEGRAM_BOT_TOKEN` from the environment directly — it does NOT resolve `bot_token_env` from `config.yaml`. If your env has `ASI_ARIFOS_BOT_TOKEN` (not `TELEGRAM_BOT_TOKEN`), the CLI can't find it.
+
+**Fix — use direct Telegram API curl instead (always works):**
+```bash
+source /root/.secrets/vault.flat.env
+curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  -d "chat_id=<chat_id>" -d "text=test" | python3 -c \
+  "import json,sys; r=json.load(sys.stdin); print('✅' if r.get('ok') else f'❌ {r.get(\"description\")}')"
+```
+
+Direct curl is preferred — it's the ground truth, bypasses both gateways entirely, and works regardless of which token name is in use.
  
 ## Pitfall: `hermes config set` with negative chat IDs
 
@@ -1081,3 +1128,4 @@ After config changes + restart:
 - `references/openclaw-llm-provider-diagnosis-2026-07-11.md` — LLM provider diagnosis: API format mismatch (anthropic-messages vs openai-completions), quota exhaustion, fallback chain debugging, bailian-token-plan fix
 - `references/openclaw-new-model-release-wiring-2026-07-17.md` — adding a new model release to the picker (4-step recipe: probe upstream → live test → find ACTIVE config → edit provider + aliases in one Python script). Proven with DeepSeek V4 (2026-07-17). Catches reasoning-default empty-content pitfall + the multi-`openclaw.json` HOME trap.
 - `references/kimi-k3-multisystem-wiring-2026-07-18.md` — wiring Kimi K3 (Moonshot AI, 2.8T, released 2026-07-16) into BOTH kimi-code CLI and OpenClaw. Covers provider-availability gap (K3 is on Kimi Code API + OpenRouter, NOT on bailian-token-plan), kimi-code config.toml model definitions, OpenRouter provider block, pricing, and performance caveats.
+- `references/telegram-channel-three-system-wiring.md` — full recipe for wiring a Telegram channel across Hermes + OpenClaw + 777-FORGE. Pre-flight admin check, per-system Python patches, verification via direct curl. Proven 2026-07-23 with @arifos999.

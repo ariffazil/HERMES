@@ -34,8 +34,26 @@ triggers:
 **Diagnostic-first is an anti-pattern for Arif.** When the system is already up and operational, verbose diagnostic probes generate stale/corrected takeaways that waste session time. A prior session ran full P0/P1 diagnostics only to have Arif confirm the system was already operational — the takeaways were wrong. Trust Arif's signal over self-generated probe anxiety.
 
 **Rule:** If the system is confirmed up and Arif wants to move forward, skip the dual-probe. Probes only when there is a genuine symptom to explain. The canonical source of truth for "is the system healthy" is `curl :PORT/health` + Arif's own observation — not a verbose multi-step diagnostic ritual.
-
+**Rule:** If the system is confirmed up and Arif wants to move forward, skip the dual-probe. Probes only when there is a genuine symptom to explain. The canonical source of truth for "is the system healthy" is `curl :PORT/health` + Arif's own observation — not a verbose multi-step diagnostic ritual.
 The Observatory (`/api/status`) shows the real constitutional state — per-floor scores, vitality, drift, witness channels. These two probes frequently disagree. Always run both and reconcile.
+
+## Automated Artifact Generation (Cloud AI Ingestion)
+
+For producing immutable federation reality artifacts for cloud AI ingestion (the **epistemic bridge** — Truth without Vector), use the reality snapshot compiler:
+→ `references/reality-snapshot-compiler.md`
+
+```bash
+# Human + AI readable markdown
+python3 /root/scripts/reality_snapshot.py
+
+# Machine-readable JSON
+python3 /root/scripts/reality_snapshot.py --json
+
+# Save to dated forge_work
+python3 /root/scripts/reality_snapshot.py --output /root/forge_work/$(date +%Y-%m-%d)/reality_state.md
+```
+
+**When to use:** Arif wants to paste federation context into a cloud AI chat (Gemini, Claude, etc.) — the artifact provides grounded reality without exposing credentials, shell access, or mutation capability.
 
 ## Step 1 — Fast Liveness (what's running)
 
@@ -45,6 +63,32 @@ for svc in arifos:8088 aforge:7071 aforge-mcp:7072 aaa:3001 geox:8081 wealth:180
   name="${svc%%:*}"; port="${svc##*:}"
   curl -sf "http://localhost:$port/health" >/dev/null 2>&1 && echo "✅ $name" || echo "❌ $name"
 done
+
+# S24 Sensing Node — check telemetry freshness (JSONL, not live probe)
+# Live probe often times out due to Android deep sleep — check the log file instead
+echo ""
+echo "=== S24 Telemetry ==="
+tail -1 /root/arifos-memory/telemetry/s24_history.jsonl 2>/dev/null | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    ts=d.get('timestamp','?')
+    tel=d.get('telemetry',{})
+    print(f'  Last: {ts} | Battery: {tel.get(\"battery\",\"?\")}% | Temp: {tel.get(\"temp_c\",\"?\")}°C | Charging: {tel.get(\"charging\",\"?\")}')
+except: print('  No telemetry data')
+" 2>/dev/null || echo "  ❌ No telemetry file"
+
+# Mesh isolation boundaries (verify DMZ contract)
+echo ""
+echo "=== Mesh Boundaries ==="
+# FLOW → S24 should be BLOCKED
+ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@100.64.0.4 \
+  "curl -sf --connect-timeout 3 http://100.64.0.1:8088/health >/dev/null 2>&1 && echo '  ❌ FLOW→S24: OPEN (breach!)' || echo '  ✅ FLOW→S24: BLOCKED'" 2>/dev/null \
+  || echo "  ⚠️ SSH to FLOW failed — can't verify boundary"
+# FLOW → FORGE should be BLOCKED
+ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@100.64.0.4 \
+  "curl -sf --connect-timeout 3 http://100.64.0.2:7071/health >/dev/null 2>&1 && echo '  ❌ FLOW→FORGE: OPEN (breach!)' || echo '  ✅ FLOW→FORGE: BLOCKED'" 2>/dev/null \
+  || echo "  ⚠️ SSH to FLOW failed — can't verify boundary"
 
 # Telegram bots — THREE distinct bots, THREE owners
 # @ASI_arifos_bot  = Hermes (this session)
@@ -779,6 +823,8 @@ RECOMMENDED ACTIONS:
 <reversible fixes>
 ```
 
+FORGE duty-pulse interpretation (drift scanner, constitutional sync, vitality pulse):\n→ `references/forge-duty-pulse-interpretation.md`
+
 Full transport state findings from 2026-07-14:
 → `references/federation-transport-state.md`
 
@@ -904,11 +950,26 @@ Full gap analysis with diagnostic probe and escalation rules:
 
 - **Organ probe hostname mismatch — kernel shows "offline" for organs that are actually up (proven 2026-07-18).** When `curl localhost:<PORT>/health` returns 200 but the kernel's `/api/live/all` reports "offline", the probe hostnames in `rest_routes.py` are wrong. The kernel uses Docker container hostnames (`geox_eic`, `wealth-organ`, `well`) that don't resolve on bare-metal. Fix: change to `localhost` with correct ports (8081→8081, wealth-organ:8082→localhost:18082, well:8083→localhost:18083). See `references/observatory-dual-engine.md` for full architectural context.
 
+- **Telegram Markdown tables do NOT render — use plain text or HTML (proven 2026-07-21).** Despite what the Hermes system prompt says about rich Markdown table support, the actual Telegram bot cannot render pipe `| col | col |` tables. They arrive as raw markdown source text. Arif explicitly: "bot ni tak support format tu lagi. Plain text atau HTML je boleh." Use bullet lists, indented key-value pairs, or `key: value` format for structured data. Reserve Markdown tables for file artifacts only (forge_work). Applies to ALL outputs on Telegram — skill content can have tables, but what the agent says TO Arif must be plain-formatted.
+
+- **Federation reboot cascade: arifOS restart → gateway MCP poison → full reboot (proven 2026-07-23).** When arifOS restarts cleanly via systemd, the hermes-asi-gateway gets a dependency-triggered SIGTERM. If Hermes MCP has been degraded (failing reconnects with "unhandled errors in a TaskGroup" every 300s for 17+ min), the gateway cannot cleanly terminate. Exit code 1 → network.target cascade → full systemd reboot. Root cause: Hermes MCP instability (pre-existing). Trigger: arifOS restart (benign). Detection: `journalctl -u hermes-asi-gateway --since "30 min ago" | grep "failed after 5 reconnection"`. If seen, gateway is vulnerable. Fix: restart gateway cleanly when MCP errors accumulate, OR harden gateway to tolerate MCP termination failures (exit 0 instead of 1).
+
 - **Dual-bot convergence ≠ truth (proven 2026-07-18).** When OpenClaw and Hermes independently converge on the same diagnosis, it's a useful signal but NOT proof. Both bots share the same VPS, same tools, same data sources — they can converge on the same wrong conclusion. Always verify against live state (`curl`, `systemctl`, `ps`) before acting on any diagnosis, even when both bots agree. OpenClaw correctly identified the observatory gap (6 organs with null identity); Hermes confirmed and fixed it. The convergence was valuable because we backed it with direct `/health` probes — not because two bots agreed.
+
+- **Agent feedback loop via shared chat (proven 2026-07-19).** When Hermes and OpenClaw share the same Telegram chat/channel, every Hermes response becomes an OpenClaw user message. If OpenClaw's model cascade is failing (all providers 429), it posts an error back to the chat → Hermes sees it as a user message → responds → OpenClaw picks up the response → fails again → error → infinite loop. **Break by killing the failing agent's process:** `kill -9 <pid>`. The auto-restart will bring it back fresh after rate limits reset. Do NOT keep responding — every response feeds the loop. The symptom is the same error message arriving 3+ times with your replies interspersed.
 
 - **drift-alert false positive: broken symlinks in `.grok/skills.zen-archived-*` are harmless (proven 2026-07-22).** The `drift-alert` cron job runs `find /root -maxdepth 4 -xtype l` and flags any count >40 as a warning. The `.grok/skills.zen-archived-*` directory contains ~324 broken symlinks from a zen-skill archive operation. These are NOT system rot — they're leftover references from a skills consolidation that the archive tarball preserves but the live filesystem no longer needs. **When you see `broken=324` from drift-alert, check if they're all in `.grok/` first.** If yes, it's a false alarm. The 40-threshold alert was designed for production symlinks (e.g., broken `/var/www/` references), not archive residue.
 
 - **GEOX has no systemd service — check with `ps aux` not `systemctl` (proven 2026-07-19).** GEOX runs directly from `/root/GEOX/.venv/bin/python3 -m geox_mcp.server` with no systemd unit. `systemctl status geox` returns `Unit not found`. Always verify GEOX liveness with `ps aux | grep geox_mcp.server` or `curl :8081/health`, never with systemctl. The heartbeat daemon (`organ_heartbeat_daemon.py geox http://127.0.0.1:8081/health`) is a separate process that monitors GEOX but doesn't manage its lifecycle.
+
+**Emergency load triage — full protocol for SEV:high load alerts:**
+→ `references/emergency-load-triage.md`
+
+Covers: orphan identification (github-mcp-server, pytest, kimi, browser), kill+verify sequence, boot storm vs emergency classification, shutdown cascade forensics.
+
+- **arifOS event loop freeze — TCP accept but no HTTP response (proven 2026-07-23).** `curl -v http://localhost:8088/health` shows `* Connected to localhost` but `* Operation timed out after 5000 milliseconds with 0 bytes received`. The Python process is alive (systemd says active) but its async event loop is stuck — probably waiting on I/O or deadlocked. Fix: `systemctl restart arifos`. Recovery takes ~15s (tool wrapper loading). Memory looks fine (289MB) — this is NOT an OOM. Detection: `curl -v --max-time 5 http://localhost:8088/health 2>&1 | tail -5`.
+
+- **arifOS memory pressure → auto-restart (proven 2026-07-23).** `systemctl status arifos` shows `Memory: 1.5G (high: 1.5G, max: 2G, swap max: 512M, available: 0B, peak: 1.5G, swap: 511.9M)`. When `available: 0B` AND swap is near `512M peak`, systemd deactivates the service (stop-sigterm). It auto-restarts cleanly within ~16s. The real issue: 4h 37min uptime before OOM suggests a slow memory leak. Temporary fix: raise MemoryHigh to 2G. Permanent fix: investigate leak. Detection: `systemctl status arifos --no-pager | grep Memory`.
 
 - **GEOX editable-install branch-switch mismatch (proven 2026-07-19).** When GEOX runs from an editable pip install (`pip show geox` shows `Editable project location: /root/GEOX`) and the git working tree is switched to a different branch after startup, the health endpoint reports the commit from the OLD branch — not the current checkout. The running Python process has the old code in memory. **Always verify with both `curl :8081/health | jq '.git_version'` AND `git -C /root/GEOX rev-parse --short=8 HEAD` to detect this mismatch.** A mismatch means the running process pre-dates the branch switch and needs a restart. The `drift_check_live.py` script compares `source_commit[:8]` against `str(deployed_version)` using Python's `in` (substring) operator. Version strings like `"v2026.07.17"` can coincidentally contain hex-like substrings, producing false negatives. Conversely, longer strings without the commit substring produce false positives (ALL organs flagged DRIFT when clean). **Always extract commit hash patterns with regex** — never use substring `in` for drift comparison. Fix: `re.findall(r'[0-9a-f]{7,40}', deployed_version)` to extract actual commit prefixes from version strings. Same pattern as arifOS MCP `tools/list` — without the correct Accept header, `resources/list` returns 406. With the header, returns 31 resources including 11 ATLAS333 URIs. When auditing ATLAS333 surface exposure, always use:
   ```bash
@@ -921,6 +982,10 @@ Full gap analysis with diagnostic probe and escalation rules:
 ## MCP Transport Debugging
 
 When `tools/list` returns unexpected counts, federation health reports session issues, or MCP calls fail with "session_unavailable", load the transport debugging patterns:
+
+- **Web search config split-brain (proven 2026-07-21).** Hermes config has TWO search sections — `web:` (used by `web_search` tool) and `search:` (used by search-only toolset). They can drift to different backends (e.g., `web.backend: brave` while `search.backend: searxng`). Verify: `grep -n "search_backend\|backend:" /root/.hermes/config.yaml | grep -v "^#\|x_search"`. Both `web:` and `search:` sections must show the same backend. Fix: `hermes config set web.search_backend searxng && hermes config set web.backend searxng`.
+
+- **SearXNG bind-mount edit pattern (2026-07-21).** SearXNG settings.yml is bind-mounted from `/root/searxng/settings.yml` to `/etc/searxng/settings.yml:ro` in the container. Edit on HOST, then `docker restart searxng`. Never edit inside container.
 
 → `references/mcp-transport-debugging.md`
 

@@ -186,6 +186,8 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 
 **Pitfall:** Both `vault.env` AND `vault.flat.env` may have the same bad line. Fix the source, then regenerate.
 
+**Creating a systemd unit that needs vault.env secrets:** See `references/systemd-service-with-secrets.md` — the `ExecStart` bash-wrapper pattern, why `EnvironmentFile` doesn't work with shell-export syntax, and the "gateway cannot self-restart" pitfall.
+
 ## Pitfalls
 
 - **Don't kill Docker bridge interfaces.** `docker0` and `br-*` are live container networking. Only remove interfaces that have no containers attached.
@@ -194,12 +196,14 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 - **Swap usage after killing a hog takes time to decay.** Don't panic if swap doesn't drop immediately — the kernel reclaims it lazily.
 - **Never `rm -rf` a git repo.** Always move to quarantine: `mv /root/repo /root/.quarantine-YYYY-MM-DD/repo`. User can verify before permanent deletion.
 - **Parallel probes, serial fixes.** Recon is concurrent. Cleanup is ordered — critical first, then high, then medium. Don't skip the ordering.
+- **Agent session death → orphan cascade (proven 2026-07-23).** When agent sessions (OpenCode, Kimi, Hermes) die without cleanup, their spawned MCP child processes (github-mcp-server, browser, kimi-code, pytest) survive as orphans. These stack up silently: 3× github-mcp-server at 58% CPU each, kimi-code at 25%, stale browser at 75%. Total: 200%+ wasted CPU. Detection: `ps aux --sort=-%cpu | head -15` — look for `github-mcp-server`, `kimi-code`, `MainThr+` with PPID=1. Fix: `kill -9 <pid>` for all orphans, no service impact. Root fix: session-cleanup hook that kills children when parent exits — not yet implemented.
 
 ## Reference: Common Resource Hogs
 
 | Process | Typical RSS | Usually Stuck When |
 |---|---|---|
 | `pytest` | 2-11GB | Running >10 min, D state |
+| `github-mcp-server` | 4-6MB per instance | 3+ orphans (dead agent sessions), 58% CPU each |
 | `tsserver` | 300-700MB | Parent editor killed |
 | `pyright-langserver` | 200-400MB | Parent editor killed |
 | `kimi-code` | 400MB-1.2GB | Multiple instances |
@@ -315,7 +319,7 @@ Agent sessions (kimi, opencode) spawn MCP child processes that survive after the
 ```bash
 for pid in $(ps -eo pid,ppid= | awk '$2==1{print $1}'); do
   cmd=$(cat /proc/$pid/comm 2>/dev/null)
-  if echo "$cmd" | grep -qE "capability.index|chrome-devtools|sequential-thinking|brave-search|postgres-mcp|context7|playwright|megamemory|perplexity|supabase|fetch-server|exa-mcp|minimax-coding"; then
+  if echo "$cmd" | grep -qE "capability.index|chrome-devtools|sequential-thinking|brave-search|postgres-mcp|context7|playwright|megamemory|perplexity|supabase|fetch-server|exa-mcp|minimax-coding|github-mcp-server"; then
     kill -9 $pid 2>/dev/null && echo "killed orphan $pid ($cmd)"
   fi
 done

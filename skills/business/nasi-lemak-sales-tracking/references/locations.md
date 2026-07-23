@@ -2,20 +2,22 @@
 
 ## Station Codes & Aliases
 
-| Code | Full Name | Type | Active Days | Alias Of |
-|---|---|---|---|---|
-| SETIAWANGSA | LRT Setiawangsa | LRT station | Mon (20/7) | — |
-| WANGSA MAJU | LRT Wangsa Maju | LRT station | Mon (20/7) | — |
-| BSW | BSW | Stall/shop | Mon (20/7) | **May be same as DSW** |
-| DP | DP | Stall/shop | Mon (20/7) | **May be same as DSP** |
-| MAMAK 2 | Mamak 2 | Mamak stall | Sun (19/7) | — |
-| MAMAK 1 | Mamak 1 | Mamak stall | Sun (19/7) | — |
-| KEDAI P | Kedai P | Shop | Sun (19/7) | — |
-| KEDAI L | Kedai L | Shop | Sun (19/7) | — |
-| DSW | DSW | Stall/shop | Sun (19/7) | **May be same as BSW** |
-| DSP | DSP | Stall/shop | Sun (19/7) | **May be same as DP** |
-
-⚠️ **BSW/DSW** and **DP/DSP** appear on different receipts but likely refer to the same physical stations. The user used "DSW"/"DSP" on 19/7 (Ahad) and "BSW"/"DP" on 20/7 (Isnin). Confirm with user before treating as separate.
+| Code | Full Name | Type | Kedai Count | Active Days | Alias Of |
+|---|---|---|---|---|---|
+| SETIAWANGSA | LRT Setiawangsa | LRT station | 1 | Mon (20/7) | — |
+| LRT S | LRT Setiawangsa | LRT station | **3 kedai** | Sun (19/7), Wed (22/7) | — |
+| WANGSA MAJU / LRT WM | LRT Wangsa Maju | LRT station | 1 | Mon (20/7), Wed (22/7) | — |
+| BSW | BSW | Stall/shop | 1 | Mon (20/7) | **May be same as DSW** |
+| DP | DP | Stall/shop | 1 | Mon (20/7) | **May be same as DSP** |
+| MAMAK 2 | Mamak 2 | Mamak stall | **2 kedai** | Sun (19/7), Wed (22/7) | — |
+| MAMAK 1 | Mamak 1 | Mamak stall | 1 | Sun (19/7) | — |
+| KEDAI P | Kedai P | Shop | 1 | Sun (19/7), Wed (22/7) | — |
+| KEDAI L | Kedai L | Shop | 1 | Sun (19/7), Wed (22/7) | — |
+| EVEN | Even | Stall | 1 | Wed (22/7) | — |
+| KEDAI A | Kedai A | Shop | 1 | Wed (22/7) | — |
+| EVEN | Even | Stall | 1 | Wed (22/7) | — |
+| DSW | DSW | Stall/shop | 1 | Sun (19/7) | **May be same as BSW** |
+| DSP | DSP | Stall/shop | 1 | Sun (19/7) | **May be same as DP** |
 
 ## Sambal Types
 
@@ -25,25 +27,18 @@
 | Sambal asing | Sambal packed separately | KEDAI P, KEDAI L, DSW (dadar), DSP (dadar) |
 | Separuh sambal campur | Half-portion mixed sambal | MAMAK 2, MAMAK 1 |
 
-## 19 July 2026 (Ahad) — Per-Location Detail
+## 22 July 2026 (Rabu) — Per-Location Detail
 
-| Lokasi | Rebus 🥚 | Mata 🍳 | Dadar | Total | Sambal | Baki | Sold |
-|---|---|---|---|---|---|---|---|
-| MAMAK 2 | 45 | — | — | 45 | Separuh campur | 8 | 37 |
-| KEDAI P | — | 40 | — | 40 | Asing | 0 | 40 |
-| KEDAI L | 15 | 15 | 15 | 45 | Asing | ⏳ | ⏳ |
-| MAMAK 1 | 20 | — | — | 20 | Separuh campur | 0 | 20 |
-| DSW | 8 | 8 | 8 | 24 | Campur (r+m) / Asing (d) | 0 | 24 |
-| DSP | 8 | 8 | 8 | 24 | Campur (r+m) / Asing (d) | 0 | 24 |
+| Lokasi | Kedai | Rebus 🥚 | Mata 🍳 | Dadar | Total |
+|---|---|---|---|---|---|
+| MAMAK 2 | 2 | 40 | — | — | 40 |
+| LRT WM | 1 | 4 | 10 | 4 | 18 |
+| KEDAI P | 1 | — | 38 | — | 38 |
+| LRT S | 3 | 12 | 20 | 16 | 48 |
+| KEDAI L | 1 | 30 | 30 | 30 | 90 |
+| **Total** | **9 kedai** | **86** | **98** | **50** | **234** |
 
-## 20 July 2026 (Isnin) — Per-Location Detail
-
-| Lokasi | Rebus 🥚 | Mata 🍳 | Dadar | Berlauk | Total | Baki | Sold |
-|---|---|---|---|---|---|---|---|
-| Setiawangsa | 6 | 12 | 6 | 8 | — | 11 | 21 |
-| Wangsa Maju | 6 | 8 | 6 | — | — | 6 | 14 |
-| BSW | 4 | 8 | 4 | — | — | ⏳ | ⏳ |
-| DP | 4 | 8 | 4 | — | — | ⏳ | ⏳ |
+Berlauk LRT S (cash term): Paru 4, Dendeng 7, Ayam Goreng 2, Sambal Sotong 1
 
 ## Historical Summary
 
@@ -61,6 +56,13 @@
 - BSW: 16 → ⏳ pending
 - DP: 16 → ⏳ pending
 
-### Cross-Day: Mata best performer (93% known sold rate)
+### 22/7 (Rabu) — 234 ordered, revenue RM 310.20 (pre-deduction)
+- LRT S: 48 (3 kedai)
+- KEDAI L: 90 (single kedai — highest volume)
+- MAMAK 2: 40 (2 kedai, rebus only)
+- 9 kedai total across 5 locations
+
+### Cross-Day
 - Ahad = 4.1× Isnin volume
-- Total 2-day known revenue: RM 230.10
+- Rabu overtook Ahad (234 vs 198)
+- Mata consistently best performer

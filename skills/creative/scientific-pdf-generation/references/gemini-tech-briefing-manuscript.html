@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2.2cm 2.5cm 2.2cm;
+    @top-center { content: element(header); }
+    @bottom-center { content: element(footer); }
+  }
+  body {
+    font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.55;
+    color: #e6edf3;
+    background: #0d1117;
+    margin: 0; padding: 0;
+  }
+  .header {
+    position: running(header);
+    font-size: 7.5pt; color: #f0a500; text-align: left;
+    padding-bottom: 4px; border-bottom: 1.5pt solid #f0a500;
+  }
+  .header .right { float: right; color: #8b949e; }
+  .footer {
+    position: running(footer);
+    font-size: 7pt; color: #8b949e; text-align: center;
+    padding-top: 4px; border-top: 0.5pt solid #30363d;
+  }
+  .cover {
+    text-align: center; padding-top: 6cm;
+  }
+  .cover .tag { font-size: 9pt; color: #f0a500; letter-spacing: 3pt; text-transform: uppercase; margin-bottom: 1.5cm; }
+  .cover h1 { font-size: 28pt; color: #f0a500; margin: 0 0 0.5cm 0; line-height: 1.15; }
+  .cover .subtitle { font-size: 13pt; color: #ffa657; margin-bottom: 1.5cm; font-style: italic; }
+  .cover .meta { font-size: 9pt; color: #8b949e; line-height: 1.8; }
+  .cover .classification { margin-top: 2.5cm; font-size: 8pt; color: #f85149; letter-spacing: 2pt; }
+  h1 { font-size: 16pt; color: #f0a500; border-bottom: 0.8pt solid #f0a500; padding-bottom: 4pt; margin: 1.2cm 0 0.4cm 0; page-break-before: always; }
+  h1:first-of-type { page-break-before: avoid; }
+  h2 { font-size: 12pt; color: #ffa657; margin: 0.7cm 0 0.3cm 0; }
+  h3 { font-size: 10.5pt; color: #3fb950; margin: 0.5cm 0 0.2cm 0; }
+  p { margin: 0 0 0.3cm 0; text-align: justify; }
+  table { width: 100%; border-collapse: collapse; margin: 0.4cm 0; font-size: 9pt; }
+  th { background: #1a2332; color: #f0a500; padding: 6px 8px; text-align: left; font-weight: bold; border-bottom: 1.5pt solid #f0a500; }
+  td { padding: 5px 8px; border-bottom: 0.5pt solid #30363d; vertical-align: top; }
+  tr:nth-child(even) td { background: #161b22; }
+  .callout { background: #161b22; border-left: 3pt solid #f0a500; padding: 10px 14px; margin: 0.5cm 0; font-size: 9.5pt; }
+  .callout-red { border-left-color: #f85149; }
+  .callout-green { border-left-color: #3fb950; }
+  .callout-teal { border-left-color: #39d2c0; }
+  .callout strong { color: #f0a500; }
+  .verdict-box { background: #161b22; border: 1.2pt solid #f0a500; padding: 14px 18px; margin: 0.6cm 0; text-align: center; }
+  .verdict-box .label { font-size: 8pt; color: #8b949e; letter-spacing: 2pt; text-transform: uppercase; }
+  .verdict-box .statement { font-size: 13pt; color: #f0a500; font-weight: bold; margin: 6px 0; }
+  .verdict-box .detail { font-size: 9pt; color: #8b949e; }
+  .highlight { color: #f0a500; font-weight: bold; }
+  .red { color: #f85149; }
+  .green { color: #3fb950; }
+  .two-col { display: flex; gap: 0.4cm; }
+  .two-col > div { flex: 1; }
+  .quote { border-left: 2pt solid #ffa657; padding: 6px 12px; margin: 0.4cm 0; font-style: italic; color: #ffa657; background: #1a1f28; }
+</style>
+</head>
+<body>
+<!-- TEMPLATE: Dark-themed weasyprint HTML for tech industry competitive intelligence briefings.
+     Replace content between body tags. Keep CSS as-is.
+     Proven: 2026-07-22 Gemini 3.6 Flash briefing (8 pages, 60KB).
+     Key patterns: .verdict-box for strategic verdicts, .callout-* for emphasized notes,
+     .two-col for side-by-side comparisons, .quote for pull quotes. -->
+
+<div class="header">
+  BRIEFING TITLE
+  <span class="right">DATE &bull; ANALYST</span>
+</div>
+<div class="footer">
+  PREPARED FOR RECIPIENT &bull; CLASSIFICATION &bull; Page <span class="pageNumber"></span>
+</div>
+
+<div class="cover">
+  <div class="tag">Intelligence Briefing</div>
+  <h1>TITLE</h1>
+  <div class="subtitle">Subtitle line</div>
+  <div class="meta">
+    Prepared for: <strong>NAME</strong><br>
+    Date: <strong>DATE</strong><br>
+    Analyst: <strong>Hermes-Prime (Federated Research)</strong>
+  </div>
+  <div class="classification">▮ FOR INTERNAL USE</div>
+</div>
+
+<h1>1. Executive Summary</h1>
+<div class="verdict-box">
+  <div class="label">STRATEGIC VERDICT</div>
+  <div class="statement">One-line verdict.</div>
+  <div class="detail">Supporting detail.</div>
+</div>
+
+<!-- Add sections with h1/h2/h3, tables, callouts as needed -->
+
+<p style="text-align:center;margin-top:1.5cm;font-size:8pt;color:#8b949e;">
+  — END OF BRIEFING —<br>
+  Prepared by Hermes-Prime (Federated Research) · DATE · arifOS Federation<br>
+  DITEMPA BUKAN DIBERI
+</p>
+</body>
+</html>

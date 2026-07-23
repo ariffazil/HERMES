@@ -152,9 +152,33 @@ Strips F-floor refs, replaces jargon (insufficient reward → potensi untung tak
 - `references/backtest-methodology.md` — backtest setup, corrected multiplier, pitfall log
 - `references/gold-session-volatility.md` — 2yr volatility analysis by MYT hour, news impact hierarchy, Syed trading rules
 - `references/plain-language-translator.md` — `translateJudge()` pattern for converting arifOS F-floor language to human-readable BM on public dashboards
+- `references/trade-review-chart.md` — dark-theme candlestick chart pattern with entry/SL/TP levels for position review (proven 2026-07-21, Brent review for abang sado)
 
 ## Cron Integration
 The existing `XAUUSD Price Alert` cron job (adbe4006fba5) sends price updates. The new system replaces it with: scan → APEX state → regime → signal → risk → judge → alert. When wiring, use `python -m trading.main alert` as the cron command.
+
+### ⚠️ CRITICAL: Sovereign Approval Gate (F13 SOVEREIGN)
+**The paper trading pipeline has a structural gap: Morning Analysis (b6361) recommends setups, Zen Executor (b98bd) auto-executes them — with NO human approval step in between.**
+
+Post-mortem from 2026-07-23 session:
+- Syed-approved trades: **1/1 (100% WR)**
+- Auto-executed trades: **1/3 (33% WR)**
+- Net: -$145.40 (auto-executed losses: -$576.40, Syed-approved profit: +$431.00)
+
+The fix requires injecting a human gate:
+
+```
+Morning Analysis → recommends setup
+        ↓
+Hermes sends to Arif/Syed: "Signal: XAUUSD BUY $zone. Approve?"
+        ↓
+Arif/Syed: "Ok" / "Skip" / "SL tighter"
+        ↓
+IF APPROVED → Zen Executor watches for trigger
+IF SKIPPED → Zen Executor ignores
+```
+
+**Without this gate, the paper bot trades like a headless robot.** The human approval IS the edge — not the technical signal. This is F13 SOVEREIGN in action at the trading layer.
 
 ## Optimized Strategy (backtested on 2yr real gold data)
 ```
@@ -227,3 +251,25 @@ UPTREND: +$1,567 | DOWNTREND: +$780 | SIDEWAYS: skipped
 - Confuses long/short directions — keep alerts unambiguous
 - Voice alerts: ms-MY-OsmanNeural
 - Prefers simple BM explanations
+
+### Sovereign Approval Gate (POST-MORTEM 2026-07-23)
+Cron auto-execution WITHOUT human approval loses money. Paper ledger: 100% WR Syed-approved trades vs 33% WR auto-executed. The Morning Analysis → Zen Executor pipeline has NO F13 gate. Fix: inject approval step between recommendation and execution — signal delivered → human says Ok/Skip → executor watches or ignores.
+
+## Governed Autonomous Paper Trading Engine (proven 2026-07-23)
+**File:** `/root/paper_trading/governed_engine.py` — autonomous execution with 6 constitutional governance gates. Zero human in the loop.
+
+| Gate | Rule | Blocks |
+|------|------|--------|
+| G1: APEX State | CHAOS → HALT | No trades in chaos |
+| G2: Cross-Asset | Brent crash >5% → HALT commodities | Contagion protection |
+| G3: Confluence | <2 confirming signals → SKIP | Single-trigger entries |
+| G4: Loss Cap | Daily >3% DD → CIRCUIT BREAKER | Blowout prevention |
+| G5: Cooling | <4H since last SL → WAIT | Revenge trading block |
+| G6: Session | Asian = range only | Timezone discipline |
+
+**Data layer:** yfinance OHLCV → EMA/RSI/ATR/Swing Points → pullback detection
+**Execution:** Rejection wick OR pullback-to-EMA → entry with auto SL/TP/trail → JSON log → VAULT999
+**Cron:** Morning Analysis (b6361, 8am Mon-Fri) + Zen Executor (b98bd, every 180m)
+**Run:** `python3 /root/paper_trading/governed_engine.py scan`
+
+See: `references/governed-trading-engine.md` for full architecture.

@@ -15,6 +15,8 @@ description: Analyze institutions for intelligence — structural features, fail
 - Forging new organs or institutional-memory features in arifOS
 - Mapping human behavioral traps to structural/architectural countermeasures
 - User shares Forge/agent output that needs institutional analysis metabolization
+- User shares a link to an institutional announcement (government, corporate) and asks for analysis — trigger AI-mediated decision detection framework
+- User asks "did [leader/institution] use AI for this?" — trigger power-law epistemic distortion diagnosis
 
 ## Core Framework
 
@@ -66,6 +68,24 @@ This is NOT aggregate individual IQ, having good data/AI, or being efficient.
 | Reflective | "I understand WHY X and can justify it" | Humans who've done the work. |
 
 The threat: institutions that outsource reflective knowledge to AI-only systems hollow out — surface citations, no understanding. VAULT999 stores WHAT (reliabilist). The institution needs to preserve WHY (reflective).
+
+## AI-Mediated Decision Detection
+
+When analyzing institutional outputs (policy announcements, CEO statements, restructuring plans), deploy the three-axis diagnostic framework:
+
+| Axis | Core Question | Key Signals |
+|------|--------------|-------------|
+| **Cognitive Camouflage** | Does the idea look more sophisticated than its substance? | Tiered frameworks without causal links, clean numbering (3-phase/5-pillar), KPI language where KPIs don't apply. Strip formatting — if the idea boils down to one obvious sentence, the formatting IS the AI signal. |
+| **Friction Collapse** | Would this idea have survived pre-AI? | Idea complexity ≠ document length. No evidence of iteration or struggle. Perfect formatting with zero causal chain. |
+| **Power-Law Alignment** | Does this sound like what everyone else is doing? | AI amplifies the peak of the power-law distribution in training data, not truth. Truth is often in the tail. Sovereignty-specific reasoning, domain-grounded causal models, and politically-awkward admissions are tail-signals indicating human authorship. |
+
+### Key Heuristic
+> If the output could have been written about **any** company/police force/government agency, it's AI-mediated (at peak of distribution). If it could ONLY apply to THIS institution in THIS country with THIS political context — that's tail-knowledge, human-grounded.
+
+### The Recursive Hazard
+AI-mediated decisions enter the corpus → future AI trains on them → the median shifts toward AI-generated patterns → institutions converge on identical language → drift becomes invisible because everything looks "normal."
+
+Full diagnostic framework, specific signals (metric circularity, rhetorical traps, sovereignty blindness), and quick-reference card in `references/ai-mediated-decision-detection.md`.
 
 ## Literature Pillars
 

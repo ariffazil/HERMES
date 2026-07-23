@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Helvetica, Arial, sans-serif; margin: 40px; color: #1a1a1a; }
+  h1 { color: #003366; font-size: 20pt; text-align: center; margin-bottom: 5px; }
+  .date { text-align: center; color: #6B7280; font-size: 10pt; margin-bottom: 30px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  th { background: #003366; color: white; padding: 8px 10px; font-size: 10pt; text-align: left; }
+  td { padding: 7px 10px; font-size: 9pt; border-bottom: 1px solid #e5e7eb; }
+  tr:nth-child(even) { background: #f9fafb; }
+  .total { font-weight: bold; background: #f0a500; color: white; }
+  .total td { font-weight: bold; font-size: 10pt; }
+  .footer { text-align: center; color: #6B7280; font-size: 8pt; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px; }
+</style>
+</head>
+<body>
+
+<h1>RESIT VENDOR — V005</h1>
+<p class="date">{{DATE}}</p>
+
+<table>
+<tr><th>Vendor</th><th>Item</th><th>Hantar</th><th>Baki</th><th>Sold</th><th>Harga (RM)</th><th>Jualan (RM)</th></tr>
+{{ROWS}}
+<tr class="total"><td colspan="6">TOTAL</td><td>{{TOTAL}}</td></tr>
+</table>
+
+<table>
+<tr><th>Ringkasan</th><th></th></tr>
+<tr><td>Total Hantar</td><td>{{TOTAL_HANTAR}} bungkus</td></tr>
+<tr><td>Total Baki</td><td>{{TOTAL_BAKI}} bungkus</td></tr>
+<tr><td>Total Sold</td><td>{{TOTAL_SOLD}} bungkus</td></tr>
+<tr><td>Sold Rate</td><td>{{SOLD_RATE}}%</td></tr>
+<tr class="total"><td>Total Jualan</td><td>RM {{TOTAL_REVENUE}}</td></tr>
+</table>
+
+<p class="footer">Dijana oleh Hermes Agent — {{GEN_DATE}}</p>
+
+</body>
+</html>

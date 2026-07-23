@@ -12,7 +12,7 @@ triggers:
   - "relate to my life"
   - "bukan untuk AI lab orang"
   - "kutuk essay"
-version: "1.3"
+version: "1.5"
 ---
 
 # MakcikGPT Article Forging — v1.0
@@ -202,7 +202,7 @@ Quick checklist — every article must score on all 6:
 ## Stage 5: VERIFY — Build
 
 ```bash
-cd /root/ARIF-SITES/sites/arif-fazil.com
+/root/arif-sites/sites/arif-fazil.com/npm run build
 npm run build
 ```
 
@@ -246,7 +246,7 @@ makcikgpt_dir = "/root/arif-sites/sites/arif-fazil.com/src/data/makcikgpt"
 Source path: `/root/arif-sites/sites/arif-fazil.com/src/data/makcikgpt/*.ts`. This is the AUTHORITATIVE source. The JS bundle is derived.
 
 **Reading articles from JS bundle (fallback when VPS not accessible):**
-Individual article URLs (`/wealth/makcikgpt/<slug>`) redirect to the SPA index. To extract full article text:
+Individual article URLs (`/world/makcikgpt/<slug>`) redirect to the SPA index. To extract full article text:
 1. Download bundle: `curl -sL "https://arif-fazil.com/assets/$(curl -sL https://arif-fazil.com/makcikgpt/ | grep -o 'index-[^"]*\.js' | head -1)" > /tmp/bundle.js`
 2. Find metadata array (`od = [{slug, title, subtitle, date, ...}]`) — 14 objects, one per article
 3. Find HTML blocks: `html:\`...\`` (backtick-delimited template literals) — ~25 blocks total, articles 0-14 are MakcikGPT
@@ -338,6 +338,199 @@ When mainstream media publishes a story MakcikGPT already covered days/weeks ear
 
 **Anti-pattern:** Don't just re-report the story with "Bernama ni lambat." The value is the QUESTIONS Bernama didn't ask — each backed by evidence MakcikGPT already published.
 
+## Voice Pattern: "Badan Tak Boleh Bohong" (Body Language Forensics)
+
+When a corporate photo tells a different story than the press release — the CEO's body betrays what the PR copy hides. AI-powered body language analysis via `vision_analyze` is a legitimate MakcikGPT investigative tool.
+
+**Key insight:** In any negotiation, the party more emotionally invested in the signing photo is GENERALLY NOT the party that got the better end of the deal. The veteran (cool, performative smile) got what they wanted.
+
+See [references/body-language-forensics-pattern.md](references/body-language-forensics-pattern.md). Proven 2026-07-22: Taufik-Descalzi SEARAH handshake. Published as `searah-senyum-media-suap`.
+
+## Voice Pattern: "Media Kena Suap" (Paid Media / Trojan Horse Investigation)
+
+When an influencer account publishes corporate PR disguised as "pendemokrasian ilmu" — and their bio says "Collaboration/Sponsorship" — investigate the economic relationship.
+
+**Method:**
+1. Screenshot the post with full context (carousel indicator, engagement, bio)
+2. Check bio for sponsorship flags (🏳️, "Collaboration/Sponsorship", "Paid partnership")
+3. Compare content to official press releases for identical talking points
+4. **Build a cross-outlet omission table** — the most powerful technique:
+```
+| Fact Omitted | PETRONAS PR | BusinessToday | ATMA Studio | Bernama |
+|---|---|---|---|---|
+| UK incorporation | ❌ | ❌ | ❌ | ✅ (no explanation) |
+```
+5. Contrast domestic frame ("jangan risau") vs international frame ("game-changer")
+6. Frame: "Kenapa PETRONAS perlu bayar influencer untuk explain deal yang kononnya 'transparent'?"
+7. Ask: "Kalau deal ni betul-betul cantik — kenapa tak explain sendiri kat Parlimen?"
+
+Proven 2026-07-22: ATMA Studio 15-slide SEARAH explainer. Published as `searah-kekal-milik-penuh`. Full investigative methodology in [references/contradiction-map-pattern.md](references/contradiction-map-pattern.md).
+
+## Voice Pattern: "Ini Semua Illusions" (Corporate Language Deconstruction)
+
+When corporate PR uses aggregate terms to hide scale — e.g. "5 assets" that are actually 5 PSCs containing 25+ individual fields — deconstruct the term layer by layer. Arif signals this with phrases like "ini semua illusions," "5 aset tu bukan 5," or "cube hang ikut fields."
+
+**Method:**
+1. **Accept the official number.** "Artikel kata 5 aset di Malaysia."
+2. **Define what "asset" actually means in this context.** In O&G: "aset" = PSC/block, NOT individual field. One PSC contains 5-7 fields.
+3. **Map each PSC to its constituent fields.** Use historical sources (The Edge 2019, WoodMac, SEAPEX reports) to find actual field names.
+4. **Show the real count.** "5 aset = 5 PSC = 25+ medan sebenar."
+5. **Build the contrast table.** Official framing vs reality, side by side:
+```
+| Yang diberitahu | Realiti |
+|---|---|
+| "5 assets in Malaysia" | 5 PSC — setiap satu mengandungi 5-7 medan berasingan |
+| "19 assets" | 19 PSC — mungkin 50-60+ medan sebenar |
+```
+6. **Ask the structural question.** "Kenapa guna 'aset' dan bukan 'medan'? Sebab kalau rakyat nampak 25 medan, depa tanya lebih banyak soalan."
+
+**Worked example — ExxonMobil Malaysia portfolio (see `references/exxonmobil-psc-field-map.md`):**
+- 2008 PSC: Guntong, Tapis, Semangkok, Irong Barat, Palas, Tabu (6 fields active, Seligi divested)
+- Gas PSC: Angsi, Lawit, Bintang, Damar, Telok, Jerneh (6 fields)
+- PM9: Bekok, Pulai, Tiong, Tinggi, Kepong (5 fields)
+- PM5: Larut + others
+- PM8: Seligi + others
+
+**Key sources for O&G field forensics:**
+- The Edge Malaysia — "ExxonMobil exiting Malaysia to focus on Permian Basin" (Oct 2019) — lists all 3 PSCs + constituent fields
+- SEAPEX reports for PSC partner percentages
+- Wood Mackenzie field profiles for individual field details
+- Global Energy Monitor wiki for field-level data
+
+**Anti-pattern:** Accepting "5 assets" as a fact. Always ask: "Apa unit sebenar dia? PSC atau medan? Berapa medan dalam satu PSC?"
+
+Proven 2026-07-23: Arif flagged "5 aset" as illusion — deconstruction revealed Searah's 5 Malaysia PSCs contain 25+ individual fields from ex-Exxon + PCSB portfolios.
+
+## Voice Pattern: "48 Jam Narrative Landscape" (Cross-Article Timeline Analysis)
+
+When 2-3 seemingly unrelated articles appear within 48 hours, map them on a timeline to reveal the coordinated narrative landscape. One article is usually the truth-teller, others are PR amplification.
+
+**Method:**
+1. Collect all articles published within a tight window (48-72 hours)
+2. Classify each: truth-telling / sovereignty narrative / PR amplification / press release copy
+3. Map on timeline with layer tags
+4. Identify the pattern: who speaks first? who amplifies? what's missing from each?
+
+**Worked example — 22-23 July 2026:**
+| Tarikh | Peristiwa | Layer |
+|---|---|---|
+| 22 Jul | MakcikGPT dedah ATMA Studio paid media + body language + capital reduction | Truth-telling |
+| 22 Jul | PETROS umum 800 bbl/hari — "hadiah untuk Sarawak" | Sovereignty counter-narrative |
+| 23 Jul | The Star tulis Searah RCF US$6B — "oversubscribed, confidence in SEA" | PR amplification |
+
+**Analysis framing:** "Artikel MakcikGPT semalam dah sebut pattern yang sama yang kita dissect hari ni." Use the timeline to show real-time validation of earlier truth-telling.
+
+Proven 2026-07-23: MakcikGPT July 22 article on paid media + Searah body language was validated by July 22-23 news cycle showing exact patterns predicted.
+
+## Voice Pattern: "Kami Ni Tengah Anxiety Rightsizing Wei" (Staff Voice)
+
+When Arif signals "kami ni tengah anxiety rightsizing weiii" — use first-person plural ("kami") to carry authentic staff voice. Not "pekerja PETRONAS" (distance).
+
+**Key elements:**
+1. First-person plural — "kami", "kita", not "mereka" or "pekerja PETRONAS"
+2. Specific anxiety triggers — loan rumah, anak universiti, 15-20 tahun service
+3. Contrast: CEO smiling with foreign partner in 15-slide PR vs staff who never see the CEO
+4. The timeline alignment — aset pindah → staff kena rightsizing → PR slide keluar cakap semua okay
+5. Direct question: "untuk siapa 'okay' ni? Untuk staff yang kena rightsizing? Atau untuk orang yang duduk dalam slide?"
+
+**Tone:** Kampung uncle/auntie venting at the kedai kopi. "Wei... weiii" suffix. Not polished anger — real exhaustion.
+
+**The "Dia Makan Sorang" angle:** When Arif signals someone is benefiting alone at the institution's expense — frame as "satu orang senyum, ribuan orang resah." The smile in the PR photo becomes evidence of the gap.
+
+Proven 2026-07-22: Section "Wei Kami Ni Tengah Anxiety Rightsizing Weiii" in `searah-kekal-milik-penuh`. Connect institutional moves to human cost. Arif's directive: "gaya orang kampung sembang2" — casual, relatable, BM Penang, no analyst tone.
+
+## Article Update Protocol — KEMASKINI / Transparency Banner
+
+When new evidence emerges AFTER publishing (e.g., Companies House data, new filings, whistleblower documents), do NOT silently edit the article. Add a **gold-bordered KEMASKINI banner** at the top of the article body (after the cover, before the first section heading). This establishes epistemic dominance over any PR counter-narrative.
+
+**Format:**
+```html
+<div style="background:#1a1a1a;border:2px solid #d4a843;padding:1.2em 1.5em;margin:1.5em 0;border-radius:4px;">
+<p style="margin:0;font-size:0.85em;color:#d4a843;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">⚡ KEMASKINI — [DATE], [TIME] MYT</p>
+<p style="margin:0.6em 0 0 0;font-size:0.95em;color:#ccc;line-height:1.6;">
+[Concise summary of what new evidence was found, source, and what it changes. Keep under 5 sentences. Bold key names and numbers.]
+</p>
+</div>
+```
+
+**When to use:**
+- New Companies House/registry data reveals corrected board numbers
+- New filing/document emerges that strengthens or refines the original thesis
+- External source (WoodMac, Reuters) publishes analysis that adds evidence
+- You find a structural error in the original article that needs transparent correction
+
+**When NOT to use:**
+- Minor typo fixes — just fix silently
+- Adding a new section that doesn't correct/contradict the original
+- SEO tweaks
+
+**Anti-pattern:** Editing the original claim without acknowledging the update. This creates a paper trail gap. If PETRONAS PR screenshots the original and the updated version shows silent edits, you lose credibility. The banner protects you — it shows you're actively investigating and transparently updating.
+
+Proven 2026-07-22: SEARAH article updated post-publish after Companies House deep-read revealed true 6:6 board structure (not implied 2:2), SEARA→SEARAH name change, Silia Anak Hamdan token Sarawak appointment, and 31 May mass restructure timeline. Banner placed between cover and first `## Hai Makcik` heading.
+
+## Build Verification — JS Bundle Hash Match
+
+After deploy, always verify the JS bundle hash on the live site matches the dist:
+
+```bash
+# 1. Get dist bundle name
+DIST_JS=$(ls -t /root/arif-sites/sites/arif-fazil.com/dist/assets/*.js | head -1 | xargs basename)
+
+# 2. Get live bundle name
+LIVE_JS=$(curl -s "https://arif-fazil.com/" | grep -oP 'index-[A-Za-z0-9]+\.js')
+
+# 3. Compare
+[ "$DIST_JS" = "$LIVE_JS" ] && echo "MATCH" || echo "MISMATCH — redeploy"
+```
+
+If mismatch: the CDN or Caddy may be serving a cached index.html pointing to an old JS bundle. Re-rsync dist/index.html and check `cf-cache-status` in response headers.
+
+Proven 2026-07-22: After SEARAH article image fix, the old `index-niapUkiG.js` stayed on disk while new `index-DB9-pkyB.js` was deployed. Hash verification confirms which is active and catches stale deployments.
+
+## Image Embedding in MakcikGPT Articles
+
+**FULL WORKFLOW — follow every step or images WILL break.**
+
+```bash
+# 1. Copy image to public/ BEFORE building
+cp /path/to/source.jpg /root/arif-sites/sites/arif-fazil.com/public/images/makcikgpt/<filename>.jpg
+
+# 2. Reference in article HTML (use unique timestamp/hash filename to avoid CDN 404 cache):
+# <img src="/images/makcikgpt/<filename>.jpg" alt="..." style="width:100%;max-width:600px;margin:1.5em 0;border-radius:8px;" />
+
+# 3. Build
+cd /root/arif-sites/sites/arif-fazil.com && npm run build
+
+# 4. Deploy — sync dist/ to VPS webroot
+rsync -av dist/images/ /var/www/html/arif/images/
+rsync -av dist/assets/ /var/www/html/arif/assets/
+rsync -av dist/index.html /var/www/html/arif/index.html
+```
+
+### Pitfall: Caddy has NO `/images/*` handler by default
+
+Caddy serves arif-fazil.com from `/var/www/html/arif/`. There are explicit `handle` blocks for `/assets/*`, `/data/*`, `/canon/*`, etc. — but **no handler for `/images/*`**. Without it, image requests fall through to the SPA index.html fallback and return the React shell (not the image). You MUST add the handler:
+
+```bash
+# Insert BEFORE the /assets/* block in /etc/caddy/Caddyfile:
+# handle /images/* {
+#     header Cache-Control "public, max-age=86400"
+#     file_server
+# }
+```
+
+Then reload: `caddy reload --config /etc/caddy/Caddyfile`
+
+### Pitfall: Cloudflare caches 404s
+
+If an image URL returns 404 even once (e.g., before the handler was added, or before the file was synced), Cloudflare caches the 404. Subsequent requests return `cf-cache-status: HIT` with 404. **Fix: use a unique filename** (timestamp/hash). Don't try to purge — just rename and redeploy. The old URL stays cached; the new one is fresh.
+
+### Pitfall: Caddy TLS error on localhost
+
+`curl -k https://localhost/...` with `Host:` header fails with TLS alert. Use `curl -sk --resolve arif-fazil.com:443:127.0.0.1 https://arif-fazil.com/...` to test origin directly, bypassing Cloudflare.
+
+Proven 2026-07-22: SEARAH article image deployment — 3 filename changes needed before image served clean.
+
 ## Anti-Calhoun "Beautiful Ones" Frame
 
 When critiquing institutional decline, use Calhoun's Universe 25 Phase 4: entities that look perfect (visi cantik, misi sophisticated, Cultural Beliefs banyak) but contribute nothing (ROACE jatuh, Gentari rugi, production menurun). The frame: "Misi cantik. Realiti berbeza." Proven 2026-07-14: PETRONAS visi-misi article mapped 50-year evolution from 7 founding principles (substance) to "progressive energy and solutions partner" (slide deck). Pattern: more words + less doing = institutional beautiful ones.
@@ -425,6 +618,7 @@ Key: articles are TypeScript files at `/root/ARIF-SITES/sites/arif-fazil.com/src
 - `references/hitl-essay-2026-07-10.md` — kutuk mode essay (dual-target sharp critique)
 - `references/narrative-debunking-pattern.md` — 3-layer pattern for articles that debunk popular narratives. "Betul, tapi..." rhythm: acknowledge kernel truth → show what's wrong → reveal hidden thread. Proven 2026-07-13 (PETRONAS ATM article). Includes pitfalls (don't fully reject/confirm, data must be OBS, don't use word "myth").
 - `references/religious-authority-research-brief.md` — Malaysia religious authority misconduct research brief. 4 categories (sexual abuse, institutional failure, financial misconduct, power without oversight). Potential MakcikGPT series on institutional religious accountability. Needs live verification before publish. Compiled 2026-07-18.
+- `references/searah-evidence-archiving-pattern.md` — immutable evidence pack pipeline: Companies House deep-read → press release fetch → WoodMac analysis → evidence ledger → browser screenshots. Proven 2026-07-22 (SEARAH exposé).
 - `references/rakyat-marhaen-voice-pattern.md` — how to write for makcik kat pasar: no epistemic labels, no Greek symbols, numbers as words, metaphors replace analysis. Proven 2026-07-13. Includes iteration pattern (3 versions: modern → kampung → F2-corrected kampung).
 - `references/agentic-web-optimization.md` — bot markdown bypass, llms-full.txt, semantic anchors for RAG chunking, JSON-LD ClaimReview. Stage 7 of the pipeline. Proven 2026-07-15.
 - `references/rasa-embodiment-pattern.md` — how to add rasa (embodied feeling) to articles: data + manusia = rasa. Includes 3-article rewrite examples, the rasa test, and what rasa is NOT. Proven 2026-07-13.

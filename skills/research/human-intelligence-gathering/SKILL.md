@@ -64,6 +64,7 @@ Extract only what you can verify from available sources:
 - What has this person BUILT or PUBLISHED?
 - What platforms are they on?
 - What's their professional/academic identity?
+- **Malaysian identity markers** — bodybuilder/fitness competition records, military/askar service (ATM, PALAPES), sports, bank account scam databases. These are culturally high-signal for disambiguation and identity verification. See `references/malaysian-identity-markers.md` for the full checklist.
 
 **Session mentions (DER):**
 - What has the sovereign said about them?
@@ -158,6 +159,12 @@ Celebrating someone else's birthday ≠ it's their birthday. Seeing someone at a
 - Azwa = technical builder → she needs recognition, not analysis
 - Don't use the same template for every family member. Match the approach to the person's nature.
 
+### P7: Don't skip Malaysian identity marker searches (learned 2026-07-23)
+When searching for a Malaysian person, professional platforms (LinkedIn) are NOT enough. Run supplementary searches for bodybuilder/fitness competition records and military/askar service. These are culturally common identity dimensions that professional profiles omit. A construction supervisor from Dungun may also be a competitive bodybuilder — the LinkedIn profile won't tell you. See `references/malaysian-identity-markers.md` for the full checklist and search query patterns.
+
+### P8: Flag claim-vs-reality mismatches — don't silently accept personas (learned 2026-07-23)
+When a person CLAIMS an identity (bodybuilder, askar, doctor, pilot) but their public professional profile shows a different story, that mismatch IS the signal. Document both sides: what they claim vs what public sources show. Example: "Claims askar/bodybuilder → LinkedIn shows Construction Supervisor @ Avianca Energy PLT, SMK Yam Tuan Radin 2012, no military/fitness records found." Label the gap, don't conclude fraud. This pattern is critical for romance scam / investment scam investigations where fabricated personas are standard tradecraft.
+
 ## Entropy Reduction Framework
 
 When asked "how to reduce X's chaos":
@@ -186,3 +193,7 @@ Can you describe what the bot does in one sentence? If not, it's too complex.
 - `sovereign-conversation-protocol` — When conversations get deep/personal
 - `deep-research` — When you need to web-research a person
 - `person-dossier-from-public-sources` — When building a shareable profile
+
+## Reference Files
+- `references/malaysian-identity-markers.md` — Full checklist for Malaysian identity disambiguation
+- `references/scam-investigation-technical-patterns.md` — QR code decode, bank account tracing, persona cross-reference checklist, red flag scoring

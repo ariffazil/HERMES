@@ -1,0 +1,318 @@
+# model-picker.yaml — canonical model routing for Hermes Agent
+# PROBED: 2026-07-23 ~18:30 UTC | 57 Zen + 23 Go models tested
+# RULE: no model string hardcoded anywhere else. This file is the picker.
+# DEAD MODELS: all GPT, Claude, Gemini on Zen (401 — key lacks premium billing)
+
+probed_at: "2026-07-23T18:30:00Z"
+probe_summary:
+  zen_total: 57
+  zen_alive: 19
+  go_total: 23
+  go_alive: 20
+  total_alive: 39
+
+tiers:
+  bulk:
+    use: "cron jobs, background scans, high-volume summaries"
+    provider: opencode-go
+    model: deepseek-v4-flash
+    endpoint: chat_completions
+    cost: "flat $10/mo subscription"
+    note: "Go subscription already paid. Flash is free marginal cost within $60/mo cap."
+
+  default:
+    use: "Telegram chat, daily work, casual code"
+    provider: opencode-zen
+    model: deepseek-v4-flash
+    endpoint: chat_completions
+    cost: "$0.14/M input, $0.28/M output"
+    note: "Anti-mahal: flash not pro for casual chat."
+
+  heavy:
+    use: "code generation, audits, long-context reasoning"
+    provider: opencode-zen
+    model: deepseek-v4-pro
+    endpoint: chat_completions
+    cost: "$1.74/M input, $3.48/M output"
+    fallback: minimax-m3
+    fallback_cost: "$0.30/M input, $1.20/M output"
+    note: "Pro for heavy work. Fallback to MiniMax M3 if pro is slow/429."
+
+  apex:
+    use: "rare governed judgments, constitutional reasoning"
+    provider: opencode-zen
+    model: grok-4.5
+    endpoint: chat_completions
+    cost: "$2.00/M input, $6.00/M output"
+    fallback: glm-5.2
+    fallback_cost: "$1.40/M input, $4.40/M output"
+    note: "Claude unavailable on this Zen key (401 — needs billing). Grok-4.5 is best available for apex reasoning."
+
+# ── Live Models (probed alive) ──
+
+zen_alive:
+  grok-build-0.1:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    premium: true
+    
+  grok-4.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    premium: true
+    
+  deepseek-v4-pro:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  deepseek-v4-flash:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  glm-5.2:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  glm-5.1:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  glm-5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  minimax-m3:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  minimax-m2.7:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  minimax-m2.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  kimi-k2.6:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  kimi-k2.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  qwen3.6-plus:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    note: "also works via anthropic_messages"
+    
+  qwen3.5-plus:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  # Free tier models
+  big-pickle:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    free: true
+    
+  deepseek-v4-flash-free:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    free: true
+    
+  mimo-v2.5-free:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    free: true
+    
+  nemotron-3-ultra-free:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    free: true
+    
+  north-mini-code-free:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    free: true
+
+go_alive:
+  kimi-k3:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  kimi-k2.7-code:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  kimi-k2.6:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  kimi-k2.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  glm-5.2:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  glm-5.1:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  glm-5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  deepseek-v4-pro:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  deepseek-v4-flash:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  mimo-v2.5-pro:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  mimo-v2.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  hy3:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  grok-4.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    
+  # These use chat_completions (NOT anthropic_messages) — routing bug in hermes_cli/models.py
+  minimax-m3:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+    
+  minimax-m2.7:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+    
+  minimax-m2.5:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+    
+  qwen3.7-max:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+    
+  qwen3.7-plus:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+    
+  qwen3.6-plus:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+    
+  qwen3.5-plus:
+    alive: true
+    http_status: 200
+    endpoint: chat_completions
+    routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+
+# ── Dead Models ──
+
+zen_dead:
+  - {model: claude-fable-5, status: 401, reason: "premium billing required"}
+  - {model: claude-opus-4-8, status: 401, reason: "premium billing required"}
+  - {model: claude-opus-4-7, status: 401, reason: "premium billing required"}
+  - {model: claude-opus-4-6, status: 401, reason: "premium billing required"}
+  - {model: claude-opus-4-5, status: 401, reason: "premium billing required"}
+  - {model: claude-opus-4-1, status: 401, reason: "premium billing required"}
+  - {model: claude-sonnet-5, status: 401, reason: "premium billing required"}
+  - {model: claude-sonnet-4-6, status: 401, reason: "premium billing required"}
+  - {model: claude-sonnet-4-5, status: 401, reason: "premium billing required"}
+  - {model: claude-sonnet-4, status: 401, reason: "premium billing required"}
+  - {model: claude-haiku-4-5, status: 401, reason: "premium billing required"}
+  - {model: gemini-3.6-flash, status: 400, reason: "premium billing or wrong endpoint"}
+  - {model: gemini-3.5-flash-lite, status: 400, reason: "premium billing or wrong endpoint"}
+  - {model: gemini-3.5-flash, status: 400, reason: "premium billing or wrong endpoint"}
+  - {model: gemini-3.1-pro, status: 400, reason: "premium billing or wrong endpoint"}
+  - {model: gemini-3-flash, status: 400, reason: "premium billing or wrong endpoint"}
+  - {model: gpt-5.6-sol, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.6-terra, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.6-luna, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.5, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.5-pro, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.4, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.4-pro, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.4-mini, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.4-nano, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.3-codex-spark, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.3-codex, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.2, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.2-codex, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.1, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.1-codex-max, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.1-codex, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5.1-codex-mini, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5-codex, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: gpt-5-nano, status: 400, reason: "premium billing or responses endpoint"}
+  - {model: kimi-k2.7-code, status: 429, reason: "rate limited"}
+  - {model: laguna-s-2.1-free, status: 0, reason: "timeout or connection error"}
+
+go_dead:
+  - {model: mimo-v2-pro, status: 400, reason: "not available"}
+  - {model: mimo-v2-omni, status: 400, reason: "not available"}
+  - {model: hy3-preview, status: 400, reason: "not available"}
+
+# ── Routing Bug ──
+# hermes_cli/models.py line 3439-3446 routes Go minimax-* and qwen* 
+# through anthropic_messages, but Go actually serves these via chat_completions.
+# This bug only affects Go MiniMax and Qwen — Zen routing is correct.
+# Fix: change opencode_model_api_mode() to return chat_completions for those prefixes on Go.
