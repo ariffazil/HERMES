@@ -1,0 +1,38 @@
+name: Repo Routing Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+  push:
+    branches-ignore: []
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-routing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Validate REPO trailer
+        run: |
+          set -euo pipefail
+          TARGET_REPO="${{ github.event.pull_request.base.repo.name }}"
+          echo "Target repo: $TARGET_REPO"
+          COMMITS=$(git log --format='%H %B' origin/main..HEAD)
+          echo "$COMMITS" | while IFS= read -r sha body; do
+            if ! echo "$body" | grep -qi "^REPO="; then
+              echo "❌ Commit $sha: Missing REPO= trailer"
+              exit 1
+            fi
+          done
+          echo "✅ All commits have valid REPO= trailers"

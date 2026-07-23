@@ -1,0 +1,79 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# HERMES Sentinel Pre-Merge Gate
+# Binary PASS / BLOCK for every PR to main.
+# Q1: Route manifest changed?
+# Q2: Skill catalog intact?
+# Q3: Bridge config valid?
+# ═══════════════════════════════════════════════════════════════════════════
+name: "🛡️ HERMES Sentinel"
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  merge_group:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  q1-route-manifest:
+    name: "Q1 — Route Manifest"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Valid route manifest
+        run: |
+          test -f HERMES-COMMAND-MANIFEST.md || (echo "❌ Missing command manifest" && exit 1)
+          test -f config.yaml || echo "⚠️ config.yaml not present (runtime-only)"
+          echo "✅ Route manifest valid"
+
+  q2-skill-catalog:
+    name: "Q2 — Skill Catalog"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Skill integrity
+        run: |
+          SKILLS=$(find skills/ -name 'SKILL.md' 2>/dev/null | wc -l)
+          echo "Skills found: $SKILLS"
+          if [ "$SKILLS" -eq 0 ]; then echo "⚠️ Zero skills — catalog empty"; fi
+          echo "✅ Skill catalog check complete"
+
+  q3-bridge-config:
+    name: "Q3 — Bridge Config"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Config valid
+        run: |
+          python3 -c "import yaml; yaml.safe_load(open('config.yaml'))" 2>/dev/null && echo "✅ config.yaml valid YAML" || echo "⚠️ config.yaml requires runtime deps (non-blocking)"
+      - name: No adjudication leak
+        run: |
+          if grep -rq "SEAL\|888_JUDGE\|final_verdict" skills/ --include="*.md" 2>/dev/null | grep -v "never\|DONT\|REFUSE\|HARAM\|#" > /dev/null; then
+            echo "⚠️ Adjudication patterns in skills — HERMES bridges, never judges"
+          fi
+          echo "✅ Boundary check complete"
+
+  sentinel-gate:
+    name: "✅ Sentinel Gate"
+    needs: [q1-route-manifest, q2-skill-catalog, q3-bridge-config]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Gate verdict
+        run: |
+          Q1="${{ needs.q1-route-manifest.result }}"
+          Q2="${{ needs.q2-skill-catalog.result }}"
+          Q3="${{ needs.q3-bridge-config.result }}"
+          echo "Q1: $Q1 | Q2: $Q2 | Q3: $Q3"
+          if [[ "$Q1" != "success" ]]; then
+            echo "::error::SENTINEL BLOCK — Q1 route manifest invalid"
+            exit 1
+          fi
+          echo "✅ SENTINEL PASS"

@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# arifOS Federation — Governance Gate (HERMES)
+# Constitutional audit on every push to main
+# DITEMPA BUKAN DIBERI
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: "🛡️ Federation Governance Gate"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: governance-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  governance-audit:
+    name: "Constitutional Audit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run Governance Gate
+        run: bash scripts/governance-gate.sh

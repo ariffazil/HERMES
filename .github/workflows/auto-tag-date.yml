@@ -1,0 +1,38 @@
+# ════════════════════════════════════════════════════════════
+# Auto Date Tag — vYYYY.MM.DD on every push to main
+# DITEMPA BUKAN DIBERI
+# ════════════════════════════════════════════════════════════
+
+name: "🏷️ Auto Date Tag"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-tag-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tag:
+    name: "Tag vYYYY.MM.DD"
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Generate date tag
+        run: |
+          TAG="v$(date -u +%Y.%m.%d)"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists — skipping"
+          else
+            git tag -a "$TAG" -m "HERMES release $TAG — DITEMPA BUKAN DIBERI"
+            git push origin "$TAG"
+            echo "✅ Tagged $TAG"
+          fi

@@ -1,0 +1,32 @@
+# ════════════════════════════════════════════════════════════
+# Weekly Repo Hygiene — Stale branch + tag cleanup
+# Non-blocking. Federation-wide pattern.
+# ════════════════════════════════════════════════════════════
+
+name: "🧹 Weekly Repo Hygiene"
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Every Monday 6am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  hygiene:
+    name: "Hygiene Scan"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Report stale branches
+        run: |
+          echo "=== HERMES Repo Hygiene ==="
+          echo "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git branch -r --merged origin/main | grep -v "origin/main\|origin/HEAD" | while read b; do
+            echo "  Merged: $b (safe to delete)"
+          done
+          echo "✅ Hygiene scan complete"
