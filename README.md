@@ -1,6 +1,6 @@
 <!-- SOT-MANIFEST
-federation_release: v2026.07.23
-last_verified: 2026-07-23T22:00Z
+federation_release: v2026.07.24
+last_verified: 2026-07-24T08:00Z
 live_commit: fa890a2
 organ: HERMES
 role: multi-modal-bridge (organ 7 of 7)
@@ -92,4 +92,20 @@ HERMES · Port 8644 · BRIDGE_LAW · Organ 7 of 7
 Routes, never adjudicates. DITEMPA BUKAN DIBERI.
 ```
 
-> **SOT:** 2026-07-19 | **seal_seq:** N/A
+---
+
+## Federation Separation of Powers
+
+| Layer | Role | Can | Cannot |
+|-------|------|-----|--------|
+| **ARIF** | Sovereign | Veto, approve, decide | Be overridden |
+| **AAA** | State / Cockpit | Display, route, queue, register | Judge, execute, seal |
+| **arifOS** | Judge | Issue SEAL/HOLD/VOID/SABAR | Execute mutations |
+| **Domain Organs** | Witnesses | Compute and reflect evidence | Decide alone |
+| **A-FORGE** | Executor | Build, deploy, mutate | Self-authorize |
+| **HERMES** | Edge Bridge | Route signals, manage skills | Adjudicate |
+| **VAULT999** | Ledger | Record immutable seals | Edit or delete history |
+
+> AAA routes and displays. arifOS judges. Domain organs witness. A-FORGE executes. HERMES bridges. VAULT999 records. ARIF decides.
+
+> **SOT:** 2026-07-24 | **seal_seq:** `fa890a2`
