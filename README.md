@@ -55,6 +55,24 @@ VAULT999 — immutable record
 
 HERMES sits at the **edge** — it bridges external signals into the federation and routes creative/media evidence to the reasoning layer.
 
+```mermaid
+graph LR
+    TG[📱 Telegram<br/>Operator Channel] <-->|messages| HERMES
+    subgraph HERMES [🔮 HERMES — Multi-Modal Bridge]
+        EDGE[Signal Edge] --> ROUTE[Route & Classify]
+        SKILL[Skill Catalog<br/>31+ Skills]
+    end
+    ROUTE -->|governance| ARIFOS[⚖️ arifOS :8088]
+    ROUTE -->|earth| GEOX[🌍 GEOX :8081]
+    ROUTE -->|capital| WEALTH[💰 WEALTH :18082]
+    ROUTE -->|readiness| WELL[🫀 WELL :18083]
+    ROUTE -->|execute| AFORGE[🔥 A-FORGE :7071]
+    ARIFOS -->|seal| VAULT[(VAULT999)]
+    AFORGE -->|receipt| VAULT
+    SKILL -.->|loads| ARIFOS
+    SKILL -.->|loads| AFORGE
+```
+
 ---
 
 ## 3. Federation Cross-Reference
