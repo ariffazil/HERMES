@@ -1,0 +1,49 @@
+# HERMES — Multi-Modal Bridge + Telegram Relay
+
+> arifOS Federation external gateway. Python + Telegram Bot API.
+> Port: 8644 | Systemd: hermes.service
+
+## Role
+
+HERMES is the sovereign relay organ — bridging the arifOS Federation cockpit to Telegram and other external channels. It is the unified external gateway for all federation organs.
+
+## Key Endpoints
+
+- Health: `http://localhost:8644/health`
+- Telegram: Connected via Bot API (token in /root/.secrets/vault.env)
+
+## Federation Organs
+
+| Organ | Port | Role |
+|-------|------|------|
+| arifOS | 8088 | Constitutional kernel — judge, seal, F1-F13 |
+| A-FORGE | 7071 | Execution shell — build, deploy, forge |
+| AAA | 3001 | Cockpit + A2A identity |
+| GEOX | 8081 | Earth intelligence |
+| WEALTH | 18082 | Capital intelligence |
+| WELL | 18083 | Vitality guard (REFLECT_ONLY) |
+| HERMES | 8644 | Multi-modal bridge + Telegram relay (← you are here) |
+
+## Capabilities
+
+- Telegram ↔ arifOS kernel relay
+- Multi-modal message routing
+- Federation-wide notification dispatch
+- Sovereign command interface
+
+## Tech Stack
+
+- Python 3.12+
+- python-telegram-bot
+- httpx for organ health probes
+
+## Key Paths
+
+- Source: `/root/HERMES/`
+- Config: `/root/HERMES/config/`
+
+## Git
+
+- Remote: `https://github.com/ariffazil/HERMES`
+- Branch: main
+- License: AGPL-3.0
