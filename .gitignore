@@ -6,6 +6,7 @@ sessions.db
 kanban.db
 kanban.db.dispatch.lock
 kanban.db.init.lock
+kanban/
 
 # Caches
 cache/
@@ -17,6 +18,19 @@ sticker_cache.json
 # Config backups
 config.yaml.bak.*
 *.bak
+
+# Browser artifacts
+browser_screenshots/
+.scratch_tip_shown
+
+# Tuning data
+honcho.json
+
+# Curator backups
+profiles/*/skills/.curator_backups/
+
+# MCP tokens
+mcp-tokens/
 
 # Sensitive content — never push
 *caregiver*
