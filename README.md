@@ -10,7 +10,8 @@ truth_rule: tools/list + /health beat any static count in prose
 
 # 🔮 HERMES — Multi-Modal Bridge
 
-[![Federation](https://img.shields.io/badge/Federation-v2026.07.23-0a7b83)](https://arifos.arif-fazil.com)
+[![Domain CI](https://github.com/ariffazil/HERMES/actions/workflows/domain-ci.yml/badge.svg?branch=main)](https://github.com/ariffazil/HERMES/actions/workflows/domain-ci.yml)
+[![Federation](https://img.shields.io/badge/Federation-v2026.07.24-0a7b83)](https://arifos.arif-fazil.com)
 [![License](https://img.shields.io/github/license/ariffazil/HERMES?label=License)](LICENSE)
 
 > **HERMES routes. It never adjudicates.**
