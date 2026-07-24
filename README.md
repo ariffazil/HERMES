@@ -1,6 +1,6 @@
 <!-- SOT-MANIFEST
 federation_release: v2026.07.24
-last_verified: 2026-07-24T08:00Z
+last_verified: 2026-07-24T16:00Z
 live_commit: fa890a2
 organ: HERMES
 role: multi-modal-bridge (organ 7 of 7)
