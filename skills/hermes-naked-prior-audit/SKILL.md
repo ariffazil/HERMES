@@ -1,6 +1,6 @@
 ---
 name: hermes-naked-prior-audit
-description: Session-start self-audit for Hermes — strips stale ghost priors, flags UNVERIFIED reconstructions, applies F2 inward before first output.
+description: Session-start self-audit for Hermes — strips stale ghost priors, flags UNVERIFIED reconstructions, applies F2 inward before first output
 category: cognitive-commands
 trigger: First turn of every new session (auto) OR when Arif signals "/reset_context"
 author: Hermes (drafted 2026-07-10)

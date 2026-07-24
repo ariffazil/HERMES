@@ -164,6 +164,7 @@ Telethon saves the session as a `.session` file (SQLite). Location: `/root/userb
 
 - `references/telegram-code-blocking.md` — why Telegram blocks codes shared in chat
 - `references/contact-links-and-qr.md` — `t.me/contact/` link format, QR code decoding, and scam investigation pipeline
+- `references/bot-api-set-profile-photo.md` — Bot API `setMyProfilePhoto` with `InputProfilePhotoStatic` + `attach://` format
 
 ## Integration with Hermes
 

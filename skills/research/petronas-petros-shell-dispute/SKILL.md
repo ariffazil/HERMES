@@ -1,6 +1,6 @@
 ---
 name: petronas-petros-shell-dispute
-description: "PETRONAS–Petros–Shell MDS dispute 2024-2026: espionage case, gas war, BG call, MBR freeze, simulative exploitation framework. 6 case artifacts + 4 new WEALTH detection tools."
+description: "PETRONAS–Petros–Shell MDS dispute 2024-2026: espionage case, gas war, BG call, MBR freeze, simulative exploitation framework. 6 case artifacts + 4"
 version: 1.0.0
 author: hermes-prime
 tags: [petronas, petros, shell, sarawak, gas, dispute, simulative-exploitation, acemoglu, institutional-collapse, mbr, bank-guarantee]

@@ -1,6 +1,6 @@
 ---
 name: vps-agentic-ops
-description: "Autonomous VPS operations — smoketest, state machine, circuit breaker, rollback, dead-man's switch, cross-federation mesh. Covers designing and deploying active response layers on VPS machines for agentic infrastructure."
+description: "Autonomous VPS operations — smoketest, state machine, circuit breaker, rollback, dead-man's switch, cross-federation mesh"
 version: 1.0.0
 author: Hermes Agent
 tags: [vps, agentic, monitoring, self-heal, federation, headscale, tailscale, active-response]

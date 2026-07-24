@@ -1,6 +1,6 @@
 ---
 name: corporate-legal-scrub
-description: "Remove corporate entity references from git repos to avoid legal exposure. Systematic scrub: nuke dedicated directories, anonymize remaining references across source/tests/docs/contracts, verify zero hits, commit clean. Load when Arif says 'remove [company] references', 'legal scrub', 'clean up corporate mentions', or any task removing employer/client names from repos."
+description: "Remove corporate entity references from git repos to avoid legal exposure"
 triggers:
   - "remove company references"
   - "legal scrub"

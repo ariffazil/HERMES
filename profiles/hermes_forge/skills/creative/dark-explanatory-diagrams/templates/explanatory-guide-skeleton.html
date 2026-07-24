@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{TITLE}}</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #020617;
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  .header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .pulse {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px #34d399;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  h1 { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+  h3 { font-size: 12px; color: #cbd5e1; }
+  .subtitle { font-size: 10px; color: #94a3b8; margin-bottom: 24px; }
+  .card {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .card-dot.red { background: #fb7185; }
+  .card-dot.emerald { background: #34d399; }
+  .card-dot.amber { background: #fbbf24; }
+  .card-dot.cyan { background: #22d3ee; }
+  .card-dot.violet { background: #a78bfa; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  ul { list-style: none; font-size: 11px; color: #cbd5e1; }
+  ul li { padding: 4px 0; border-bottom: 1px solid #1e293b; }
+  ul li:last-child { border-bottom: none; }
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .tag-red { background: rgba(251,113,133,0.2); color: #fb7185; }
+  .tag-emerald { background: rgba(52,211,153,0.2); color: #34d399; }
+  .tag-amber { background: rgba(251,191,36,0.2); color: #fbbf24; }
+  .tag-cyan { background: rgba(34,211,238,0.2); color: #22d3ee; }
+  .tag-violet { background: rgba(167,139,250,0.2); color: #a78bfa; }
+  .footer { font-size: 9px; color: #64748b; text-align: center; margin-top: 16px; }
+  .legend-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; font-size: 9px; color: #94a3b8; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="pulse"></div>
+  <h1>{{TITLE}}</h1>
+</div>
+<div class="subtitle">{{CONTEXT — user, version, scope}}</div>
+
+<!-- SECTION 1: ANATOMY (Pattern 1) -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-dot cyan"></div>
+    <h3>① {{ANATOMY_SECTION_TITLE}}</h3>
+  </div>
+  <svg viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="800" height="480" fill="url(#grid)"/>
+    <!-- LEFT: BEFORE -->
+    <text x="200" y="30" text-anchor="middle" font-size="13" fill="#22d3ee" font-weight="700">{{BEFORE_TITLE}}</text>
+    <!-- anatomy parts here -->
+    <!-- DIVIDER -->
+    <line x1="400" y1="60" x2="400" y2="430" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="400" y="455" text-anchor="middle" font-size="9" fill="#64748b">{{TRANSITION_LABEL}}</text>
+    <!-- RIGHT: AFTER -->
+    <text x="600" y="30" text-anchor="middle" font-size="13" fill="#fb7185" font-weight="700">{{AFTER_TITLE}}</text>
+    <!-- post-state anatomy parts here -->
+  </svg>
+  <div class="legend-row">
+    <!-- legend items -->
+  </div>
+</div>
+
+<!-- SECTION 2: TIMELINE (Pattern 2) -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-dot emerald"></div>
+    <h3>② {{TIMELINE_SECTION_TITLE}}</h3>
+  </div>
+  <svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="grid2" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="800" height="360" fill="url(#grid2)"/>
+    <line x1="60" y1="80" x2="760" y2="80" stroke="#1e293b" stroke-width="2"/>
+    <!-- milestone circles + labels + phase zones + detail rows -->
+  </svg>
+</div>
+
+<!-- SECTION 3: DO/DONT (Pattern 3) -->
+<div class="grid">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot emerald"></div>
+      <h3>BUAT ✓</h3>
+    </div>
+    <ul>
+      <li><span class="tag tag-emerald">{{PHASE}}</span> {{ACTION}}</li>
+      <!-- more items -->
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-dot red"></div>
+      <h3>JANGAN ✗</h3>
+    </div>
+    <ul>
+      <li><span class="tag tag-red">{{PHASE}}</span> {{ACTION}}</li>
+      <!-- more items -->
+    </ul>
+  </div>
+</div>
+
+<!-- SECTION 4: SIGNATURE QUOTE (Pattern 4) -->
+<div class="card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);">
+  <div class="card-header">
+    <div class="card-dot violet"></div>
+    <h3>{{SIGNATURE_SECTION_TITLE}}</h3>
+  </div>
+  <div style="text-align:center; padding:20px;">
+    <div style="font-size:14px; color:#c4b5fd; font-weight:700; line-height:1.8;">
+      "{{QUOTE}}"
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  {{SOURCES · DISCLAIMER · VERSION}}
+</div>
+
+</body>
+</html>

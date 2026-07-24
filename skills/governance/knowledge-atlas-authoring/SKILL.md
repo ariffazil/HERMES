@@ -1,6 +1,6 @@
 ---
 name: knowledge-atlas-authoring
-description: "Author passive domain knowledge profiles for the arifOS federation — Geometry B. Domain profiles are NOUNS (axioms, constraints, equations), not VERBS (agents, runtimes, MCP tools). Covers the thermodynamic boundary between agent-cards/ and knowledge/, JSON schema for domain profiles, axiom writing standards (genuine, not placeholder), dependency chain management, epistemic tagging, manifest generation, and schema normalization from parallel subagent output. Load when: Arif says 'create knowledge directory', 'domain atlas', '33 knowledge profiles', 'Geometry B', 'knowledge profiles for physics/math/code', 'atlas authoring', or any task touching /root/AAA/knowledge/."
+description: "Author passive domain knowledge profiles for the arifOS federation — pure NOUNS (axioms, constraints, equations), not VERBS. Geometry B."
 tags:
   - knowledge
   - atlas

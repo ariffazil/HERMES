@@ -1,7 +1,13 @@
 {
-  "updated_at": "2026-07-23T22:19:02.647851",
+  "updated_at": "2026-07-24T17:02:08.725194",
   "platforms": {
     "telegram": [
+      {
+        "id": "8410138119",
+        "name": "ASI💃",
+        "type": "dm",
+        "thread_id": null
+      },
       {
         "id": "267378578",
         "name": "ARIF",
@@ -9,8 +15,20 @@
         "thread_id": null
       },
       {
-        "id": "8410138119",
-        "name": "ASI💃",
+        "id": "-1003815535761",
+        "name": "SADO",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:1",
+        "name": "AAA / topic 1",
+        "type": "group",
+        "thread_id": "1"
+      },
+      {
+        "id": "8727562763",
+        "name": "777 FORGE 🔥🧠⚒️🌎💎",
         "type": "dm",
         "thread_id": null
       },
@@ -27,28 +45,22 @@
         "thread_id": null
       },
       {
-        "id": "-1003753855708:1",
-        "name": "AAA / topic 1",
-        "type": "group",
-        "thread_id": "1"
-      },
-      {
-        "id": "-1003815535761",
-        "name": "SADO",
-        "type": "group",
-        "thread_id": null
-      },
-      {
         "id": "1042200555",
         "name": "No name",
         "type": "dm",
         "thread_id": null
       },
       {
-        "id": "8727562763",
-        "name": "777 FORGE 🔥🧠⚒️🌎💎",
-        "type": "dm",
-        "thread_id": null
+        "id": "-1003753855708:37092",
+        "name": "AAA / topic 37092",
+        "type": "group",
+        "thread_id": "37092"
+      },
+      {
+        "id": "-1003753855708:36606",
+        "name": "AAA / topic 36606",
+        "type": "group",
+        "thread_id": "36606"
       },
       {
         "id": "-5561731065",
@@ -69,12 +81,6 @@
         "thread_id": "36988"
       },
       {
-        "id": "-1003753855708:36606",
-        "name": "AAA / topic 36606",
-        "type": "group",
-        "thread_id": "36606"
-      },
-      {
         "id": "8324190535",
         "name": "Wawa",
         "type": "dm",
@@ -85,12 +91,6 @@
         "name": "Fahmi Amni",
         "type": "dm",
         "thread_id": null
-      },
-      {
-        "id": "-1003753855708:37092",
-        "name": "AAA / topic 37092",
-        "type": "group",
-        "thread_id": "37092"
       },
       {
         "id": "8247664885",

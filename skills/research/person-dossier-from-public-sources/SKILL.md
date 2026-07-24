@@ -1,6 +1,6 @@
 ---
 name: person-dossier-from-public-sources
-description: Build an epistemic-tagged human profile dossier (PDF or markdown) from public sources including SPE papers, LinkedIn, scispace, news, and recruiter activity. Triggers when user asks for deep research on a person, a profile for someone, or a briefing on a real human. Hard refusal - never fabricate biographical detail without anchor.
+description: "Build an epistemic-tagged human profile dossier from public sources. Hard refusal on fabricated biographical detail."
 ---
 
 # Person Dossier from Public Sources

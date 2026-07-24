@@ -1,6 +1,6 @@
 ---
 name: arifos-interceptor-patching
-description: "Diagnose and fix arifOS kernel authority/session bugs — interceptor resolution, session isolation, SCT propagation, external anchor bypasses, and the constitutional seal flow (init→judge→seal)."
+description: "Diagnose and fix arifOS kernel authority/session bugs — interceptor resolution, session isolation, SCT propagation, external anchor bypasses, and the constitutional"
 triggers:
   - "arifOS seal fails with authority errors"
   - "session binding bug — downstream tools see MEDIUM/LOW instead of FULL/SOVEREIGN"
@@ -15,6 +15,7 @@ triggers:
   - "strict-organ doctrine enforcement"
   - "anonymous organ read rejection"
   - "arif_seal mode authority downgrade"
+  - "arifOS health check times out (TCP accept, no HTTP response)"
   - "arif_think returns empty reasoning"
 ---
 
@@ -200,6 +201,73 @@ return (capability.authority_required, capability.irreversible,
 
 **Conformance impact:** `arifosmcp/runtime/conformance_live.py` gained `_check_anonymous_organ_read_rejection()` as P0 check #15 (total checks 18→19). Tests in `tests/runtime/test_conformance_live.py` updated to expect 19 checks.
 
+## Diagnostic: arifOS Health-Check Timeout (TCP Accept, No HTTP Response)
+
+### The pattern (proven 2026-07-23/24 — 7+ recurrences)
+
+```
+$ curl -v --max-time 5 http://localhost:8088/health
+* TCP on 127.0.0.1:8088 connected
+> GET /health HTTP/1.1 (sent)
+* hangs 5 seconds, zero bytes received
+curl: (28) Operation timed out
+
+$ systemctl status arifos | grep Active
+Active: active (running) since ... (process alive, memory normal)
+```
+
+**arifOS accepts TCP connections but never responds.** Process alive, memory fine, socket open — but `/health` hangs. This is NOT a crash. It's the event-loop blocked by a hung LLM call.
+
+### Most common root cause: dead TokenRouter/LLM API key
+
+Check the LLM provider keys BEFORE assuming an event-loop bug:
+
+```bash
+journalctl -u arifos --since "30 min ago" | grep -iE '401|503|api_key|TokenRouter|llm_client|model_not_found'
+```
+
+**What you'll find when a key is dead:**
+- `HTTP 401: invalid api key` — MiniMax/DeepSeek/etc. key expired
+- `HTTP 503: No available channel for model` — DeepSeek billing dead
+- `TokenRouter transport error` — all backends failed
+
+### The mechanism
+
+1. arifOS receives a tool call → needs LLM completion → calls TokenRouter/llm_client
+2. **All configured backends are dead** (401/503) → client retries or hangs
+3. The async event-loop blocks on the hung coroutine
+4. New requests queue up → event-loop starved → `/health` stops responding
+5. Systemd eventually kills with `timeout` → restart → 20-30 min → same deadlock
+
+### Fix order
+
+1. **Identify which key is dead** from journal errors
+2. **Rotate the key** in `/root/.secrets/vault.env`
+3. **Update systemd drop-in** if it hardcodes the wrong token (e.g., OpenClaw had a dead 8149 bot token in a drop-in while vault.env had the live 84101 token)
+4. `systemctl daemon-reload && systemctl restart arifos`
+5. **Verify** — `curl -sf http://localhost:8088/health`
+
+### Pitfall: Restarting without fixing the key
+
+Restart buys 20-30 min before the next tool call triggers the LLM hang again. The key fix IS the fix — restart alone is just a delay.
+
+### Pitfall: Multiple bot tokens in vault.env
+
+vault.env may have MULTIPLE different token values for the same key name — one `export` line with a working bot, and an unexported line with a dead token. The systemd drop-in may reference the dead one. **Verify which token the service actually loads** — check the drop-in file, not vault.env.
+
+```bash
+# Check which token a service actually uses
+grep TELEGRAM_BOT_TOKEN /etc/systemd/system/*.service.d/*.conf
+```
+
+### When it's NOT a dead key
+
+If journalctl shows NO 401/503/TokenRouter errors, the hang is likely:
+- **Real event-loop deadlock** — session contention, locked mutex, I/O deadlock
+- **Memory limit hit** — `systemctl status arifos | grep Memory` near the 1.5G cap
+- **Inter-process deadlock** — azevent bus, thermodynamic pulse lock
+- In these cases, restart is the correct fix. The root cause needs deeper investigation (strace, thread dump).
+
 ## Common pitfalls
 
 ### 0. Embodied handler override — the silent dispatch hijacker
@@ -252,6 +320,14 @@ The deployed code is at `/opt/arifos/app/`. The source repo is at `/root/arifOS/
 
 ### 6. arif_seal needs evidence_sources when NOT SOVEREIGN
 For non-SOVEREIGN actors, the interceptor checks `req.raw_arguments.get("evidence_sources", [])` and needs at least one `EXTERNAL_*` entry. The arif_seal schema doesn't expose this param. SOVEREIGN bypasses this check.
+
+### 7. Light-init sovereign authority not escalating after Ed25519 verification (2026-07-24)
+
+**The bug:** `arif_init(mode="light")` with valid Ed25519 signature returns `OBSERVE_ONLY` authority instead of `FULL`/`SOVEREIGN`. The auto-identity path at `session.py` line 1390 verifies the signature and sets `sess["authority"] = "FULL"` but doesn't update the light-init variables `_light_actor_verified`, `_light_band`, `_light_agent_class`, `_light_authority_level`. These stay at their unverified defaults, so `_project_light()` and the Ed25519-exempt check both see the wrong authority.
+
+**Fix:** Add 4 lines after auto-identity succeeds at line 1393 — set `_light_actor_verified = True`, `_light_band = "FULL"`, `_light_agent_class = "SOVEREIGN_PRINCIPAL"`, `_light_authority_level = "SOVEREIGN"`.
+
+**Full writeup:** [`references/light-init-sovereign-authority-bug.md`](references/light-init-sovereign-authority-bug.md)
 
 ## Verification
 

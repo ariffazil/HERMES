@@ -1,6 +1,6 @@
 ---
 name: mcp-naming-contract
-description: Apply the MCP Tools/Prompts/Resources naming contract when designing or auditing tool surfaces. The LLM discovers and invokes tools by name + description alone — name and description are the interface contract, not metadata. Load when authoring a new MCP tool/resource/prompt, when auditing an organ's tool surface for "silent misfires", when renaming existing tools, or when Batch N + 1 tools in a federation disagree on naming convention. Triggers include "name this tool", "audit the MCP surface", "tool description", "tool misfires", "agent picks the wrong tool", "silent misfire", "MCP spec naming", or any task touching arifOS/GEOX/A-FORGE/WEALTH/WELL/AAA/Hermes tool or prompt registries.
+description: "Apply the MCP Tools/Prompts/Resources naming contract to tool surfaces. Name and description are the interface contract — not metadata."
 version: 1.0.0
 author: Hermes-PRIME
 created: 2026-07-09

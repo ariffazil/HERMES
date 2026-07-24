@@ -1,6 +1,6 @@
 ---
 name: paper-to-code-validation
-description: "Validate that a research paper's equations and claims are properly implemented in code, tested, and numerically verified. The 'close the loop' pattern: read paper → extract equations → search codebase → map to implementations → check test coverage → identify gaps → propose what to build. Use when Arif asks 'is this embedded in our code', 'does this match the paper', 'close the loop', 'validate the equations', or shares a .tex/.pdf and asks if the theory is implemented."
+description: "Validate that a research paper's equations and claims are properly implemented, tested, and numerically verified. Closes the theory-to-code loop."
 version: 1.0.0
 author: Hermes
 license: MIT

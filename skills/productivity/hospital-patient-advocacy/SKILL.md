@@ -1,6 +1,6 @@
 ---
 name: hospital-patient-advocacy
-description: "Help users navigate Malaysian public hospital systems — interpret medical reports, translate clinical terms to plain BM, draft correspondence, and guide family through admissions/surgery/recovery."
+description: "Help users navigate Malaysian public hospital systems — interpret medical reports, translate clinical terms to plain BM, draft correspondence, and"
 tags: [hospital, medical, malaysia, patient-advocacy, translation, hkl]
 ---
 
@@ -77,6 +77,7 @@ When user is mobile/stressed/at hospital and needs assessment questions or guida
 - **Don't mention procedure details in formal letters.** The user corrected this — "kecuain waktu endos." Hospitals are defensive about complications.
 - **Don't push the user to act.** Present options, let them decide. They're under stress.
 - **Verify patient identity across documents.** Name mismatches (e.g. ROSLANAH vs ROSNANI) are common clerical errors in govt hospitals — flag them.
+- **Distinguish symptom location carefully.** "Perut mengah" (perut rasa penuh/ketat/tegang) is completely different from "dada mengah" (sesak nafas/chest tightness). The first is ileus/distension, the second is respiratory. Don't conflate them. Confirm dengan user: "Perut ke dada?"
 
 ## Common Malaysian Hospital Context
 

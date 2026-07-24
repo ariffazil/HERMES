@@ -1,7 +1,7 @@
 ---
 name: federation-checkup
-description: "Standard checkup protocol for the arifOS federation — dual-probe pattern, floor interpretation, OpenCode session monitoring, flag hierarchy for human-readable reports, and sweep-and-classify housekeeping. Load when Arif asks 'how's the system', 'status', 'checkup', 'semua organ hijau ke', 'what's running', 'sweep the federation', 'find everything pending/stale', or any health/readiness/housekeeping probe of the federation."
-tags: [federation, health, checkup, arifOS, observability, ops]
+description: "Standard checkup protocol for the arifOS federation — dual-probe pattern, floor interpretation, flag hierarchy, and sweep-and-classify housekeeping."
+related_skills: [bloodhound-federation-mapping]
 triggers:
   - "how's the system"
   - "status"
@@ -21,12 +21,29 @@ triggers:
   - "identity diagnostics"
   - "federation repair"
   - "build identity drift"
-  - "drift monitor repair"
+  - "PulseMCP"
+  - "pulsemcp"
+  - "ecosystem listing"
+  - "external verification"
+  - "public MCP listing"
+  - "floor table audit"
+  - "consumer drift"
+  - "FLOOR_TABLE"
+  - "Fasa 1 audit"
+  - "SPEC rejection"
+  - "seal status audit"
+  - "constitutional source audit"
 ---
 
 # Federation Checkup — Dual-Probe Protocol
 
 > Always run both probes. Reconcile before reporting. Surface by flag hierarchy.
+
+## BloodHound-Aware Architecture (Transport ≠ Privilege)
+
+See `references/bloodhound-federation-insights.md` for the full BloodHound→arifOS mapping and 3-phase audit architecture.
+
+**Core insight:** TCP transport reachability (11/11 edges green) is NOT federation security. The real surface is **which MCP tools can mutate constitutional state** — 3 tools are 1-hop from F13 (`arif_forge`, `arif_judge`, `arif_seal`). Every other tool is observe-only from a constitutional perspective.
 
 ## The Core Lesson
 
@@ -39,19 +56,52 @@ The Observatory (`/api/status`) shows the real constitutional state — per-floo
 
 ## Automated Artifact Generation (Cloud AI Ingestion)
 
-For producing immutable federation reality artifacts for cloud AI ingestion (the **epistemic bridge** — Truth without Vector), use the reality snapshot compiler:
-→ `references/reality-snapshot-compiler.md`
+For producing immutable federation reality artifacts for cloud AI ingestion (the **epistemic bridge** — Truth without Vector), use the `federation_reality_probe.py` (v2.0.0) via Makefile targets or direct invocation.
+
+### make reality — Standard Probe
 
 ```bash
-# Human + AI readable markdown
-python3 /root/scripts/reality_snapshot.py
-
-# Machine-readable JSON
-python3 /root/scripts/reality_snapshot.py --json
-
-# Save to dated forge_work
-python3 /root/scripts/reality_snapshot.py --output /root/forge_work/$(date +%Y-%m-%d)/reality_state.md
+cd /root/arifOS
+make reality
+# Equivalent to:
+python3 scripts/federation_reality_probe.py --write-md --write-json --public
 ```
+
+Outputs: `var/reality/federation_reality_<timestamp>.json` + `FEDERATION_REALITY_SNAPSHOT.md`
+
+Checks: organ liveness, tool count vs expected, version freshness, public HTTPS endpoint, endpoint detail, known gaps.
+
+### make reality-deep — Full Scope Sweep + F13 Reachability
+
+```bash
+cd /root/arifOS
+make reality-deep
+# Equivalent to:
+python3 scripts/federation_reality_probe.py --scope --write-md --write-json --public --verbose
+```
+
+Includes all `make reality` checks PLUS:
+
+**Tool scope sweep:** For every MCP-enabled organ, performs `tools/list` (full names + prefix classification like `arif_`, `geox_`, `capital_`, `well_`), `resources/list` (resource URIs), `prompts/list` (prompt names). Results appear in three dedicated subsections: "Tool Names by Prefix", "Resource URIs", "Prompt Names".
+
+**F13 SOVEREIGN reachability:** Cross-checks:
+- `GENESIS/FLOOR_TABLE.json` — exists, parseable, authority field, floor count
+- `GENESIS/000_KERNEL_CANON.md` — exists, F13/SOVEREIGN mention count, file size
+- Every organ's `/health` response for `f13_status`, `sovereign_status`, `sovereign`, or `human_veto` fields
+- All 13 constitutional floors emitted in a dedicated F13 table in the MD report
+
+### When to Use Which
+
+| Situation | Command |
+|-----------|---------|
+| Quick checkup, paste into chat | `make reality` |
+| Deep audit across all MCP surfaces | `make reality-deep` |
+| Debugging tool count mismatch | `make reality-deep` (see actual tool names) |
+| Before/after SEAL to verify no drift | `make reality-deep` |
+| F13 constitution integrity check | `make reality-deep` |
+
+For the older stand-alone reality snapshot compiler (deprecated since v2 probe):
+→ `references/reality-snapshot-compiler.md`
 
 **When to use:** Arif wants to paste federation context into a cloud AI chat (Gemini, Claude, etc.) — the artifact provides grounded reality without exposing credentials, shell access, or mutation capability.
 
@@ -90,13 +140,15 @@ ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@100.64.0.4 \
   "curl -sf --connect-timeout 3 http://100.64.0.2:7071/health >/dev/null 2>&1 && echo '  ❌ FLOW→FORGE: OPEN (breach!)' || echo '  ✅ FLOW→FORGE: BLOCKED'" 2>/dev/null \
   || echo "  ⚠️ SSH to FLOW failed — can't verify boundary"
 
-# Telegram bots — THREE distinct bots, THREE owners
-# @ASI_arifos_bot  = Hermes (this session)
-# @arifOS_bot      = OpenCode code execution
-# @AGI_ASI_bot     = OpenClaw AGI gateway
+# Telegram bots — THREE distinct bots with distinct roles
+# @ASI_arifos_bot  = Hermes (conversation, judgment, memory)
+# @arifOS_bot      = 777 FORGE (sovereign execution, seals)
+# @AGI_ASI_bot     = OpenClaw AGI (machine ops, search, forge)
 for bot in opencode-bot openclaw-gateway; do
   systemctl is-active --quiet $bot 2>/dev/null && echo "✅ $bot" || echo "❌ $bot"
 done
+# For deep bot diagnostics (multi-source verification, token cross-ref, webhook info):
+# → references/telegram-bots-inventory.md
 ```
 
 ## Step 2 — Deep Constitutional Probe
@@ -715,6 +767,7 @@ The scanner checks: symlink pointing to canonical → `SYMLINK_OK`. File with di
 | **STALE + NAMED ANOMALY** | Track, don't touch | WELL biometrics, VAULT999 chain gaps |
 | **ORPHANED** | Kill | Paused cron with no reason, never-run jobs |
 | **DRAFT** | Ship or kill | Skills with DRAFT markers, unfinished specs |
+| **AGENTS.md DRIFT** | Propagate | `references/governance-pointer-propagation.md` — inject/update cross-cutting governance pointers in all organ and harness AGENTS.md files |
 
 ### Output Format
 
@@ -837,6 +890,107 @@ When the checkup goes beyond "are organs alive?" into "can the constitution actu
 
 → `references/cage-audit-constitutional-stress-test.md`
 
+## Constitutional Source Drift Audit — FLOOR_TABLE Consumer Checks
+
+When the canonical **FLOOR_TABLE.json** (`/root/arifOS/GENESIS/FLOOR_TABLE.json`) exists and you need to verify that all registered consumers are faithfully rendering their assigned floors, names, operators, and rules — run this protocol.
+
+### When to Run
+
+- **Fasa 1 audit request** — explicit "FLOOR_TABLE consumer drift check + seal status audit"
+- After FLOOR_TABLE.json is updated or re-forged
+- When Arif asks "are the consumers synced?" or "check floor drift"
+- During federation-wide governance audit
+- Before any seal or deploy that touches floor definitions
+
+### Step 1 — Read the Canonical Source
+
+```bash
+cat /root/arifOS/GENESIS/FLOOR_TABLE.json | python3 -m json.tool
+```
+
+Extract:
+- **version, forged date, authority** — metadata
+- **All 13 floors** — id, name, rule, operator, sealed_range
+- **F2 band mapping** — OBS→CLAIM, DER→PLAUSIBLE, INT→ESTIMATE, SPEC→UNKNOWN
+- **F7 canonical form** — Ω₀ ∈ [0.03, 0.05], confidence cap [0.95, 0.97], deprecated strings (0.90, STEWARDSHIP, HARAM)
+- **F6 bridge** — MARUAH (operational) / EMPATHY (public)
+- **Consumers array** — each consumer's name, path, and `must` contract
+
+### Step 2 — Audit Each Consumer Simultaneously
+
+For every consumer in `floors.consumers[]`, read its target file and check:
+
+| Check | What to Verify |
+|-------|----------------|
+| File reachable | File exists at declared path |
+| F7 name | Must be HUMILITY, never STEWARDSHIP |
+| F7 operator | Must cite Ω₀, never 0.90 cap |
+| F2 band names | Must use CLAIM/PLAUSIBLE/ESTIMATE/UNKNOWN chip text |
+| F6 rendering | Operational layer → MARUAH; Public layer → EMPATHY |
+| Floor names | Must match canonical F1–F13 names verbatim |
+| Floor rules | One-line rule should match canon directionally |
+| F9 name | Must be ANTIHANTU (not ANTI-CASCADE or other variant) |
+| F9 color | Canonical is #FF003C |
+| F9 description | Core rule: "No deception, manipulation, consciousness claims." |
+| Evidence chips | Must emit one of the four band names, not a fifth custom class |
+
+### Step 3 — Seal Status Audit
+
+```bash
+# Check immutable flag on all constitutional documents
+lsattr /root/arifOS/GENESIS/FLOOR_TABLE.json /root/AAA/AGENTS.md /root/arif-sites/sites/arif-fazil.com/src/pages/Wealth.tsx /root/scripts/wealth-static-render.py /root/AAA/CLAUDE.md /root/AGENTS.md
+
+# Check seal receipt existence
+test -f /root/forge_work/2026-07-24/floor-table-canon-seal-2026-07-23.md && echo "SEAL_RECEIPT_EXISTS" || echo "SEAL_RECEIPT_MISSING"
+
+# Stat for last-modified timestamps
+stat --format='%s %y %n' /root/arifOS/GENESIS/FLOOR_TABLE.json /root/AAA/AGENTS.md /root/arif-sites/sites/arif-fazil.com/src/pages/Wealth.tsx /root/scripts/wealth-static-render.py /root/AAA/CLAUDE.md /root/AGENTS.md
+```
+
+**Interpretation:**
+- `chattr +i` (immutable) = constitutionally sealed — cannot be accidentally modified
+- `lsattr` showing only `e` (extent format, standard) = **NOT immutable** — should be set per doctrine
+- Seal receipt at path declared in FLOOR_TABLE.json should exist
+- Last-modified timestamps should be consistent with the `forged` date in FLOOR_TABLE
+
+### Step 4 — CLAUDE.md & AGENTS.md Integrity Check
+
+Cross-check these four files for mutual consistency:
+
+| File | What to Check |
+|------|---------------|
+| `/root/AAA/CLAUDE.md` | References F13 SOVEREIGN, organ ports, correct F7/F9 names |
+| `/root/AGENTS.md` | Has F1–F13 table; F7 must be HUMILITY; F9 must be ANTIHANTU; no 0.90 cap |
+| `/root/arifOS/AGENTS.md` | Delegates to FLOOR_TABLE.json/000_KERNEL_CANON.md |
+| `/root/AAA/AGENTS.md` | **Must not be a stub** — must render F1–F13 names + rules verbatim |
+
+**Common drift point:** `/root/AAA/AGENTS.md` is the single shallowest file in the chain — frequently becomes a 7-line pointer instead of a full floor renderer.
+
+### Step 5 — Producing the Report
+
+Write a structured Markdown report to `/root/arifOS/audits/fasa1-floor-consumer-drift-audit-YYYY-MM-DD.md` with per-consumer drift table, seal status table, and recommended actions with severity tags (🔴 CRITICAL / 🟡 MODERATE / 🟢 MINOR).
+
+See `references/floor-table-consumer-drift-audit-2026-07-25.md` for a worked example with actual drift findings.
+
+### Contract-Specific Checks
+
+**GEOX claim workflow — SPEC Rejection Gate**
+- Check `/root/GEOX/contracts/claim_state_machine.yaml` for SPEC-aware rejection logic
+- Verify that transition `APPROVED_INTERPRETATION → SEALED` has truth_class gate
+- Cross-reference against `000_KERNEL_CANON.md` which may document known drift
+
+**AAA AGENTS.md — Floor Render**
+- Must render all F1–F13 names + one-line rules verbatim
+- Must cite Ω₀, never 0.90
+- Must render F6 bridge (MARUAH operational, EMPATHY public)
+
+### Pitfalls
+
+- **Consumers may resolve to a different path than declared.** FLOOR_TABLE may say `/root/arifOS/contracts/...` (underspecified). The active path may be `/root/GEOX/contracts/`. Always check both.
+- **000_KERNEL_CANON.md may document known drift** — line 178 may say "accept SPEC as SEAL-worthy" which contradicts FLOOR_TABLE. This is a documented open issue, not a new finding.
+- **Some consumers render only a subset of floors** (e.g., Wealth.tsx renders F1, F2, F7, F9, F13). This is a design choice, not drift — verify the consumer contract, not full coverage.
+- **F9 commonly drifts to ANTI-CASCADE** with wrong color and description. This is the most frequent consumer error.
+
 ## Authority Recovery Mission (Structured Diagnostic)
 
 When Arif asks for "authority recovery," "P0 federation repair," or "identity diagnostics" — especially when `actor_verified=false` is reported — use the structured 7-report diagnostic mission pattern. **The critical insight: `actor_verified=false` is correct for anonymous sessions. The identity kernel is usually WORKING. Do NOT propose rewriting it.**
@@ -930,8 +1084,64 @@ The seal chain uses mixed sequence schemes by design. When reconciling, classify
 Full gap analysis with diagnostic probe and escalation rules:
 → `references/vault999-chain-gap-classification.md`
 
+## External Ecosystem Verification (PulseMCP)
+
+When Arif asks about the arifOS PulseMCP listing or wants to verify the public ecosystem surface, verify the full external presence:
+
+### Step 1 — Find the PulseMCP listing URL
+
+The PulseMCP slug does NOT follow the `io.github.owner/repo` path. The arifOS listing is at:
+```
+https://www.pulsemcp.com/servers/ariffazil-arifos
+```
+There is also a separate implementation listing at `pulsemcp.com/servers/ariffazil-arifosmcp`.
+
+### Step 2 — Verify the listing page
+
+Check: classification (community/official), visitor count, rank (global + weekly), release date, GitHub stars, related servers. The related servers section reveals ecosystem positioning — arifOS sits alongside Defenter, Fulcrum, AgentOS, Apiiro Guardian, Bulwark, AGA, Sentinel, Delimit, EU AI Governance.
+
+### Step 3 — Verify the endpoint
+
+The PulseMCP UI truncates the endpoint URL (shows `https://arifosmcp.arif-fa...`). The canonical MCP endpoint is:
+```
+https://mcp.arif-fazil.com/mcp
+```
+Both `arifosmcp.arif-fazil.com` and `mcp.arif-fazil.com` resolve to the same gateway (Cloudflare). The `arifosmcp` subdomain is a landing page with `<link rel="mcp" href="https://mcp.arif-fazil.com/mcp">`.
+
+### Step 4 — Verify server.json
+
+The `.well-known/mcp/server.json` is the **authoritative source** — NOT GitHub raw. Both `raw.githubusercontent.com/ariffazil/arifos/main/server.json` and `.../arifosmcp/main/server.json` return 404. The `.well-known` endpoint on the live server is canonical:
+```bash
+curl -sS https://mcp.arif-fazil.com/.well-known/mcp/server.json | python3 -m json.tool
+```
+
+### Step 5 — Verify runtime health
+
+Standard health probe + tools/list + surface consistency check:
+```bash
+curl -sS https://mcp.arif-fazil.com/health
+curl -sS -X POST https://mcp.arif-fazil.com/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
+  -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
+```
+
+Key fields to verify: `runtime_drift`, `contract_drift`, `surface_consistency.verdict`, `boot_attestation`, `vault999_health`, `floors_active`.
+
+### Output Format
+
+```
+PulseMCP VERIFICATION — YYYY-MM-DD
+
+Listing: ✅/❌ | URL: <url> | Rank: #N | Visitors: N
+Endpoint: ✅/❌ | <url> | Protocol: <version>
+server.json: ✅/❌ | .well-known: <status> | GitHub raw: 404 (expected)
+Runtime: ✅/❌ | v<version> | drift: false | surface: CONSISTENT
+```
+
 ## Pitfalls
 
+- **Streamable HTTP protocol mismatch for external organs (proven 2026-07-24).** WEALTH, WELL, GEOX, and A-FORGE use Streamable HTTP transport (MCP Protocol Specification) that returns HTTP 400 or empty tool lists when probed with raw `tools/list` POST. The `federation_reality_probe.py --scope` flag currently falls back to organ-specific MCP tools (e.g., `geox_surface_status`, `well_registry_status`). Future upgrade: add SSE / Streamable HTTP client framing for full coverage. WEALTH also requires session_id for all calls (L11 AUTH), blocking anonymous probe entirely.\n- **arifOS 413 "Request payload too large" — body size limit is 1MB by default (proven 2026-07-23).** The arifOS gateway's `BodySizeLimitMiddleware` (`arifosmcp/runtime/fastmcp_ext/transports.py:563`) defaults to 1,048,576 bytes when `ARIFOS_HTTP_MAX_BODY_BYTES` is not set in the systemd unit. MCP tool calls with large responses (e.g., `arif_observe` with governance metadata) blow past 1MB and return 413. Fix: add `Environment=ARIFOS_HTTP_MAX_BODY_BYTES=10485760` (10MB) to `/etc/systemd/system/arifos.service`, then `systemctl daemon-reload && systemctl restart arifos`. Verify with `systemctl show arifos -p Environment | grep MAX_BODY`. The env var is read at startup by the FastMCP transport layer — no code change needed.
 - **Don't confuse "registered" with "fallback."** When auditing model configurations, `agents.defaults.models` (available models) ≠ `model.fallbacks` (auto-failover chain). Both Hermes and OpenClaw have separate fields. Always grep both.
 - **AGI priority violation: infra before UI.** AGI will tunnel-vision on dashboard/site work while infrastructure isn't verified. "Dashboard on dead timer = pretty lie." Always verify infrastructure layer (systemctl status, state files, logs) BEFORE touching presentation/UI. If AGI ignores priority redirection, escalate to 888_OVERRIDE immediately. Proven 2026-07-14: AGI ignored 4 priority redirections to build Observatory while timer wasn't registered in systemd.
 - **Tool-hunger: don't build because infrastructure exists.** When evaluating whether to forge new capability, ask: "Does the PROBLEM exist, or does the INFRASTRUCTURE exist?" If current utilization is <20% of capacity, the correct action is status quo + document triggers for when to revisit. Building because ollama/bge-m3 is live (not because 7KB flat memory is struggling) is tool-hunger, not engineering.
@@ -952,7 +1162,11 @@ Full gap analysis with diagnostic probe and escalation rules:
 
 - **Telegram Markdown tables do NOT render — use plain text or HTML (proven 2026-07-21).** Despite what the Hermes system prompt says about rich Markdown table support, the actual Telegram bot cannot render pipe `| col | col |` tables. They arrive as raw markdown source text. Arif explicitly: "bot ni tak support format tu lagi. Plain text atau HTML je boleh." Use bullet lists, indented key-value pairs, or `key: value` format for structured data. Reserve Markdown tables for file artifacts only (forge_work). Applies to ALL outputs on Telegram — skill content can have tables, but what the agent says TO Arif must be plain-formatted.
 
+- **vault.env bot tokens are redacted with `***` — grep returns `***`, not the real token (proven 2026-07-24).** All secrets in vault.env and vault.flat.env are stored as sops/age-encrypted values that appear as `***` in the file. `grep TELEGRAM_BOT_TOKEN vault.env` showing `***` is EXPECTED — it does NOT mean the token is dead. The real tokens are decrypted at runtime by secure launch scripts (`openclaw-gateway-secure.sh`, `hermes-gateway-secure.sh`). To verify a bot's actual token: (1) find the running process, (2) `cat /proc/PID/environ | tr '\\0' '\\n' | grep TELEGRAM_BOT_TOKEN`. **Never declare a bot dead from grep on vault.env.** See `references/telegram-bots-inventory.md` §Sops/Secrets Token Redaction Pattern.
+
 - **Federation reboot cascade: arifOS restart → gateway MCP poison → full reboot (proven 2026-07-23).** When arifOS restarts cleanly via systemd, the hermes-asi-gateway gets a dependency-triggered SIGTERM. If Hermes MCP has been degraded (failing reconnects with "unhandled errors in a TaskGroup" every 300s for 17+ min), the gateway cannot cleanly terminate. Exit code 1 → network.target cascade → full systemd reboot. Root cause: Hermes MCP instability (pre-existing). Trigger: arifOS restart (benign). Detection: `journalctl -u hermes-asi-gateway --since "30 min ago" | grep "failed after 5 reconnection"`. If seen, gateway is vulnerable. Fix: restart gateway cleanly when MCP errors accumulate, OR harden gateway to tolerate MCP termination failures (exit 0 instead of 1).
+
+- **Gateway shutdown race: Event loop closed → exit 75/TEMPFAIL → systemd restart counter (proven 2026-07-24).** During a clean `hermes gateway restart` (or `systemctl restart hermes-asi-gateway`), the old process can crash with `RuntimeError: Event loop is closed` in `mcp_tool.py:_wait_for_reconnect_or_shutdown` (~line 1997). The asyncio event loop closes before pending MCP reconnection tasks are cleaned up, causing `Task was destroyed but it is pending!` errors. Exit code 75 (TEMPFAIL) → systemd increments `StartLimitBurst=3` counter. If counter hits 3 within `StartLimitInterval=60`, systemd stops restarting — gateway stays dead. This is a race condition in the MCP tool shutdown path, distinct from the MCP poison cascade above (exit 1 from degraded MCP). Detection: `journalctl -u hermes-asi-gateway | grep -A5 "Event loop is closed"`. The gateway typically stabilizes on the next systemd restart (counter resets after interval). Fix: harden `_wait_for_reconnect_or_shutdown` to catch `RuntimeError` when event loop is already closed, or cancel pending tasks before loop shutdown. Gateway debug sequence: (1) `tail -100 ~/.hermes/logs/gateway.log` for crash pattern, (2) `ps aux | grep gateway` for running PID, (3) `journalctl -u hermes-asi-gateway --no-pager -n 50` for systemd view, (4) `systemctl cat hermes-asi-gateway` for unit config, (5) `ss -tlnp | grep -E "18086|18001"` for MCP dependency check.
 
 - **Dual-bot convergence ≠ truth (proven 2026-07-18).** When OpenClaw and Hermes independently converge on the same diagnosis, it's a useful signal but NOT proof. Both bots share the same VPS, same tools, same data sources — they can converge on the same wrong conclusion. Always verify against live state (`curl`, `systemctl`, `ps`) before acting on any diagnosis, even when both bots agree. OpenClaw correctly identified the observatory gap (6 organs with null identity); Hermes confirmed and fixed it. The convergence was valuable because we backed it with direct `/health` probes — not because two bots agreed.
 

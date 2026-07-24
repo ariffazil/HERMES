@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2.2cm;
+    @top-left { content: "Malaysia Civic Intelligence Briefing — 11 July 2026"; font-size: 7pt; color: #8b949e; font-family: 'Helvetica', sans-serif; }
+    @top-right { content: "arifOS Federation"; font-size: 7pt; color: #f0a500; font-family: 'Helvetica', sans-serif; font-weight: bold; }
+    @bottom-center { content: "Page " counter(page) " of " counter(pages); font-size: 7pt; color: #8b949e; font-family: 'Helvetica', sans-serif; }
+  }
+  @page :first { @top-left { content: ""; } @top-right { content: ""; } }
+  body { background: #0d1117; color: #e6edf3; font-family: 'Helvetica', 'DejaVu Sans', sans-serif; font-size: 10pt; line-height: 1.55; }
+  a { color: #58a6ff; }
+
+  /* COVER */
+  .cover { text-align: center; padding-top: 120px; page-break-after: always; }
+  .cover h1 { font-size: 28pt; color: #f0a500; margin-bottom: 8px; letter-spacing: 1px; }
+  .cover h2 { font-size: 16pt; color: #ffa657; font-weight: normal; margin-bottom: 40px; }
+  .cover .meta { font-size: 9pt; color: #8b949e; margin-top: 60px; line-height: 1.8; }
+  .cover .meta strong { color: #e6edf3; }
+  .cover .divider { width: 200px; height: 2px; background: #f0a500; margin: 30px auto; }
+  .cover .tagline { font-size: 11pt; color: #ffa657; font-style: italic; margin-top: 40px; }
+
+  /* HEADINGS */
+  h1 { color: #f0a500; font-size: 18pt; border-bottom: 2px solid #f0a500; padding-bottom: 6px; margin-top: 30px; page-break-after: avoid; }
+  h2 { color: #ffa657; font-size: 14pt; margin-top: 22px; page-break-after: avoid; }
+  h3 { color: #3fb950; font-size: 11pt; margin-top: 16px; page-break-after: avoid; }
+  h4 { color: #58a6ff; font-size: 10pt; margin-top: 12px; }
+
+  /* SIGNAL BOXES */
+  .signal-box { background: #161b22; border-left: 4px solid #f0a500; padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0; }
+  .signal-box.red { border-left-color: #f85149; }
+  .signal-box.green { border-left-color: #3fb950; }
+  .signal-box.blue { border-left-color: #58a6ff; }
+  .signal-box.amber { border-left-color: #ffa657; }
+  .signal-box strong { color: #f0a500; }
+  .signal-box.red strong { color: #f85149; }
+  .signal-box.green strong { color: #3fb950; }
+  .signal-box.blue strong { color: #58a6ff; }
+
+  /* EXECUTIVE CALLOUT */
+  .exec-callout { background: #1a1f28; border: 2px solid #f0a500; padding: 20px 24px; margin: 20px 0; border-radius: 8px; }
+  .exec-callout .headline { font-size: 14pt; color: #f0a500; font-weight: bold; margin-bottom: 10px; }
+  .exec-callout p { color: #e6edf3; margin: 6px 0; }
+  .exec-callout .sub { color: #ffa657; font-size: 9pt; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 9pt; }
+  th { background: #1a2332; color: #f0a500; padding: 8px 10px; text-align: left; font-weight: bold; border-bottom: 2px solid #f0a500; }
+  td { padding: 7px 10px; border-bottom: 1px solid #21262d; }
+  tr:nth-child(even) td { background: #161b22; }
+  tr:nth-child(odd) td { background: #0d1117; }
+
+  /* COLORED READINGS */
+  .reading-critical { color: #f85149; font-weight: bold; }
+  .reading-warning { color: #ffa657; font-weight: bold; }
+  .reading-good { color: #3fb950; font-weight: bold; }
+  .reading-info { color: #58a6ff; font-weight: bold; }
+  .reading-stable { color: #8b949e; }
+
+  /* KEY INSIGHT */
+  .key-insight { background: #0d1f0d; border: 1px solid #3fb950; padding: 16px 20px; margin: 16px 0; border-radius: 6px; }
+  .key-insight .label { color: #3fb950; font-size: 8pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .key-insight p { color: #e6edf3; margin: 4px 0; }
+
+  /* WARNING BOX */
+  .warning-box { background: #1f0d0d; border: 1px solid #f85149; padding: 16px 20px; margin: 16px 0; border-radius: 6px; }
+  .warning-box .label { color: #f85149; font-size: 8pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .warning-box p { color: #e6edf3; margin: 4px 0; }
+
+  /* QUOTE */
+  blockquote { background: #161b22; border-left: 3px solid #ffa657; padding: 12px 16px; margin: 14px 0; font-style: italic; color: #ffa657; border-radius: 0 6px 6px 0; }
+  blockquote cite { display: block; margin-top: 8px; font-size: 8pt; color: #8b949e; font-style: normal; }
+
+  /* LISTS */
+  ul, ol { margin: 8px 0; padding-left: 24px; }
+  li { margin: 4px 0; }
+  li strong { color: #ffa657; }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid #30363d; margin: 24px 0; }
+  .gold-rule { border: none; border-top: 2px solid #f0a500; margin: 30px 0; }
+
+  /* FOOTER NOTE */
+  .footer-note { text-align: center; font-size: 8pt; color: #8b949e; margin-top: 40px; padding-top: 16px; border-top: 1px solid #30363d; }
+
+  /* TAG */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8pt; font-weight: bold; margin-right: 4px; }
+  .tag-obs { background: #0d2818; color: #3fb950; }
+  .tag-der { background: #1a1a0d; color: #ffa657; }
+  .tag-int { background: #1a0d1a; color: #bc8cff; }
+  .tag-spec { background: #1a0d0d; color: #f85149; }
+
+  /* SECTION NUMBER */
+  .section-num { color: #f0a500; font-weight: bold; margin-right: 6px; }
+
+  /* PAGE BREAK */
+  .page-break { page-break-before: always; }
+
+  /* SCAR TABLE SPECIAL */
+  .scar-active { color: #f85149; }
+  .scar-metabolized { color: #3fb950; }
+  .scar-monitor { color: #ffa657; }
+
+  /* TWO COL */
+  .two-col { display: flex; gap: 16px; }
+  .two-col > div { flex: 1; }
+
+  /* SUMMARY STRIP */
+  .summary-strip { background: #161b22; padding: 14px 18px; margin: 16px 0; border-radius: 6px; border: 1px solid #30363d; }
+  .summary-strip .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #21262d; }
+  .summary-strip .item:last-child { border-bottom: none; }
+  .summary-strip .item .label { color: #8b949e; }
+  .summary-strip .item .value { font-weight: bold; }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>MALAYSIA CIVIC INTELLIGENCE BRIEFING</h1>
+  <div class="divider"></div>
+  <h2>11 July 2026 — Consolidated Synthesis</h2>
+  <div class="tagline">"BN won Johor so thoroughly that Malaysia's political future now depends more on Zahid and Onn Hafiz's intentions than on Anwar's agenda."</div>
+  <div class="meta">
+    <strong>Prepared by:</strong> arifOS Federation | Hermes SOUL Layer<br>
+    <strong>Mode:</strong> Critique · Refinement · Synthesis | Auditor-Architect<br>
+    <strong>Epistemic Band:</strong> OBS / DER / INT (Tier 2–3)<br>
+    <strong>Confidence:</strong> 72 / 100<br>
+    <strong>Pages:</strong> 10<br>
+    <strong>Classification:</strong> Civic Intelligence — Internal Use
+  </div>
+</div>
+
+<!-- TOC -->
+<h1>Contents</h1>
+<div class="summary-strip">
+  <div class="item"><span class="label">Part I</span><span class="value" style="color:#ffa657">Domestic News Landscape</span></div>
+  <div class="item"><span class="label">Part II</span><span class="value" style="color:#ffa657">PRN Johor Deep Analysis — The Political Realignment</span></div>
+  <div class="item"><span class="label">Part III</span><span class="value" style="color:#ffa657">Multi-Layer Civic Telemetry</span></div>
+  <div class="item"><span class="label">Part IV</span><span class="value" style="color:#ffa657">Synthesis & Critique — The Honest Read</span></div>
+  <div class="item"><span class="label">Part V</span><span class="value" style="color:#ffa657">Daily Reflection Pulse</span></div>
+  <div class="item"><span class="label">Appendices</span><span class="value" style="color:#8b949e">Epistemic Discipline · Source Matrix · Glossary</span></div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- PART I -->
+<h1><span class="section-num">I</span> Domestic News Landscape</h1>
+
+<h2>1.1 The Dominant Narrative — Johor State Election</h2>
+
+<div class="exec-callout">
+  <div class="headline">PRN JOHOR KE-16 — HARI MENGGUNDI: 11 JULY 2026</div>
+  <p>56 DUN seats contested. Polls closed at 6pm. All 1,076 pusat mengundi shut. Vote counting underway.</p>
+  <div class="sub">BN: 56 seats | PH: 56 seats | PN: 33 seats | MUDA: 4 | BERSAMA: 15 | BEBAS: 6</div>
+</div>
+
+<table>
+  <tr><th>Metric</th><th>Value</th><th>Signal</th></tr>
+  <tr><td>Turnout</td><td class="reading-good">67.44% (1,809,185 of 2.6M)</td><td>Massive jump from 2022's 53.13%</td></tr>
+  <tr><td>Highest turnout</td><td class="reading-info">Sri Medan (77.2%)</td><td>Rural Malay belt mobilized</td></tr>
+  <tr><td>Lowest turnout</td><td class="reading-warning">Bekok (58.9%)</td><td>Urban mixed seat</td></tr>
+  <tr><td>Additional voters vs 2022</td><td class="reading-good">+440,000</td><td>New voters or re-mobilized stay-homers</td></tr>
+</table>
+
+<h3>Other Political Signals This Week</h3>
+<ul>
+  <li><strong>Dr. Mahathir turns 101.</strong> Anwar extended birthday wishes. Low-cost optics, not substance.</li>
+  <li><strong>Anwar denies buying BMW</strong> for personal use — clarified as government property. Viral story.</li>
+  <li><strong>Chegubard disqualified</strong> from Negeri Sembilan polls after RM5,000 sedition fine.</li>
+  <li><strong>Anthony Loke</strong> directs JPJ to target Johor campaigners riding without helmets.</li>
+  <li><strong>PAS bristles at Onn Hafiz's rejection</strong> — insists BN support is "no weakness."</li>
+  <li><strong>Lim Guan Eng</strong> urges Zahid to prove MSME sincerity with loan moratorium.</li>
+</ul>
+
+<h2>1.2 Tragedy & Human Drama</h2>
+
+<div class="warning-box">
+  <div class="label">MASS CASUALTY — LPT EXPRESSWAY</div>
+  <p><strong>4 dead, 20 injured</strong> in a major accident on the Lebuhraya Pantai Timur near Jabor, Pahang. Multiple motorcycles involved in early-morning crash at KM246.4.</p>
+  <p>This is a <strong>recurring pattern</strong> — group riding dynamics, fatigue, enforcement gaps on high-speed expressways. Not isolated. A systemic vulnerability.</p>
+</div>
+
+<table>
+  <tr><th>Incident</th><th>Location</th><th>Signal</th></tr>
+  <tr><td>76-year-old man drowns after car skidded into river</td><td>Johor</td><td class="reading-warning">Infrastructure + age vulnerability</td></tr>
+  <tr><td>Form 6 student collapses and dies at school</td><td>Unknown</td><td class="reading-critical">Youth health — sudden death, active in sports</td></tr>
+  <tr><td>Form 1 boy chases classmates with paper cutter</td><td>Melaka</td><td class="reading-critical">Bullying escalation — ice pelting retaliation</td></tr>
+  <tr><td>Flash flooding exceeds Storm Senyar levels</td><td>Melaka</td><td class="reading-warning">3 PPS opened. Resilience gaps exposed.</td></tr>
+</table>
+
+<h2>1.3 Entertainment & Scandal — The Attention Drain</h2>
+
+<div class="signal-box red">
+  <strong>STRUCTURAL DIAGNOSIS:</strong> This cluster reveals a functioning parallel justice system — accusation → viral amplification → real-world consequences (employment, reputation, safety) with minimal due process. Not random scandal churn. A degraded social contract around privacy and proportionality.
+</div>
+
+<table>
+  <tr><th>Case</th><th>What Happened</th><th>Signal</th></tr>
+  <tr><td><strong>Tisha Shamsir</strong></td><td>Drug case. Apologized for damaging Gerak Khas image.</td><td>Celebrity + criminal justice</td></tr>
+  <tr><td><strong>Norreen Iman</strong></td><td>Photo without hijab goes viral. Netizen debate.</td><td>Cultural flashpoint, tribunal</td></tr>
+  <tr><td><strong>Aween Ismail</strong></td><td>Loses jobs from social media misunderstanding.</td><td class="reading-critical">Real consequences from viral misinterpretation</td></tr>
+  <tr><td><strong>Jazmy Juma</strong></td><td>Accused of arrogance/lateness. Apologized.</td><td>Professional reputation defense</td></tr>
+  <tr><td><strong>Ruhainies</strong></td><td>Defends luxury as "hard work."</td><td>Gender + wealth scrutiny</td></tr>
+  <tr><td><strong>Zizan Razak</strong></td><td>Refuses to spread shame. Believes in karma.</td><td class="reading-good">Counter-signal to tribunal culture</td></tr>
+  <tr><td><strong>Anna Jobling & Karel</strong></td><td>Confirmed dating. Not ready for marriage.</td><td>Normal celebrity relationship</td></tr>
+</table>
+
+<h2>1.4 National Issues</h2>
+
+<div class="key-insight">
+  <div class="label">HIDDEN HEADLINE — EPF DISCIPLINE</div>
+  <p><strong>RM20 billion withdrawn</strong> by 5.5 million members from the EPF Flexible Account.</p>
+  <p>But: <strong>Two-thirds of eligible members chose NOT to withdraw.</strong> This is forged restraint under accessible capital — not panic. Most commentary headlines the outflow and misses the restraint. That asymmetry itself is diagnostic of attention economy failure.</p>
+</div>
+
+<table>
+  <tr><th>Issue</th><th>Detail</th><th>Reading</th></tr>
+  <tr><td>EPF Flexible Account</td><td>RM20B outflow, 5.5M members, 2/3 restraint</td><td class="reading-good">STANDOUT POSITIVE</td></tr>
+  <tr><td>Naturalised football players</td><td>EAIC: citizenship processed "too quickly, not orderly"</td><td class="reading-critical">PROCESS INTEGRITY FLAG</td></tr>
+  <tr><td>IMF GDP forecast</td><td>4.7% growth for Malaysia 2026</td><td class="reading-info">POSITIVE BACKDROP</td></tr>
+  <tr><td>Global supply crisis</td><td>Impact trending for Malaysians</td><td class="reading-warning">RISK VECTOR</td></tr>
+  <tr><td>Bukit Kayu Hitam-Sadao road</td><td>New border crossing opens. Old one closed.</td><td class="reading-good">INFRASTRUCTURE POSITIVE</td></tr>
+  <tr><td>Malaysian fined in Thailand</td><td>Showed MyJPJ app instead of physical licence</td><td class="reading-warning">ENFORCEMENT GAP</td></tr>
+  <tr><td>DOSM Cause-of-Death calculator</td><td>Probabilistic mortality tool launched</td><td class="reading-info">RADICAL TRANSPARENCY OR DYSTOPIAN?</td></tr>
+  <tr><td>Xiaohongshu trend</td><td>MY consumers migrating to Chinese validation platforms</td><td class="reading-warning">GENERATIONAL ATTENTION SHIFT</td></tr>
+</table>
+
+<h2>1.5 Weather & Travel</h2>
+<ul>
+  <li><strong>Typhoon Bavi</strong> — Malaysia Airlines cancels KL-Taipei flights (11 July). Possibly most powerful storm in years approaching Taiwan/China.</li>
+  <li><strong>Melaka flooding</strong> — rainfall exceeded Tropical Storm Senyar levels.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- PART II -->
+<h1><span class="section-num">II</span> PRN Johor Deep Analysis — The Political Realignment</h1>
+
+<h2>2.1 The Numbers — 2022 vs 2026</h2>
+
+<table>
+  <tr><th>Metric</th><th>PRN 2022</th><th>PRN 2026 (Unofficial)</th><th>Change</th></tr>
+  <tr><td>BN seats</td><td>40</td><td class="reading-good">~49</td><td class="reading-good">+9</td></tr>
+  <tr><td>PH seats</td><td>12</td><td class="reading-critical">~7</td><td class="reading-critical">−5</td></tr>
+  <tr><td>PN seats</td><td>3</td><td class="reading-critical">near zero</td><td class="reading-critical">−3</td></tr>
+  <tr><td>MUDA seats</td><td>1</td><td>unclear</td><td>—</td></tr>
+  <tr><td>Turnout</td><td>53.13%</td><td class="reading-good">67.44%</td><td class="reading-good">+14.3 pts</td></tr>
+  <tr><td>Additional voters</td><td>baseline</td><td class="reading-info">+440,000</td><td>—</td></tr>
+</table>
+
+<div class="signal-box">
+  <strong>BN captured ~87.5% of seats</strong> — a supermajority that eliminates the need for any coalition partner in the Johor state assembly.
+</div>
+
+<h2>2.2 The Turnout Thesis — The Highest-Signal Fact</h2>
+
+<div class="key-insight">
+  <div class="label">WHEN BOTH LOW AND HIGH TURNOUT FAVOUR THE SAME PARTY — THAT'S A MANDATE</div>
+  <p>In 2022, low turnout structurally favoured BN (disciplined base). In 2026, <strong>high turnout also favoured BN</strong>. They mobilized voters who stayed home previously — semi-urban Malay and development-focused cohorts responding to "Maju Johor."</p>
+  <p>The mechanism: positive development narrative <strong>PLUS</strong> racial sentiment consolidation ("Chinese tool" framing on Anwar) <strong>PLUS</strong> decades-old UMNO ground machinery.</p>
+</div>
+
+<h2>2.3 PAS Collapse — Existential Crisis</h2>
+
+<div class="warning-box">
+  <div class="label">PAS OPENLY ENDORSED BN AND RECEIVED NEAR-ZERO RETURN</div>
+  <p>Voters bypassed the middleman and went directly to BN. The PAS-BN kingmaker model is broken in Johor.</p>
+  <p>Hadi Awang's dual posture (PN federally, BN locally) exposed as incoherent. PAS announced they <strong>would not issue any statements on results night</strong> — the silence of irrelevance.</p>
+</div>
+
+<h2>2.4 PH's Semi-Urban Retreat</h2>
+
+<div class="signal-box red">
+  <strong>PH confirmed in ~7 seats</strong> — confined to urban Chinese strongholds. Lost ground in semi-urban Malay areas despite Anwar's personal campaign. The "Chinese tool" racial framing was effective. PH is becoming an urban-only party in Johor — a regression from their 2018 peak.
+</div>
+
+<h2>2.5 Onn Hafiz — The Star</h2>
+
+<div class="signal-box green">
+  <strong>Menteri Besar delivered a supermajority while defending.</strong> Young, royalty-linked, development-focused. AWANI: <em>"Arkitek Maju Johor, Onn Hafiz Ghazi hadirkan kemenangan besar untuk BN."</em> PM-material talk is premature but directionally earned. Risk: complacency under one-party dominance.
+</div>
+
+<h2>2.6 Power Dynamics — What It Means</h2>
+
+<table>
+  <tr><th>Dimension</th><th>Implication</th><th>Severity</th></tr>
+  <tr><td>Zahid's leverage</td><td>Clear inside unity government. BN holds stronger hand.</td><td class="reading-critical">HIGH</td></tr>
+  <tr><td>Anwar's position</td><td>More contingent on keeping BN content. Federal authority weakened.</td><td class="reading-critical">HIGH</td></tr>
+  <tr><td>GE16 horizon</td><td>If Johor pattern replicates nationally, BN largest party again.</td><td class="reading-warning">MEDIUM</td></tr>
+  <tr><td>Checks & balances</td><td>87% seats = near-absence of opposition scrutiny.</td><td class="reading-critical">HIGH</td></tr>
+  <tr><td>Racial sentiment</td><td>Still primary mobilizer in Malay-majority areas.</td><td class="reading-warning">PERSISTENT</td></tr>
+  <tr><td>PAS/PN relevance</td><td>Effectively erased in Johor. National implications pending.</td><td class="reading-critical">COLLAPSING</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- PART III -->
+<h1><span class="section-num">III</span> Multi-Layer Civic Telemetry</h1>
+
+<h2>3.1 Civic Thermometer — Final Refined Readings</h2>
+
+<table>
+  <tr><th>Dimension</th><th>Reading</th><th>Driver</th><th>Assessment</th></tr>
+  <tr><td>Political Heat</td><td class="reading-critical">CRITICAL</td><td>BN supermajority + Zahid leverage + Onn Hafiz national signal</td><td>Structural realignment</td></tr>
+  <tr><td>Moral Temperature</td><td class="reading-critical">COMPROMISED</td><td>Social media tribunal (accusation = consequence)</td><td>Degraded social contract</td></tr>
+  <tr><td>Attention Integrity</td><td class="reading-warning">WARNING</td><td>Scandal dominating structural signals</td><td>Attention economy failure</td></tr>
+  <tr><td>PAS Relevance</td><td class="reading-critical">COLLAPSING</td><td>Endorsement backfire + voter bypass</td><td>Existential crisis</td></tr>
+  <tr><td>Racial Sentiment</td><td class="reading-warning">PRIMARY LEVER</td><td>"Chinese tool" effectiveness in Malay areas</td><td>Durable political technology</td></tr>
+  <tr><td>Infrastructure Scar</td><td class="reading-warning">RECURRING</td><td>LPT mass casualty — pattern, not incident</td><td>Systemic vulnerability</td></tr>
+  <tr><td>EPF Discipline</td><td class="reading-good">POSITIVE</td><td>2/3 eligible chose restraint</td><td>Forged, not panicked</td></tr>
+  <tr><td>Opposition Voice</td><td class="reading-critical">COMPRESSED</td><td>PH semi-urban losses + PN near-zero</td><td>Structural absence</td></tr>
+  <tr><td>Institutional Trust</td><td class="reading-warning">UNDER WATCH</td><td>EAIC citizenship flag + EPF mixed</td><td>Process integrity</td></tr>
+  <tr><td>Peace & Participation</td><td class="reading-good">POSITIVE</td><td>67% turnout + no major disorder</td><td>Healthy civic muscle</td></tr>
+</table>
+
+<h2>3.2 Scar Metabolism Map</h2>
+
+<table>
+  <tr><th>Scar</th><th>Status</th><th>Action Required</th></tr>
+  <tr><td class="scar-metabolized">GE15 BN humiliation</td><td class="reading-good">METABOLIZED</td><td>State-level rebuild complete in Johor</td></tr>
+  <tr><td class="scar-metabolized">2022 PN wave over-reach</td><td class="reading-good">METABOLIZED</td><td>Evaporated in Johor test case</td></tr>
+  <tr><td class="scar-active">Social media tribunal system</td><td class="reading-critical">ACTIVE</td><td>Accusation → viral → real-world consequences without due process</td></tr>
+  <tr><td class="scar-active">Expressway group-riding</td><td class="reading-critical">ACTIVE</td><td>Recurring mass casualty — enforcement, regulations, design</td></tr>
+  <tr><td class="scar-active">Thin opposition scrutiny</td><td class="reading-critical">ACTIVE</td><td>Supermajority = institutional risk</td></tr>
+  <tr><td class="scar-active">PH federal dependency</td><td class="reading-critical">ACTIVE</td><td>Structural subordination to BN</td></tr>
+  <tr><td class="scar-monitor">Racial identity lever</td><td class="reading-warning">MONITOR</td><td>Durable despite development narratives</td></tr>
+  <tr><td class="scar-monitor">Platform attention migration</td><td class="reading-warning">MONITOR</td><td>Xiaohongshu/TikTok changing civic narrative propagation</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- PART IV -->
+<h1><span class="section-num">IV</span> Synthesis & Critique — The Honest Read</h1>
+
+<h2>4.1 Where Diplomatic Language Failed</h2>
+
+<div class="signal-box red">
+  <strong>The "Chinese tool" attack is the real undercurrent.</strong> Anwar being labelled pro-Chinese in Malay-majority Johor is the signal underneath the election. Racial sentiment remains the primary lever regardless of development achievements. BN wins by being the "Malay" party. PH loses because they cannot shake the DAP association.
+</div>
+
+<div class="signal-box red">
+  <strong>The Anwar-Mahathir civility gesture is performative.</strong> Birthday wishes to a 101-year-old rival cost nothing and generate goodwill headlines. They do not offset the substantive failure to neutralize racial framing in Malay-majority areas.
+</div>
+
+<div class="signal-box red">
+  <strong>"Stability vs checks" is too diplomatic.</strong> 49/56 seats means the Johor state assembly becomes a rubber stamp. No meaningful opposition to scrutinize budgets, challenge policy, or surface failures. This is not theoretical — it is the lived reality of BN-dominated state assemblies.
+</div>
+
+<div class="signal-box amber">
+  <strong>Development narrative is the polite explanation.</strong> Ethnic consolidation and machine politics are the actual mechanisms. Both can be true, but the clean narrative overweights delivery and underweights racial mobilization.
+</div>
+
+<h2>4.2 What Was Missing From All Prior Passes</h2>
+
+<h3>1. The BERSAMA Wildcard</h3>
+<p>BERSAMA contested 15 seats. Vote splitting could have materially affected PH in semi-urban seats. If BERSAMA took 3–5% from PH in tight races, that explains PH's losses more than BN's strength alone.</p>
+
+<h3>2. The Malay Voter Realignment Question</h3>
+<p>The deepest question is not "BN won" but <strong>which</strong> Malays shifted:</p>
+<ul>
+  <li><strong>(a)</strong> PAS voters going to BN (party collapse)?</li>
+  <li><strong>(b)</strong> PH-leaning Malays going to BN (government dissatisfaction)?</li>
+  <li><strong>(c)</strong> New voters overwhelmingly Malay and BN-leaning?</li>
+</ul>
+<p>Each has different GE16 implications. No disaggregated data available.</p>
+
+<h3>3. The Anwar Fatigue Signal</h3>
+<p>Anwar campaigned hard — personal appearances, plantation boy story, direct confrontation. PH still lost ground. This is a <strong>federal PM performance referendum</strong> in a key state. Voters are punishing the gap between promise and delivery.</p>
+
+<h3>4. The Youth Vote Split</h3>
+<p>67% turnout with ~440k new voters from undi 18 + auto-registration. If they broke heavily BN, that is a generational shift. Zero data.</p>
+
+<h2>4.3 The One-Line Summary</h2>
+
+<blockquote>
+  BN won Johor so thoroughly that Malaysia's political future now depends more on Zahid and Onn Hafiz's intentions than on Anwar's agenda.
+</blockquote>
+
+<div class="page-break"></div>
+
+<!-- PART V -->
+<h1><span class="section-num">V</span> Daily Reflection Pulse</h1>
+
+<h2>Feeling</h2>
+<p>Weight of the LPT tragedy (4 lives lost) amid political contestation and scandal noise. Respect for decisive voter verdict and high participation. Concern for long-term health of contestation in a near one-party state environment. Hope that strong mandate is stewarded with precision and inclusion rather than triumphalism.</p>
+
+<h2>Fact</h2>
+<div class="summary-strip">
+  <div class="item"><span class="label">BN trajectory</span><span class="value reading-good">Dominant — ~49/56 seats</span></div>
+  <div class="item"><span class="label">Turnout</span><span class="value reading-good">67.44% — 14-point jump</span></div>
+  <div class="item"><span class="label">PH ground</span><span class="value reading-critical">Lost semi-urban Malay seats</span></div>
+  <div class="item"><span class="label">PN/PAS</span><span class="value reading-critical">Erased in Johor</span></div>
+  <div class="item"><span class="label">EPF restraint</span><span class="value reading-good">2/3 chose not to withdraw</span></div>
+  <div class="item"><span class="label">LPT tragedy</span><span class="value reading-critical">4 dead, 20 injured</span></div>
+  <div class="item"><span class="label">Social media tribunal</span><span class="value reading-critical">Systemic, not episodic</span></div>
+  <div class="item"><span class="label">GDP forecast</span><span class="value reading-info">IMF: 4.7% for 2026</span></div>
+</div>
+
+<h2>Law / Principle</h2>
+
+<div class="signal-box" style="border-left-color: #f0a500;">
+  <strong>DITEMPA BUKAN DIBERI.</strong> Elections are part of the forge. Strong mandates test whether power is used to harden institutions and broaden prosperity — or to entrench. Attention discipline matters. Development record and local machinery outperformed narrative attacks. Human sovereignty in democracy requires both decisive outcomes <strong>and</strong> robust mechanisms for correction and inclusion. One-coalition dominance is stable but demands higher internal discipline and external transparency. Precision builds peace; concentration without accountability risks future fracture.
+</div>
+
+<div class="page-break"></div>
+
+<!-- APPENDICES -->
+<h1>Appendices</h1>
+
+<h2>A: Epistemic Discipline</h2>
+
+<table>
+  <tr><th>Tag</th><th>Meaning</th><th>Application</th></tr>
+  <tr><td><span class="tag tag-obs">OBS</span></td><td>Directly observed</td><td>News headlines, vote counts, turnout figures</td></tr>
+  <tr><td><span class="tag tag-der">DER</span></td><td>Derived from multiple sources</td><td>2022 vs 2026 comparison, turnout analysis</td></tr>
+  <tr><td><span class="tag tag-int">INT</span></td><td>Interpreted through framework</td><td>Power dynamics, scar metabolism, GE16 implications</td></tr>
+  <tr><td><span class="tag tag-spec">SPEC</span></td><td>Speculative / low-confidence</td><td>Youth vote split, BERSAMA impact, long-term effects</td></tr>
+</table>
+
+<p><strong>Confidence: 72/100.</strong> Strong structural extraction with calibrated real-time augmentation. Uncertainty: exact final seat counts still settling; limited depth on individual incidents; no primary document review (EAIC report, EPF statistics, returning officer data).</p>
+
+<h2>B: Source Matrix</h2>
+
+<table>
+  <tr><th>Source</th><th>Type</th><th>Items Covered</th></tr>
+  <tr><td>Malay Mail</td><td>News portal</td><td>Politics, national issues, human drama</td></tr>
+  <tr><td>Astro AWANI</td><td>News portal</td><td>Election live updates, national, flood</td></tr>
+  <tr><td>Utusan Malaysia</td><td>News portal</td><td>Election tracker, politics, general</td></tr>
+  <tr><td>The Star</td><td>News portal</td><td>National, weather, lifestyle</td></tr>
+  <tr><td>SAYS</td><td>Social news</td><td>EPF, human drama, entertainment</td></tr>
+  <tr><td>mStar</td><td>Entertainment</td><td>Scandal, celebrity, cultural flashpoints</td></tr>
+  <tr><td>AP News / Reuters</td><td>International</td><td>Context (Iran, Ukraine, typhoon)</td></tr>
+  <tr><td>Grok synthesis (×2)</td><td>AI analysis</td><td>Multi-layer civic telemetry, political landscape</td></tr>
+  <tr><td>Hermes critique (×2)</td><td>AI analysis</td><td>Sharpening, missing signals, structural reading</td></tr>
+</table>
+
+<h2>C: Glossary</h2>
+
+<table>
+  <tr><th>Term</th><th>Meaning</th></tr>
+  <tr><td>PRN</td><td>Pilihan Raya Negeri (State Election)</td></tr>
+  <tr><td>DUN</td><td>Dewan Undangan Negeri (State Legislative Assembly)</td></tr>
+  <tr><td>BN</td><td>Barisan Nasional</td></tr>
+  <tr><td>PH</td><td>Pakatan Harapan</td></tr>
+  <tr><td>PN</td><td>Perikatan Nasional</td></tr>
+  <tr><td>PAS</td><td>Parti Islam Se-Malaysia</td></tr>
+  <tr><td>EPF</td><td>Employees Provident Fund (KWSP)</td></tr>
+  <tr><td>EAIC</td><td>Enforcement Agency Integrity Commission</td></tr>
+  <tr><td>LPT</td><td>Lebuhraya Pantai Timur (East Coast Expressway)</td></tr>
+  <tr><td>GE16</td><td>16th General Election (expected by 2027)</td></tr>
+  <tr><td>DOSM</td><td>Department of Statistics Malaysia</td></tr>
+  <tr><td>MB</td><td>Menteri Besar (Chief Minister)</td></tr>
+  <tr><td>PPS</td><td>Pusat Pemindahan Sementara (Relief Centre)</td></tr>
+</table>
+
+<div class="footer-note">
+  <strong>DITEMPA BUKAN DIBERI</strong><br>
+  This document is a consolidated intelligence synthesis. Not a declaration of final election results.<br>
+  All analysis is epistemic witness-tier (OBS/DER/INT). No execution proposed. No F13 trigger.<br>
+  Prepared by Hermes SOUL Layer | arifOS Federation | 11 July 2026
+</div>
+
+</body>
+</html>

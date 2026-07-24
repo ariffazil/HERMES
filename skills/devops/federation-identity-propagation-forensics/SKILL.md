@@ -1,6 +1,6 @@
 ---
 name: federation-identity-propagation-forensics
-description: Diagnose and trace identity propagation failures across arifOS federation — when receipts log anonymous/self_report/openclaw-anon despite session_id + actor_id being passed. Covers the full code path from MCP envelope → kernel receipt writer → VAULT999 ledger files.
+description: Diagnose and trace identity propagation failures across arifOS federation — when receipts log anonymous/self_report/openclaw-anon despite session_id + actor_id being passed
 triggers:
   - "receipts showing anonymous or openclaw-anon"
   - "actor_source is self_report"
@@ -256,6 +256,10 @@ Under F2 (TRUTH), a receipt without verified provenance is evidentially void. Cl
 
 - **Diagnostic script** — `references/vault999-identity-audit.py`: standalone Python script that audits all three VAULT999 ledgers, outputs actor/session distribution with placeholder flagging, supports `--date` filter. Run: `python3 references/vault999-identity-audit.py [--date YYYY-MM-DD]`
 
+## Related: T3a BOOT Gate Authority Downgrade (2026-07-24)
+
+A separate identity-propagation failure not covered by the ledger fix above: the server-side `_apply_boot_gate()` in `authority.py` demotes FULL→OBSERVE_ONLY when `boot_state=PARTIAL`. Unlike the ledger anonymity problem (actor_id not written), this is the session SCT being issued at the wrong authority level. See `arifos-kernel-zen-audit` skill's T3a BOOT Gate Demotion section for full diagnosis and fix.
+
 ## Pitfalls
 
 - **Interceptor authority bug (2026-07-16).** The interceptor's `_resolve_authority()` caps self-report actors at MEDIUM even when the session has a valid SCT with FULL authority. This breaks arif_seal and arif_judge for all MCP callers. Fix: patch interceptor.py to look up _SESSIONS store for verified SCT authority. See `arifos-interceptor-patching` skill for full patches.
@@ -263,4 +267,4 @@ Under F2 (TRUTH), a receipt without verified provenance is evidentially void. Cl
 - **`_actor_for_response` is not a silver bullet.** It only works when `_RESPONSE_CONTEXT` or `_SESSIONS` has the real identity. If the session was created without identity (as OpenClaw often does), resolution fails.
 - **OpenClaw is the workhorse.** 83% of receipts come from OpenClaw. Fixing the envelope coercion in `wrap_legacy_call` has the highest impact.
 - **Historical receipts are gone.** You can't retroactively fix 10K+ existing receipts. The fix is forward-looking. Historical receipts should be annotated, not mutated (F1 — immutability).
-- **PITFALL: Deployment path mismatch.** arifOS source lives at `/root/arifOS/` but the running process uses `/opt/arifos/app/`. Editing source files alone does NOT deploy the fix. You must `cp` the modified files to `/opt/arifos/app/` THEN restart `systemctl restart arifos`. This bit the 2026-07-13 fix — initial edits to `/root/arifOS/` had no effect until deployed to `/opt/arifos/app/`.
+- **Deployment path mismatch** — arifOS source at `/root/arifOS/`, runtime at `/opt/arifos/app/`. Patch BOTH or `cp` + restart. This bit the 2026-07-13 fix.\n- **MCP transport authority block (2026-07-24)** — `arif_init` mints SOVEREIGN SCT but interceptor sees `self_report` → LOW. MCP protocol has no session context between `tools/call` requests. Workaround: direct VAULT999 chain write. See `references/mcp-transport-authority-block-2026-07-24.md`.

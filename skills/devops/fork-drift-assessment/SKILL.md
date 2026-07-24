@@ -1,6 +1,6 @@
 ---
 name: fork-drift-assessment
-description: "Compare a local fork or install against upstream origin — detect drift, categorize missing commits (security/fix/features), assess upgrade urgency, and map PR review feedback against current main. Use when: 'how far behind am I', 'do I need to upgrade', 'contrast my install with upstream', 'what am I missing', 'review this PR feedback', 'is this PR stale'."
+description: "Compare a local fork or install against upstream origin — detect drift, categorize missing commits, assess upgrade urgency, and map against main."
 version: 1.0.0
 author: Hermes Agent
 license: MIT

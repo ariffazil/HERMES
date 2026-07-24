@@ -1,0 +1,43 @@
+{
+  "seal_draft_id": "2026-07-24T01:17-hermes-forge-session",
+  "timestamp": "2026-07-24T01:17:00+08:00",
+  "authority": "PENDING_888_HOLD",
+  "session_summary": "Arif forge session — cosmetic fixes, Honcho memory, Camofox browser, 3 bot logos",
+  "artifacts": {
+    "cosmetic_fixes": {
+      "systemd": "hermes-asi-gateway.service TimeoutStopUSec=210s (match drain_timeout 180s)",
+      "telegram_spam": "Cron job 49d171deeb6d (arifs24-telemetry) paused — was delivering to bot itself every 10min"
+    },
+    "honcho_memory": {
+      "status": "4 Docker containers running (api, deriver, database pgvector, redis)",
+      "port": "127.0.0.1:8002",
+      "config": "~/.hermes/honcho.json — workspace 'hermes', peer 'Arif'",
+      "hermes_provider": "memory.provider = honcho"
+    },
+    "camofox_browser": {
+      "status": "Running on 127.0.0.1:9377",
+      "systemd": "camofox.service enabled, auto-restart",
+      "config": "CAMOFOX_URL=http://localhost:9377 in ~/.hermes/.env",
+      "engine": "camoufox (Firefox fork, C++ fingerprint spoofing)"
+    },
+    "bot_logos": {
+      "hermes": "@ASI_arifos_bot — forged metal 'A' + neural crown + dual red/blue neon",
+      "openclaw": "@AGI_ASI_bot — cyberpunk claw 'A' + cyan/magenta neon",
+      "forge": "@arifOS_bot — forged anvil 'A' + cyberpunk neon cracks + molten core"
+    },
+    "openclaw_restoration": {
+      "model": "minimax/MiniMax-M3",
+      "status": "0 errors, gateway live, webhook listening",
+      "token_source": "vault.env.bak-pre-copilot-byok-20260702T052733"
+    }
+  },
+  "files": {
+    "logos": "/tmp/bot_photos/{hermes_logo_v2.jpg, openclaw_logo_v1.jpg, forge_logo_v2.jpg}",
+    "honcho_config": "/root/.hermes/honcho.json",
+    "camofox_service": "/etc/systemd/system/camofox.service",
+    "honcho_repo": "/root/honcho/",
+    "camofox_repo": "/root/camofox-browser/"
+  },
+  "pending_sovereign_ack": true,
+  "note": "Draft seal — requires 888_HOLD + Arif F13 acknowledgment before VAULT999 immutable append"
+}

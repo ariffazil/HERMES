@@ -1,6 +1,6 @@
 ---
 name: federation-node-onboarding
-description: "Onboard a new VPS/node to the arifOS federation mesh. SSH key exchange, Tailscale/Headscale setup, organ registration, smoketest, notification. Use when user says 'add new node', 'onboard X', 'connect new VPS', 'federation link', or gives an IP + purpose for a new machine."
+description: "Onboard a new VPS/node to the arifOS federation mesh. SSH key exchange, Tailscale/Headscale setup, organ registration, smoketest, notification"
 version: 1.0.0
 author: Hermes Agent
 tags: [federation, onboarding, tailscale, headscale, ssh, mesh, devops, infrastructure]

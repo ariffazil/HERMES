@@ -1,6 +1,6 @@
 ---
 name: institutional-epistemic-sink-forensics
-description: Diagnose whether a named institution (employer, agency, university, research group, foundation) shows the Calhoun "behavioral sink" pattern — role saturation without truth metabolism, operational success blocking foundational revision, citation chain inertia, AI/competence control as institutional threat. Drives the WEALTH federation (collapse-signature, beautiful-mouse, capture, power, judge-handoff), routes through arifOS judge, and embeds the discipline of holding at 0.58 confidence rather than overclaim. Use when Arif names a specific institution as exhibiting "epistemic sink", "role saturation", "committee disease", "beautiful mouse", "behavioral sink", "Calhoun", or asks to "test the theory" against a named employer / agency / group.
+description: "Diagnose whether an institution shows Calhoun's behavioral-sink pattern — role saturation without truth metabolism. Routes through arifOS judge with disciplined"
 ---
 
 # Institutional Epistemic Sink Forensics

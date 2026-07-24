@@ -1,6 +1,6 @@
 ---
 name: legal-case-dossier-from-news
-description: "Build a structured legal-case dossier (court cases, criminal trials, corporate-espionage cases, securities cases) from one or more news URLs. Output is a case sheet in MDS schema (ACTOR · VECTOR · PAYLOAD · COUNTERPARTY · TIMELINE · CHARGE · DEFENSE · CONTEXT · EFFECT) with per-fact epistemic labels (OBS/DER/INT/SPEC), multi-source cross-check, and sha256 receipt. Use when Arif (or any sovereign) asks to build a chronological case, dossier, breakdown, case sheet, or forensic timeline from a news article — especially court-news from Malaysia, Singapore, or comparable Commonwealth jurisdictions. Triggers: 'build a chronological case', 'case sheet', 'dossier', 'break down this case', 'what's the timeline', 'forensic timeline', 'map this trial', 'kronologi kes'."
+description: "Build a structured legal-case dossier from news URLs. Outputs a MDS-schema case sheet with epistemic-labelled facts, multi-source cross-check, and SHA256"
 version: 1.0.0
 author: Hermes Agent
 tags: [legal, court-news, case-sheet, dossier, mds, malaysia, forensic, obs-der-int-spec, structured-artifact]

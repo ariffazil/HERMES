@@ -1,6 +1,6 @@
 ---
 name: civic-intelligence-pdf
-description: "Generate colour-coded civic intelligence briefing PDFs. Two modes: dark theme (screen briefings) and light (print/archive). Semantic colour callouts, stat cards, scannable structure. Chrome headless or WeasyPrint. Proven 2026-07-11 Malaysia Civic Intelligence Briefing v1-v2."
+description: "Generate colour-coded civic intelligence briefing PDFs. Two"
 triggers:
   - "civic briefing pdf"
   - "intelligence dossier pdf"

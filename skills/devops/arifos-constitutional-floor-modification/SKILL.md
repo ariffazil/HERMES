@@ -1,6 +1,6 @@
 ---
 name: arifos-constitutional-floor-modification
-description: "Modify arifOS constitutional floors (F1-F13) across AGENTS.md, public mapping, and kernel code. Covers the full lifecycle: docs, kernel enforcement, tests, SOT manifest."
+description: "Modify arifOS constitutional floors (F1-F13) across AGENTS.md, public mapping, and kernel code. Covers the full lifecycle"
 triggers:
   - "upgrade F8"
   - "modify constitutional floor"

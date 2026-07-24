@@ -1,6 +1,6 @@
 ---
 name: nasi-lemak-sales-tracking
-description: Track nasi lemak sales across locations/days — process receipt images, compile baki, compute revenue. Use when user shares handwritten cash bills, order receipts, baki counts, or asks for sales summaries and revenue analysis.
+description: Track nasi lemak sales across locations/days — process receipt images, compile baki, compute revenue
 ---
 
 # Nasi Lemak Sales Tracking
@@ -83,9 +83,132 @@ date,day,location,jenis,order_qty,baki,sold,price_rm,revenue_rm
 - Bold totals
 - Short bullet insights at the end, not paragraphs
 
-## Pitfalls
+### 6. Vendor Claim / Order Summary Report (V005 Format)
 
-- Receipt handwriting is often ambiguous — never be certain about abbreviations without user confirmation
+When the user asks for a **"claim vendor"** or **"buat macam ni"** (pointing to a previous report):
+
+**Two distinct report formats:**
+
+| Format | Title | Columns | Use |
+|--------|-------|---------|-----|
+| ORDER SUMMARY | `ORDER SUMMARY — V005` | Lokasi, Rebus🥚, Mata🍳, Dadar, Total | Daily aggregate by location |
+| CLAIM VENDOR | `CLAIM VENDOR — V005` | Vendor, Item, Hantar, Baki, Sold, Harga, Jualan | Per-vendor payout calculation |
+
+**Visual style (both formats):**
+- Navy header row (`#003366`), white text
+- Zebra-striped rows (white / `#f9fafb`)
+- Gold total row (`#f0a500`), bold white text
+- A4 print-ready, clean sans-serif
+
+**File output preference:** The user explicitly prefers **HTML files** (`*.html`) — not PDF. Generate HTML first. Only generate PDF (via weasyprint) when the user explicitly asks for "PDF". Command: `cd /root/forge_work/YYYY-MM-DD/ && weasyprint file.html file.pdf`
+
+**Date format:** Always use `DD JULAI 2026 (HARI)` — e.g. `24 JULAI 2026 (JUMAAT)`. Verify today's actual day-of-week.
+
+**Reference code:** All claim/receipt forms use `V005` as the document code. Keep in header title: `CLAIM VENDOR — V005`.
+
+### 7. Dual-Layer Pricing
+
+The user operates two price layers — **always ask which layer** if not explicitly stated:
+
+| Variant | Supplier (buy) | Customer (sell) |
+|---------|---------------|-----------------|
+| Telur Mata 🍳 | RM 1.50 | RM 3.00 |
+| Telur Rebus 🥚 | RM 1.20 | RM 2.50 |
+| Telur Dadar | RM 1.20 | RM 2.50 |
+| Berlauk 🥩 | (user specifies) | (user specifies, often cash-term) |
+
+- **Supplier pricing** (cost of goods): `darab 1.5 n 1.2`
+- **Customer pricing** (revenue): User specifies per-batch e.g. `"telur mata rm 3 n telur rebus rm 2.5"`
+- Revenue = sold × customer price. Cost = sold × supplier price. Profit = revenue − cost.
+
+## HTML Template (Vendor Claim)
+
+When generating an HTML file for the user, use this structure — it matches the V005 claim format exactly. Save to `/root/forge_work/YYYY-MM-DD/claim_vendor_v005.html`:
+
+### Minimal HTML scaffold
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8">
+<style>
+  body { font-family: Helvetica, Arial, sans-serif; margin: 40px; }
+  h1 { color: #003366; font-size: 20pt; text-align: center; }
+  .date { text-align: center; color: #6B7280; font-size: 10pt; margin-bottom: 30px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #003366; color: white; padding: 8px 10px; font-size: 10pt; text-align: left; }
+  td { padding: 7px 10px; font-size: 9pt; border-bottom: 1px solid #e5e7eb; }
+  tr:nth-child(even) { background: #f9fafb; }
+  .total { background: #f0a500; color: white; font-weight: bold; }
+  .footer { text-align: center; color: #6B7280; font-size: 8pt; border-top: 1px solid #e5e7eb; padding-top: 15px; margin-top: 30px; }
+</style></head>
+<body>
+<h1>CLAIM VENDOR — V005</h1>
+<p class="date">DD JULAI 2026 (HARI)</p>
+<table>
+<tr><th>Vendor</th><th>Item</th><th>Hantar</th><th>Baki</th><th>Sold</th><th>Harga (RM)</th><th>Jualan (RM)</th></tr>
+<!-- Rows -->
+<tr class="total"><td colspan="6">TOTAL</td><td>XXX.XX</td></tr>
+</table>
+<p class="footer">Dijana oleh Hermes Agent — DD Julai 2026</p>
+</body></html>
+```
+
+### Order Summary HTML (location breakdown)
+
+```html
+<h1>ORDER SUMMARY — V005</h1>
+<p class="date">DD JULAI 2026 (HARI)</p>
+<table>
+<tr><th>Lokasi</th><th>Rebus 🥚</th><th>Mata 🍳</th><th>Dadar</th><th>Total</th></tr>
+<!-- Rows -->
+</table>
+```
+
+### 8. Self-Reminder: Stop Explaining When User Asks for Output
+
+When the user says things like:
+- "Buat macam ni" / "Buat file" / "Buat forward camni"
+- "Aku xnak dalam pdf. Aku nak dalam file"
+- Repeatedly sending back the same PDF or file you just delivered
+
+→ **Stop explaining what the file contains. Stop asking questions. Stop giving advice or warnings about missing data. Just generate the file and deliver it immediately. If the format is already clear from prior context, replicate it exactly without commentary.** The user corrects only when the output is wrong, not because they need explanation. Explanations after the user has given clear instructions delay the only outcome they want: the file.
+
+**Critical: the "send-back" signal.** When the user sends back the same file you just delivered (without any new data), it means the FORMAT is wrong, not the content. Do NOT ask "what's wrong?" or "what should I change?" — instead:
+1. Read/extract the file the user sent back to understand the structure.
+2. Replicate its EXACT columns, header wording, title, and styling.
+3. Update only the data and date.
+4. Resend.
+
+**HTML-first, PDF-only-on-demand.** Default deliverable is HTML at `/root/forge_work/YYYY-MM-DD/claim_vendor_v005.html`. Only produce PDF via weasyprint when the user explicitly says "PDF".
+
+### 9. Date Format Preference
+
+The user prefers `DD/MM/YYYY` format (e.g. `24/07/2026`) over verbose Malay dates (e.g. `24 JULAI 2026 (JUMAAT)`). Default to the short format. Only use the verbose format if the user explicitly accepted it in a prior context for the same document.
+
+### 10. Multi-Date Claim Table
+
+When user provides vendor data spanning multiple dates, add a `Tarikh` column to disambiguate. Group by vendor, not by date. When user says "Tukar X sahaja", filter to only that date.
+
+### 11. Structured Claim Input Pattern
+
+The user provides claim data in this format. Parse directly:
+```
+Vendor [NAME]
+Claim payment V005
+[date] [day]
+Hantar [N]
+tolak Baki [N]
+=jual [N]
+Total Jual [N] x [price] = RM [amount]
+```
+May include "Jual lelong [N] x [price]" as a separate row. Different vendors may have different dates.
+
+**HTML-first, PDF-only-on-demand.** Default deliverable is HTML at `/root/forge_work/YYYY-MM-DD/claim_vendor_v005.html`. Only produce PDF via weasyprint when the user explicitly says "PDF".
+
+## References
+
+- `references/v005-claim-template.html` — example claim vendor HTML file
 - The user may split one receipt's items across multiple messages; keep a running tally
 - "Telur masin" on a receipt may map to "telur mata" in the user's category system — ask
 - Some receipts list items the user later says "buang" (discard) — adjust accordingly

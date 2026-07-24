@@ -1,6 +1,6 @@
 ---
 name: vps-autonomous-ops
-description: "Build and operate autonomous VPS control loops — smoketest, state machine, rollback, circuit breaker, dead-man's switch. Class-level pattern for self-healing infrastructure under arifOS governance."
+description: "Build and operate autonomous VPS control loops — smoketest, state machine, rollback, circuit breaker, dead-man's switch. Class-level pattern for self-healing"
 triggers:
   - VPS health monitoring automation
   - Self-healing service infrastructure

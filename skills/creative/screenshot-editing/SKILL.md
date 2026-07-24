@@ -1,6 +1,6 @@
 ---
 name: screenshot-editing
-description: Edit existing screenshots/images to add, remove, or modify content. PIL/Pillow image surgery — crop, insert text, shift regions, preserve original formatting.
+description: Edit existing screenshots/images to add, remove, or modify content. PIL/Pillow image surgery — crop, insert text, shift regions, preserve original
 triggers:
   - user sends a screenshot and says "add X to this"
   - user says "same format as this image" + wants a modification

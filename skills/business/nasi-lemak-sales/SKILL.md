@@ -1,6 +1,6 @@
 ---
 name: nasi-lemak-sales
-description: "Track nasi lemak daily orders, vendor claims, sales, and generate summary PDFs. For Khairuddin's nasi lemak business across multiple LRT/kedai locations."
+description: "Track nasi lemak daily orders, vendor claims, sales, and generate summary PDFs. For Khairuddin's nasi lemak business across multiple LRT/kedai"
 tags: [nasi-lemak, sales, vendor-claim, pdf, business-tracking]
 triggers:
   - "nasi lemak order"

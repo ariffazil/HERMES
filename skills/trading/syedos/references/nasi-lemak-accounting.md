@@ -42,7 +42,8 @@ Abang Sado can explain to a vendor with too many similar items:
 
 ## Interactive Dashboard
 
-**URL:** `https://arif-fazil.com/verify/nasi-lemak-dashboard.html`
+**URL (legacy):** `https://arif-fazil.com/verify/nasi-lemak-dashboard.html`
+**URL (SyedOS — new):** `https://arif-fazil.com/sado/` — combined nasi lemak daily summary + XAUUSD trading reference + accounting + locations in one interactive HTML dark-theme dashboard with Chart.js. Built 2026-07-24.
 
 Features:
 - 3 vendor comparison modes (Abang Sado 4-item, Vendor 10-item aka "tak bijak", Gerai Cerdik 3-NL+side)

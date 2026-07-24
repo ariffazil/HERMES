@@ -1,6 +1,6 @@
 ---
 name: scientific-pdf-generation
-description: "Generate publication-quality PDFs with reportlab + matplotlib — four modes: Mode A (academic, white/serif), Mode B (intelligence dossier, dark/gold), Mode C (sell-side analyst report, navy/light/UOBKH/CIMB house style), Mode D (trading signal, dark/OANDA-style candlestick charts). Two-column layout, proper typography, figure styling, references."
+description: "Generate publication-quality PDFs with reportlab + matplotlib — four"
 triggers:
   - "scientific pdf"
   - "publication quality document"

@@ -1,6 +1,6 @@
 ---
 name: consult-external-llm
-description: External LLM consultation via existing vault keys (DeepSeek, MiniMax). F9-wrapped raw signal. No new vendors.
+description: External LLM consultation via existing vault keys (DeepSeek, MiniMax). F9-wrapped raw signal. No new vendors
 version: 1.0.0
 seal: 2026-07-10
 tags: [external-ai, deepseek, minimax, f9, reasoning]

@@ -1,6 +1,6 @@
 ---
 name: institutional-case-building
-description: Build chronological case files from public sources (court testimony, media, filings) — institutional shadow mapping, trigger analysis, value quantification. For corporate disputes, governance failures, regulatory conflicts.
+description: Build chronological case files from public sources (court testimony, media, filings) — institutional shadow mapping, trigger analysis, value quantification
 triggers:
   - "build a case on"
   - "chronological case"

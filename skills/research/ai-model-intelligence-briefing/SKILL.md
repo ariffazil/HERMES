@@ -24,7 +24,13 @@ triggers:
 - He wants structured breakdown — not a news summary, not hype
 - Federation implications are mandatory — this is the value layer Arif cares about
 
+## Related References
+- `references/ilmu-bbb-forensic-probe-methodology.md` — Systematic adversarial probe methodology for verifying vendor claims about AI models (fine-tune vs from-scratch, benchmark independence, guardrail consistency)
+
 ## Workflow
+
+### Phase 0: Pre-Brief — Vendor Claim Hygiene
+Before diving into a new model announcement, check if the vendor has a track record of misleading claims. Search for independent audits, contradiction reports, or community findings on the vendor's previous releases. Reference the BBB forensic methodology (`references/ilmu-bbb-forensic-probe-methodology.md`) for structured adversarial probing.
 
 ### Phase 1: Gather Sources (Parallel)
 

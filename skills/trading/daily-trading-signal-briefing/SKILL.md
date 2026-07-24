@@ -1,6 +1,6 @@
 ---
 name: daily-trading-signal-briefing
-description: "Daily XAUUSD gold trading signal for rakyat marhaen. One-page PDF, dark OANDA-style chart, zoomed candlesticks, buy/sell zones near current price, EMA 20/50, R:R visual, simple language. Not broker jargon."
+description: "Daily XAUUSD gold trading signal for rakyat marhaen"
 triggers:
   - "gold signal"
   - "trading signal"

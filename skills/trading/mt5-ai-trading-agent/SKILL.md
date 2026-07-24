@@ -1,6 +1,6 @@
 ---
 name: mt5-ai-trading-agent
-description: "Build AI-powered trading agents that connect MetaTrader 5 to Hermes intelligence — technical analysis, signal generation, risk management, voice delivery. Covers XAUUSD, forex, commodities."
+description: "Build AI-powered trading agents that connect MetaTrader 5 to Hermes intelligence — technical analysis, signal generation, risk management, voice delivery"
 version: 1.0.0
 tags: [trading, metatrader5, mt5, xauusd, forex, gold, ai-agent, technical-analysis, risk-management]
 metadata:

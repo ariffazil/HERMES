@@ -1,6 +1,6 @@
 ---
 name: hermes-log-forensics
-description: "When session_search misses messages or sessions, raw gateway logs are the authoritative fallback. Covers log locations, grep patterns, and the session DB vs raw log discrepancy."
+description: "When session_search misses messages or sessions, raw gateway logs are the authoritative fallback"
 version: 1.0.0
 author: Hermes-Prime
 metadata:
@@ -126,6 +126,44 @@ grep "inbound.*1042200555" /root/.hermes/logs/agent.log* /root/.hermes/logs/gate
 5. **Assuming "no session = no contact."** The session DB is lossy. Logs are authoritative.
 6. **Confidently asserting absence from session_search alone.** NEVER say "no, they never contacted the bot" based solely on session_search returning empty. The session DB is a lossy index. Raw logs are the source of truth. If a human witness (especially the sovereign) says "I saw it happen," that overrides session_search. Check raw logs before asserting absence. Saying "no" confidently and being wrong is worse than saying "let me verify."
 7. **Searching only DM logs.** A user may interact in GROUPS, not DMs. Search both `chat=<USER_ID>` (DM) AND group activity where the user's session key contains their ID (e.g., `group:<GROUP_ID>:<USER_ID>`).
+
+## Gateway Restart Loop Diagnosis
+
+When the gateway appears to be restarting or crash-looping, check logs in this order:
+
+### 1. Identify the restart pattern
+```bash
+grep -E "Starting Hermes Gateway|Gateway stopped|SIGTERM|SIGKILL|Stopping gateway" /root/.hermes/logs/gateway.log | tail -40
+```
+
+### 2. Check for shutdown crash triggers
+The `Event loop is closed` RuntimeError during shutdown (exit code 75/TEMPFAIL) is a known arifOS pattern — the MCP tool's `_wait_for_reconnect_or_shutdown` races with event loop teardown. This causes systemd to restart the gateway on a loop. Look for:
+```bash
+grep -A5 "Event loop is closed" /root/.hermes/logs/gateway.log
+```
+
+### 3. Check systemd unit timeout mismatch
+The gateway logs `Stale systemd unit detected` when `TimeoutStopSec` in the running systemd unit doesn't match the gateway's `drain_timeout`. The fix is a daemon-reload (not a unit file edit — the file is often already correct):
+```bash
+systemctl show hermes-asi-gateway.service -p TimeoutStopUSec  # check current
+systemctl daemon-reload                                        # reload unit files
+systemctl show hermes-asi-gateway.service -p TimeoutStopUSec  # verify (should show 3min 30s = 210s)
+```
+
+### 4. Check for overlapping gateway instances
+```bash
+ps aux | grep "hermes.*gateway" | grep -v grep
+```
+Multiple gateway processes (especially with different session storage paths like `/root/HERMES/sessions` vs `/root/.hermes/sessions`) indicate two systemd units or two instances fighting. The `--replace` flag on the current process means it's replacing a previous instance.
+
+### 5. Verify stability
+```bash
+systemctl status hermes-asi-gateway.service
+ps -o etime= -p <PID>  # check uptime
+```
+
+### 6. Check for recurring bot-to-bot delivery errors
+The `Forbidden: the bot can't send messages to the bot` error at regular intervals (e.g., every 10 minutes) is a cron job delivering to the bot's own Telegram ID. Not a crash trigger, but clutters logs. See `hermes-cron-rhythm` skill for the fix pattern (check `~/.hermes/cron/jobs.json` `last_delivery_error` field).
 
 ## Decision Tree
 

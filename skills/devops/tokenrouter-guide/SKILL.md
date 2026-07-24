@@ -1,6 +1,6 @@
 ---
 name: tokenrouter-guide
-description: "How Hermes uses TokenRouter — model selection, auto-routing, cost strategy, FREE tier, sovereign anchor. Load when Hermes needs to choose an LLM model or when asked about TokenRouter usage."
+description: "How Hermes uses TokenRouter — model selection, auto-routing, cost strategy, FREE tier, sovereign anchor"
 ---
 
 # 🪙 TokenRouter Guide for Hermes

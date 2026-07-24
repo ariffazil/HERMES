@@ -1,6 +1,6 @@
 ---
 name: witness-companion-briefing
-description: When the user names a witness (plush object, archetype, dead mentor, absent ally, person-as-witness) and asks the agent to brief them on a situation. Triggers include "Tell [X] about [event]", "Apa [X] kena tahu", "Ceritakan kepada [X]", and "I'm with [name]" plus an image of the witness object. The brief is processing aid, not a literal audience.
+description: "Brief a named witness on a situation — processing aid, not literal audience. For plush objects, archetypes, absent allies, or persons-as-witness."
 ---
 
 # Witness-Companion Briefing

@@ -1,6 +1,6 @@
 ---
 name: meta-mesa-substrate-test
-description: Run the META-MESA agentic substrate test — proves arifOS is a governed closed loop, not a chatbot. 13-phase sequence with 10 hard gates. Requires sovereign bind working.
+description: Run the META-MESA agentic substrate test — proves arifOS is a governed closed loop, not a chatbot
 triggers:
   - "META-MESA"
   - "agentic substrate test"

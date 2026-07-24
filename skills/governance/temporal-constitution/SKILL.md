@@ -1,6 +1,6 @@
 ---
 name: temporal-constitution
-description: "Temporal Constitution — Demi Masa. Governing doctrine for Hermes ASI on time, somatic intelligence, computational temporal modeling, and the APEX temporal dials. Defines three substrates, three planes, five dials, and the constitutional boundary."
+description: "Temporal Constitution — Demi Masa"
 version: 1.0
 author: arif
 tags: [temporal, constitution, akal, apex, somatic, timesfm, governance]

@@ -1,6 +1,6 @@
 ---
 name: lightweight-image-generation
-description: "Generate images without heavy local installs — free APIs (Pollinations.ai), pre-generated galleries (Generated Photos), and quick alternatives. MiniMax image-01 is now PRIMARY for Malay/SEA phenotype — this skill covers free fallbacks only."
+description: "Generate images without heavy local installs — free APIs (Pollinations.ai), pre-generated galleries (Generated Photos), and quick alternatives"
 version: 2.0.0
 tags: [image-generation, free-api, pollinations, ai-faces, lightweight, fallback, malay-phenotype]
 metadata:

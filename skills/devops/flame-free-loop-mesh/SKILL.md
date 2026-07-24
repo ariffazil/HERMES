@@ -1,6 +1,6 @@
 ---
 name: flame-free-loop-mesh
-description: "Operate FLAME — the RM0 Free-Loop AI Model Engine. Hit-rate-adaptive, graceful-swap inference mesh for tools, system workers, and non-constitutional agent sub-tasks. Two-lane architecture separating FLAME tool lane (throughput) from governed agent cascade (truth). Load when using flame/free-llm CLI, wiring tools to free inference, auditing the free fleet, or mapping FLAME integration candidates across MCP tools and cron jobs."
+description: "Operate the RM0 Free-Loop AI Model Engine — hit-rate-adaptive, graceful-swap inference mesh for tools and system workers. Two-lane architecture."
 ---
 
 # FLAME — Free Loop AI Model Engine

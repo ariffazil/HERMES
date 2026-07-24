@@ -1,6 +1,6 @@
 ---
 name: autonomous-vps-response
-description: "Tier 1 Active Response pattern — autonomous VPS health monitoring with smoketest, state machine, circuit breaker, rollback, and 888_HOLD escalation. Dependency-free shell scripts. Use when building self-healing infrastructure for VPS/servers."
+description: "Tier 1 Active Response pattern — autonomous VPS health monitoring with smoketest, state machine, circuit breaker, rollback, and 888_HOLD escalation"
 version: 1.0.0
 author: Hermes Agent
 tags: [vps, monitoring, self-healing, circuit-breaker, rollback, autonomous, tier1]

@@ -16,7 +16,8 @@ related_skills: [infra-guardian, federation-self-hosted-services, vps-operations
 
 ## Critical Rules
 
-1. **ALWAYS back up before modifying**: `cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile.bak.YYYY-MM-DD`
+1. **ALWAYS check which config file is actually running**: `ps aux | grep caddy | grep run` — Caddy may start from `/etc/caddy/Caddyfile` while backup copies (`Caddyfile.live`, `Caddyfile.bak.*`) exist in the same directory. Editing the wrong file = edits that never take effect. The running config wins.
+2. **ALWAYS back up before modifying**: `cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile.bak.YYYY-MM-DD`
 2. **ALWAYS validate before reloading**: `caddy validate --config /etc/caddy/Caddyfile`
 3. **ALWAYS test existing routes after reload** — verify homepage and related paths still return 200
 4. **Handle blocks evaluate TOP-DOWN** — more specific routes MUST come before broader ones
@@ -27,6 +28,93 @@ related_skills: [infra-guardian, federation-self-hosted-services, vps-operations
 - Config: `/etc/caddy/Caddyfile`
 - Admin socket: `unix//var/run/caddy-admin.sock`
 - Managed domains: `arif-fazil.com` (Ψ), `arifos.arif-fazil.com` (Ω), `aaa.arif-fazil.com` (Δ)
+
+## Adding a Standalone Subdomain (Not Under arif-fazil.com)
+
+When the user asks to deploy a site "not linked to main site" (e.g., `syedos.arif-fazil.com` instead of `arif-fazil.com/syedos/`):
+
+### Step 1: Cloudflare DNS Record
+
+Credentials live in `/root/.secrets/vault.env`:
+- `CF_TOKEN=cfut_...`
+- `CF_ZONE_ID=6e837d3be53b37dcf79e0f09a1e14faa`
+- VPS IP: `72.62.71.199`
+
+```python
+import urllib.request, json
+data = json.dumps({
+    "type": "A",
+    "name": "syedos",        # creates syedos.arif-fazil.com
+    "content": "72.62.71.199",
+    "ttl": 120,
+    "proxied": True
+}).encode()
+req = urllib.request.Request(
+    f"https://api.cloudflare.com/client/v4/zones/{CF_ZONE_ID}/dns_records",
+    data=data,
+    headers={"Authorization": f"Bearer {CF_TOKEN}", "Content-Type": "application/json"}
+)
+print(json.loads(urllib.request.urlopen(req).read()))
+```
+
+**Note:** TTL becomes 1 (auto) when proxied=True — Cloudflare manages this.
+
+### Step 2: Caddy vhost
+
+```caddyfile
+newsubdomain.arif-fazil.com {
+    import tls_origin
+    encode zstd gzip
+    root * /var/www/html/newsubdomain
+    
+    # Optional sub-paths
+    handle /dashboard/* {
+        try_files /dashboard.html /index.html
+        file_server
+    }
+    
+    # Default
+    handle {
+        try_files {path} {path}/index.html /index.html
+        file_server
+    }
+}
+```
+
+### Step 3: Certificate + Verification
+
+Caddy auto-requests Let's Encrypt cert via HTTP-01 challenge through Cloudflare. Monitor:
+```bash
+journalctl -u caddy --no-pager -n 5 | grep "newsubdomain"
+# Wait for "certificate obtained successfully"
+```
+
+Test via direct IP (bypasses DNS):
+```bash
+curl -sk --resolve "newsubdomain.arif-fazil.com:443:72.62.71.199" \
+  -o /dev/null -w "HTTP %{http_code}\nSize: %{size_download}\n" \
+  https://newsubdomain.arif-fazil.com/
+```
+
+**Pitfall:** SSL will fail (exit code 35, "000") until Let's Encrypt cert is issued (~5 seconds). This is normal. Check `journalctl -u caddy` for ACME progress.
+
+### Step 4: DNS Propagation
+
+Cloudflare DNS takes ~1-2 minutes to propagate globally. Until then, only `--resolve` testing works.
+
+### User Preference: Standalone Subdomain vs Main-Site Subpath
+
+**When to use subdomain** (proven 2026-07-24 — user preference):
+- Site is for someone OTHER than Arif (e.g., Syed's dashboard)
+- User says "just share domain" or "jangan link dengan main site"
+- The site has its own identity/theme unrelated to arif-fazil.com
+- Zero risk of breaking main site SPA routing
+
+**When to use subpath** (`arif-fazil.com/<app>/`):
+- Internal governance/observatory tools
+- Quick prototypes or testing before domain migration
+- Federation organ dashboards (gold, oil, gas)
+- Any case where the user DIDN'T specifically request a standalone domain
 
 ## Adding a New Subpath Route (Static + API Proxy)
 
@@ -176,6 +264,63 @@ curl -sk -o /dev/null -w "%{http_code}" https://arif-fazil.com/
 curl -sk -o /dev/null -w "%{http_code}" https://arif-fazil.com/<parent-path>
 ```
 
+## Systemd Service for Python API
+
+For Python HTTPServer backends (e.g., file upload servers, lightweight APIs):
+
+```ini
+[Unit]
+Description=<description>
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/sado
+ExecStart=/usr/bin/python3 /root/sado/server.py
+Restart=always
+RestartSec=3
+Environment=HOME=/root
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+systemctl daemon-reload
+systemctl enable <service>
+systemctl start <service>
+systemctl status <service> --no-pager | head -10
+# Verify port
+ss -tlnp | grep <PORT>
+```
+
+**Common pitfall:** Python's built-in `HTTPServer` is single-threaded. For single-user portals behind Caddy it's fine. For multi-user, use `ThreadingHTTPServer` or gunicorn.
+
+## File Upload Backend Pattern
+
+When building a file upload portal with auto-processing pipeline:
+
+1. **Upload HTML** — drag-drop zone + file input with `capture="environment"` (phone camera), POST multipart form to `/api/upload`
+2. **Python backend** — parses multipart POST, saves file to disk with UUID filename + sidecar `.json` metadata, touches `.pending` flag
+3. **systemd service** — keeps Python server alive
+4. **Caddy proxy** — `handle /api/* { reverse_proxy 127.0.0.1:<PORT> }`
+5. **Cron watcher** — checks `.pending` file every N minutes, processes receipts, marks processed=true, removes flag, regenerates dashboard
+6. **Dashboard regeneration** — cron rewrites the static HTML with fresh data
+
+### User Preference: Zen Single-Page Design (proven 2026-07-24)
+
+Arif prefers **one scrollable page** over multi-tab/multi-page navigation for non-technical users (like Syed). Evidence:
+- "So many button to click to go to the desired pages. Zen it"
+- User wanted floating upload button (FAB) rather than separate upload page
+- Everything in one scroll, no tabs, no sub-navigation
+
+**When building sites for end-users (not yourself):**
+- Default to one-page scroll layout
+- Use floating action buttons (FAB) for secondary actions
+- No tabs, no sub-pages, no hierarchical navigation
+- Everything visible without clicking
+- Responsive: stacks vertically on mobile
+
 ## Systemd Service for Node.js API
 
 ```ini
@@ -233,12 +378,55 @@ handle /file.html {
 
 **Verification:** `curl -sI https://arif-fazil.com/verify/file.html | head -3` should return `200` and `text/html`.
 
+### Common Pitfall: `root * /outside/docroot` Returns 404 for file_server (PROVEN 2026-07-24)
+
+When you add a `handle /path/*` block with `root * /root/some-dir` pointing to a directory OUTSIDE `/var/www/html/`, the `file_server` handler returns 404 even though the file exists and permissions are correct.
+
+**Symptom:** `curl -sk https://arif-fazil.com/path/file.html` → `HTTP/2 404` with `content-length: 0`. File exists at `/root/some-dir/file.html` with `-rw-r--r--`. The route appears in the live config (verified via admin API). All tls_origin headers are present, confirming Caddy's host block is routing the request.
+
+**Root cause:** When a Caddy vhost has a `root` set at the top level (e.g., `root * /var/www/html/arif` via the tls_origin import), nested `handle` blocks that set `root * /some/external/path` may not propagate correctly to the `file_server` handler within deeply nested subroutes. The subroute group (created by Caddyfile adapter for `handle` blocks) inherits the parent root, and the override from a `vars` handler in a nested sub-subroute doesn't take effect for `file_server`.
+
+**Fix — copy files to the standard document root:**
+
+```bash
+# Instead of:
+#   root * /root/sado
+#   file_server
+
+# Do this:
+mkdir -p /var/www/html/arif/<app>
+cp /root/some-dir/* /var/www/html/arif/<app>/
+chmod 644 /var/www/html/arif/<app>/*
+
+# Caddyfile:
+handle /<app>/* {
+    root * /var/www/html/arif
+    try_files {path} {path}/index.html /<app>/index.html
+    file_server
+}
+```
+
+**Why this works:** The file lives under the vhost's established root, so `file_server` resolves it correctly. The `try_files` chain provides SPA-like fallback.
+
+**Alternative — use a symlink in the document root:**
+```bash
+ln -s /root/some-dir /var/www/html/arif/<app>
+```
+Then use the same `handle` block with the standard root. The symlink follows automatically as long as Caddy has filesystem access (runs as root on this infra).
+
+**Verification:**
+```bash
+curl -sk -o /dev/null -w "HTTP %{http_code}\nSize: %{size_download}\n" https://arif-fazil.com/<app>/file.html
+# Should return 200, not 404/0
+```
+
 ## Existing arif-fazil.com Route Map
 
 Reference — routes already configured in the main site block (as of 2026-07-22):
 
 | Path | Backend | Notes |
 |------|---------|-------|
+| `/sado/*` | static (`/var/www/html/arif/sado/`) | SyedOS dashboard — ADDED 2026-07-24 |
 | `/images/*` | static (`/var/www/html/arif/images/`) | Static media — ADDED 2026-07-22 |
 | `/api/*` | `127.0.0.1:8088` | arifOS kernel |
 | `/mcp*` | `127.0.0.1:8088` | MCP endpoint |

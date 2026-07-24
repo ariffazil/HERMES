@@ -1,6 +1,6 @@
 ---
 name: live-probe-audit-pattern
-description: When Arif (or any sovereign voice) feeds you a status narrative with claimed numbers ("100% 200 OK", "Zero dead links", "all surfaces wired"), probe against live state before accepting. Class of work is "narrative-vs-state audit" — distinct from kernel audits (arifos-kernel-zen-audit) which probe identity/wrapper behavior. This skill probes external surface claims (web routing, MCP surfaces, agent registrations, SOT YAML, navigation maps).
+description: "Probe status narratives against live system state before accepting. Narrative-vs-state audit for web routing, MCP surfaces, agent registrations, and SOT"
 tags: [audit, probe, trust-but-verify, caddy, mcp, navigation, narrative-vs-state]
 triggers:
   - "audit this"

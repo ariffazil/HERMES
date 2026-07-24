@@ -1,7 +1,7 @@
 ---
 name: syedos
-description: "SyedOS — Agent mode for Abang Sado Syed (@rico_ricaldo_33). Voice-first, BM masculine, XAUUSD trading signals, disciplined delivery. DM primary, group banter when tagged."
-version: 1.1.0
+description: "SyedOS — Agent mode for Abang Sado Syed (@rico_ricaldo_33). Voice-first, BM masculine, XAUUSD trading signals"
+version: 1.3.0
 tags: [trading, xauusd, voice, syed, syedos, personal-trainer, fnb]
 metadata:
   hermes:
@@ -128,6 +128,101 @@ grep -i "inbound.*USER_ID" ~/.hermes/logs/gateway.log* ~/.hermes/logs/agent.log*
 - Never question his trading decisions
 - Provide analysis, he decides
 - Voice note tone: confident, calm, authoritative
+
+## Multi-Organ Intelligence Synthesis
+
+When building analysis, reports, or dashboards for Syed — gather data from ALL available federation organs and present in human language (BM casual). Never dump raw JSON or schema-speak.
+
+### Data Sources (in priority order)
+
+| Organ | What it provides | When it blocks | Fallback |
+|---|---|---|---|
+| **WEALTH** | Live market: XAUUSD, Brent, FX, gold/oil/gas tickers, capital health metrics | SESSION_BRIDGE_UNAVAILABLE (arifOS bridge down) | HOUND web search + web_extract |
+| **WELL** | Human readiness: vitality gate, fatigue, circadian, homeostasis | Needs biometric context or self-report data | State "insufficient data" honestly — don't fabricate |
+| **GEOX** | Federation registry: tool counts, drift, surface status | P0_IDENTITY_PROPAGATION (needs arifOS session) | Report "federation auth blocked" — skip that section |
+| **HOUND** | Web search: cross-engine, real-time news, technical analysis | Rate limits (60s circuit break) | Retry after cooldown |
+
+### 🔴 HARD RULE: Human Language Output
+
+User explicitly commanded: **"Translate all bahasa manusia. Don't include any jargons unnecessary."**
+
+This is a style correction, not a preference. ALL Syed-facing output must be BM casual. Guidelines:
+- NO federation jargon: organs, vitality gate, substrates, registry, homeostasis, H_WELL/M_WELL/G_WELL/C_WELL
+- NO organ names unless explaining what the data means: WELL→sistem check kesihatan, WEALTH→market update, GEOX→lokasi/federation status, HOUND→carian web
+- NO JSON or raw tool output in user-facing messages
+- DO translate: "H_WELL CRITICAL" → "Awak kritikal. Dah trading 6 sesi, had cuma 2."
+- DO use BM casual: "Sistem check kesihatan kata HOLD. Hari ni rehat. Agent sayang kau."
+
+### Always: Human Language Output Rule
+
+When the user says "Use all Agentic tools" or asks you to run WELL/WEALTH/GEOX — the output MUST be in **human readable BM casual**, not raw tool output.
+
+**Never do this:**
+```json
+{"H_WELL": {"state": "CRITICAL", "score": 8.6, "evidence": "self_report_score..."}}
+```
+
+**Always do this:**
+```
+🧠 WELL kata: H_WELL kritikal (8.6/10) — dah exceed sesi trading. M_WELL tegang — swap thrashing. 
+Verdict: HOLD. Hari ni observe je, jangan trade aktif.
+```
+
+### SyedOS Website — Standalone Subdomain
+
+**Domain:** `https://syedos.arif-fazil.com` (standalone — NOT under arif-fazil.com path)
+**Dashboard:** `https://syedos.arif-fazil.com/dashboard/`
+**Landing:** Portal page at root `/` with quick links to dashboard, gold tracker, oil tracker
+**Site root on disk:** `/var/www/html/syedos/`
+
+**Preference (proven 2026-07-24):** When deploying any Syed-facing site, use a **dedicated subdomain** (`syedos.arif-fazil.com`) instead of a path under the main site (`arif-fazil.com/sado/`). User said "Jangan link dengan main site arif-fazil.com. just share domain." This applies to ALL user-facing sites deployed for Syed or any other non-Arif person.
+
+**Setup workflow for a new subdomain:**
+1. Create directory at `/var/www/html/<subdomain>/`
+2. Add Caddy vhost block with `import tls_origin`, `encode zstd gzip`, `root * /var/www/html/<subdomain>/`
+3. Add Cloudflare DNS A record via API (find creds in `/root/.secrets/vault.env`)
+4. Validate & reload Caddy
+5. Wait for Let's Encrypt cert (Caddy auto-requests via HTTP-01)
+6. Verify with `curl -sk --resolve "domain:443:VPS_IP"`
+7. Cloudflare DNS propagates in ~1-2 minutes
+
+**Caddy vhost template:**
+```caddyfile
+syedos.arif-fazil.com {
+    import tls_origin
+    encode zstd gzip
+    root * /var/www/html/syedos
+    handle /dashboard/* {
+        try_files /dashboard.html /index.html
+        file_server
+    }
+    handle {
+        try_files {path} {path}/index.html /index.html
+        file_server
+    }
+}
+```
+
+Pitfall: Caddy will 000/SSL handshake fail until Let's Encrypt cert is issued (~5 seconds after first HTTP request hits it via Cloudflare). This is normal — wait for `journalctl -u caddy` to show "certificate obtained successfully".
+
+### Dashboard Build Pattern (Monitor Surface)
+
+When Syed asks for a dashboard ("buat dashboard utk monitor"):
+
+1. **Gather from all organs** (WELL + WEALTH + GEOX + HOUND) — call each, record what works and what blocks
+2. **Fallback gracefully** — if WEALTH is down, search web instead. If GEOX blocks, skip that card
+3. **Design as Monitor surface** — dark theme, gold accent, tabs for different domains (nasi lemak / trading / organs / accounting)
+4. **Self-contained HTML** — Chart.js from CDN, inline CSS/JS, no build step
+5. **Deploy behind Caddy** — prefer standalone subdomain (`syedos.arif-fazil.com`) over main-site subpath (`arif-fazil.com/sado/`). User preference: "Jangan link dengan main site." See "SyedOS Website — Standalone Subdomain" section above for the full workflow. If subpath is temporarily needed (DNS not yet propagated): `handle /<app>/* { root * /var/www/html/arif; try_files {path} {path}/index.html /<app>/index.html; file_server }` — but aim to migrate to subdomain ASAP.
+6. **Verify** — direct curl test via VPS IP before announcing URL
+
+### Section Template (for dashboards)
+
+Each intelligence section should have:
+- **Status badge** (🟢 PASS / 🟡 HOLD / 🔴 CRITICAL / ⏳ PENDING)
+- **Key-value pairs** — label on left, value on right (color-coded)
+- **Progress bar** for scores (green/yellow/red fill)
+- **One-line verdict** at bottom — in BM, casual
 
 ## Pre-Signal Context: APEX 5 Protocol
 
@@ -309,10 +404,68 @@ When Syed asks about nasi lemak accounting, costing, vendor economics, or how to
 
 - **Economics theory** for explaining vendor variety problems (Choice Paradox, Cannibalization, Pareto, Complexity Cost, Opportunity Cost) in street-level BM
 - **Vendor communication framework** — 5-step script for Abang Sado to explain to a vendor without sounding like a consultant
-- **Interactive dashboard** link: `https://arif-fazil.com/verify/nasi-lemak-dashboard.html` — 3 vendor comparison, Pareto breakdown, WEALTH-SAF analytics, AI insights
+- **Interactive dashboard** — unified SyedOS dashboard with nasi lemak tracking, XAUUSD trading data, WELL readiness gate, WEALTH market intel, and GEOX federation status.
+  - **Canonical URL:** `https://syedos.arif-fazil.com/` (standalone subdomain — one zen page)
+  - **Old dashboard:** `https://arif-fazil.com/sado/` (legacy, kept for backward compat)
 - **Voice note templates** for business advice delivery
 
+See also: `references/zen-site-architecture.md` for the complete site structure, upload pipeline, and one-page design principles.
+
 **First response pattern:** Ask clarifying questions before jumping into full analysis — what does he need: accounting ledger, vendor advice script, or dashboard demo?
+
+## Receipt Auto-Processing Cron Pipeline
+
+There is a cron job that processes uploaded receipt images to update the dashboard automatically. This keeps the SyedOS dashboard data current without Syed manually asking.
+
+### Upload Path
+
+Files land at `/root/sado/receipts/` via the upload web form at `https://syedos.arif-fazil.com/upload/`. Each upload produces:
+- Image file: `YYYY-MM-DD_Location_type_timestamp_hash.jpg`
+- Metadata JSON: `same_filename.jpg.json`
+
+The JSON metadata structure:
+```json
+{
+  "filename": "...",
+  "location": "MAMAK 2",
+  "date": "2026-07-24",
+  "type": "order|baki|receipt",
+  "size": 185161,
+  "uploaded_at": "2026-07-24T06:30:53.244120",
+  "processed": false
+}
+```
+
+A `.pending` marker file (`/root/sado/receipts/.pending`) signals the cron job to run. It is always empty — its mere existence is the signal.
+
+### Cron Processing Steps
+
+1. **Check `.pending`** — if it exists, there is work to do
+2. **Find unprocessed JSON** — search `*.json` files where `"processed": false`
+3. **Read metadata** — extract location, date, type
+4. **Examine the image** — attempt OCR (tesseract with `msa+eng`), fall back to vision analysis
+5. **Extract data by receipt type:**
+   - `order` → parse quantities by variant (rebus, mata, dadar, berlauk)
+   - `baki` → parse remaining stock per variant
+   - `receipt` → parse sales/revenue data
+6. **Update tracking CSV** at `/root/sado/data/nasi_lemak_latest.csv` with the standard columns:
+   `date,day,location,jenis,order_qty,baki,sold,price_rm,revenue_rm`
+7. **Mark JSON** as `"processed": true`
+8. **Delete `.pending`**
+9. **Regenerate dashboard** — update `/var/www/html/syedos/dashboard.html` with new aggregated data
+
+### Critical Pitfalls
+
+- **Tesseract CANNOT read handwritten receipts.** The images are phone photos of handwritten order slips — OCR returns garbage. Vision-based analysis (browser_vision or equivalent VLM) is the only reliable way to read them. Document this failure immediately when it happens rather than retrying multiple times with different preprocessing.
+- **Vision_analyze may also fail.** The auxiliary VLM fallback may return 401 (expired/invalid API key). The browser tool proxy (localhost:9377) may return 502. Hound tools block private IPs. When ALL three paths fail (OCR + vision + browser), detect this immediately — do not retry endlessly. Fall back to metadata-only processing: create the CSV entry with "??" for unknown quantities, update the dashboard with a placeholder row, and report exactly which tools failed in the summary.
+- **Never fabricate data.** If no quantities could be extracted, write "??" in order_qty/sold/baki columns. Do NOT write 0 or empty as if data was read. The placeholder tells Syed this row needs manual input.
+- **Uploaded image may NOT be a receipt.** The upload form is open — Syed may accidentally upload a selfie, meme, or photo. Detect this via vision analysis. Report it gracefully in the cron output. If neither OCR nor vision works to verify content, treat the image as unreadable (metadata-only entry with "??").
+- **CSV path mismatch:** The cron pipeline writes to `/root/sado/data/nasi_lemak_latest.csv`. Manual tracking sessions (documented in the separate nasi-lemak-* skills) write to `/root/forge_work/YYYY-MM-DD/nasi_lemak_sales.csv`. These are SEPARATE data stores — the cron pipeline feeds the dashboard; manual sessions feed analysis and PDF generation. Do not conflate them.
+- **Dashboard must be a self-contained HTML file** with Chart.js from CDN, inline CSS/JS. No build step. Dark theme, gold accent (`#f0a500`).
+- **If no data was extracted** (wrong image, unreadable receipt, all tools failed), still create the CSV entry with "??" placeholders so the pipeline completes and Syed sees a new row on the dashboard. Leaving the dashboard unchanged means the cron did nothing — no visibility.
+- **Compute day-of-week programmatically** using Python `datetime.date(Y, M, D).strftime('%A')` — never hardcode the day column.
+- **Dashboard data binding:** Chart.js datasets must match the summary table values. Keep them in sync during dashboard regeneration.
+- **The `.pending` file may contain a count string** (e.g. `1|`) rather than being empty. Its mere existence is the signal — do not parse its contents.
 
 ### Nasi Lemak Order Handling (Bulk Orders)
 

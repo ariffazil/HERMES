@@ -1,6 +1,6 @@
 ---
 name: filesystem-entropy-audit
-description: "Audit a directory tree for stale, duplicate, and bloated entries. Classify as LIVE/STALE/ORPHANED, quarantine safe targets, escalate decisions on active-but-bloated projects. Produces a review report."
+description: "Audit a directory tree for stale, duplicate, and bloated entries. Classify as LIVE/STALE/ORPHANED, quarantine safe targets, escalate decisions on active-but-bloated"
 triggers:
   - disk usage is high or growing
   - user asks to clean up or audit directories
@@ -25,7 +25,7 @@ triggers:
 
 ### Post-Zen Pass (targeted residual scan)
 
-After a zen loop completes (prompt dedup, file consolidation, symlink creation), a second pass catches what the loop operator may have overlooked. Zen loops focus on the declared target — they rarely audit the archive tail, forge work accumulation, or SOT manifest expiry. Run these probes in parallel:
+After a zen loop completes (prompt dedup, file consolidation, symlink creation, description compression), a second pass catches what the loop operator may have overlooked. Zen loops focus on the declared target — they rarely audit the archive tail, forge work accumulation, SOT manifest expiry, or MCP prompt description verbosity. Run these probes in parallel:
 
 ```bash
 # 1. Stale archive bloat — large _archive dirs that could be compressed or verified
@@ -42,9 +42,15 @@ grep -rl "valid_until: 202" /root --include="AGENTS.md" --include="CLAUDE.md" 2>
 find /root -name "AGENTS.md" -not -path "*/_archive/*" -not -path "*/.git/*" | wc -l
 find /root -name "CLAUDE.md" -not -path "*/_archive/*" -not -path "*/.git/*" | wc -l
 
-# 5. Stray top-level dirs conflicting with organ conventions
-# e.g., /root/forge_work/ should live under A-FORGE/, not at root
-ls -d /root/forge_work /root/reports /root/sado 2>/dev/null
+# 6. MCP prompt description bloat — descriptions that repeat meta fields (stage, linked_tools, floors). Geox_sense: "INGEST: Raw data → artifact_ref. LAS, SEG-Y, CSV, DST, tops, deviation." — terse OK. Workflow templates: verbose with F-floor tags and negative constraints enforced by runtime. Pattern: compress descriptions to unique value; info in `meta` fields is already machine-readable.
+find /root -name "prompts*.py" -path "*/prompts/*" -not -path "*/_archive/*" 2>/dev/null | wc -l
+find /root -name "__init__.py" -path "*/prompts/*" | xargs grep -l "mcp.prompt\|register_prompts" 2>/dev/null
+
+# 7. Cross-organ AGENTS.md boilerplate — identical sections duplicated across organs
+# Dual-Lane CI Architecture (~30 lines) and Steel Security Layer (~35 lines) found
+# identical in GEOX/WEALTH/WELL AGENTS.md. Compress to 2-line pointer to forge_work/.
+grep -c "CI ARCHITECTURE\|Dual-Lane Agentic CI" /root/*/AGENTS.md 2>/dev/null
+grep -c "STEEL SECURITY LAYER\|Steel Security Layer" /root/*/AGENTS.md 2>/dev/null
 ```
 
 **Post-zen report format:** Present findings as a compact table with size/count and action recommendation. All T1 (no mutations) unless user says "jalan terus."
@@ -167,6 +173,33 @@ When any MCP client (Kimi Code, Claude Code, Gemini CLI, OpenCode, etc.) warns t
 
 See `references/agents-md-trim-pattern.md` for the full before/after diff.
 
+### MCP prompt description verbosity — meta-field redundancy
+
+MCP prompt `description` fields commonly duplicate information carried in the `meta` block (stage, linked_tools, linked_resources, floors_referenced). This bloats the MCP surface (every prompt description is sent in `prompts/list`), creates maintenance coupling, and adds noise for LLMs reading the surface.
+
+**Audit pattern:**
+```bash
+# Find all prompt registration files across organs
+find /root -name "__init__.py" -path "*/prompts/*" | xargs grep -l "mcp.prompt\|register_prompts" 2>/dev/null
+# Or search for @mcp.prompt decorators
+grep -rn "@mcp.prompt" /root/arifOS /root/GEOX /root/WEALTH /root/WELL --include="*.py" 2>/dev/null
+```
+
+**Known redundancy categories (proven 2026-07-24, ~26KB saved across 7 organs):**
+
+| Pattern | Example (before) | Zen compression (after) |
+|---------|-----------------|------------------------|
+| Stage enum repeated from `meta.stage` | `"🌊 WITNESS — 111 SENSE observation stage. Acquire ground-truth signals..."` | `"🌊 WITNESS — Observe ground-truth signals before reasoning."` |
+| Tools listed in description + `meta.linked_tools` | `"Auto-calls arif_judge + geox_contradiction_scan..."` | Remove — already in meta |
+| Floor refs in description + `meta.floors_referenced` | `"F6 EMPATHY: weakest stakeholder's dignity preserved κᵣ ≥ 0.70"` | Remove — runtime-enforced |
+| Negative constraints enforced at runtime | `"F13 SOVEREIGN ratification required for destructive actions"` | Remove — arif_judge enforces at 888 gate |
+| Workflow steps in description | `"Workflow: well_ingest → well_qc → petrophysics → claim_create"` | Compress to purpose: `"LAS → pay summary + claim envelope"` |
+| Version/changelog refs in descriptions | `"v3 forged 2026-07-11 (F-06 metadata); recipient_id parameterised"` | Remove — version in meta, changelog in git |
+
+**What to keep:** The essential purpose — what the prompt does that isn't obvious from its name alone. Stage numbers, floor tags, linked tools, and version info belong in `meta`, not `description`.
+
+**Trigger:** Any MCP prompt description >120 chars or containing comma-separated tool lists, floor references, or version strings.
+
 ### Rename = update hardcoded paths
 When renaming a directory (e.g., `arif-sites/` → `ARIF-SITES/`), immediately scan and update:
 - Deploy scripts (`deploy-vps.sh`, `deploy-site.sh`)
@@ -183,6 +216,23 @@ Before deleting a large venv, verify that `requirements.txt` or `pyproject.toml`
 
 ### User may not know Python ecosystem terms
 Arif is a geologist/capital strategist, not a Python developer. When referencing `.venv`, `pip`, `node_modules`, etc., explain what they are in one line before proceeding. Don't assume familiarity with Python/Node dependency management.
+
+### Cross-organ AGENTS.md boilerplate duplication
+
+AGENTS.md files across federation organs (GEOX, WEALTH, WELL) often carry identical sections — Dual-Lane CI Architecture (~30 lines), Steel Security Layer (~35 lines), Constitution cross-references, Humour disciplines. These are copy-paste carried from organ to organ during initialization and drift independently.
+
+**Detection:**
+```bash
+# Count identical boilerplate sections across organs
+grep -c "CI ARCHITECTURE\|Dual-Lane" /root/*/AGENTS.md 2>/dev/null | grep -v ":0$"
+grep -c "STEEL SECURITY\|Steel Security" /root/*/AGENTS.md 2>/dev/null | grep -v ":0$"
+```
+
+**Action:** Replace each boilerplate section with a 2-3 line summary pointing to the canonical source (`forge_work/AGENTIC-CI-FORGE-2026-07-01.md` for CI, `forge_work/` for Steel Security). Do not inline identical long-form content in every organ — the canonical source is the single point of truth.
+
+**Savings observed (2026-07-24):** ~9KB across GEOX + WEALTH + WELL AGENTS.md by replacing 3 duplicated sections with 2-line summaries.
+
+**Trigger:** Anytime an audit finds MCP prompt descriptions >100 chars that list tools/stages already in `meta` fields, or AGENTS.md sections >15 lines that appear verbatim in another organ's file.
 
 ### Sister-workspace template clones
 

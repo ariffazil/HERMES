@@ -1,6 +1,6 @@
 ---
 name: flame-free-loop
-description: FLAME free-loop inference mesh for system workers and tools — RM0-only, non-agentic, hit-rate-adaptive routing. Use when building or debugging tool-lane LLM inference, routing scripts through free tiers, or adding new providers to the free fleet.
+description: FLAME free-loop inference mesh for system workers and tools — RM0-only, non-agentic, hit-rate-adaptive routing
 ---
 
 # FLAME — Free Loop AI Model Engine
@@ -9,10 +9,12 @@ Two-lane architecture for the arifOS federation:
 
 | Lane | Chain | Who | Governance |
 |------|-------|-----|------------|
-| **Agent** | TokenRouter→MiniMax→MiMo→Groq→Gemini→Cerebras→SEA-LION→Ollama→HOLD | Hermes, OpenCode, OpenClaw, A-FORGE, arifOS | F1-F13 enforced |
-| **Tool** | Groq→SEA-LION→Gemini→Cerebras→OpenCode→Ollama | Scripts, workers, batch jobs, cron, ETL | None needed — OBSERVE only |
+| **Agent** | DeepSeek V4 Pro (direct, primary) → OpenRouter auto-beta (smart fallback) → OpenRouter free (cost) → Ollama (local) → HOLD | Hermes, OpenCode, OpenClaw, A-FORGE, arifOS | F1–F13 enforced |
+| **Tool** | Groq→SEA-LION→Gemini→Cerebras→OpenRouter/free→OpenCode→Ollama | Scripts, workers, batch jobs, cron, ETL | None needed — OBSERVE only |
 
 **Tool lane = FLAME.** Workers do not judge, seal, or hold constitutional authority. They only transform data.
+
+> **Cascade truth:** The agent lane above reflects the proposed OpenRouter-optimised chain (per `/root/AAA/docs/OPENROUTER_ZEN_OPTIMIZATION.md`). The SOT at AGENT_MODEL_MAP.json still carries the legacy `TokenRouter→MiniMax→MiMo→Groq→...→HOLD` as of 2026-07-24. Verify via `curl -s http://localhost:8088/health` before assuming the chain matches this skill.
 
 ## When to Use FLAME
 
@@ -58,7 +60,7 @@ The `free-llm` command is symlinked to `/root/A-FORGE/flame/flame_router.py`. Py
 5. **No agent access** — Hermes/OpenCode/OpenClaw MCP tools never route FLAME
 6. **Seal boundary** — FLAME output = evidence for arif_judge input, never seals itself
 
-## Fleet (14 models, 6 providers, all RM0)
+## Fleet (17 models, 7 providers + OpenRouter, all RM0)
 
 | Provider | Models | Speed | Notes |
 |----------|--------|-------|-------|
@@ -66,6 +68,7 @@ The `free-llm` command is symlinked to `/root/A-FORGE/flame/flame_router.py`. Py
 | SEA-LION | aisingapore/Qwen-SEA-LION-v4-32B-IT, aisingapore/Llama-SEA-LION-v3-70B-IT, aisingapore/Gemma-SEA-LION-v4-27B-IT | 1000-3100ms | BM-native. 10 req/min free tier. |
 | Gemini | gemini-2.5-flash | ~900ms | 1,500 req/day free. Flash Lite degraded (SHADOW-GEM-002). |
 | Cerebras | gemma-4-31b, gpt-oss-120b, zai-glm-4.7 | 300-1500ms | $5 prepaid credit, expires Aug 20 2026. GPT-OSS has same shadow as Groq. GLM-4.7 needs higher max_tokens (reasoning model). |
+| OpenRouter/free | `openrouter/free` (auto-routes to ~50 free models: Qwen 3.6 Plus, DeepSeek V3 free, Gemma 4, Llama 4 Scout, Nemotron, GPT-OSS) | varies | **New.** RM0 gateway to 50 free models across 10+ providers. Used in tool lane after Cerebras. See `/root/AAA/docs/OPENROUTER_ZEN_OPTIMIZATION.md` §7 for ZDR-safe picks. |
 | OpenCode | deepseek-v4-flash-free, north-mini-code-free | 1500-2100ms | Stable OSS. |
 | Ollama | qwen2.5-coder:3b | 18-22s | Local survival knife. Always available. |
 

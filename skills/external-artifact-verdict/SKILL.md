@@ -1,6 +1,6 @@
 ---
 name: external-artifact-verdict
-description: Independently verify runnable artifacts (zip/repo/dir) delivered by external AI (ChatGPT, Claude, Gemini, Copilot) before accepting the attached verdict. The artifact carries a self-verdict + test counts + witness declarations — your job is to confirm or refute, not to trust. Use when an external AI delivers a kernel/controller/pipeline/library and claims "tests pass" / "no repo modified" / "DRAFT_ONLY" / "X witnesses". Triggers include "verify this zip", "audit this code drop", "external AI delivered", "self-verdict", "witness claim".
+description: "Independently verify runnable artifacts from external AI before accepting the attached self-verdict. Confirm or refute claims without trust."
 tags: [verification, audit, external-ai, code-artifact, kernel-controller, witness-validation, anti-theater, f2, f9, f11]
 metadata:
   hermes:

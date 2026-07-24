@@ -1,6 +1,6 @@
 ---
 name: j-collapse-detection
-description: "Detect judgment collapse in humans, AGI, and institutions. The geometry of evil: ten collapse indicators, five soul-axis corruption signatures, J-state integrity checklist, governance response grammar (ADVISORY/HOLD/VOID), and the entropy argument for why evil is unsustainable. Derived from arifOS constitutional floors, 5-axis soul geometry, and sovereign-corrected dark geometry analysis."
+description: "Detect judgment collapse in humans, AGI, and institutions"
 triggers:
   - "J-collapse"
   - "judgment collapse"

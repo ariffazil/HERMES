@@ -1,6 +1,6 @@
 ---
 name: "token-plan-image"
-description: "Call the Qwen Token Plan text-to-image / image-edit models (qwen-image-2.0, qwen-image-2.0-pro, wan2.7-image, wan2.7-image-pro) to generate or edit images from a text description. Activates when the user asks to draw, render, generate, or edit an image. For Malay/SEA phenotype prompts, prefer minimax-cli (MiniMax image-01)."
+description: "Call the Qwen Token Plan text-to-image / image-edit models (qwen-image-2.0, qwen-image-2.0-pro, wan2.7-image, wan2.7-image-pro) to generate or edit images from a"
 version: 2.0.0
 tags: [qwen, token-plan, image-generation, text-to-image, image-editing]
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: mcp-conformance-audit
-description: Full MCP server conformance audit — Streamable HTTP lifecycle, ghost tool classification, AppConfig wiring, vertical slice proof, and test suite generation. Use when auditing any MCP server for protocol compliance, tool→app UI mapping correctness, or registry drift.
+description: Full MCP server conformance audit — Streamable HTTP lifecycle, ghost tool classification, AppConfig wiring, vertical slice proof, and test suite
 ---
 
 # MCP Conformance Audit

@@ -1,6 +1,6 @@
 ---
 name: arif-sites-content-ops
-description: "Edit, build, and deploy content on arif-fazil.com (React 19 + Vite). Covers essay location, content structure, build pipeline, and the feedback→fix→deploy workflow. Use when Arif shares audit feedback on an essay and says 'fix it', when editing MakcikGPT articles, or when any content on arif-fazil.com needs updating."
+description: "Edit, build, and deploy content on arif-fazil.com (React 19 + Vite). Covers essay location, content structure, build pipeline, and the"
 version: 1.0.0
 author: Hermes
 license: MIT

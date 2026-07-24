@@ -1,6 +1,6 @@
 ---
 name: human-intelligence-gathering
-description: "Gather intelligence on a named person from available sources — web, session history, family context, public profiles. Use when Arif asks 'tell me about X', 'what does X want', 'profile X', or 'what should I know about X' for a real human. Covers the full pipeline from source discovery to entropy mapping to bot design for personal chaos reduction."
+description: "Gather intelligence on a named person from available sources — web, session history, public profiles. Full pipeline from discovery to"
 triggers:
   - "tell me about [person]"
   - "what does [person] want from me"

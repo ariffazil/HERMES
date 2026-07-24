@@ -1,6 +1,6 @@
 ---
 name: music-generation
-description: "Full music generation pipeline — concept → lyrics → cultural research → AI generation → delivery. Covers MiniMax (mmx music generate), HeartMuLa, AudioCraft, and Suno prompt crafting. Includes the critical cultural authenticity workflow for traditional/folklore songs."
+description: "Full music generation pipeline — concept → lyrics → cultural research → AI generation → delivery"
 version: 1.0.0
 tags: [music, audio, generation, minimax, heartmula, audiocraft, suno, folk, traditional, lyrics, kaparinyo]
 metadata:

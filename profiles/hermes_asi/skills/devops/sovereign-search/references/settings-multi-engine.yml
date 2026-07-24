@@ -1,0 +1,50 @@
+# SearXNG settings — sovereign multi-engine + cache
+# Template for arifOS federation. DuckDuckGo primary (free), Brave + Google fallback.
+use_default_settings: true
+
+server:
+  bind_address: "0.0.0.0"
+  port: 8080
+  limiter: false
+  image_proxy: true
+
+search:
+  safe_search: 0
+  default_lang: "en"
+  formats: [html, json]
+
+# Engine pool — multiplexed for resilience
+# If one engine blocks IP, SearXNG silently rotates to next
+engines:
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+  - name: brave
+    engine: brave
+    shortcut: br
+    disabled: false
+    api_key: "${BRAVE_API_KEY}"
+  - name: google
+    engine: google
+    shortcut: g
+    use_mobile_ui: false
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+
+# Redis caching — same query within TTL = served from disk, zero upstream request
+redis:
+  url: unix:///run/redis-searxng/redis.sock?db=0
+cache:
+  search_cache: true
+  search_cache_ttl: 600         # 10 min
+  search_cache_max_size: 1000
+
+outgoing:
+  request_timeout: 5.0
+  retries: 1                    # retry next engine on failure
+  enable_http2: true
+
+ui:
+  static_use_hash: true
+  default_theme: simple

@@ -1,6 +1,6 @@
 ---
 name: audio-analysis
-description: "Build Python DSP-based audio analysis modules — feature extraction, scoring, classification. Covers librosa/numpy pipelines, onset detection, spectral analysis, MFCC clustering, envelope analysis. Includes known librosa segfault map for this system."
+description: "Build Python DSP-based audio analysis modules — feature extraction, scoring, classification"
 version: 1.0.0
 tags: [audio, dsp, python, librosa, numpy, music, analysis, scoring, features]
 metadata:

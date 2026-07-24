@@ -1,6 +1,6 @@
 ---
 name: institutional-intelligence
-description: Analyze institutions for intelligence — structural features, failure modes, literature framework, and federation mapping. Use when evaluating whether an institution (human or agentic) can sense, learn, adapt, remember, and prevent extraction across time.
+description: Analyze institutions for intelligence — structural features, failure modes, literature framework, and federation mapping
 ---
 
 # Institutional Intelligence Analysis

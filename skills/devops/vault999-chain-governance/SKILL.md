@@ -1,6 +1,6 @@
 ---
 name: vault999-chain-governance
-description: "Manage VAULT999 append-only seal chain integrity — verification, writer hardening, incident response, IMAGE_SEAL separation, identity propagation, and recovery. Covers chain verification (hash chain walk, duplicate detection, fork detection), writer hardening (pg_advisory_xact_lock, FOR UPDATE, unique constraints), identity propagation (dual write path gap, actor_source/kernel_verdict plumbing), incident documentation (freeze → snapshot → manifest → classify), and recovery (epoch fork, quarantine, repair). Use when: Arif says 'check seal chain', 'vault integrity', 'VAULT999 chain break', 'writer hardening', 'IMAGE_SEAL', 'seq mismatch', 'prev_hash', 'chain audit', 'recovery fork', 'vault999 writer', 'identity propagation', 'actor_source', 'self_report receipts', 'anonymous receipts', 'receipts logging anonymous', or any task touching /root/.local/share/arifos/vault999/."
+description: "Manage VAULT999 append-only seal chain integrity — verification, writer hardening, incident response, and recovery. Ensures chain verifiability and identity propagation."
 tags:
   - vault999
   - seal-chain

@@ -1,6 +1,6 @@
 ---
 name: weekly-federation-deep-brief
-description: "Weekly deep brief for Arif — synthesizes 7 days of arifOS federation state across 7 dimensions (VAULT999 seals, git activity, pending work, system evolution, temporal patterns, autonomy ledger, what-matters). Lead with meaning not data; close with one forward question. Runs autonomously as Sunday 23:00 MYT cron, delivered to Arif's DM. Sister cadence to daily-federation-briefing (24h heartbeat) and executive-intelligence-briefing (external news). Load when Arif asks for 'weekly brief', 'week in review', 'federation review', 'weekly summary', 'what happened this week', '7-day report', or when the cron trigger fires."
+description: "Weekly federation-state synthesis across 7 dimensions. Lead with meaning, close with one forward question. Delivered autonomously via Sunday cron."
 triggers:
   - "weekly brief"
   - "week in review"

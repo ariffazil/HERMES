@@ -1,6 +1,6 @@
 ---
 name: agentic-vps-operations
-description: "Autonomous VPS monitoring and self-healing — Tier 1 Active Response with smoketest, state machine, circuit breaker, rollback, dead-man's switch. Covers multi-agent VPS operations where AGI executes and ASI validates."
+description: "Autonomous VPS monitoring and self-healing — Tier 1 Active Response with smoketest, state machine, circuit breaker, rollback, dead-man's switch"
 version: 1.0.0
 author: Hermes + AGI + Arif
 tags: [vps, monitoring, self-healing, watchdog, state-machine, circuit-breaker, autonomous]

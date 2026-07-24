@@ -1,6 +1,6 @@
 ---
 name: receipt-to-analytics
-description: Convert informal business records (handwritten receipt images, oral stock/sales updates) into structured CSV + revenue analysis. Use when the user shares receipt photos and expects compiled sales data with insights.
+description: Convert informal business records (handwritten receipt images, oral stock/sales updates) into structured CSV + revenue analysis
 ---
 
 # Receipt-to-Analytics

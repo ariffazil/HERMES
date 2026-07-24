@@ -1,6 +1,6 @@
 ---
 name: geological-artifact-rigor
-description: "Standing instruction for all geoscience artifacts — panels, dossiers, maps, cross-sections. Born from Raja Ridhuan's feedback: 'tak cukup geology.' 8 hard rules ensuring real geological substance, not just epistemic tagging."
+description: "Standing instruction for all geoscience artifacts — panels, dossiers, maps, cross-sections"
 version: 1.1.0
 author: arif-sovereign
 tags: [geology, GEOX, rigor, standing-instruction, F2-truth]

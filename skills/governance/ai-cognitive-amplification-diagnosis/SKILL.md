@@ -1,6 +1,6 @@
 ---
 name: ai-cognitive-amplification-diagnosis
-description: Diagnose whether AI-mediated reasoning has captured an institution's decision grammar. Apply the Cognitive Amplification Diagnostic (CAD) framework — cognitive camouflage, amplification asymmetry, friction collapse, power-law distortion — to policy, corporate strategy, or institutional output. Use when Arif shares a policy article, corporate announcement, government framework, or institutional narrative and wants to assess whether the reasoning is AI-shaped, sovereignty-blind, or structurally captured by power-law corpus patterns.
+description: "Diagnose whether AI-mediated reasoning has captured an institution's decision grammar using the Cognitive Amplification Diagnostic framework."
 ---
 
 # AI Cognitive Amplification Diagnosis

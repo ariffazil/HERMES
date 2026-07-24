@@ -42,6 +42,9 @@ For **cross-directory consolidation** (merging .agents into AAA via symlinks):
 For **boot-wiring** (making knowledge modules auto-load at init via governed.json):
 → See `references/boot-wiring-pattern.md`
 
+For **bulk description zennning** (shortening all skill descriptions to one high-signal line across a whole library):
+→ See `references/bulk-description-zen-workflow.md`
+
 ## When to Use
 
 - Skill library has grown organically and needs consolidation
@@ -162,6 +165,65 @@ Align prefixes to the7 zen laws:
 | `ker-` | ∞ KERNEL | Trinity, quantum, eureka |
 
 Format: `prefix-verb-noun`, ≤25 chars, filesystem-safe, no collisions.
+
+## Description Pruning Protocol (Zen Standard)
+
+When pruning or rewriting skill descriptions across the library, apply the Zen principle:
+**Say once. Positive. No examples.**
+
+| Rule | Meaning | Bad Example | Good Example |
+|------|---------|-------------|--------------|
+| Say once | One concise statement, not a list of every use case | "Use when Arif asks for 'tell me everything about X', 'human profile for X', 'do deep research on [person]', 'intelligence briefing on [person]'..." | "Build a verifiable, epistemic-labelled professional dossier for a named person." |
+| Positive | State what the skill DOES, not what it isn't | "This is NOT for institution profiling" | (Just describe what it's for) |
+| No examples | No trigger enumeration, no "e.g. X, Y, Z" | "Covers SALAM ceremony, F1-F13 boot, thin per-agent wrappers, instruction file size management, and the 'one constitution, many platforms' pattern" | "Design platform-agnostic agent init prompts for multi-agent federations." |
+
+### Concrete Heuristic Rules for Automated Zenning
+
+When running bulk automation, these regex-based rules effectively shorten descriptions to 10-20 words. They were proven against 430 live SKILL.md files on 2026-07-24:
+
+1. Strip "Use when:" / "Use this when:" prefixes (both leading and trailing clauses)
+2. Remove parenthetical explanations: `(e.g. X)`, `(i.e. X)`, `(including X)`, `(such as X)`, `(like X)`
+3. Remove trailing example lists after em/en dash (`--- e.g. X, Y, Z`)
+4. Remove "Modes:" / "Modes include:" trailing clauses
+5. Remove mid-sentence "Use when" clauses after comma
+6. If still >25 words, take the first sentence (it's usually the high-signal line)
+7. Hard-trim at 22 words
+8. Strip trailing periods
+
+See `references/bulk-description-zen-workflow.md` for the full Python implementation, YAML quoting edge cases (double-double-quotes, single-single-quotes, trailing duplicates), validation script, and the complete end-to-end workflow.
+
+**Workflow for bulk description audit:**
+
+Run the reusable script: `python3 scripts/bulk-description-audit.py --dir /path/to/skills`
+
+Or inline:
+import os, re, sys
+for root, dirs, files in os.walk('skills/'):
+    if 'SKILL.md' not in files:
+        continue
+    path = os.path.join(root, 'SKILL.md')
+    with open(path) as f:
+        content = f.read()
+    m = re.search(r'^---\n(.*?)\n---', content, re.DOTALL)
+    if not m:
+        continue
+    front = m.group(1)
+    for pat in [
+        r'^description:\s*>\s*\n(.*?)(?:\n\S|\Z)',
+        r'^description:\s*"(.*?)"',
+        r'^description:\s*""(.+?)""',
+        r'^description:\s*(.+?)$',
+    ]:
+        dm = re.search(pat, front, re.DOTALL if '^\n' not in pat else 0)
+        if dm:
+            desc = ' '.join(dm.group(1).strip().split())
+            break
+    wc = len(desc.split())
+    if wc > 50:
+        print(f"{wc:4d}w  {root[7:] if root.startswith('skills/') else root}: {desc[:60]}...")
+```
+
+**Bulk patching hints** (for when the edit/patch tool fails on YAML format):\n- Some SKILL.md files wrap descriptions in `""...""` (double-double-quotes) which is non-standard YAML — the fuzzy matching in edit tools may fail to locate these. Use a Python script with `str.replace()` or `re.sub()` for these cases.\n- Also watch for `''...''` (single-single-quotes), `"text""` (trailing double), and `'''text'` (triple leading). All break YAML parsers and confuse string-match tools.\n- After any bulk edit, always validate with `yaml.safe_load()` across all frontmatter blocks. The `patch` tool's null-diff for "no change needed" won't catch structural YAML breakage.\n- Flat YAML scalars (no quotes, single-line) are safely patchable with standard tools.\n- For multi-line `description: >` blocks, ensure old_string includes all continuation lines with original whitespace.
 
 ## Pruning Checklist
 
@@ -307,6 +369,7 @@ Full details: `references/aaa-skill-architecture-2026-07-11.md`
 - **`hermes send` needs the token in env.** If `bot_token_env` points to a var that isn't exported, `hermes send` fails with "You must pass the token you received from BotFather." Either fix `bot_token_env` or export the correct var before calling.
 - **YAML frontmatter check must test line 1, not head -5.** When checking for valid YAML frontmatter, `head -5 | grep "^---"` can produce false positives if `---` appears as a markdown separator later. Always check `head -1` equals exactly `---`. The correct check: `first_line=$(head -1 "$f"); if [ "$first_line" != "---" ]; then echo "BAD_YAML"; fi`. Skills with non-YAML first lines (e.g., starting with `#` heading) still work but lose structured metadata parsing.
 - **"OpenClaw" legacy references are common after rebranding.** When a product/org gets renamed, grep for the old name across all SKILL.md files. Skills referencing the old name aren't broken but contain stale terminology that confuses new agents. Batch find-replace or flag for manual update.
+- **YAML `""...""` double-double-quoting breaks string-matching tools.** Some SKILL.md descriptions use non-standard `""text""` quoting (outer YAML `"` + inner `"`). The `patch`/edit tool's fuzzy matching cannot locate these strings. Fix by running a Python script that reads the file, finds `description: ""...""` via regex, and replaces it with standard `description: "..."` before applying further edits. The pattern: `re.sub(r'^description:\s*""(.+?)""', r'description: "\1"', content, flags=re.MULTILINE)`.
 
 ## Hermes Library Audit Reference
 

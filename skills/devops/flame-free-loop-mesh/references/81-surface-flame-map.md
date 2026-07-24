@@ -1,8 +1,34 @@
 # FLAME Integration Map — Full Federation 81-Surface Classification
 
 > Forged: 2026-07-20 by FORGE (000Ω) + Hermes
+> Updated: 2026-07-24 — OpenRouter Tier 11 + Arif-ratified division of labor
 > Reference for: `flame-free-loop-mesh` skill
 > Methodology: Every MCP tool + internal CLI + system script classified by FLAME eligibility
+
+## Clean Division of Labor (Arif-ratified 2026-07-24)
+
+| Layer | Role | Model Tier |
+|---|---|---|
+| **FLAME** | Tools, workers, fallback throughput | Free/cheap, tiered by availability, disposable |
+| **Hermes** | Epistemic/human-life reasoning | Premium, high-effort, reasoning-preserved |
+| **OpenCode** | Execution/coding actuation | Budget-to-premium depending on task complexity |
+| **arifOS** | Judgment, audit, sealing | Policy logic — not a model tier at all |
+
+## 12-Tier Architecture (2026-07-24)
+
+```
+T1-T2:  Groq — llama-3.1-8b-instant (fastest) / llama-3.3-70b-versatile (deep)
+T3-T5:  SEA-LION — Qwen v4 32B / Llama v3 70B / Gemma v4 27B (BM-native)
+T6:     Gemini — gemini-2.5-flash (general, deep-context)
+T7:     Cerebras — gemma-4-31b (multimodal, volume)
+T8:     Groq — gpt-oss-120b (experimental, low-weight)
+T9:     Gemini — gemini-flash-lite-latest (experimental, low-weight)
+T10:    Cerebras — gpt-oss-120b (experimental, low-weight)
+T11:    🆕 OpenRouter — :free aggregator (gap-fill, weight=0.5)
+T12:    Ollama — qwen2.5-coder:3b (survival knife)
+```
+
+Tiers are a cascading **availability ladder**, not a reasoning hierarchy.
 
 ## Classification Legend
 

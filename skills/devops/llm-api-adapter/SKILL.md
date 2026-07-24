@@ -1,6 +1,6 @@
 ---
 name: llm-api-adapter
-description: "Build thin translation proxies between incompatible LLM API formats (Chat Completions ↔ Responses API, etc.). For custom providers, external routing gateways, and protocol bridges."
+description: "Build thin translation proxies between incompatible LLM API formats. For custom providers, external routing gateways, and protocol bridges."
 version: 1.1.0
 author: Hermes Agent
 tags: [llm, api, adapter, proxy, gateway, protocol, translation, routing]

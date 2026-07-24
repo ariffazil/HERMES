@@ -1,6 +1,6 @@
 ---
 name: android-observer-node
-description: Onboard an Android device as a stateless Sovereign Sensing Node in the arifOS federation via Termux + Tailscale/Headscale. No arifOS, no numpy — pure Python stdlib HTTP observer.
+description: Onboard an Android device as a stateless Sovereign Sensing Node in the arifOS federation via Termux + Tailscale/Headscale
 version: 1.0.0
 triggers:
   - "add android node"

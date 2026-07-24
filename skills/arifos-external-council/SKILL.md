@@ -1,6 +1,6 @@
 ---
 name: arifos-external-council
-description: External constitutional audit, co-architecture, and bounded forge planning for arifOS Kernel, AAA state/cockpit, A-FORGE execution, GEOX, WEALTH, WELL, VAULT999, and future federation organs. Use when Arif asks ChatGPT to audit live tools or repositories, detect registry or schema drift, challenge architecture claims, design kernel or organ contracts, prepare implementation plans or pull requests, evaluate models/datasets, run cross-organ analysis, investigate incidents, or onboard a new organ without collapsing authority boundaries.
+description: "External constitutional audit and bounded forge planning for arifOS federation organs. Detects drift, challenges architecture claims, and prepares contracts."
 ---
 
 # arifOS External Council

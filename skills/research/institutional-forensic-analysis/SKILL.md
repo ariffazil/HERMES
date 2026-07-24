@@ -1,6 +1,6 @@
 ---
 name: institutional-forensic-analysis
-description: "Build forensic case files on institutional crises — chronological mapping, detection analysis, shadow mapping, value quantification, theoretical framing, constitutional audit. For multi-source, multi-actor, multi-front institutional conflicts."
+description: "Build forensic case files on institutional crises — chronological mapping, detection analysis, shadow mapping, value quantification, theoretical framing, constitutional audit"
 version: 1.1.0
 author: Hermes Agent
 license: MIT

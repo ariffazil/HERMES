@@ -1,6 +1,6 @@
 ---
 name: vendor-partner-intelligence
-description: Assess third-party vendors and partners for fit, risk, and substance-vs-hype. Verify claims, classify domain fit, define procurement KPIs.
+description: Assess third-party vendors and partners for fit, risk, and substance-vs-hype. Verify claims, classify domain fit, define procurement KPIs
 tags: [vendor, partner, competitor, assessment, procurement, hype-filter, domain-fit, KPI]
 ---
 

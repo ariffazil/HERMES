@@ -1,6 +1,6 @@
 ---
 name: dark-explanatory-diagrams
-description: "Dark-themed HTML+SVG visual guides for non-tech subjects — anatomy, biology, timelines, recovery journeys, process flows, laws/rules, and educational explanations. Sibling to architecture-diagram; same dark grid aesthetic but extended for explanatory/educational content."
+description: "Dark-themed HTML+SVG visual guides for non-tech subjects — anatomy, biology, timelines, recovery journeys, process flows, laws/rules, and educational explanations"
 version: 1.0.0
 author: arifOS
 license: MIT

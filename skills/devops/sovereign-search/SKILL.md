@@ -1,6 +1,6 @@
 ---
 name: sovereign-search
-description: "Self-host web search for Hermes Agent — SearXNG deployment, Tavily/Brave migration, config unification, and zero-API-key architecture. Use when web_search fails with quota errors (432/401/429), when adding self-hosted search, or when Arif says 'hak asasi warga AAA' for search."
+description: "Self-host web search for Hermes Agent — SearXNG deployment, Tavily/Brave migration, config unification, and zero-API-key architecture"
 version: 1.0.0
 author: Hermes Agent
 license: MIT

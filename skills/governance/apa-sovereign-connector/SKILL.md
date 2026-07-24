@@ -1,6 +1,6 @@
 ---
 name: apa-sovereign-connector
-description: "APA (Autonomous Protocol for Applications) — sovereign SaaS connector protocol. The constitutional replacement for Composio. 5-stage reflex arc: ART→KERNEL→APA→ACT→VAULT999. Self-hosted, lease-gated, VAULT999-anchored. Load when: Arif asks about APA, Composio, SaaS integration, connector bridges, email/calendar/github/telegram bridges, forge_lease, or sovereign external API access."
+description: "APA (Autonomous Protocol for Applications) — sovereign SaaS connector protocol"
 tags: [apa, composio, sovereign, connectors, bridges, saas, governance]
 triggers:
   - "apa"

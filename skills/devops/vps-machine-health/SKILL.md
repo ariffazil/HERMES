@@ -1,6 +1,6 @@
 ---
 name: vps-machine-health
-description: "Full VPS machine health optimization — system resource recon, memory/CPU hog identification, OS-level cleanup (apt, snap, journal, kernels, /tmp), Docker container/volume audit, service port mapping, and comprehensive dossier generation. Load when: 'optimize the machine', 'clean up the VPS', 'what's running', 'full system dossier', 'machine health', 'remove chaos', 'redundancy cleanup', 'system inventory'."
+description: "Full VPS machine health optimization — resource recon, hog identification, OS-level cleanup, Docker audit, and comprehensive dossier generation."
 triggers:
   - optimize the machine or VPS
   - clean up chaos and redundancy
@@ -282,5 +282,6 @@ Emphasize that the dossier reflects the moment it was generated. Processes, disk
 
 ## References
 
+- `references/arifos-event-loop-hang.md` — arifOS event-loop hang diagnosis (process alive, TCP accepts, HTTP hangs; differential from OOM cap kill)
 - `references/cron-and-memory-hygiene.md` — cron job audit patterns, memory tier dedup
 - `references/kimi-mcp-timeout-diagnosis.md` — Kimi Code CLI MCP timeout diagnosis (arifOS stdio, startupTimeoutMs, HTTP vs stdio workaround)

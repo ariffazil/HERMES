@@ -1,8 +1,8 @@
 ---
 name: minimax-cli
-description: "MiniMax multimodal via mmx-cli — TTS, video, music, image, vision, search. Image generation is PRIMARY choice for Malay/SEA phenotype and realism-critical surfaces."
-version: 2.0.0
-tags: [minimax, tts, video, music, image, vision, multimodal, malay-phenotype, image-generation]
+description: "MiniMax multimodal via mmx-cli — TTS, video, music, image, vision, search. Image generation is PRIMARY choice for Malay/SEA phenotype and"
+version: 2.1.0
+tags: [minimax, tts, video, music, image, vision, multimodal, malay-phenotype, image-generation, logo-design]
 metadata:
   hermes:
     category: creative
@@ -114,6 +114,57 @@ When prompt contains `shirtless`, `abang sado`, `bodybuilding`, `gym`, `fitness`
 - **Add explicit context:** "in a gym", "studio lighting", "fitness photography"
 
 Both MiniMax and Pollinations enforce NSFW filters. MiniMax provides cleaner, more professional fitness-aesthetic results.
+
+### 🎨 Logo & Branding Generation
+
+MiniMax image-01 is the primary tool for bot/agent profile logos. The model is strong at cyberpunk/sci-fi aesthetic but needs precise genre anchoring.
+
+**Workflow: iterative refinement**
+
+```bash
+# 1. Generate initial version
+mmx image generate --prompt "..." --aspect-ratio 1:1 --non-interactive
+cp image_001.jpg /tmp/logo_v1.jpg
+
+# 2. Vision-analyze (use vision_analyze tool or mmx vision describe)
+#    Check: clear letter shape? correct aesthetic? thumbnail-suitable?
+
+# 3. Refine prompt based on feedback
+mmx image generate --prompt "..." --aspect-ratio 1:1 --non-interactive
+cp image_001.jpg /tmp/logo_v2.jpg
+
+# 4. Verify v2 → upload if approved
+```
+
+**Pitfall: genre drift without explicit aesthetic anchors**
+
+The model can interpret "forged metal" as dark fantasy/volcanic instead of cyberpunk. Always anchor the aesthetic explicitly:
+
+| Weak prompt | Strong prompt |
+|---|---|
+| `forged metal A logo, dark background` | `cyberpunk forged metal A logo, neon cyan and magenta edge lighting, circuit traces, dark void background` |
+| `industrial forge logo` | `cyberpunk industrial forge logo, neon circuit traces, holographic edge glow, not dark fantasy, not volcanic` |
+
+**Proven 2026-07-24:** Forge logo v1 was dark fantasy volcanic — beautiful but wrong genre. v2 with explicit "cyberpunk, neon, circuit traces" passed. Hermes logo v1 had Omega symbol — v2 removed it and added "neural network crown" at apex.
+
+**Prompt structure for cyberpunk logos:**
+1. **Subject**: bold letter A, centered, forged metal texture
+2. **Aesthetic**: cyberpunk, neon edge lighting, circuit board engravings
+3. **Colors**: specify dual-tone (e.g., crimson red + electric blue, cyan + magenta)
+4. **Distinctive element**: neural crown, claw blades, molten core — one unique feature
+5. **Background**: dark void, no text, no extra symbols
+6. **Format**: 1:1 square, thumbnail-suitable, strong silhouette
+
+**Profile photo upload workflow:**
+```python
+import requests, json
+with open("/tmp/logo_v2.jpg", "rb") as photo:
+    r = requests.post(
+        f"https://api.telegram.org/bot{TOKEN}/setMyProfilePhoto",
+        data={"photo": json.dumps({"type": "static", "photo": "attach://myfile"})},
+        files={"myfile": ("logo.jpg", photo, "image/jpeg")}, timeout=15
+    )
+```
 
 ### ⚖️ Contrast
 

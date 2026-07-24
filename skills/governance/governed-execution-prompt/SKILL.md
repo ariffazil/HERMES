@@ -16,6 +16,26 @@ triggers:
   - "buat apa"
   - "documentation theater"
   - "phase 1 phase 2"
+  - "prompt zen"
+  - "model tier"
+  - "instructions are a tax"
+  - "prompt compression"
+  - "zen pruning"
+  - "federation-scale"
+  - "MCP tool description"
+  - "skill description"
+  - "federation-scale"
+  - "AAA-ZEN-ALIGNMENT"
+  - "zen alignment"
+  - "boot chain"
+  - "zen doctrine"
+  - "operational zen"
+  - "per-runtime instruction"
+  - "instruction surface"
+  - "prompt tax"
+  - "mass zen"
+  - "parallel zen"
+  - "bulk zen"
 ---
 
 # Governed Execution Prompt Pattern
@@ -32,6 +52,21 @@ Phase 1 (docs) without Phase 2 (data flow) = theater.
 1. Bundle it with Phase 2 work that DOES change behavior
 2. Be honest that it's foundational and name what Phase 2 looks like
 3. Let the user decide
+
+## Model-Tier Awareness (Prompt Zen)
+
+**Instructions are a tax on weak model reasoning.** The prompt you write depends on who reads it:
+
+| Target Model | Prompt Style | Example |
+|---|---|---|
+| Frontier (DeepSeek V4, Opus 4.8) | Lean ~400-900w, positive alignment, no examples | "Write code that reads like surrounding code." |
+| Mid-tier (Sonnet 5, Haiku 4.5) | Verbose ~2,000+w, explicit "don't do X" | 11 bullets of "don't add abstractions/error handling/comments" |
+
+**Rule of thumb:** If the model can infer the constraint from the codebase, delete the instruction. If it can't, put it in runtime enforcement (not a prompt).
+
+See `references/model-tier-prompt-zen.md` for the full Claude Code case study (Apr→Jul 2026: 2,686w → 830w, ~69% cut) and the five pitfalls of over-prompting.
+
+See `references/federation-scale-zen-pruning.md` for the systematic methodology used to prune the arifOS federation's entire instruction surface (~15,650w → 854w) including MCP tool descriptions, A2A agent cards, and skill descriptions.
 
 ## Pre-Prompt Codebase Review (MANDATORY)
 
@@ -111,6 +146,28 @@ When user asks "what will this actually change?":
 8. **Config collision with OpenCode.** See `references/opencode-execution-logistics.md` for the workaround when OpenCode fails with "Unrecognized keys" due to A2A agent-card files.
 9. **TUI submit race.** `process(action="submit")` may leave text in buffer unsent. For multi-phase work, `opencode run` with a 600s timeout is more reliable than interactive TUI.
 10. **Undershooting the timeout.** Multi-phase execution across multiple repos needs 600s. Setting 180s will kill the agent mid-phase.
+11. **Writing rules for the weakest model in your stack.** If you support both frontier and mid-tier, you need two prompts (or conditional injection), not one ruleset that satisfies both. See `references/model-tier-prompt-zen.md`.
+12. **Confusing "said in prompt" with "enforced at runtime."** A prompt is a hint, not a hard gate. Put hard constraints in code (fail-closed gates, schema validation, floor constraints).
+13. **Memory as prompt tax.** Memory entries written to avoid repeating yourself become a permanent tax on every turn. If the insight survives more than one session, encode it as a skill reference, not memory text.
+
+14. **MCP tool descriptions are a hidden prompt multiplier.** Every tool registered with an MCP server has a `description` field that appears in `tools/list`. If 8 tools each have a 60-word verbose description with mode lists and "Use when:" sections, that's ~500 tokens per `tools/list` call that could be ~100. Strip mode lists, "Use when:", and "F8 scoped to:" annotations — the kernel and schema enforce those at runtime. The model already knows what the tool does from its name.
+
+15. **Skill descriptions as prompt surface.** Every `description:` field in a SKILL.md YAML frontmatter is loaded on `skills_list` — 219 skills × 30 words each = ~6,500 words of prompt tax. Compress to one high-signal line (10-15 words). The model loads the full SKILL.md content on demand when the skill is invoked.
+
+16. **Boot chain injection after zenning — the gap between \"prompt is zen\" and \"every runtime loads it.\"** After compressing AGENTS.md files, you must ensure EVERY organ's boot chain references the operational zen doctrine. Pattern: one SOT doctrine file (AAA-ZEN-ALIGNMENT.md), every AGENTS.md carries a one-line pointer (`> **ZEN:** /path/to/AAA-ZEN-ALIGNMENT.md — load at boot`). Without this, Claude Code or Kimi Code might read DITEMPA but never load the 18 operational rules. See `references/boot-chain-injection.md`.
+
+17. **Subagent bulk zenning — parallel fan-out for 200+ files.** When applying zen across a federation (210 skills + 6 agent cards + 24 tool descriptions + 5 AGENTS.md), don't do it sequentially. Use `delegate_task` to fan out parallel subagents: one for skills, one for agent cards, one for MCP tool descriptions. Each subagent gets the edit pattern and a file list. This completes in minutes what would take hours sequentially. Each subagent's result reports back independently.
+
+## Multi-Session Forge Handoff Pattern
+
+When a complex forge operation spans multiple sessions, the baton pass between agents is a constitutional risk. See `references/multi-session-forge-handoff.md` for the full pattern:
+
+- SESSION-SEAL.md (full state + credentials + commands)
+- `<task>-airocks-init.md` (one-page forge prompt, load this first)
+- Memory consolidation to one line
+- Skill update reflecting corrected approach
+
+This pattern was forged during the Kabarkan observability bootstrap (2026-07-24) where a single Airlock dispatch hook was identified as the last valve in a multi-session operation.
 
 ## Example Session: WELL Thermodynamic-APEX Wiring (2026-07-18)
 

@@ -1,6 +1,6 @@
 ---
 name: a2a-agent-card-registration
-description: "A2A protocol management for the AAA federation mesh — register, audit, sign, and organize agent cards. Covers agent-card.json schema, Ed25519 signing, protocol version alignment, standard method aliases, orthogonal agent categorization, CIV-333 directory nesting, normaliseCard() field whitelist, discover route mapping, drift scanner sync, and gateway restart. Load when: Arif says 'register X in the A2A mesh', 'create agent card', 'protocol alignment', 'signed agent cards', 'A2A v1.2', 'how many agents', 'agent inventory', 'wajib core', 'agent audit', 'organize agents', 'CIV-333', or any task touching /root/AAA/a2a-server/agent-cards/."
+description: "Manage A2A protocol agent cards in the AAA federation mesh — register, audit, sign, and organize. Covers schema, signing, directory"
 tags:
   - a2a
   - agent-card
@@ -36,6 +36,10 @@ triggers:
   - "orthogonal"
   - "3x3x3 nesting"
   - "agent taxonomy"
+  - "prune descriptions"
+  - "compress descriptions"
+  - "zen the cards"
+  - "bulk description compression"
 ---
 
 # A2A Agent Card Registration — Constitutional Metadata
@@ -642,6 +646,40 @@ If asked "where are the 33 agents?" — they're in `knowledge/`, not `agent-card
 }
 ```
 Each is passive JSON — no executables, no A2A cards, no MCP tools. Created via delegate_task subagents (3 parallel workers, one per band). After creation, normalize schema drift across subagents with a Python script mapping `code→id, label→name`.
+
+## Description Zen Compression — Bulk Pruning
+
+Agent card descriptions and skill descriptions accumulate verbosity. Periodic Zen pruning keeps cards concise.
+
+**Trigger:** "prune agent card descriptions" / "compress descriptions" / "Zen the cards" / bulk text-field reduction across cards.
+
+**Principle:** Skill descriptions should be inferable from the name. Top-level descriptions communicate purpose in 1-2 lines. Security descriptions need <10 words. If the name says "Fabrication Prevention", the description doesn't need to restate "Artifact fabrication prevention — verify before claiming existence" — compress to essence.
+
+### Workflow (scalable Python pattern)
+
+**Phase 1 — Inventory:** `find /root/AAA/a2a-server/agent-cards -name '*.json' | sort`. Also check `dist/` copies and `AGENT_INDEX.json`.
+
+**Phase 2 — Word-count baseline:** Write a recursive Python function counting words in `description`, `capabilities`, `purpose`, `doctrine` fields. Run per-file. Typical 22-file A2A corpus: ~4,200 words.
+
+**Phase 3 — Define compression map:** Build a dict mapping skill `name` → compressed description (5-12 words each). Key targets: top-level `description`, `skills[].description` (largest word sink), `securitySchemes.*.description`, `principal_agent`, extension descriptions, `authority_boundary[]` items, `upgrade_history`.
+
+**Phase 4 — Apply:** Python script reads each JSON, applies map to matching fields, compresses remaining long fields by threshold, validates output.
+
+**Phase 5 — Validate:** `python3 -m json.tool "$f"` on every pruned file.
+
+**Phase 6 — Re-measure:** Re-run word-count. Target ≥30% reduction (validated: 38% on 4,249-word / 22-file corpus).
+
+### Pitfalls
+
+- Do NOT touch structured fields (mcp_surface, subAgentPolicy, autonomy_tiers, booleans, floor_scope arrays, topological roles, A2A transport).
+- Dist copies may have different structure — run a separate pass after the main one.
+- Forge cards need only skill description compressions; they're already lean.
+- Do NOT strip `skills[].examples` arrays — they aid discovery.
+- Validate JSON after every transformation step.
+- AGENT_INDEX.json has its own prose (`_doctrine`, `_principles`, agent `notes`, `hardening_ref`).
+- Clean up temp scripts after finishing.
+
+See `references/bulk-description-compression.md` for the full annotated per-file report from a validated run.
 
 ### Quick Protocol Version Audit
 

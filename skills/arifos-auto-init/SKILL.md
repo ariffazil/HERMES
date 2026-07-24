@@ -1,6 +1,6 @@
 ---
 name: arifos-auto-init
-description: Auto-bind arifOS sessions with Ed25519 challenge-response. Sovereign never touches signing.
+description: Auto-bind arifOS sessions with Ed25519 challenge-response. Sovereign never touches signing
 triggers:
   - "init arifOS"
   - "bind session"

@@ -1,6 +1,6 @@
 ---
 name: ssh-client-setup
-description: SSH client key generation and troubleshooting across devices (Termux, desktop, mobile). Covers key format compatibility, one-command setup, and config shortcuts for federation VPS access.
+description: SSH client key generation and troubleshooting across devices (Termux, desktop, mobile). Covers key format compatibility, one-command setup, and config shortcuts
 ---
 
 # SSH Client Setup & Troubleshooting

@@ -1,6 +1,6 @@
 ---
 name: temporal-consequence-engine
-description: "Temporal Consequence Engine — implementation spec aligned with AAA architecture. Given a candidate action, compute temporal trajectories and risk surfaces across PAST-PRESENT-FUTURE, using constitutional logs + temporal forecasting, emit L5a VERIFY report (never a verdict). Companion to temporal-constitution skill."
+description: "Temporal Consequence Engine — implementation spec aligned with AAA architecture"
 version: 1.1
 author: arif
 tags: [temporal, consequence, engine, akal, apex, aaa, governance, timesfm]

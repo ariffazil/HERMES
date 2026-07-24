@@ -1,6 +1,6 @@
 ---
 name: agent-email-transport
-description: "Send email from AI agents on a VPS — Brevo SMTP relay, universal transport module, DMARC/SPF gauntlet, and 2026 email landscape. Load when Arif asks about agent email, Gmail SMTP config, sending from VPS, email relay for agents, or 'how do my agents email me'."
+description: "Send email from AI agents on a VPS — Brevo SMTP relay, universal transport module, DMARC/SPF gauntlet, and 2026 email"
 version: 1.0.0
 author: Hermes Agent
 tags: [email, smtp, brevo, agent-infrastructure, vps, deliverability]

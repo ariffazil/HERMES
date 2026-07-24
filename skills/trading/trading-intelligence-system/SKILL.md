@@ -1,6 +1,6 @@
 ---
 name: trading-intelligence-system
-description: arifOS Trading Intelligence System — agentic signal engine + risk management + governance pipeline for XAUUSD. SCANNER → SIGNAL → RISK → JUDGE → EXECUTE → TRACK → ALERT.
+description: arifOS Trading Intelligence System — agentic signal engine + risk management + governance pipeline for XAUUSD
 trigger: When user asks about gold trading, XAUUSD signals, trading system, position sizing, backtesting, or risk management.
 ---
 

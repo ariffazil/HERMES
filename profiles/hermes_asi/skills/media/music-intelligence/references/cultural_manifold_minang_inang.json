@@ -1,0 +1,47 @@
+{
+  "$schema": "arifos/cultural-manifold/v1",
+  "identity": {
+    "region": "Minangkabau",
+    "genre": "Inang",
+    "heritage_lineage": ["Gumarang (1960s)", "Elly Kasim (1972)", "Siti Nurhaliza (2000s)"],
+    "description": "Traditional Minangkabau folk dance song, joget/inang rhythm, pantun lyric structure"
+  },
+  "structural_priors": {
+    "tempo_range_bpm": [85, 120],
+    "section_structure": ["intro", "verse", "chorus", "verse", "chorus", "bridge", "outro"],
+    "min_sections": 4,
+    "max_duration_sec": 240,
+    "call_and_response": true
+  },
+  "harmonic_constraints": {
+    "scale_type": "pentatonic_minang",
+    "allowed_degrees": [1, 2, 3, 5, 6],
+    "key_stability_threshold": 0.7,
+    "max_key_changes": 1
+  },
+  "timbre_palette": {
+    "core_instruments": ["saluang", "rebab", "talempong", "gandang"],
+    "optional_instruments": ["strings_pad", "bass"],
+    "forbidden_instruments": ["electric_guitar_distorted", "trap_808", "dubstep_wobble"],
+    "min_traditional_ratio": 0.6
+  },
+  "lyric_constraints": {
+    "structure": "pantun",
+    "required_refrains": ["kaparinyo", "ondeh sayang", "yo malang"],
+    "dialect": "minang",
+    "min_verses": 3
+  },
+  "amanah_filters": {
+    "must_not": ["direct_copy_known_song", "mocking_tone", "cultural_stereotyping"],
+    "must_include": ["at_least_one_traditional_rhythmic_pattern", "minang_dialect_refrains"],
+    "seal_requires_human_witness": false
+  },
+  "evaluation_thresholds": {
+    "rhythm_match_min": 0.6,
+    "scale_compliance_min": 0.5,
+    "timbre_match_min": 0.5,
+    "heritage_alignment_min": 0.5,
+    "coherence_min": 0.4,
+    "folk_alignment_max": 4.0
+  }
+}

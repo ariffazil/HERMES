@@ -1,6 +1,6 @@
 ---
 name: kimi-code-model-management
-description: Switch kimi-code CLI models — add new model definitions, change default_model, test, and verify. Covers the config.toml schema, provider binding, model capability flags, and the Kimi Code managed OAuth provider. Load when Arif says "tukar model kimi-code", "switch kimi model", "pakai K3 untuk kimi", "update kimicode", or any task touching /root/.kimi-code/config.toml model config.
+description: "Switch kimi-code CLI models — add definitions, change defaults, test, and verify. Covers config.toml schema, provider binding, and capability flags."
 ---
 
 # Kimi Code Model Management

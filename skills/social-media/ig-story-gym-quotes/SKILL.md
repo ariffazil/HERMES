@@ -1,6 +1,6 @@
 ---
 name: ig-story-gym-quotes
-description: "Daily IG Story — motivational quotes from historical figures, gym aesthetic. Video preferred (8s MP4 + beat), image fallback. Manual posting to @fallout1985_ for now."
+description: "Daily IG Story — motivational quotes from historical figures, gym aesthetic. Video preferred (8s MP4 + beat), image fallback. Manual"
 triggers:
   - "ig story"
   - "instagram story"

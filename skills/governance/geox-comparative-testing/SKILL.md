@@ -1,6 +1,6 @@
 ---
 name: geox-comparative-testing
-description: "Three-agent comparison methodology for proving GEOX governance value — GEOX vs Vanilla AI vs External Tools on identical geological data. Used when the question is 'does GEOX actually make AI produce better geological output?'"
+description: "Three-agent comparison methodology for proving GEOX governance value — GEOX vs Vanilla AI vs External Tools on identical geological data"
 tags: [geox, testing, comparison, governance, falsification, marmousi, petrophysics]
 triggers:
   - "does GEOX actually work"

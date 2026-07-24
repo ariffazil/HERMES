@@ -1,6 +1,6 @@
 ---
 name: agentic-integrity-observability
-description: "Complete design for Agentic Integrity Observability — a judgment telemetry layer between AI reasoning and AI governance. Covers human envelope system, niat sovereignty, J-collapse detection, choice axioms, dark geometry detector, and entropy integrity mesh."
+description: "Complete design for Agentic Integrity Observability — a judgment telemetry layer between AI reasoning and AI governance"
 version: 1.0.0
 author: Hermes (under Arif F13)
 tags: [governance, integrity, observability, human-envelope, sovereignty, entropy, moral-compass]

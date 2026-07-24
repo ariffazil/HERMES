@@ -2,6 +2,7 @@
 
 > **DITEMPA BUKAN DIBERI** — Forged, not given.
 > **Organ:** HERMES (7 of 7) | **Role:** Multi-Modal Bridge | **Layer:** L3 DOMAIN
+> **Canonical AAA:** `/root/AAA/CLAUDE.md` · **Zen:** `/root/AAA/prompts/AAA-ZEN-ALIGNMENT.md`
 
 ## What This Repo Is
 
@@ -34,4 +35,3 @@ bash scripts/governance-gate.sh                                  # governance ch
 
 - REPO= commit trailer required: `REPO=HERMES`
 - Tags: `vYYYY.MM.DD` only
-- Bridge organs NEVER adjudicate — route to arifOS

@@ -1,6 +1,6 @@
 ---
 name: governed-knowledge-stores
-description: "Design and build structured knowledge stores with governance constraints — truth classification, authority levels, provenance tracking, temporal decay, and Gödel locks (no self-certification). Use when: building memory systems, knowledge bases, or any store where entries must carry epistemic metadata and cannot self-authorize."
+description: "Design and build structured knowledge stores with governance constraints — truth classification, authority levels, provenance tracking, temporal decay, and Gödel"
 triggers:
   - "governed memory"
   - "knowledge store with truth classes"

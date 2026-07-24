@@ -1,7 +1,7 @@
 ---
 name: seven-zen-organs-enforcement
 title: Seven Zen Organs — Constitutional Enforcement for Every Agent Reflex
-description: "Operationalize Arif's Seven Zen Organs doctrine (Reality, Governance, Civilization, Execution, Memory, Witness, Meaning) as the per-turn reflex arc that every agent in the arifOS federation must run before answering. Each organ maps to an existing federation layer; each missing organ produces a named failure mode (hallucination, tyranny, isolation, paralysis, amnesia, Gödel-lock, purposelessness). Use when any agent — Hermes, OpenCode, Codex, Claude Code, A-FORGE, GEOX, WEALTH, WELL, AAA, arifOS MCP — is about to act, reply, or mutate, AND when Arif invokes 'zen' / 'organs' / 'F2+F11+F13' / 'witness' explicitly."
+description: "Operationalize the Seven Zen Organs doctrine as a per-turn reflex arc. Every agent in the arifOS federation runs this before"
 version: 1.0.0
 author: arifOS Federation (Hermes agent, on F13 SOVEREIGN directive 2026-07-03)
 license: MIT

@@ -1,6 +1,6 @@
 ---
 name: arifos-runtime-module-authoring
-description: Create new arifOS runtime modules (audit, fatigue, scoring, etc.) following project conventions — Pydantic v2, VAULT999 persistence, ruff clean, line budgets.
+description: Create new arifOS runtime modules following project conventions — Pydantic v2, VAULT999 persistence, ruff clean, line budgets
 ---
 
 # arifOS Runtime Module Authoring

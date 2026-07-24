@@ -1,6 +1,6 @@
 ---
 name: audit-parallel-forge-history
-description: Audit repositories with parallel-forge history — multiple commits touching the same files from different sessions/agents. Prevents over-engineering dedup based on "duplicate grep hits" that are actually documented legacy boundaries. Load when auditing repos where multiple agents have forged independently, especially when finding "duplicate" constants/functions across modules.
+description: Audit repositories with parallel-forge history — multiple commits touching the same files from different sessions/agents
 tags: [audit, refactoring, parallel-forge, dedup, legacy-boundaries, governance]
 triggers:
   - "audit for duplicates"

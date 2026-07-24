@@ -1,6 +1,6 @@
 ---
 name: nasi-lemak-tracking
-description: Track multi-location nasi lemak daily orders, baki, sales, and revenue. Calculate per-variant and per-location totals. Save to structured CSV.
+description: Track multi-location nasi lemak daily orders, baki, sales, and revenue. Calculate per-variant and per-location totals. Save to structured CSV
 tags: [nasi-lemak, sales, tracking, business, food]
 ---
 
@@ -15,7 +15,8 @@ calculation, CSV persistence, and summary generation.
 | Variant | Emoji | Price/unit |
 |---|---|---|
 | Telur Mata | 🍳 | RM 1.50 |
-| Telur Rebus | 🥚 | RM 1.20 |
+| Telur Rebus (keras) | 🥚 | RM 1.20 |
+| Telur Rebus Separuh (half-boiled) | 🥚 | RM 1.20 |
 | Telur Dadar | 🍳(same) | RM 1.20 |
 | Berlauk | 🥩 | Cash term — EXCLUDED from standard calc |
 
@@ -78,6 +79,36 @@ LRT S, LRT WM, EVEN, DSW, DSP
 | LRT S | 3 |
 | Others | 1 each |
 
+## Sambal Types
+
+| Sambal | Meaning |
+|--------|---------|
+| **Campur** | Sambal mixed in with the nasi lemak |
+| **Asing** | Sambal packed separately in a container |
+
+Does NOT affect pricing. Track for accuracy.
+
+## Order Entry Format (Syed's standard)
+
+Syed sends orders in a structured text format. Parse consistently:
+
+```
+LOCATION CODE
+1. Nasi lemak telur [jenis] sambal [campur/asing] [qty]
+2. Nasi lemak telur [jenis] sambal [campur/asing] [qty]
+3. Nasi lemak berlauk [jenis] [qty]- cash term
+```
+
+Prices at the end are for reference (per-unit):<br>
+Telur mata = RM1.50 | Telur dadar = RM1.20 | Telur rebus (keras/separuh) = RM1.20 | Nasi berlauk = RM1.50
+
+## Order Entry Rules
+
+1. When user says "cash term" or "berlauk" — those items are **excluded** from standard sales/revenue calculations
+2. If user says "Sambal asing" vs "Sambal campur" — note but don't split on price
+3. "Telur rebus separuh" = half-boiled egg (different from telur rebus keras). Same price RM1.20
+4. Some locations (EVEN, MAMAK 2) have stand-alone codes without numbering
+
 When user asks "purata per kedai" — divide location total by sub-kedai count.
 
 ## Supplier Cost vs Revenue
@@ -100,8 +131,10 @@ When user asks "ok ke nak bayar supplier":
 
 ## Voice/Tone
 
-- BM casual with Khairuddin
+- **Full BM** — user will correct if you use English. Respond entirely in Bahasa Melayu.
+- Use with both Khairuddin and Syed — both prefer BM casual
 - Short sentences
 - Tables with emojis
 - No markdown fluff — direct numbers
 - When user says "simpan" or "buat summary", save to CSV + give analysis
+- When user gives correction (e.g. "salah" or "abaikan"), acknowledge quickly and move on — no lengthy apologies

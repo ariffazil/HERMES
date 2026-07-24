@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: "Deep research on a topic: multi-source web research → structured synthesis → deliverable. For books, tools, frameworks, domains, people, institutions — and personal names (witness-frame-aware). Load when user says 'deep research on', 'research this', 'what is the full picture on', 'give me everything on', or asks for a name/person investigation with verifiable or unverifiable anchors."
+description: "Deep multi-source web research for books, tools, frameworks, domains, people, and institutions. Structured synthesis into a deliverable."
 version: 1.3.0
 author: Hermes Agent + Hermes-PRIME
 tags: [research, synthesis, web-research, books, frameworks, analysis, people, witness-frame]

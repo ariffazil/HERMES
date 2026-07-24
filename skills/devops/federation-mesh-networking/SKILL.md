@@ -1,6 +1,6 @@
 ---
 name: federation-mesh-networking
-description: "Mesh networking for the arifOS federation — Tailscale, Headscale, AXL, P2P protocols, node onboarding, MagicDNS, NAT traversal. Class-level skill for connecting federation organs across multiple machines without manual SSH key management. Load when: 'set up tailscale', 'mesh networking', 'connect two VPS', 'add new node to federation', 'P2P for agents', 'headscale', 'federation networking', 'node onboarding', 'organ discovery across machines'."
+description: "Mesh networking for the arifOS federation — Tailscale, Headscale, AXL, P2P protocols, node onboarding, and organ discovery across machines."
 triggers:
   - Tailscale or Headscale setup
   - Mesh VPN for federation

@@ -1,6 +1,6 @@
 ---
 name: whatsapp-group-intelligence
-description: Analyze exported WhatsApp group chats to extract key people, power structures, event details, and social dynamics. Use when the user shares a .zip or .txt WhatsApp chat export and needs to understand who's who, who to meet, or whether to attend an event. Combines structural analysis (roles, activity, mentions) with emotional intelligence (identity gaps, institutional pressure, social anxiety).
+description: "Analyze exported WhatsApp group chats to extract key people, power structures, event details, and social dynamics. Combines structural and emotional"
 triggers:
   - "whatsapp chat export"
   - "group chat analysis"

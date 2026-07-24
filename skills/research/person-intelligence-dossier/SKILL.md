@@ -1,6 +1,6 @@
 ---
 name: person-intelligence-dossier
-description: Build a verifiable professional profile + intelligence dossier for a specific named person — colleague, contact, candidate, third-party recipient. Multi-source web mining (LinkedIn, SPE/arXiv, Scopus/SciSpace, employer registry, RocketReach, news) → epistemic-labelled bio → share-ready PDF with SHA256 receipt. Use when Arif asks for "tell me everything about X", "human profile for X", "do deep research on [person]", "intelligence briefing on [person]", "I need to brief my colleague on X", or asks for a shareable dossier for a specific named person (not an institution, not a topic). Triggers include "profile of X", "background of X", "who is X", "X's CV", "shareable profile for X". Distinct from institution-focused profiling (sister skill `institutional-case-building`) and from news/topical briefing (sister skill `executive-intelligence-briefing`).
+description: "Build a verifiable, epistemic-labelled professional dossier for a named person. Multi-source web mining → share-ready PDF with SHA256 receipt."
 ---
 
 # Person Intelligence Dossier

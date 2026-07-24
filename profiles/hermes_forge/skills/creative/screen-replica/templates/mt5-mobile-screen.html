@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MT5 Statement</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #fff;
+  width: 390px;
+  min-height: 844px;
+  margin: 0 auto;
+  color: #000;
+  font-size: 13px;
+}
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.tabs-row { display: flex; align-items: center; justify-content: center; padding: 8px 16px; border-bottom: 1px solid #eee; }
+.tabs { display: flex; justify-content: center; gap: 8px; }
+.tab { padding: 6px 18px; border-radius: 20px; font-size: 13px; color: #666; }
+.tab.active { background: #f0f0f0; color: #000; font-weight: 600; }
+.clock-icon { margin-left: 12px; font-size: 16px; color: #666; }
+.trade-item { padding: 12px 16px; border-bottom: 1px solid #f5f5f5; }
+.trade-header { display: flex; justify-content: space-between; align-items: center; }
+.trade-symbol { font-size: 14px; font-weight: 600; }
+.trade-type { font-weight: 700; margin-left: 4px; }
+.trade-type.buy { color: #007AFF; }
+.trade-type.sell { color: #FF3B30; }
+.trade-lots { color: #666; font-size: 12px; }
+.trade-prices { margin-top: 4px; font-size: 13px; color: #333; }
+.arrow { color: #999; margin: 0 6px; }
+.trade-right { text-align: right; }
+.trade-date { font-size: 11px; color: #999; }
+.trade-profit { font-size: 14px; font-weight: 700; color: #007AFF; margin-top: 2px; }
+.summary { padding: 16px; border-top: 2px solid #eee; margin-top: 8px; }
+.summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+.summary-row .label { color: #666; }
+.summary-row .value { font-weight: 600; }
+.summary-row.total .value { color: #007AFF; font-weight: 700; }
+.summary-row.balance { border-top: 2px solid #eee; padding-top: 10px; margin-top: 4px; }
+.summary-row.balance .label { font-weight: 700; font-size: 15px; }
+.summary-row.balance .value { font-weight: 700; font-size: 15px; color: #007AFF; }
+.bottom-nav {
+  position: fixed; bottom: 0; width: 390px;
+  display: flex; justify-content: space-around;
+  padding: 10px 0 20px 0; background: #fff; border-top: 1px solid #eee;
+}
+.nav-item { text-align: center; font-size: 10px; color: #999; }
+.nav-item.active { color: #007AFF; }
+.nav-icon { font-size: 18px; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<!-- CUSTOMIZE: Status bar time -->
+<div class="status-bar">
+  <div>9:20 🌙</div>
+  <div>4G 📶 🔋</div>
+</div>
+
+<!-- CUSTOMIZE: Active tab -->
+<div class="tabs-row">
+  <div class="tabs">
+    <div class="tab">Positions</div>
+    <div class="tab">Orders</div>
+    <div class="tab active">Deals</div>
+  </div>
+  <span class="clock-icon">🕐</span>
+</div>
+
+<!-- CUSTOMIZE: Trade entries - duplicate block below for each trade -->
+<!--
+<div class="trade-item">
+  <div class="trade-header">
+    <div>
+      <span class="trade-symbol">XAUUSD.m</span>
+      <span class="trade-type buy">buy</span>
+      <span class="trade-lots">1.0</span>
+    </div>
+    <div class="trade-right">
+      <div class="trade-date">2026.07.09 09:33:15</div>
+      <div class="trade-profit">9 577.11</div>
+    </div>
+  </div>
+  <div class="trade-prices">4058.73 <span class="arrow">→</span> 4105.74</div>
+</div>
+-->
+
+<!-- CUSTOMIZE: Account summary -->
+<div class="summary">
+  <div class="summary-row"><span class="label">Deposit:</span><span class="value">0.00</span></div>
+  <div class="summary-row total"><span class="label">Profit:</span><span class="value">118 195.75</span></div>
+  <div class="summary-row"><span class="label">Swap:</span><span class="value">0.00</span></div>
+  <div class="summary-row"><span class="label">Commission:</span><span class="value">0.00</span></div>
+  <div class="summary-row balance"><span class="label">Balance:</span><span class="value">118 195.75</span></div>
+</div>
+
+<!-- Bottom nav -->
+<div class="bottom-nav">
+  <div class="nav-item"><div class="nav-icon">📊</div>Quotes</div>
+  <div class="nav-item"><div class="nav-icon">📈</div>Chart</div>
+  <div class="nav-item"><div class="nav-icon">💹</div>Trade</div>
+  <div class="nav-item active"><div class="nav-icon">🕐</div>History</div>
+  <div class="nav-item"><div class="nav-icon">⚙️</div>Settings</div>
+</div>
+
+</body>
+</html>

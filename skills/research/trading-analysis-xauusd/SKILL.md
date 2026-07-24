@@ -1,6 +1,6 @@
 ---
 name: trading-analysis-xauusd
-description: XAUUSD (Gold) technical analysis — price action, key levels, confirmation entries, risk management. User-validated methodology.
+description: XAUUSD (Gold) technical analysis — price action, key levels, confirmation entries, risk management. User-validated methodology
 triggers:
   - XAUUSD
   - gold trading

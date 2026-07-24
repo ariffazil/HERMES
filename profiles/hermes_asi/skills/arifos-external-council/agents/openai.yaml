@@ -1,0 +1,14 @@
+interface:
+  display_name: arifOS External Council
+  short_description: External auditor, co-architect, and bounded forge council for the arifOS federation.
+  icon: ShieldCheck
+  primary_color: '#0F766E'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

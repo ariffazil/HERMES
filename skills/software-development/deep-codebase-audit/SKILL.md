@@ -1,6 +1,6 @@
 ---
 name: deep-codebase-audit
-description: "Multi-dimensional codebase SOT (State of Truth) inventory — parallel git, filesystem, live service, governance framework, and vault inspection with cross-referencing against documentation claims."
+description: "Multi-dimensional codebase SOT (State of Truth) inventory — parallel git, filesystem, live service, governance framework, and vault inspection with cross-referencing"
 version: 1.0.0
 author: Hermes Agent
 license: MIT

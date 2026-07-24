@@ -1,0 +1,106 @@
+{
+  "case_id": "PETRONAS-PETROS-LEAK-2024-KHAIRUL",
+  "schema": "MDS-v1",
+  "generated_utc": "2026-07-08T00:00:00Z",
+  "actor": {
+    "name": "Mohd Khairul Akmal Mohd Jasni",
+    "age_at_charge": 41,
+    "last_role": "Manager, Business Unit Performance, PETRONAS",
+    "tenure_months": 22,
+    "group": "BPI/BPPR (9 pax)"
+  },
+  "counterparty": {
+    "recipients": [
+      {"name": "Datuk Janin Girie", "role": "Group CEO, Petros", "background": "ex-PETRONAS"},
+      {"name": "Mohd Azha Abdul Jalil", "role": "CFO, Petros", "background": "Petros internal"}
+    ],
+    "interview_panel_for_petros_application": [
+      "Mohd Azha Abdul Jalil (CFO)",
+      "Datuk Abang Arabi Abang Narudin (SVP SRM)"
+    ],
+    "structural_cluster": "SRM / Gas Aggregator finance stack"
+  },
+  "payload": {
+    "document_title": "Q1 2024 Upstream Business Performance - Operational & Financial",
+    "classification": "Internal (every page)",
+    "release_authority_required": "Head of Finance & Risk, Petronas Carigali (Karima)",
+    "probable_content_estimate": [
+      "field/basin production",
+      "opex/capex run-rates",
+      "netback by region",
+      "fiscal metrics",
+      "variance vs AOP",
+      "risk flags",
+      "divestment posture incl. Sudan",
+      "HSE issues",
+      "oil & gas discoveries",
+      "project investments"
+    ],
+    "content_confidence": "SPEC (not publicly disclosed)"
+  },
+  "vector": {
+    "channel": "PETRONAS corporate email -> external Petros email",
+    "date": "2024-06-08",
+    "first_attempt_MYT": "07:19 (failed, file too large)",
+    "successful_send_MYT": "15:19-15:21",
+    "location_at_send": "B-6-10, Marc Service Residence, Jalan Pinang, KL",
+    "recipients_emails": ["janin@petros.my", "azha@petros.my"]
+  },
+  "timeline": [
+    {"date": "2024-01-24", "event": "Khairul applies Head Upstream Finance @ Petros", "confidence": "OBS"},
+    {"date": "2024-03-27", "event": "Petros offers Head Finance (Gas Aggregator & SRM) RM25k/mo", "confidence": "OBS"},
+    {"date": "2024-05-10", "event": "Q1 2024 report presented to Upstream Leadership Team", "confidence": "OBS"},
+    {"date": "2024-06-08T07:19+08:00", "event": "First email attempt fails (file size)", "confidence": "OBS"},
+    {"date": "2024-06-08T15:19-15:21+08:00", "event": "Successful send to Petros C-suite", "confidence": "OBS"},
+    {"date": "2024-12-06T12:41+08:00", "event": "WBC alerts Jumsuri Basri @ Twin Towers", "confidence": "OBS"},
+    {"date": "2024-12-09", "event": "Khairul suspended (until 2025-02-08)", "confidence": "OBS"},
+    {"date": "2024-12-10", "event": "Police report @ IPD Dang Wangi", "confidence": "OBS"},
+    {"date": "2024-12-20", "event": "Khairul terminated by PETRONAS", "confidence": "OBS"},
+    {"date": "2025-04-19", "event": "Charged at KL Sessions Court", "confidence": "OBS"},
+    {"date": "2025-05-08", "event": "Representation letter rejected by AGC", "confidence": "OBS"},
+    {"date": "2026-06-25", "event": "Trial Day 1 - PW1 Jumsuri Basri", "confidence": "OBS"},
+    {"date": "2026-06-26", "event": "Trial Day 2 - PW2 Syakirah Mustapa", "confidence": "OBS"},
+    {"date": "2026-07-07", "event": "Trial Day 3 - PW3 Nurul Qurratu Aini (Petros HR)", "confidence": "OBS"},
+    {"date": "2026-07-08", "event": "Trial continues before Mazuliana Abdul Rashid", "confidence": "OBS"}
+  ],
+  "charge": {
+    "statute": "Section 203A(1) Penal Code read with Section 511",
+    "framing": "Attempting to disclose information obtained in course of official duty",
+    "max_penalty_203A_1": "RM1M fine OR imprisonment <= 1 year",
+    "max_penalty_511": "imprisonment <= half of 203A(1) max",
+    "framing_tension": "Charge uses 'attempt' (§511) but Cyber confirmed successful 15:19 send"
+  },
+  "defense": [
+    "Alibi: was on holiday in Penang 8 Jun 2024; laptop with female colleague",
+    "Document discrepancy: suspension letter says 'attempt', police report says 'sent'",
+    "WBC incomplete: did not contact Petros email owners, did not weigh show-cause reply",
+    "Third-party hypothesis: another person may have sent from Khairul's email"
+  ],
+  "institutional_context": {
+    "petros_status": "State oil co of Sarawak, est. 2017",
+    "federal_court_petronas_ref": "Filed Jan 2026, heard 16 Mar 2026",
+    "kuching_hc_judgment": "30 Jan 2026 (separate matter)",
+    "active_negotiation_track": "SRM / Gas Aggregator between PETRONAS and Petros",
+    "media_framing": "leak could 'jeopardise' / 'undermine' negotiations and national interests"
+  },
+  "detection_trail": {
+    "trigger": "Whistleblowing Committee internal referral",
+    "verification_path": ["Cyber Security (email/SMTP log)", "Finance (classification review)", "HR (disciplinary)", "IR (Jumsuri procedural anchor)"],
+    "public_framing": "'Cyber Security confirmed' across Malay Mail, Utusan, Borneo Post, Astro Awani"
+  },
+  "open_threads": [
+    "Reply emails / WhatsApp / prior contact between Khairul and Janin/Azha outside HR",
+    "Forensic findings from Khairul's laptop (3rd-party vendor, identity unrecorded)",
+    "Outcome of Khairul's internal appeal",
+    "AGC rationale for §511 (attempt) framing despite successful send",
+    "Any §203A charges against recipients (Janin, Azha) - no public record"
+  ],
+  "source_count": 16,
+  "source_diversity": ["Malay Mail", "The Edge", "Borneo Post", "FMT", "The Star", "MalaysiaKini", "Utusan", "Astro Awani", "The Sun", "KLSEScreener"],
+  "labels": {
+    "OBS_pct": "~75% of facts (dates, charge, recipients, classification)",
+    "DER_pct": "~10% (negotiation impact from testimony)",
+    "INT_pct": "~10% (motive interpretation, no direct evidence)",
+    "SPEC_pct": "~5% (document content, DLP mechanism, prior contact)"
+  }
+}

@@ -1,6 +1,6 @@
 ---
 name: federation-subsystem-bringup
-description: Activate dormant but complete subsystems in the arifOS federation — code that was designed, built, and tested but never wired into the operational substrate. Covers detecting dormant code, checking dependencies, creating systemd service/timer units, handling env var path mismatches, first-run verification, and known-drift management.
+description: Activate dormant but complete subsystems in the arifOS federation — code that was designed, built, and tested but never wired
 version: 1.0.0
 tags: [devops, systemd, activation, dormant, bringup, governance]
 category: devops

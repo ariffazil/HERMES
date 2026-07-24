@@ -1,6 +1,6 @@
 ---
 name: agentic-trading-companion
-description: "Build an AI trading companion system — signal engine, price alerts, journal tracking, chart generation, and web terminal. NOT auto-execution. Phase 1: AI proposes, human decides. Proven: 2026-07-14 XAUUSD gold trading system for Abang Sado Udin."
+description: "Build an AI trading companion system — signal engine, price alerts, journal tracking, chart generation, and web terminal"
 triggers:
   - "trading agent"
   - "trading companion"

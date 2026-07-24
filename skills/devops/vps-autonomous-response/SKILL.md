@@ -1,6 +1,6 @@
 ---
 name: vps-autonomous-response
-description: "Build autonomous VPS monitoring and response layers — smoketests, state machines, circuit breakers, auto-rollback, and dead-man's switches. For any VPS or infrastructure that needs self-healing without human intervention."
+description: "Build autonomous VPS monitoring and response layers — smoketests, state machines, circuit breakers, auto-rollback, and dead-man's switches"
 version: 1.0.0
 author: Hermes Agent
 tags: [vps, monitoring, autonomous, self-healing, state-machine, circuit-breaker, watchdog]

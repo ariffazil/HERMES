@@ -1,6 +1,6 @@
 ---
 name: repository-sot-inventory
-description: "Establish multi-surface ground truth for any repository or live system. Probe git state, filesystem structure, live HTTP endpoints, pattern search across docs, cross-reference claims vs reality, detect duplicates/superseded documents, and produce a structured SOT report. For codebases, monorepos, kernel repos, or any system where you need to know what IS true right now."
+description: "Establish multi-surface ground truth for any repository or live system. Probes git state, filesystem, HTTP endpoints, and documentation claims."
 triggers:
   - user asks 'build a SOT', 'SOT inventory', 'state of truth', 'what is the state of the repo'
   - user asks 'audit the repository', 'full inventory', 'map the codebase', 'inspect everything'

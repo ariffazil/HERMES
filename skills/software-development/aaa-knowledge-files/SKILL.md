@@ -1,6 +1,6 @@
 ---
 name: aaa-knowledge-files
-description: "Create, enrich, or audit structured knowledge domain files in the AAA federation knowledge base (/root/AAA/knowledge/{band}/). OVERLAPS with governance/knowledge-atlas-authoring — that skill is authoritative for Geometry B. This skill covers directory structure, axiom quality rules, and the subagent schema-normalization pitfall but its schema section is historical."
+description: "Create, enrich, or audit structured knowledge domain files in the AAA federation knowledge base (/root/AAA/knowledge/{band}/)"
 triggers:
   - "create knowledge domain file"
   - "aaa knowledge band"

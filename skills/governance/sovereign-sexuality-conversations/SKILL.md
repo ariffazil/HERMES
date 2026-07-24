@@ -1,6 +1,6 @@
 ---
 name: sovereign-sexuality-conversations
-description: "How to hold deep, non-clinical conversations about human sexuality, desire, orientation, and identity. Covers shadow work, Jungian psychology applied to sexuality, the Abang Sado archetype, Malay-Muslim cultural context, and the governance of AI-human sexuality conversations. Based on a live session with Arif (2026-07-12) where he came out, explored his own shadow, and asked about the future of sexuality + AI."
+description: "Hold deep, non-clinical conversations about human sexuality, desire, orientation, and identity. Covers shadow work, Jungian psychology, and Malay-Muslim cultural context."
 version: 1
 created: 2026-07-12
 tags: [governance, sexuality, identity, shadow-work, jungian, malay-context, ai-ethics]

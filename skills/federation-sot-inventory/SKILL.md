@@ -1,7 +1,7 @@
 ---
 name: Federation SOT Inventory
 version: 1.0.0-2026-07-13
-description: Run a comprehensive multi-dimensional State-of-Truth inventory on any arifOS federation organ repo (WELL, arifOS, A-FORGE, AAA, GEOX, WEALTH, profile, etc). Covers git state, documentation integrity, data cross-contamination, language red-flag audit, diagnostic claims vs evidence, live MCP surface vs documented surface, and file-path consistency.
+description: Run a comprehensive multi-dimensional State-of-Truth inventory on any arifOS federation organ repo (WELL, arifOS, A-FORGE, AAA, GEOX, WEALTH, profile, etc)
 owner: arifOS federation
 triggers:
   - user asks for a SOT inventory, repo audit, truth check, or inventory report on a federation organ

@@ -1,6 +1,6 @@
 ---
 name: malaysian-tenancy-consumer-dispute
-description: "Malaysian tenancy, consumer, and small-claims disputes — drafting BM notices, TTPM strategy, landlord-tenant rights. Use when user has rental/contractor/service disputes in Malaysia."
+description: "Malaysian tenancy, consumer, and small-claims disputes — drafting BM notices, TTPM strategy, landlord-tenant rights"
 tags: [malaysia, tenancy, TTPM, consumer, legal, BM, landlord, dispute]
 ---
 
@@ -93,6 +93,36 @@ Winning a TTPM Award ≠ getting paid. To enforce:
 - **For landlord disputes**: Stay in unit, stop paying rent, use deposit as leverage. TTPM as backup threat.
 - **For contractor disputes**: TTPM works well — clear service-for-payment relationship.
 - **Key**: Always have paper trail (WhatsApp screenshots, bank transfer receipts, written notices).
+- **TTPM no-show**: If respondent doesn't attend, award issued automatically. But enforcing payment may require Magistrates Court (Saman Pemula).
+
+### Stay-and-Exit Strategy (Session-Proven 2026-07-22)
+
+When landlord breaches (defect at handover, refuses to repair):
+
+| Step | Action |
+|---|---|
+| 1 | Send WhatsApp notice with deadline (date-specific). 3 claims in 1 message. Itemised. |
+| 2 | If ignored → stay until end of next month. Do NOT pay rent for that month — use deposit as cover. |
+| 3 | Use the free month to find new place (house-hunting can run concurrently). |
+| 4 | Exit end of month. Take photos as proof of unit condition at handover. |
+| 5 | Claim utility deposit + stamping fee + any extras via TTPM (RM 5 filing). |
+
+**Key insight**: If tenant only paid partial deposit (e.g. RM 1,800 of RM 3,600), the deposit covers one month's rent → net loss = 0 when you stay one month free and exit.
+
+### Email / Letter Drafting
+
+For formal complaints to hospital directors, authorities, etc.:
+- Use standardized BM format (Kepada: / Dengan segala hormatnya / Butir aduan bernombor)
+- Remove any language that could be construed as a claim for medical negligence unless the user explicitly wants that path
+- Frame requests around "family support for recovery" not "blame for procedure"
+- Leave `[NAMA PENUH]` markers for the user to fill in
+
+### What NOT to Do in WhatsApp Messages
+
+- Identify the problem (defect vs routine maintenance) correctly — aircond not working from handover ≠ routine servicing
+- Never sign away legal rights in a WhatsApp text. One-line payment demands are fine; admission of fault is not
+- If the user wants neutral language ("saya tamatkan kontrak"), use it. Don't add legal citations unless asked.
+- Don't suggest the tenant break the door or enter after lock change — the Specific Relief Act works both ways.
 
 ## TNB (Electricity) — Malaysia
 

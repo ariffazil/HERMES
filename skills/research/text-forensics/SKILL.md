@@ -1,6 +1,6 @@
 ---
 name: text-forensics
-description: "Analyze large exported chat/text files to extract behavioral profiles, life timelines, emotional signatures, and relationship dynamics. Use when user sends a WhatsApp/Telegram/iMessage export, large chat log, or any longitudinal personal text corpus and wants to understand WHO the person is, WHAT patterns exist, and WHAT the data reveals."
+description: "Analyze large exported chat/text files to extract behavioral profiles, life timelines, emotional signatures, and relationship dynamics"
 triggers:
   - user sends a large chat export file
   - analyze this chat for patterns

@@ -1,6 +1,6 @@
 ---
 name: makcikgpt-article-forging
-description: "Forge MakcikGPT articles for arif-fazil.com — research-driven, MakcikGPT voice, TypeScript format, deploy to VPS. Covers the full pipeline: OBSERVE (research) → HYPOTHESIZE (angle) → FORGE (write) → VERIFY (build) → DEPLOY."
+description: "Forge MakcikGPT articles for arif-fazil.com — research-driven, MakcikGPT voice, TypeScript format, deploy to VPS"
 triggers:
   - "makcikgpt article"
   - "write makcikgpt"

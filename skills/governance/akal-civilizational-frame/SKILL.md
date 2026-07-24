@@ -1,6 +1,6 @@
 ---
 name: akal-civilizational-frame
-description: "AKAL (عقل) civilizational frame — the Malay-Islamic cosmology underlying arifOS cognitive architecture. ILMU-AKAL-HIKMAH three-layer cosmology, four-gate conjunctive commitment, and the difference between cleverness and consequence-aware intellect."
+description: "AKAL (عقل) civilizational frame — the Malay-Islamic cosmology underlying arifOS cognitive architecture"
 triggers:
   - "Any discussion of AKAL, cognitive invariants, or kernel philosophy"
   - "When explaining arifOS architecture to external audiences"

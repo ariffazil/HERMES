@@ -1,6 +1,6 @@
 ---
 name: screen-replica
-description: "Replicate a specific app screen or UI format as a visual HTML artifact, then screenshot it for delivery. When a user sends a screenshot and says 'format sama' / 'ikut format ni' / 'sebijik sama' — they want a VISUAL replica, not a text file."
+description: "Replicate a specific app screen or UI format as a visual HTML artifact, then screenshot it for delivery"
 tags: [html, css, screenshot, ui-replica, mobile-app, format, visual, trading, finance]
 triggers:
   - "user sends a screenshot and asks for output in that format"

@@ -1,6 +1,6 @@
 ---
 name: music-intelligence
-description: "Governed music generation + somatic scoring pipeline. Generate music via MiniMax, analyze with DSP, score against cultural manifolds, iterate. Covers Nusantara folk (Minang, Zapin, Asli, Joget) and generic genres."
+description: "Governed music generation + somatic scoring pipeline"
 version: 1.0.0
 tags: [music, audio, generation, somatic, scoring, cultural-manifold, nusantara, minmax, dsp]
 metadata:

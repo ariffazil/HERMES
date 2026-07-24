@@ -1,6 +1,6 @@
 ---
 name: image-annotation-labeling
-description: "Add numbered labels to images with explanations. For complex screenshots, trading charts, technical diagrams, or any image the user wants annotated. Uses PIL/Pillow to draw numbered circles + connecting lines + label boxes. Proven: 2026-07-14 XAUUSD trading chart annotation."
+description: "Add numbered labels to images with explanations"
 triggers:
   - "label image"
   - "annotate image"

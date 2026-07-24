@@ -1,6 +1,6 @@
 ---
 name: akal-cognitive-invariants
-description: "SUPERSEDED by governance/akal-cognitive-invariants. CLAP v2 — Bloom's Taxonomy as constitutional physics. Renamed to AKAL (عقل), collapsed into APEX THEORY four-dial architecture. See governance/akal-cognitive-invariants for current spec."
+description: "SUPERSEDED by governance/akal-cognitive-invariants. CLAP v2 — Bloom's Taxonomy as constitutional physics. Renamed to AKAL (عقل)"
 version: 2.0.0
 author: hermes-prime
 date: 2026-07-11

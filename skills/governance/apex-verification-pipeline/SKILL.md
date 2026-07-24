@@ -6,11 +6,15 @@ description: >
   implementation, seven axioms enforced. Falsifiable at execution time.
 triggers:
   - "apex compute"
+  - "apex intelligence"
   - "G score"
+  - "G-score"
   - "apex verification"
   - "apex gate"
   - "forge_evaluate"
   - "governance score"
+  - "F8 GENIUS"
+  - "apex G"
 version: "1.0.0"
 sealed: "2026-07-13"
 sovereign: "ARIF (F13)"
@@ -89,6 +93,7 @@ X = (successful_steps / total_steps) · consequence_stability
 
 ## Reference Files
 
+- `references/live-measurement-methodology.md` — **Live G-score computation from apex_metrics.db.** Governance-verdict classification (critical: failure codes include HOLD/SEAL/SABAR/VOID which are NOT errors), primitive derivation from `success/has_evidence/within_lease` columns, the P bottleneck diagnosis, trend bucketing, charting, and the two computation path warning (`apex_primitives.py` deprecated — counts governance verdicts as failures → G ≈ 0.10 instead of 0.71).
 - `references/apex-axiom-proofs-and-variant-mapping.md` — full axiom proofs, 4-variant mapping, A=Authority rationale, measurement laws, gate layer separation
 - `references/market-prediction-application.md` — APEX applied to market prediction: primitive→market mapping, CLARITY/CHAOS/STABLE states, verdict matrix, volume integration, real XAUUSD example
 

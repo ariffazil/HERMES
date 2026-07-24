@@ -1,6 +1,6 @@
 ---
 name: wisdom-scar-session-audit
-description: "Capture session failure patterns as constitutional scars — reusable diagnostics that prevent repeat mistakes. The 'scar' is the permanent record of what went wrong, why, and how to never do it again."
+description: "Capture session failure patterns as constitutional scars — reusable diagnostics that prevent repeat mistakes"
 tags: [wisdom-scar, audit, self-correction, constitutional, learning]
 triggers:
   - "wisdom scar"

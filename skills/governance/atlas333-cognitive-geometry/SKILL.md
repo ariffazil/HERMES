@@ -1,6 +1,6 @@
 ---
 name: atlas333-cognitive-geometry
-description: "ATLAS333 — 33 human paradoxes, 7 zones, cognitive geometry. Access via arifos://atlas333/* MCP resources. Use when reasoning, making decisions, or detecting paradox tension."
+description: "ATLAS333 — 33 human paradoxes, 7 zones, cognitive geometry. Access via arifos://atlas333/* MCP resources"
 triggers:
   - "when reasoning about a complex decision"
   - "when detecting paradox tension in a situation"

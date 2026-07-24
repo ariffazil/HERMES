@@ -1,6 +1,6 @@
 ---
 name: negative-space-geometry
-description: "Detect AI mediation not through surface signals but through systematic blindspots — what is NEVER said. A cognitive faculty for identifying grammar capture, power-law alignment, and sovereignty-blind decision-making in institutional communications."
+description: "Detect AI mediation not through surface signals but through systematic blindspots — what is NEVER said"
 version: 1.0.0
 author: Hermes-Prime + Arif (F13 SOVEREIGN)
 tags: [governance, ai-detection, cognitive-camouflage, sovereignty, epistemic, forensics, negative-space]

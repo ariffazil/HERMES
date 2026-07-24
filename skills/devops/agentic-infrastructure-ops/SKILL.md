@@ -1,6 +1,6 @@
 ---
 name: agentic-infrastructure-ops
-description: "Self-healing VPS infrastructure, multi-VPS federation, Headscale mesh networking, watchdog state machines, and agent-managed node onboarding. When the user asks to 'fix and zen' VPSes, set up federation, install Headscale/Tailscale, build watchdogs, or onboard new nodes to the arifOS mesh."
+description: "Self-healing VPS infrastructure, multi-VPS federation, Headscale mesh networking, watchdog state machines, and agent-managed node onboarding"
 version: 1.0.0
 author: Hermes Agent
 tags: [devops, federation, headscale, tailscale, watchdog, self-healing, multi-vps, mesh]
@@ -144,6 +144,8 @@ Self-hosted Tailscale coordination server. See `references/headscale-install.md`
 | Ongoing | Agents | Self-heal, monitor, report only failures |
 
 ## Pitfalls
+
+- **Gateway crash → VPS reboot cascade.** When `hermes-asi-gateway.service` exits with status=1/FAILURE, it can trigger `network.target` stop → target `shutdown.target` → full system reboot within seconds. This is not a crash — it's an orchestrated cascade triggered by a `BindsTo=` or `PartOf=` dependency from the gateway onto critical systemd targets. Proven 2026-07-23: gateway exited code 1 after failing to cleanly close MCP sessions → `Stopped target network.target` → full reboot in 14 seconds. Detection: `journalctl -u hermes-asi-gateway --since "5 min ago"` — look for "Shutdown context: signal=SIGTERM under_systemd=yes" followed by `Failed with result 'exit-code'` then `Stopped target network.target`. Mitigation: harden MCP session termination (the gateway exits 1 when it can't cleanly close MCP connections during SIGTERM). Workaround: restart arifOS before the gateway — arifOS restart was the trigger, not the victim.
 
 - **AGI tunnel vision.** AGI tends to jump to visualisation/dashboard before verifying infrastructure. Always enforce "infra before UI" sequence.
 - **Port conflicts on Ubuntu 25.10+.** Headscale defaults conflict with existing services. Check `ss -tlnp` before binding. Use alternative ports (9080 instead of 8080).

@@ -1,6 +1,6 @@
 ---
 name: federation-git-zen
-description: "Multi-repo git hygiene pipeline for the arifOS federation — test, stage, commit, push across all 8 repos with per-repo quirks handling. Load when Arif asks to 'git zen', 'clean up repos', 'commit everything', 'push all repos', 'dirty repos', 'git status across federation', or any multi-repo git maintenance task."
+description: "Multi-repo git hygiene pipeline for the arifOS federation — test, stage, commit, push across all 8 repos with per-repo quirks"
 tags: [git, federation, hygiene, multi-repo, zen, cleanup, ops]
 triggers:
   - "git zen"

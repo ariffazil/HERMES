@@ -1,6 +1,6 @@
 ---
 name: site-deployment-verification
-description: "Verify a deployed website against a claimed feature/route list. Checks live HTTP status, source files, content counts, rendering, redirects, and link freshness. Works for React SPA + reverse proxy (Caddy/Nginx) stacks."
+description: "Verify a deployed website against a claimed feature/route list"
 triggers:
   - "audit this deployment"
   - "verify all routes"

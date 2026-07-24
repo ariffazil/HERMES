@@ -1,6 +1,6 @@
 ---
 name: runtime-truth-attestation
-description: "Ensure deployed code matches source — detect runtime drift, build wheels, clean-install into venv, purge stale dist-packages, verify import paths, add boot-time attestation. Use when: deploying code, debugging patches that 'should work but don't', checking runtime vs source mismatch, fixing editable-install pollution, setting up one-venv-one-wheel deployment."
+description: "Ensure deployed code matches source — detect runtime drift, build wheels, clean-install into venv, purge stale dist-packages, verify import paths,"
 tags:
   - deployment
   - runtime-truth

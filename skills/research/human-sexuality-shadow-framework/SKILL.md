@@ -1,6 +1,6 @@
 ---
 name: human-sexuality-shadow-framework
-description: "Alignment mechanism + psychology framework. Shadow self-witnessing loop catches subtle misalignment (rationalizing, deflecting, performing). Also covers human sexuality, desire architecture, identity spectrum, trauma, power dynamics, void desire, shame encryption."
+description: "Alignment mechanism + psychology framework"
 triggers:
   - "human sexuality"
   - "shadow psychology"

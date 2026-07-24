@@ -1,6 +1,6 @@
 ---
 name: somatic-intelligence
-description: "Read bodies, movement, and nervous system states from images, descriptions, or behavioral patterns. Three-layer somatic abstraction: physiological (what's biologically happening — unanswerable from images), phenomenological (what bodily state is expressed), symbolic (what human meaning the posture carries). Also covers kernelizing somatic intelligence into agentic systems — agent interoception, proprioception, somatic markers, nervous system regulation, and failure-pattern memory."
+description: "Read bodies, movement, and nervous system states from images or descriptions. Three-layer somatic abstraction with agentic kernel integration."
 version: 1.0.0
 tags: [somatic, interoception, embodiment, nervous-system, governance, WELL, polyvagal, damasio, levine, feldenkrais]
 metadata:

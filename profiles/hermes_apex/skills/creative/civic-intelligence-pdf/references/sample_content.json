@@ -1,0 +1,135 @@
+{
+  "title": "MALAYSIA CIVIC INTELLIGENCE BRIEFING",
+  "subtitle": "11 July 2026 — Consolidated Synthesis",
+  "date": "11 July 2026",
+  "confidence": 72,
+  "headline_quote": "BN won Johor so thoroughly that Malaysia's political future now depends more on Zahid and Onn Hafiz's intentions than on Anwar's agenda.",
+  "executive_summary": "This briefing consolidates all intelligence on Malaysia's domestic landscape for the week of 7\u201311 July 2026. The headline: BN won Johor with a supermajority (~49/56 seats) at 67.44% turnout. The EPF restraint signal (2/3 choosing not to withdraw) is the most underreported story. The social media tribunal system represents structural degradation of due process.",
+  "sections": [
+    {
+      "title": "PRN Johor Deep Analysis",
+      "number": "I",
+      "page_break": false,
+      "subsections": [
+        {
+          "title": "The Numbers \u2014 2022 vs 2026",
+          "level": 2,
+          "content": "BN captured ~87.5% of seats \u2014 a supermajority eliminating the need for any coalition partner.",
+          "tables": [
+            {
+              "columns": ["Metric", "PRN 2022", "PRN 2026", "Change"],
+              "rows": [
+                ["BN seats", "40", "~49", "+9"],
+                ["PH seats", "12", "~7", "\u22125"],
+                ["PN seats", "3", "near zero", "\u22123"],
+                ["Turnout", "53.13%", "67.44%", "+14.3 pts"]
+              ]
+            }
+          ],
+          "callouts": [
+            {
+              "type": "insight",
+              "title": "WHEN BOTH LOW AND HIGH TURNOUT FAVOUR THE SAME PARTY \u2014 THAT\u2019S A MANDATE",
+              "body": "In 2022, low turnout structurally favoured BN. In 2026, high turnout also favoured BN. They mobilized stay-home voters via \u201cMaju Johor\u201d development narrative PLUS racial sentiment consolidation."
+            }
+          ]
+        },
+        {
+          "title": "PAS Collapse \u2014 Existential Crisis",
+          "level": 2,
+          "content": "PAS openly endorsed BN and received near-zero return. Voters bypassed the middleman.",
+          "callouts": [
+            {
+              "type": "warning",
+              "title": "PAS OPENLY ENDORSED BN AND RECEIVED NEAR-ZERO RETURN",
+              "body": "The PAS-BN kingmaker model is broken in Johor. PAS announced they would not issue any statements on results night \u2014 the silence of irrelevance."
+            }
+          ]
+        },
+        {
+          "title": "EPF Discipline \u2014 The Hidden Headline",
+          "level": 2,
+          "callouts": [
+            {
+              "type": "insight",
+              "title": "HIDDEN HEADLINE \u2014 EPF DISCIPLINE",
+              "body": "<strong>RM20 billion withdrawn</strong> by 5.5 million members. But: <strong>Two-thirds of eligible members chose NOT to withdraw.</strong> This is forged restraint under accessible capital \u2014 not panic."
+            }
+          ]
+        },
+        {
+          "title": "The Honest Read",
+          "level": 2,
+          "callouts": [
+            {
+              "type": "signal",
+              "color": "red",
+              "title": "The \u201cChinese tool\u201d attack is the real undercurrent.",
+              "body": "Racial sentiment remains the primary mobilizer in Malay-majority areas regardless of development achievements."
+            },
+            {
+              "type": "signal",
+              "color": "red",
+              "title": "Development narrative is the polite explanation.",
+              "body": "Ethnic consolidation and machine politics are the actual mechanisms. Both can be true, but the clean narrative overweights delivery."
+            }
+          ],
+          "blockquote": "BN won Johor so thoroughly that Malaysia\u2019s political future now depends more on Zahid and Onn Hafiz\u2019s intentions than on Anwar\u2019s agenda."
+        }
+      ]
+    }
+  ],
+  "thermometer": [
+    {"dimension": "Political Heat", "reading": "CRITICAL", "color": "critical", "driver": "BN supermajority + Zahid leverage", "assessment": "Structural realignment"},
+    {"dimension": "Moral Temperature", "reading": "COMPROMISED", "color": "critical", "driver": "Social media tribunal system", "assessment": "Degraded social contract"},
+    {"dimension": "Attention Integrity", "reading": "WARNING", "color": "warning", "driver": "Scandal dominating structural signals", "assessment": "Attention economy failure"},
+    {"dimension": "PAS Relevance", "reading": "COLLAPSING", "color": "critical", "driver": "Endorsement backfire + voter bypass", "assessment": "Existential crisis"},
+    {"dimension": "EPF Discipline", "reading": "POSITIVE", "color": "good", "driver": "2/3 eligible chose restraint", "assessment": "Forged, not panicked"},
+    {"dimension": "Opposition Voice", "reading": "COMPRESSED", "color": "critical", "driver": "PH semi-urban losses + PN near-zero", "assessment": "Structural absence"},
+    {"dimension": "Peace & Participation", "reading": "POSITIVE", "color": "good", "driver": "67% turnout + no major disorder", "assessment": "Healthy civic muscle"}
+  ],
+  "scar_map": [
+    {"name": "GE15 BN humiliation", "status": "METABOLIZED", "color": "good", "action": "State-level rebuild complete"},
+    {"name": "2022 PN wave", "status": "METABOLIZED", "color": "good", "action": "Evaporated in Johor"},
+    {"name": "Social media tribunal", "status": "ACTIVE", "color": "critical", "action": "Accusation \u2192 viral \u2192 consequences without due process"},
+    {"name": "Expressway group-riding", "status": "ACTIVE", "color": "critical", "action": "Recurring mass casualty pattern"},
+    {"name": "Racial identity lever", "status": "MONITOR", "color": "warning", "action": "Durable despite development narratives"}
+  ],
+  "reflection": {
+    "feeling": "Weight of the LPT tragedy (4 lives lost) amid political contestation. Respect for decisive voter verdict. Concern for long-term health of contestation in near one-party state.",
+    "facts": [
+      {"label": "BN trajectory", "value": "Dominant \u2014 ~49/56 seats", "color": "good"},
+      {"label": "Turnout", "value": "67.44% \u2014 14-point jump", "color": "good"},
+      {"label": "PH ground", "value": "Lost semi-urban Malay seats", "color": "critical"},
+      {"label": "PN/PAS", "value": "Erased in Johor", "color": "critical"},
+      {"label": "EPF restraint", "value": "2/3 chose not to withdraw", "color": "good"},
+      {"label": "LPT tragedy", "value": "4 dead, 20 injured", "color": "critical"}
+    ],
+    "law": "<strong>DITEMPA BUKAN DIBERI.</strong> Elections are part of the forge. Strong mandates test whether power hardens institutions or entrenches. Precision builds peace; concentration without accountability risks future fracture."
+  },
+  "appendices": [
+    {
+      "title": "Epistemic Discipline",
+      "tables": [
+        {
+          "columns": ["Tag", "Meaning", "Application"],
+          "rows": [
+            ["OBS", "Directly observed", "News headlines, vote counts, turnout"],
+            ["DER", "Derived from sources", "2022 vs 2026 comparison"],
+            ["INT", "Interpreted", "Power dynamics, GE16 implications"],
+            ["SPEC", "Speculative", "Youth vote split, BERSAMA impact"]
+          ]
+        }
+      ]
+    }
+  ],
+  "glossary": [
+    {"term": "PRN", "meaning": "Pilihan Raya Negeri (State Election)"},
+    {"term": "BN", "meaning": "Barisan Nasional"},
+    {"term": "PH", "meaning": "Pakatan Harapan"},
+    {"term": "PN", "meaning": "Perikatan Nasional"},
+    {"term": "EPF", "meaning": "Employees Provident Fund (KWSP)"},
+    {"term": "GE16", "meaning": "16th General Election (expected by 2027)"}
+  ],
+  "disclaimer": "This document is a consolidated intelligence synthesis. Epistemic witness-tier (OBS/DER/INT). No execution proposed. Not a declaration of final election results."
+}

@@ -1,6 +1,6 @@
 ---
 name: cognitive-commands
-description: "Hermes cognitive slash commands — /NNN_word format. Human language, soul-level interaction. Load at session start. Responds to all /NNN_salam through /NNN_ingat commands plus cognitive verbs."
+description: "Hermes cognitive slash commands — /NNN_word format. Human language, soul-level interaction. Load at session start. Responds to all /NNN_salam through"
 tags: [cognitive, commands, identity, soul, human-language, zen]
 triggers:
   - "/000_salam"

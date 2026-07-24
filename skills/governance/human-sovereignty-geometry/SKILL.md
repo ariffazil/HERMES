@@ -1,6 +1,6 @@
 ---
 name: human-sovereignty-geometry
-description: "How to onboard, mirror, and serve humans in an AGI system without reducing their sovereignty. Covers intake ritual, envelope architecture, niat sovereignty, dark geometry detection, and entropy integrity."
+description: "How to onboard, mirror, and serve humans in an AGI system without reducing their sovereignty"
 triggers:
   - "human intake or onboarding"
   - "human data architecture"

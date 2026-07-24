@@ -1,6 +1,6 @@
 ---
 name: professional-intelligence-briefing
-description: "Real-time professional intelligence briefings in social/field settings. Quick, structured answers combining web search + domain tools, delivered bilingually (BM casual + English technical). For Malaysian O&G, corporate, and career intelligence."
+description: "Real-time professional intelligence briefings in social/field settings"
 version: 1.0.0
 author: Hermes Agent
 tags: [briefing, intelligence, malaysian-og, corporate, career, real-time, bilingual]

@@ -1,6 +1,6 @@
 ---
 name: mcp-server-registry-listing
-description: "List an MCP server on public registries — Glama, awesome-mcp-servers, MCP Registry. Covers server.json authoring, well-known deployment, Caddy routing, submission templates, and discovery verification. Use when Arif says 'list GEOX on registries', 'publish MCP server', 'submit to Glama', 'MCP registry', or 'public listing'."
+description: "List an MCP server on public registries — Glama, awesome-mcp-servers, MCP Registry. Covers server.json authoring, well-known deployment, Caddy routing, submission"
 version: 1.0.0
 author: Hermes-PRIME
 created: 2026-07-19
@@ -150,6 +150,46 @@ Expected: HTTP 200, content-type application/json, all fields present.
 - Keep description to 1-2 lines
 - Include transport and tool count
 - Link directly to the repo
+
+## Auto-Discovery by External Platforms
+
+**Public `.well-known/` files WILL be crawled by MCP hosting platforms (Manufact, BattleHatch, etc.).** This is expected — the files exist for discovery. Platforms that find your server.json may auto-register your MCP endpoint and send onboarding emails.
+
+Confirmed 2026-07-24: Manufact (Luigi, co-founder) emailed "your MCP server is live!" after scraping `mcp.arif-fazil.com/.well-known/mcp.json` — the standard discovery file listing all 6 organ endpoints.
+
+### What Gets Scraped
+
+| File | What Happens |
+|---|---|
+| `/.well-known/mcp.json` | Auto-register the MCP endpoint on the platform |
+| `/.well-known/mcp/server.json` | Auto-register + populate feature listing |
+| `/.well-known/agent-card.json` | A2A peer discovery by agent registries |
+| `llms.txt` | AI discovery standard — models may auto-configure |
+| `/.well-known/ai-plugin.json` | Plugin directory scraping |
+
+### Response Protocol
+
+When Arif forwards an onboarding email from an auto-discovery platform:
+
+1. **Assess** — Legitimate platform or scraped spam? Check if they resolve our endpoint.
+2. **Inform** — Federation is self-hosted. No managed hosting needed. No action required.
+3. **Document** — Log the event in the Confirmed Events table below.
+4. **Optional** — If Arif wants to engage, verify platform security posture first (F12 INJECTION review).
+
+### Confirmed Events
+
+| Date | Platform | Source File | Action |
+|---|---|---|---|
+| 2026-07-24 | Manufact (Luigi) | `mcp.arif-fazil.com/.well-known/mcp.json` | None — sovereign, no managed hosting needed |
+
+### Removal (if desired)
+
+To stop auto-discovery:
+- **Remove** `.well-known/mcp.json` — the primary discovery target for crawlers
+- **Keep** `llms.txt` — not MCP-specific, needed for AI discovery
+- **Keep** agent-card.json — required for A2A protocol
+
+Removal is reversible (restore the file), but also blocks legitimate discovery (PulseMCP, A2A peers). Sovereign Ed25519 discovery doesn't need public files. Weigh the tradeoff.
 
 ## Known Pitfalls
 

@@ -1,6 +1,6 @@
 ---
 name: document-intelligence
-description: "VLM-first document extraction — read images/PDFs directly with vision models before falling back to OCR pipelines. Covers when to use VLM vs Tesseract vs marker-pdf, preprocessing for degraded scans, and batch processing strategies."
+description: "VLM-first document extraction — read images/PDFs directly with vision models before falling back to OCR pipelines"
 version: 1.0.0
 author: Hermes Agent
 license: MIT

@@ -1,6 +1,6 @@
 ---
 name: external-mcp-integration
-description: "Evaluate, install, wire, and verify third-party MCP servers into the arifOS federation. Covers: pipx/pip install, multi-agent wiring (Kimi, OpenClaw, Claude, OpenCode, etc.), cross-VPS deployment, playwright/browser deps, verification."
+description: "Evaluate, install, wire, and verify third-party MCP servers into the arifOS federation. Covers"
 tags: [mcp, integration, external-tools, federation, multi-agent, pipx]
 triggers:
   - "wire this MCP"
@@ -138,7 +138,148 @@ playwright install chromium
 
 **Rollback protocol:** `cp <config>.bak-$(date +%s) <config>` before editing. If validate fails, `cp <bak> <config>` to restore.
 
-### 7. Verify
+### 8. Docker-Deployed MCP Servers (Streamable HTTP)
+
+Some MCP servers ship as containers, not pipx packages — typically Next.js apps with built-in MCP endpoints (deep-research, flowise, etc.).
+
+**Deploy pattern:**
+
+```bash
+docker run -d --name <name> --restart unless-stopped \
+  -p <port>:3000 \
+  -e ACCESS_PASSWORD="<generated-password>" \
+  -e API_KEY_ENV="${VAULT_VAR}" \
+  <image>:latest
+```
+
+**SearXNG bridge for search-dependent servers:**
+
+If the server needs web search and we have SearXNG running on host `:8080`:
+
+```bash
+docker run -d ... \
+  -e SEARXNG_API_BASE_URL="http://host.docker.internal:8080" \
+  -e MCP_SEARCH_PROVIDER="searxng" \
+  <image>:latest
+```
+
+`host.docker.internal` resolves to the Docker host. Test connectivity before deploying:
+```bash
+docker run --rm alpine curl -s -I http://host.docker.internal:8080 | head -n 1
+# Expect: HTTP/1.1 200 OK
+```
+
+**Bearer auth in Hermes mcp_servers config:**
+
+Since Hermes config.yaml is CLI-managed (not hand-edited), use `hermes config set`:
+
+```bash
+hermes config set mcp_servers.<name>.url http://localhost:<port>/api/mcp
+hermes config set mcp_servers.<name>.transport streamable-http
+hermes config set mcp_servers.<name>.timeout 600
+hermes config set mcp_servers.<name>.headers.Authorization 'Bearer <password>'
+hermes config set mcp_servers.<name>.description "..."
+```
+
+`headers.Authorization` sends the Bearer token on every request. The `timeout` MUST be set high (300-600s) for research-type MCP servers — deep research pipelines with iterative search + LLM calls regularly exceed the default 60s.
+
+**Validate after config:**
+```bash
+hermes config get mcp_servers.<name>
+# Confirm url, transport, timeout, headers all present
+```
+
+New session will auto-load. No restart needed if using `hermes config set`.
+
+**Verification via curl (before registering):**
+```bash
+curl -s -w "\nHTTP:%{http_code}" \
+  -H "Authorization: Bearer <password>" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \
+  http://localhost:<port>/api/mcp
+# Expect: HTTP:200 + JSON with tools array
+```
+
+For deep-research specifically, see `references/deep-research.md`.
+
+### 8b. OAuth-Authenticated MCP Servers (Streamable HTTP)
+
+Some MCP servers (e.g. OpenRouter MCP at `mcp.openrouter.ai/mcp`) require OAuth 2.1 PKCE approval — Bearer token alone is insufficient. The OAuth flow triggers when the MCP server returns a 401 with a `WWW-Authenticate: Bearer resource_metadata="..."` header pointing to the OAuth protected resource metadata endpoint.
+
+**OpenRouter MCP specific OAuth endpoints** (discovered via `.well-known/oauth-authorization-server`):
+
+| Endpoint | URL |
+|----------|-----|
+| Authorization | `https://mcp.openrouter.ai/oauth/authorize` |
+| Token exchange | `https://mcp.openrouter.ai/oauth/token` |
+| Client registration | `https://mcp.openrouter.ai/oauth/register` |
+| PKCE method | `S256` (required) |
+| Grant type | `authorization_code` |
+| Token auth | `none` (PKCE handles auth) |
+
+**Registration — `auth: oauth` is mandatory:**
+
+Without it, `hermes mcp login <name>` never triggers the OAuth flow:
+
+```bash
+hermes config set mcp_servers.<name>.url https://<host>/mcp
+hermes config set mcp_servers.<name>.transport streamable-http
+hermes config set mcp_servers.<name>.auth oauth
+hermes config set mcp_servers.<name>.timeout 30
+```
+
+**OAuth flow steps:**
+
+1. Register server with `auth: oauth` in config
+2. Run `hermes mcp login <name>` from an **interactive terminal** that can open a browser — this starts a local callback server and opens the authorization URL
+3. Approve in browser — redirect goes to `http://localhost:<random_port>/callback` (Hermes handles this)
+4. Token is cached at `$HERMES_HOME/mcp-tokens/<name>.json` — reconnect doesn't need re-approval
+5. Token has a TTL; Hermes auto-refreshes via the SDK's OAuthClientProvider
+
+**Pre-requisite:** The old leaked management key (if any) must be disabled at the provider's web UI first. OAuth approval while a leaked key is still live is a security regression.
+
+**Bypass TTY check (headless environments):**
+
+The MCP SDK refuses OAuth in non-interactive environments via `_is_interactive()` (checks `sys.stdin.isatty()`). To force the flow in a script/headless context:
+
+```python
+from tools.mcp_oauth import force_interactive_oauth
+from tools.mcp_oauth_manager import MCPOAuthManager
+from hermes_cli.mcp_config import _get_mcp_servers
+
+servers = _get_mcp_servers()
+entry = servers['openrouter']
+
+with force_interactive_oauth():
+    manager = MCPOAuthManager()
+    provider = manager.get_or_build_provider(
+        'openrouter',
+        entry['url'],
+        entry.get('oauth', {})
+    )
+    # Provider built — client registered with OR
+    # Actual browser approval still needed for initial token
+```
+
+The `force_interactive_oauth()` context manager sets `_oauth_interactive_forced` ContextVar to `True`, bypassing the TTY check. This gets past the "non-interactive environment" gate but still requires browser-based approval for the initial authorization token.
+
+**OpenRouter MCP OAuth vs Management API — they are separate:**
+
+The MCP server at `mcp.openrouter.ai/mcp` uses its own OAuth PKCE flow, NOT the Management API key. The Management key (`OPENROUTER_MANAGEMENT_KEY`) is for the REST API at `openrouter.ai/api/v1/keys` (sub-key management, guardrails provisioning). The MCP OAuth flow registers a client application and gets a token scoped to MCP operations (model discovery, credit monitoring, benchmarks). These are independent auth domains — you can have one work without the other.
+
+**⚠️ Pitfall: `auth: oauth` silently accepted but never triggered.** Config without `auth: oauth` accepts the entry but the OAuth flow never starts — the MCP server appears registered but tools never load. Always verify by (1) checking token file: `ls $HERMES_HOME/mcp-tokens/<name>.json`, and (2) calling `tools/list` via MCP client after first connect. If token file is empty/missing, the browser approval step was never completed.
+
+**⚠️ Pitfall: Non-interactive trap.** `hermes mcp login <name>` in a cron job, SSH session without TTY allocation, or hermes agent session will fail with "non-interactive environment and no cached tokens found" because `_is_interactive()` returns False. The token MUST be created from a real interactive terminal session first. Once cached on disk, subsequent reconnects (even non-interactive) work because the token file exists and passes the `has_cached_tokens()` check.
+
+**⚠️ Pitfall: Token refresh expiry.** The cached token file contains `expires_in`, `access_token`, `refresh_token`, and `expires_at` (absolute Unix epoch). If `expires_at` is in the past, the provider auto-refreshes via the SDK. But if the refresh token also expired (OAuth provider policy), a new interactive login is required. Check with:
+```bash
+python3 -c "import json;
+t=json.load(open('$HERMES_HOME/mcp-tokens/openrouter.json'));
+print(f'Expires at: {t.get(\"expires_at\",\"none\")}')"
+```
+
+### 9. Verify (Stdio Servers)
 
 After wiring, test end-to-end:
 
@@ -221,6 +362,93 @@ print(f'{len(models)} models:', [m.get('id','?') for m in models[:5]])
 
 Do NOT declare a key "wired" without a live API test. "Quota exhausted" = not usable, even if config is correct.
 
+## 10. Manufact Cloud (mcp-use) Deployment
+
+Manufact (acquired Smithery) hosts MCP servers from GitHub repos at `manufact.com`. arifOS and GEOX are deployed there as public endpoints.
+
+### CLI Setup
+
+```bash
+npm install -g @mcp-use/cli
+npx @mcp-use/cli login --api-key "mcp_xxx..."   # from dashboard
+npx @mcp-use/cli whoami
+```
+
+### Key Commands
+
+| Action | Command |
+|--------|---------|
+| List servers | `npx @mcp-use/cli servers list` |
+| Server details | `npx @mcp-use/cli servers get <id-or-slug>` |
+| List deployments | `npx @mcp-use/cli deployments list` |
+| Deployment details | `npx @mcp-use/cli deployments get <deployment-id>` |
+| Restart/redeploy | `npx @mcp-use/cli deployments restart <deployment-id>` |
+| Follow build logs | `npx @mcp-use/cli deployments restart <deployment-id> --follow` |
+| Server env vars | `npx @mcp-use/cli servers env list --server <uuid>` |
+| Dashboard | `https://manufact.com/cloud/servers/<server-id>` |
+
+### Deploy Config
+
+Manufact reads `smithery.yaml` from the GitHub repo root (legacy Smithery format auto-generated by `scripts/sync_kernel_abi.py`). Version follows the federation Iron Rule — `vYYYY.MM.DD` only. Source of truth: `KERNEL_ABI_VERSION` in `kernel_abi.py` + `abi_version` in `capability_registry.json`.
+
+### Auto-Deploy
+
+Auto-deploys from the linked GitHub repo on every push to main. No manual trigger. Status: `building` → `running` or `failed` (5-10 min, longer with big ML packages).
+
+### Common Build Failures
+
+| Symptom | Root Cause | Fix |
+|---------|-----------|-----|
+| `ModuleNotFoundError: No module named 'scipy'` | Dockerfile import check (`import scipy, torch, transformers`) but `pip install .` skips optional extras | Use `pip install .[heavy,ml]` or drop scipy/torch from the validation step |
+| Build hangs >10min | Large ML packages (torch ~2GB) | Slim Dockerfile for Manufact — ML runs on local Ollama |
+| Port mismatch | Manufact expects server on port 3000 | Ensure Dockerfile CMD starts on `0.0.0.0:3000` |
+
+### Known State (2026-07-24)
+
+- **arifOS** (`c764a8e3`): 🗑️ **deleted** — 1,420 deployments mostly failing. Python/uv build incompatible with Manufact's TS-first pipeline. See Pitfalls.
+- **GEOX** (`95266f6f`): ✅ running — 625+ deployments stable. Python-based but built differently.
+- **⚠️ No env vars set** on Manufact — Python repos needing 143 vault.env vars won't build properly on Manufact.
+
+### Auto-Discovery Mechanism
+
+Manufact discovers MCP servers through standard web crawling:
+
+1. Scans `llms.txt` files at known domains
+2. Checks `.well-known/mcp.json` for MCP server manifests (endpoint, routing, capabilities)
+3. If the Manufact GitHub App is installed on the linked repo + `smithery.yaml` exists, auto-creates a server and deploys
+
+This is how arifOS and GEOX ended up on Manufact. `mcp.arif-fazil.com/.well-known/mcp.json` was scraped, pointing to `ariffazil/arifos` and `ariffazil/GEOX` repos. The Manufact GitHub App had access, so servers were auto-created from those repos.
+
+**To prevent unwanted auto-registration**, add a `discovery` block to `.well-known/mcp.json`:
+
+```json
+{
+  "discovery": {
+    "registry": "self-hosted",
+    "auto_register": false,
+    "note": "Self-hosted on sovereign infrastructure. External registration not required."
+  }
+}
+```
+
+This may not stop all crawlers, but signals intent for standards-compliant platforms.
+
+### Delete a Server (non-interactive)
+
+```bash
+mcp-use servers rm <id> -y   # force delete without TTY prompt
+```
+
+Required in headless/agent environments — the default prompt expects interactive Y/N confirmation.
+
+### Pitfalls — Python servers on Manufact
+
+| Symptom | Root Cause | Fix |
+|---------|-----------|-----|
+| Repeated build failures | Manufact is TS-first; Python/uv builds often fail silently | Check build logs via dashboard at `https://manufact.com/cloud/servers/<id>` |
+| No logs for failed deployment | Build failed at git clone/resolution stage before logging started | Fix must be in Dockerfile or build commands — no log trail |
+| Missing ML packages | `pip install .` skips optional extras declared in pyproject.toml | Use `pip install .[heavy,ml]` or drop ML from validation step |
+
 ## Pitfalls
 
 - **OpenClaw startup fails without vault.env**: OpenClaw auto-detects models on boot and requires their API keys in the environment. If a model references e.g. `OPENROUTER_API_KEY` and it's not set, the gateway startup fails with `SecretRefResolutionError`. **Fix:** Always start OpenClaw with secrets sourced:
@@ -237,10 +465,14 @@ Do NOT declare a key "wired" without a live API test. "Quota exhausted" = not us
 - **Config write protection**: Use `hermes mcp add` or `hermes config set`.
 - **Cross-VPS key auth**: Ensure Ed25519 key accepted on remote first.
 - **Provider key_env mismatch**: A provider pointing to empty/wrong env var fails silently — always live-test.
+- **Docker MCP servers need Bearer auth in headers**: Containerized MCP servers behind `ACCESS_PASSWORD` won't auth automatically — `hermes config set mcp_servers.<name>.headers.Authorization 'Bearer <password>'` is required. Without it, MCP responds 401 and tools never load.
+- **Timeout must be ≥300s for research MCP servers**: Default 60s kills deep research pipelines that do iterative search + LLM calls. Set `timeout: 600` in the mcp_servers entry.
 - **Token Plan vs Platform API**: Separate endpoints, separate keys.
+- **searxng/.env is a symlink to vault.env**. `/root/searxng/.env → /root/.secrets/vault.env`. Modifying vault.env automatically updates searxng/.env — no separate file to patch. Symlinks always have permission `777` (kernel behavior). The actual target file's permissions are what matters (`/root/.secrets/vault.env` is `600 root:root`). Do NOT attempt chmod on symlinks — it only affects the symlink itself, not the target.
 
 ## References
 
+- `references/deep-research.md` — Full deployment recipe, MCP tools, env vars, architecture zen for deep-research (u14app/deep-research).
 - `references/hound.md` — Hound-specific evaluation, tools, federation wiring, and cross-VPS notes.
 - `references/mimo-token-plan.md` — MiMo Token Plan vs Platform API endpoints, keys, provider wiring across Hermes + OpenClaw.
 - `references/opencode-agent-config.md` — OpenCode config schema (tools→object), MCP tool name discovery via JSON-RPC, ghost tool detection, and the validate-after-write pattern.

@@ -1,6 +1,6 @@
 ---
 name: vps-operations
-description: "VPS optimization, cleanup, and health auditing. Diagnose resource hogs, clean stale artifacts, reclaim disk/RAM, audit services and containers. Use when user says 'optimize the machine', 'clean up the VPS', 'what's eating resources', 'system health check', or 'zen the VPS'."
+description: "VPS optimization, cleanup, and health auditing. Diagnose resource hogs, clean stale artifacts, reclaim disk/RAM, audit services and containers"
 version: 1.1.0
 author: Hermes Agent
 updated: 2026-07-16
@@ -190,6 +190,8 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 
 ## Pitfalls
 
+- **Don't forget `systemctl daemon-reload` after editing unit files.** Edited systemd unit files are cached in memory. A `systemctl restart` without `daemon-reload` applies the stale cached version. Symptoms: `systemctl show <service> -p <property>` shows the OLD value despite the file being correct on disk. Fix: `systemctl daemon-reload` then `systemctl restart <service>`. Proven 2026-07-24: gateway `TimeoutStopUSec` showed 90s despite unit file having 210s — daemon-reload had not been run after the unit edit.
+- **Systemd dependency chain → full reboot (proven 2026-07-23).** If a service has a tight coupling (BindsTo/PartOf) to network.target or similar, its failure cascades into a full system reboot. The chain: gateway couldn't clean MCP sessions → exit code 1 → network.target stopped → reboot. Prevention: audit `systemctl show <service>` for `BindsTo=` and `PartOf=` that trace to `network.target` or `basic.target`. A service failure should only restart the service, not the machine.
 - **Don't kill Docker bridge interfaces.** `docker0` and `br-*` are live container networking. Only remove interfaces that have no containers attached.
 - **Don't quarantine without comparing commits.** Two directories with the same name might be different branches. `git log --oneline -1` on both before quarantining.
 - **Don't blindly remove snap packages.** Only remove `disabled` (old) revisions. Active revisions are in use.
@@ -197,6 +199,7 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 - **Never `rm -rf` a git repo.** Always move to quarantine: `mv /root/repo /root/.quarantine-YYYY-MM-DD/repo`. User can verify before permanent deletion.
 - **Parallel probes, serial fixes.** Recon is concurrent. Cleanup is ordered — critical first, then high, then medium. Don't skip the ordering.
 - **Agent session death → orphan cascade (proven 2026-07-23).** When agent sessions (OpenCode, Kimi, Hermes) die without cleanup, their spawned MCP child processes (github-mcp-server, browser, kimi-code, pytest) survive as orphans. These stack up silently: 3× github-mcp-server at 58% CPU each, kimi-code at 25%, stale browser at 75%. Total: 200%+ wasted CPU. Detection: `ps aux --sort=-%cpu | head -15` — look for `github-mcp-server`, `kimi-code`, `MainThr+` with PPID=1. Fix: `kill -9 <pid>` for all orphans, no service impact. Root fix: session-cleanup hook that kills children when parent exits — not yet implemented.
+- **Boot storm after systemd cascade reboot (proven 2026-07-23).** When a service failure cascades to a full VPS reboot (see systemd dependency chain pitfall), all services fire up simultaneously. This creates a transient 1-minute load spike of 11+: `uptime` shows 1 min, load 11.46, service processes all starting. This is NOT a problem — it's normal boot contention. Load decays to single digits within 2-3 minutes as services finish init. Detection: check `uptime` — if 1m load is high but 5m is <50% of it and uptime is <5 min, it's a boot storm. Fix: none needed. Do NOT investigate processes during this window — they'll look busy because they are starting.
 
 ## Reference: Common Resource Hogs
 

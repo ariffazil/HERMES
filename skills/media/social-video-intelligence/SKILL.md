@@ -1,6 +1,6 @@
 ---
 name: social-video-intelligence
-description: "Multi-platform social video content access and analysis. When YouTube is blocked (common on cloud IPs), fall back to TikTok or Instagram. Covers TikTok video discovery via tikwm.com API, browser-based playback, frame capture via browser_vision, and the multi-platform fallback chain. Not a YouTube-specific tool — this is the platform-agnostic layer."
+description: "Multi-platform social video content access and analysis"
 created: 2026-07-13
 tags: [media, tiktok, youtube, instagram, social-media, video-analysis, browser]
 ---

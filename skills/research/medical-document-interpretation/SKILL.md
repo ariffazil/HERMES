@@ -1,6 +1,6 @@
 ---
 name: medical-document-interpretation
-description: Interpret Malaysian medical documents (CT reports, radiology forms, procedure reports, blood results) and explain them in simple Bahasa Melayu. Covers common tests, terminology, hospital logistics, and post-surgery recovery guidance.
+description: Interpret Malaysian medical documents (CT reports, radiology forms, procedure reports, blood results) and explain them in simple Bahasa Melayu
 tags: [medical, malaysia, hospital, report, radiology, surgery, bm]
 ---
 

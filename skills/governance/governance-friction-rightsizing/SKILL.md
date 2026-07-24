@@ -1,6 +1,6 @@
 ---
 name: governance-friction-rightsizing
-description: "Systematically audit and right-size human approval gates in a governed agentic system — distinguishing constitutional (must stay) from implementation friction (can be removed/automated). Covers the full pipeline: sweep → classify → sequence→ patch → sync-runtime. Designed for governed systems where autonomy is blocked by over-gating."
+description: "Systematically audit and right-size human approval gates in a governed agentic system — distinguishing constitutional (must stay) from implementation friction"
 version: 1.0.0
 tags: [governance, autonomy, friction, rightsizing, risk-class, gates, human-confirmation]
 category: governance
@@ -227,7 +227,12 @@ A recurring failure pattern: when the user is blocked on a basic task, agents pr
 
 **Rule:** When the user is trying to accomplish a specific task, only fix things that block that task. Completeness items, ecosystem metadata, and architectural polish are P2 unless they directly block the user's current objective. Pattern proven 2026-07-19: Arif had to push back three times against proposals to fix agent.json, Caddy SPA fallback, and MCP agent discovery — he just wanted the SCT to log into the GUI.
 
+## Hermes Agent Runtime Gates (Fail-Closed Pattern)
+
+For Hermes Agent specifically, governance gates can be implemented as `pre_tool_call` hook plugins — no core source modification needed, survives `hermes update`. See `references/hermes-fail-closed-gate-pattern.md` for the full pattern: plugin skeleton, cache design, fail-closed guarantees, and operational deployment sequence. Forged 2026-07-24 from the mcp-health-gate and model_switch.py gate implementations.
+
 ## References (see references/ directory for session-specific traces)
 
 - `references/150-gate-audit-2026-07-13.md` — Full audit results: 84 gates in arifOS, 39 in A-FORGE, 31+ in AAA+organs
 - `references/cooling-infra-activation-2026-07-12.md` — Hybrid path activation of dormant cooling infra under kernel block
+- `references/hermes-fail-closed-gate-pattern.md` — Hermes Agent `pre_tool_call` hook plugin pattern for fail-closed runtime gates. Full plugin skeleton, mcp-health-gate implementation, cache design, operational deployment sequence.

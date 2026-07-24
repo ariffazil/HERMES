@@ -1,6 +1,6 @@
 ---
 name: image-text-editing
-description: Edit existing images to add, replace, or remove text using PIL/Pillow. Use when the user wants to modify a screenshot, document image, or photo to add/replace text content while preserving the original format exactly.
+description: Edit existing images to add, replace, or remove text using PIL/Pillow
 trigger: User provides an image and asks to add, change, or remove text; user says "same format", "exact copy", "just add", "change the value"; user sends a screenshot and wants modifications to it.
 ---
 

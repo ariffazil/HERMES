@@ -1,7 +1,7 @@
 ---
 name: submission-readiness-audit
 title: Submission Readiness Audit — Deadline-Driven Gap Analysis for Federation Submissions
-description: "Reverse-engineer the gap between current state and a hard external deadline (conference, journal, internal governance review). Produce a Tier 1/2/3 prioritized gap list, a 3-option recommendation (A submit-as-is, B extend to spec, C defer), and a federated action plan. Use when Arif asks 'are we ready for X', 'what's needed to submit', 'list down what's needed', 'is the deadline realistic', or names a specific submission target with a date."
+description: "Reverse-engineer the gap between current state and a hard external deadline. Produces a Tier 1/2/3 gap list and a 3-option"
 version: 1.1.0
 author: arifOS Federation (Hermes agent, on F13 SOVEREIGN directive, 2026-07-03; v1.1 supplements stake-aware + output-shape + forced-stop patterns, 2026-07-03)
 license: MIT

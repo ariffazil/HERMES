@@ -1,7 +1,7 @@
 ---
 name: scientific-manuscript-forge
 title: Scientific Manuscript Forging — Falsifiable Model Manuscripts with GEOX Receipts
-description: "Forge publication-grade scientific manuscripts for falsifiable domain models (geology, biology, economics, etc.). Pipeline: domain research → matplotlib figures → HTML wrapper with print CSS → weasyprint PDF → GEOX claim registration + evidence ledger. Includes the 'YELLOW band tightening' discipline for honest peer-review cycles."
+description: "Forge publication-grade scientific manuscripts for falsifiable domain models"
 version: 1.0.0
 author: Hermes (for Arif F13 SOVEREIGN)
 license: MIT

@@ -1,6 +1,6 @@
 ---
 name: akal-cognitive-invariants
-description: "AKAL (عقل) — Five cognitive kernel invariants + three APEX dial integrations (PRESENT, ENERGY-ENTROPY, AMANAH). Wired into live kernel. All 5 MCP tools call AKAL hooks."
+description: "AKAL (عقل) — Five cognitive kernel invariants + three APEX dial integrations (PRESENT, ENERGY-ENTROPY, AMANAH)"
 version: "2.2"
 author: ARIF (F13)
 date: 2026-07-11

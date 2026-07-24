@@ -1,6 +1,6 @@
 ---
 name: sovereign-conversation-protocol
-description: "How to hold deep, sensitive human conversations without overclaiming inner truth. The four-layer framework for discussing human intention. Epistemic rigor during emotional vulnerability."
+description: "How to hold deep, sensitive human conversations without overclaiming inner truth. The four-layer framework for discussing human intention. Epistemic rigor"
 triggers:
   - "human asks about their own darkness"
   - "human shares vulnerability"

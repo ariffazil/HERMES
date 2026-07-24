@@ -1,6 +1,6 @@
 ---
 name: spec-audit
-description: "Audit an implementation against an external published protocol specification or API standard. Multi-dimensional gap analysis with severity grading — maps each spec dimension (schema, lifecycle, transport, discovery, security, serialization) against live implementation code."
+description: "Audit an implementation against an external published protocol specification or API standard"
 version: 1.1.0
 author: Hermes Agent
 license: MIT

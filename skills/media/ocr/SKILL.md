@@ -1,6 +1,6 @@
 ---
 name: ocr
-description: Use when extracting text from images or scanned documents -- receipts, screenshots, whiteboard photos, or any image-only text. Handles TIFF, PNG, JPEG, BMP, WEBP, PDF pages via pytesseract + Tesseract. Not for born-digital PDFs (use text extraction instead).
+description: Extract text from images and scanned documents — receipts, screenshots, whiteboard photos
 version: 1.0.0
 author: Hermes Agent
 license: MIT

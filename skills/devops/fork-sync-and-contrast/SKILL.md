@@ -1,6 +1,6 @@
 ---
 name: fork-sync-and-contrast
-description: "Sync a personal fork with upstream, rebase local commits, categorize the delta (good/meh/bad), and produce a human-readable contrast analysis. Works for any forked repo with a two-remote setup."
+description: "Sync a personal fork with upstream, rebase local commits, categorize the delta (good/meh/bad), and produce a human-readable contrast analysis"
 version: 1.0.0
 author: Hermes
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: human-envelope-architecture
-description: "Build and govern human envelopes — self-sovereign profiles for any human entering the arifOS federation. Includes the 5-axis soul geometry intake, the niat sovereignty protocol, and the envelope schema."
+description: "Build and govern human envelopes — self-sovereign profiles for any human entering the arifOS federation"
 triggers:
   - "onboard a new human"
   - "human profile"

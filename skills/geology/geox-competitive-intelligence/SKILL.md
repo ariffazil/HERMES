@@ -1,6 +1,6 @@
 ---
 name: geox-competitive-intelligence
-description: "Competitive positioning and benchmark design for GEOX against incumbent geoscience platforms (SLB/DELFI, Halliburton/DS365, Petronas TriCipta AI, vendor AI tools). Proves GEOX's wedge: intelligence and falsification layer, not workflow replacement."
+description: "Competitive positioning and benchmark design for GEOX against incumbent geoscience platforms (SLB/DELFI, Halliburton/DS365, Petronas TriCipta AI, vendor AI tools)"
 version: 1.0.0
 author: sovereign
 tags: [GEOX, competitive, benchmark, positioning, intelligence, falsification]

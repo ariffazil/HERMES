@@ -1,6 +1,6 @@
 ---
 name: wealth-commodity-dashboard
-description: "Manage the three WEALTH commodity dashboards — Gold, Brent Crude (Oil), Natural Gas — at arif-fazil.com/{gold,oil,gas}. Live data, temporal SOT, dynamic Technical Forge. When: dashboard broken, stale data, add feature, create new commodity dashboard, 'fix site', 'chart salah', 'data basi'."
+description: "Manage the three WEALTH commodity dashboards — Gold, Brent Crude (Oil), Natural Gas — at arif-fazil.com/{gold,oil,gas}"
 version: 1.0.0
 tags: [wealth, dashboard, gold, oil, gas, commodity, live-data, caddy, temporal-intelligence]
 ---

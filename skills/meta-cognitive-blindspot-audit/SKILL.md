@@ -1,6 +1,6 @@
 ---
 name: meta-cognitive-blindspot-audit
-description: Federated multi-agent blindspot audit for Hermes — systematic mapping of execution, epistemic, and dependency gaps using F7 (Humility/inward) and cross-agent triangulation. Invented 2026-07-10 during federation perimeter audit with Gemini + 888.
+description: Federated multi-agent blindspot audit for Hermes — systematic mapping of execution, epistemic, and dependency gaps using F7 (Humility/inward) and cross-agent
 category: cognitive-commands
 trigger: When Arif says 'audit your blindspots', 'perimeter audit', 'map your void', 'evaluate your operational limits', 'how do you fail', 'what can go wrong that you cannot see', or any variant requesting Hermes self-assessment of structural gaps.
 author: Hermes (forged 2026-07-10)
