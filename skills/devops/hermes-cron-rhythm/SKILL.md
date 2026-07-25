@@ -397,12 +397,69 @@ From `cron/scheduler.py` and `cron/jobs.py`:
 
 ### Fixing Drift
 
-**Per-job fix:**
-```python
-cronjob(action='update', job_id='...', model={'model':'current-model','provider':'current-provider'})
+**CLI limitation: `hermes cron edit` has NO `--model` or `--provider` flags.** Despite the `cronjob(action='update', ...)` tool accepting model/provider as params, the shell-level `hermes cron edit` command does not expose them. You cannot fix model drift via CLI — direct `jobs.json` editing is required.
+
+**Per-job fix (direct JSON edit):**
+```bash
+# 1. Backup
+cp ~/.hermes/cron/jobs.json ~/.hermes/cron/jobs.json.bak-$(date +%Y%m%d%H%M%S)
+
+# 2. Edit model/provider fields for the target job:
+python3 -c "
+import json
+with open('/root/.hermes/cron/jobs.json') as f:
+    data = json.load(f)
+for j in data['jobs']:
+    if j['id'] == '<JOB_ID>':
+        j['model'] = 'deepseek-v4-flash'
+        j['provider'] = 'deepseek'
+        print(f'Fixed: {j.get(\"name\")}')
+with open('/root/.hermes/cron/jobs.json', 'w') as f:
+    json.dump(data, f, indent=2, default=str)
+"
 ```
 
-This pins the job to the current model, clearing the snapshot mismatch. Alternatively, passing `model={}` will rebase without pinning, but the job will drift again on the next model change.
+This pins the job to the current model, clearing the snapshot mismatch. Model/provider are stored as **simple string fields** on each job dict, not nested objects.
+
+**Rebase an unpinned job without pinning:** Direct JSON edit — set `model` and `provider` to empty string (or remove them) to trigger fresh snapshot capture on next run. The job will drift again on the next model change.
+
+**Bulk fix — find + fix all drifted jobs:**
+```bash
+python3 -c "
+import json, yaml, os, shutil
+from datetime import datetime
+
+home = os.path.expanduser('~/.hermes')
+with open(f'{home}/config.yaml') as f:
+    cfg = yaml.safe_load(f) or {}
+m = cfg.get('model', {})
+cur_prov = (m.get('provider','') if isinstance(m,dict) else '').strip()
+cur_model = (m.get('default','') or m.get('model','') if isinstance(m,dict) else (m if isinstance(m,str) else '')).strip()
+
+with open(f'{home}/cron/jobs.json') as f:
+    data = json.load(f)
+
+fixed = []
+for j in data['jobs']:
+    if j.get('no_agent'): continue
+    old_m = str(j.get('model','')).strip()
+    old_p = str(j.get('provider','')).strip()
+    if old_m != cur_model or old_p != cur_prov:
+        if old_m or old_p:  # skip empty/unset
+            j['model'] = cur_model
+            j['provider'] = cur_prov
+            fixed.append(j.get('name','?'))
+
+if fixed:
+    import shutil
+    shutil.copy2(f'{home}/cron/jobs.json', f'{home}/cron/jobs.json.bak-{datetime.now().strftime(\"%Y%m%d%H%M%S\")}')
+    with open(f'{home}/cron/jobs.json', 'w') as f:
+        json.dump(data, f, indent=2, default=str)
+    print(f'Fixed {len(fixed)} jobs: {fixed}')
+"
+```
+
+**Proven 2026-07-25:** Model Drift Watchdog (this session) found 4 drifted jobs — IG Story Gym Quote, Weekly Trading Report, XAUUSD Price Alert, Trading Position Monitor — all pinned to `flame/free`/`custom:flame` when global was `deepseek-v4-flash`/`deepseek`. All 4 were paused. Fixed via direct jobs.json edit with backup. `hermes cron edit` was attempted first but lacks model/provider flags, confirming CLI limitation.
 
 **Bulk fix — Model Drift Watchdog:**
 A self-healing cron job that runs hourly, detects drift across all jobs, and auto-updates them. Pinned explicitly (`deepseek/deepseek-chat`) so it's immune to its own drift. Silent when clean, reports to AAA group when it fixes things.
@@ -563,6 +620,7 @@ When Arif asks about:
 - **Cron prompts should embed hard facts, not ask the LLM to discover them.** When a cron job needs to probe a service, embed the CORRECT port, health endpoint, and config path in the prompt. Don't rely on the LLM to guess or discover ports — it will pick wrong ones (e.g., 18001 instead of 18789 for OpenClaw). For services without systemd units, note that explicitly so the LLM probes directly instead of running `systemctl status`. **Proven 2026-07-21:** Evening digest probed wrong port and used `systemctl status` on a non-systemd service, producing a completely wrong diagnosis.
 - **API auth errors (401) may be transient — verify with a live probe before diagnosing key rotation.** A cron job that shows `last_error: HTTP 401: Invalid token` may have hit a transient DeepSeek/OpenAI outage, not a rotated key. Always verify with a live curl test against the actual inference endpoint (`POST /v1/chat/completions` with 1 token). The models list endpoint can return 200 while inference is down, or return 401 while inference works. Best practice: include a chat-completions liveness test in STEEL/shield probes to confirm the full pipeline is healthy before Hermes attempts generation. **Proven 2026-07-25:** Evening-digest showed 401 on the models endpoint but the API key was valid — chat completions returned HTTP 200. A STEEL liveness test would have confirmed this in seconds vs. manual investigation.\n- **Bot-to-bot delivery spam ("Forbidden: the bot can't send messages to the bot").** When a cron job has `deliver: origin` and the origin session was the bot itself (e.g., a job created from bot-facing context, or a job whose origin chat resolved to the bot's own Telegram ID), it tries to deliver back to the bot. Telegram forbids bots from messaging themselves. The error appears every tick in gateway.log at the job's schedule interval. **Diagnosis:** check `~/.hermes/cron/jobs.json` for `last_delivery_error` containing the bot's own ID. **Fix:** pause the job (set `enabled: false` in jobs.json) or change its `deliver` target to a valid channel. **Proven 2026-07-24:** `arifs24-telemetry` (job `49d171deeb6d`) ran every 10 minutes, had empty prompt, delivered to `origin` which resolved to bot ID `8410138119`. Paused via direct `jobs.json` edit.
 - **The CLI command is `hermes cron`, not `hermes cronjob`.** The tool call is `cronjob(action='...')` but the shell command is `hermes cron <subcommand>`. Running `hermes cronjob ...` fails with "invalid choice". Use `hermes cron list`, `hermes cron update`, `hermes cron remove`, etc. For direct manipulation when the CLI is unavailable, edit `~/.hermes/cron/jobs.json` directly (the `jobs` array contains all job objects). **Proven 2026-07-24:** attempted `hermes cronjob update --job-id ... --enabled false` and got "invalid choice: 'cronjob'". Fixed by direct JSON edit.
+- **`enabled_toolsets` accepts toolset names, not tool names.** Setting `enabled_toolsets: ["cronjob", "terminal"]` does NOT make the cronjob tool available — "cronjob" is a tool name, not a toolset name. Valid toolsets include "web", "terminal", "file", "delegation", "editing", "browser". To give a cron job access to all default tools (including the cronjob tool itself), clear `enabled_toolsets` to `[]`. The tool silently fails to load if its toolset isn't correctly named. **Proven 2026-07-25:** Model Drift Watchdog (`5a29d4fd77b8`) ran hourly with `enabled_toolsets: ["cronjob", "terminal"]` — cronjob tool never loaded because "cronjob" is a tool name, not a toolset name. Fixed by clearing `enabled_toolsets` to `[]` (defaults to all tools).
 
 ## OpenClaw Integration
 
@@ -649,7 +707,7 @@ Key: OpenClaw workspace is ~37KB. Smaller-context models overflow. Use `--light-
 - **Updated:** 2026-07-16 — all trading crons consolidated to SADO group (5 jobs), XAUUSD Price Alert converted from no_agent script to agent-driven LLM+chart (remove+create required, no_agent immutable), Trading Position Monitor added (every 15min), hourly schedule replaces */30 for price alert. Jobs table: 15 active.
 - **Updated:** 2026-07-16 — removed redundant WELL biometric reminder (overlapped with watchdog), added redundancy + unbound variable pitfalls, added routing audit protocol, fixed XAUUSD Daily Gold Signal delivery (origin→AAA group). Jobs table: 14 active.
 - **Updated:** 2026-07-17 — Model Drift Guard section added (mechanism, immunity table, fixing patterns), Model Drift Watchdog built (`5a29d4fd77b8`, hourly, AAA group), three drift-related pitfalls captured. Drift mechanism reverse-engineered from `cron/scheduler.py` (lines 3011-3058) and `cron/jobs.py` (lines 978-1020). Jobs table: 16 active.
-- **Updated:** 2026-07-25 — Cron Zen Audit Procedure added (8-axis checklist). 3 new pitfalls: script path resolution, schedule collisions, "Unauthorized" delivery diagnosis. Table marked stale with live-audit note. Zen audit of 26→23 jobs: 3 dead removed, 1 backup re-enabled, 1 sensorium staggered to 07:30.
+- **Updated:** 2026-07-25 — Model Drift Guard's "Fixing Drift" section rewritten: documented that `hermes cron edit` has no --model/--provider flags, replaced the dead tool-call snippets with direct JSON editing workflows (per-job, rebase, bulk find+fix), added the exact Python bulk-fix script. `references/model-drift-mechanism.md` gained a "Field Schema" section documenting model/provider string fields, CLI limitation note, and the watchdog's direct-edit workflow. Proven case: 4 paused flame/free jobs found drifted against deepseek-v4-flash global, fixed via direct jobs.json edit.
 - **Updated:** 2026-07-25 — Tri-Agent Protocol section added (Strict Boundaries between OpenClaw/Hermes/OpenCode). WELL-Biometric Modulation (Phase C) and State File Pattern added as design patterns #11 and #12. Prompt Extraction Pattern added as #13 (F1 versioning for LLM job prompts). LLM Job Design restored as #10 with proper numbering. Duplicate state file content removed. Provenance extended.
 - **Architecture:** 4-tier model (human/alert/cognitive/constitutional).
 - **Key insight:** "If the system thinks at 23:00 but you never see the output, the care is happening without the human it is meant to protect."

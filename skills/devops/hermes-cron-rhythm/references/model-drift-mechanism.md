@@ -34,23 +34,64 @@ run_job()
 3. **Unpinned (null)** → snapshots captured at creation → compared at every fire
 4. **Partial pin** (e.g., only `model` pinned, `provider` null) → only the unpinned axis checked
 
+## Field Schema
+
+Model/provider are stored as **simple string fields** directly on each job dict in `jobs.json`:
+
+```json
+{
+  "id": "abc123...",
+  "model": "deepseek-v4-flash",
+  "provider": "deepseek",
+  "provider_snapshot": null,
+  "model_snapshot": null,
+  ...
+}
+```
+
+- Pinned jobs: model/provider have non-empty string values; snapshots are null
+- Unpinned jobs: model/provider are empty/null; snapshots capture the global config at creation time
+- `no_agent: true` jobs: fields are always empty/irrelevant
+
 ## Fix Patterns
 
-### Fix One Job (pin to current)
-```python
-cronjob(action='update', job_id='<id>',
-        model={'model': 'deepseek-v4-pro', 'provider': 'deepseek'})
+### CLI Limitation
+
+**`hermes cron edit` has NO `--model` or `--provider` flags.** You cannot fix model drift via the Hermes CLI. Direct `jobs.json` editing is the only reliable method.
+
+### Fix One Job (pin to current — direct JSON edit)
+```bash
+cp ~/.hermes/cron/jobs.json ~/.hermes/cron/jobs.json.bak-$(date +%Y%m%d%H%M%S)
+python3 -c "
+import json
+with open('/root/.hermes/cron/jobs.json') as f:
+    data = json.load(f)
+for j in data['jobs']:
+    if j['id'] == '<JOB_ID>':
+        j['model'] = 'deepseek-v4-flash'
+        j['provider'] = 'deepseek'
+        print(f'Fixed: {j.get(\"name\")}')
+with open('/root/.hermes/cron/jobs.json', 'w') as f:
+    json.dump(data, f, indent=2, default=str)
+"
 ```
 Pinning makes the job immune to future drift (but also prevents it from auto-following model changes).
 
-### Fix One Job (rebased unpinned)
-```python
-cronjob(action='update', job_id='<id>', model={})
-```
-Clears snapshots to current global. Job will drift again on next model change.
+### Fix One Job (rebased unpinned — direct JSON edit)
+Set both `model` and `provider` to empty string in jobs.json. The cron system will capture fresh snapshots from global config on next run. Job will drift again on next model change.
 
 ### Fix All Jobs (Watchdog)
-Model Drift Watchdog (`5a29d4fd77b8`): runs hourly, pinned to `deepseek/deepseek-chat`, detects drift across all jobs, updates affected ones to match current global config. Silent when clean.
+Model Drift Watchdog (`5a29d4fd77b8`): runs hourly, detects drift across all jobs, updates affected ones to match current global config. Silent when clean.
+
+**Watchdog workflow:**
+1. Read global config from `~/.hermes/config.yaml`
+2. List jobs via `hermes cron list`
+3. Parse `~/.hermes/cron/jobs.json` — inspect each job's `model` and `provider` fields
+4. Skip `no_agent: true` jobs
+5. For jobs where pinned model/provider differs from global: edit the JSON fields directly
+6. Backup before edit; verify after
+
+**Proven 2026-07-25:** 4 paused jobs pinned to `flame/free`/`custom:flame` found drifted against global `deepseek-v4-flash`/`deepseek`. Fixed via direct JSON edit.
 
 ## Diagnostic Commands
 

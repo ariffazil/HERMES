@@ -1,6 +1,6 @@
 ---
 name: flame-free-loop
-description: FLAME free-loop inference mesh for system workers and tools — RM0-only, non-agentic, hit-rate-adaptive routing
+description: "[SUPERSEDED] Use flame-free-loop-mesh instead — this skill is a historical predecessor. All operational content migrated to flame-free-loop-mesh."
 ---
 
 # FLAME — Free Loop AI Model Engine
@@ -13,6 +13,8 @@ Two-lane architecture for the arifOS federation:
 | **Tool** | Groq→SEA-LION→Gemini→Cerebras→OpenRouter/free→OpenCode→Ollama | Scripts, workers, batch jobs, cron, ETL | None needed — OBSERVE only |
 
 **Tool lane = FLAME.** Workers do not judge, seal, or hold constitutional authority. They only transform data.
+
+> **⚠️ Overlap note:** This skill and `flame-free-loop-mesh` overlap significantly. This one focuses on CLI/engine operation (provider quirks, model ID formats). The mesh skill (more comprehensive) owns the 81-surface integration map, wiring audit, L3 Task-Routing, upgrade procedures, and fleet health status. **Curator action:** merge this skill's provider-quirk content into `flame-free-loop-mesh` (already present in `references/flame-integration-pattern.md`) and delete this skill.
 
 > **Cascade truth:** The agent lane above reflects the proposed OpenRouter-optimised chain (per `/root/AAA/docs/OPENROUTER_ZEN_OPTIMIZATION.md`). The SOT at AGENT_MODEL_MAP.json still carries the legacy `TokenRouter→MiniMax→MiMo→Groq→...→HOLD` as of 2026-07-24. Verify via `curl -s http://localhost:8088/health` before assuming the chain matches this skill.
 
@@ -62,6 +64,8 @@ The `free-llm` command is symlinked to `/root/A-FORGE/flame/flame_router.py`. Py
 
 ## Fleet (17 models, 7 providers + OpenRouter, all RM0)
 
+> **⚠️ Not all models below are verified live.** `flame_state.json` after `free-llm --mode probe` is the ground truth. Run the probe before assuming a model works. TokenRouter and OpenCode models are NOT in the `RM0-TOOLS-FREELOOP` chain — they're in the primary agent cascade. Verify with `free-llm --mode stats`.
+
 | Provider | Models | Speed | Notes |
 |----------|--------|-------|-------|
 | Groq | llama-3.1-8b-instant, llama-3.3-70b-versatile, openai/gpt-oss-120b | 150-700ms | Fastest. GPT-OSS-120B has content safety suppression (SHADOW-GPTOSS-001). |
@@ -70,7 +74,7 @@ The `free-llm` command is symlinked to `/root/A-FORGE/flame/flame_router.py`. Py
 | Cerebras | gemma-4-31b, gpt-oss-120b, zai-glm-4.7 | 300-1500ms | $5 prepaid credit, expires Aug 20 2026. GPT-OSS has same shadow as Groq. GLM-4.7 needs higher max_tokens (reasoning model). |
 | OpenRouter/free | `openrouter/free` (auto-routes to ~50 free models: Qwen 3.6 Plus, DeepSeek V3 free, Gemma 4, Llama 4 Scout, Nemotron, GPT-OSS) | varies | **New.** RM0 gateway to 50 free models across 10+ providers. Used in tool lane after Cerebras. See `/root/AAA/docs/OPENROUTER_ZEN_OPTIMIZATION.md` §7 for ZDR-safe picks. |
 | OpenCode | deepseek-v4-flash-free, north-mini-code-free | 1500-2100ms | Stable OSS. |
-| Ollama | qwen2.5-coder:3b | 18-22s | Local survival knife. Always available. |
+| Ollama | qwen2.5-coder:3b | 18ms ❌ | **DEAD** — connection refused on this VPS. `ollama list` returns nothing; no container serving. Dropped from RM0-TOOLS-FREELOOP chain. Re-add only after `docker ps` confirms runtime. |
 
 ## Provider Model ID Quirks
 

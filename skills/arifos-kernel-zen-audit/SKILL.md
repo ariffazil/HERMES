@@ -34,6 +34,19 @@ triggers:
   - "runtime band demoted"
   - "FULL OBSERVE_ONLY downgrade"
   - "two deployment paths"
+  - "F13 multi-sovereign collision"
+  - "PATH 3 falsification"
+  - "competing sovereign verdicts"
+  - "SEAL vs VOID collision"
+  - "cross-sovereign resolution"
+  - "conflict resolver wiring"
+  - "multi-sovereign F13"
+  - "session ownership enforcement"
+  - "VAULT999 collision detection"
+  - "sovereign identity map drift"
+  - "outcomes.jsonl reconciliation"
+  - "two sovereigns same action"
+  - "actor_id string check sovereign"
 ---
 
 # arifOS Kernel Zen Audit
@@ -259,6 +272,95 @@ Published MCP inputSchema rejects modes that the runtime actually supports (e.g.
 ### Detection
 
 Compare MCP inputSchema (from tools/list) vs actual dispatch enum in runtime code. If they disagree → drift confirmed.
+
+## F13 Multi-Sovereign Collision Audit (PATH 3 — 2026-07-25)
+
+**Structural invisible to one operator.** This bug appears only with two distinct sovereign identities. The falsification spec calls for two Ed25519 keypairs, two actor_ids, separate crypto — not one operator holding two keys.
+
+### What This Tests
+
+From EXTERNAL_FALSIFICATION_SPEC.md §PATH 3 (Tests 3.1–3.4):
+
+| # | Test | Expected |
+|---|------|----------|
+| 3.1 | Concurrent VOID+VOID on same action_id | One coherent terminal state |
+| 3.2 | SEAL vs VOID on same action_id | Deterministic resolution by documented rule |
+| 3.3 | Repeat 3.2 × 20 with random submission order | Zero variance |
+| 3.4 | Sovereign B adjudicates A's session | Rejected — ownership enforced |
+
+### Four Critical Checks
+
+Before the live tests, probe the source for these four dimensions:
+
+**1. Conflict resolver wiring** — `/root/arifOS/arifosmcp/core/conflict_resolver.py`
+- Does `resolve_conflict()` exist? YES — has VOID-dominates ordering and organ hierarchy.
+- Is it CALLED from the judge path (`_arif_judge_deliberate` in tools.py)? Check: search for `resolve_conflict` or `ConflictEnvelope` in tools.py.
+- If the resolver is never invoked, the "rule" is dead code. All verdicts are stored independently — last-writer-wins at the dict level.
+- The `ConflictEnvelope` uses `organ_a`/`organ_b` (GEOX/WEALTH/arifOS/HUMAN), NOT sovereign identity. Two F13 sovereigns both map to "human" — Rule 3 (same organ, more restrictive wins) would apply WERE the resolver wired.
+
+**2. Session ownership enforcement** — `/root/arifOS/arifosmcp/runtime/session.py` lines 163, 288
+- `_ACTOR_SESSION_MAP: dict[str, str]` maps `session_id → actor_id`. Does ANY downstream tool verify this mapping?
+- In `_arif_judge_deliberate` (tools.py:~16191): search for `_ACTOR_SESSION_MAP.get(session_id)` — if absent, no ownership gate.
+- The `_wrap_handler` wrapper (tools.py:~23291) only **fills in** missing actor_id from session, never **enforces** a match.
+- Sovereign identity map: `_SOVEREIGN_IDENTITY_MAP` (session.py:280) contains only `"ariffazil"`. The localhost auto-sign path (session.py:1364) accepts `"arif"`, `"888"`, `"ariffazil"` — drift between the two maps.
+
+**3. VAULT999 collision detection** — `/root/arifOS/arifosmcp/tools/vault.py`
+- Is `outcomes.jsonl` purely append-only? Check: `_VAULT_LEDGER: list[dict]` (tools.py:5810) — yes, pure append.
+- Does the vault check for existing entries with the same `action_id` before appending? Search for any `action_id` dedup or collision check in vault.py.
+- Can two entries for the same action (one SEAL, one VOID) coexist? If no reconciliation, YES — both persist independently.
+
+**4. Sovereign identity consistency** — `/root/arifOS/arifosmcp/tools/session.py` + runtime/session.py
+- Three identity sources must agree:
+  - `session.py:1364` — `_actor_lower in ("arif", "888", "ariffazil")` (auto-sign gate)
+  - `session.py:1659` — `_SOVEREIGN_MAP` for mode="challenge"
+  - `runtime/session.py:280` — `_SOVEREIGN_IDENTITY_MAP` (persistent store)
+- If these drift, sovereign A can init but sovereign B cannot, or vice versa.
+- The `_ED25519_EXEMPT_SYSTEM_ACTORS` map may also have its own list — check `session_auth.py`.
+
+### Source Code Reference Map
+
+| File | What to check | Lines |
+|------|--------------|-------|
+| `tools/session.py` | Auto-identity string check, sovereign map | 1364, 1659-1663 |
+| `runtime/session.py` | `_SOVEREIGN_IDENTITY_MAP`, `_ACTOR_SESSION_MAP` | 280-282, 163, 288 |
+| `runtime/tools.py` | `_arif_judge_deliberate`, `_wrap_handler` session fill (not enforce) | 16191+, 23291-23297 |
+| `runtime/tools.py` | `_VAULT_LEDGER`, `_JUDGE_STATE_REGISTRY` | 5810, 5818 |
+| `core/conflict_resolver.py` | Verdict ranks, organ hierarchy, `resolve_conflict` | 30-288 |
+| `tools/vault.py` | Appending logic, collision check | 401+, search for `action_id` dedup |
+
+### Scoring Template for Multi-Sovereign Dimension
+
+| Dimension | Current | After minimal fix | After full fix |
+|-----------|---------|-------------------|----------------|
+| Deterministic cross-sovereign resolution | ?/10 | 4/10 (wire resolver) | 10/10 (atomic two-phase) |
+| Session ownership enforcement | ?/10 | 6/10 (actor-match check) | 10/10 (crypto-bound SCT) |
+| VAULT999 collision detection | ?/10 | 5/10 (detect+store both) | 10/10 (auto-escalate to 888_HOLD) |
+| Sovereign identity consistency | ?/10 | 8/10 (unify map) | 10/10 (Ed25519 pubkey registry) |
+| Irreversible-action blocking | ?/10 | 6/10 (any VOID blocks) | 10/10 (all must SEAL) |
+| **Composite** | **?/50** | **29/50** | **50/50** |
+
+### Fiqh Findings (from 2026-07-25 audit)
+
+| Finding | Class | Reason |
+|---------|-------|--------|
+| No cross-sovereign collision resolution | WAJIB | Resolver exists but isn't wired into judge path |
+| No session ownership enforcement in judge | WAJIB | `_ACTOR_SESSION_MAP` created but never checked |
+| String-name sovereign detection | MAKRUH | Acceptable for localhost; map drift is real gap |
+| VAULT999 append-only (no reconciliation) | HARUS | Append-only is correct; missing higher-level reconciliation |
+| Conflict resolver exists but unwired for F13 | HARAM | Would catch SEAL vs VOID if wired; currently dead code |
+
+### Pitfalls
+
+- **The conflict resolver is correct — check if it's WIRED, not whether it exists.** `conflict_resolver.py` has a valid VOID-dominates hierarchy. The question is whether `_arif_judge_deliberate` calls `resolve_conflict()` before returning — it almost certainly doesn't.
+- **Session ownership = two separate things.** (1) `_ACTOR_SESSION_MAP` maps session_id→actor_id (it exists). (2) Code that enforces the caller's actor_id matches the map (it doesn't exist). Report both separately.
+- **Two sovereigns that map to the same organ produce the wrong resolution.** Under the conflict resolver's organ hierarchy, two F13 sovereigns both land in "human" (rank 8). Rule 3 says "more restrictive verdict wins" — VOID over SEAL. But VOID-dominates for ALL sovereigns means no single sovereign can SEAL an action another has VOIDed, even if the SEAL is the correct call. This is correct for irreversible actions but may be too restrictive for reversible ones. Call this out.
+- **Localhost auto-sign path bypasses the multi-sovereign question entirely.** When `arif_init` is called from localhost with no explicit signature, the auto-sign path (session.py:1357-1416) uses the local Ed25519 key. Two distinct remote sovereigns would each need their own key — the auto-sign path only works for the VPS-local agent.
+- **The string-name check is the real sovereign detection for the auto-sign path.** `actor_id.lower() in ("arif", "888", "ariffazil")` means any caller presenting `actor_id="arif"` gets auto-signed. If you provision a second sovereign with `actor_id="SOVEREIGN_B"`, the auto-sign path rejects them — they'd need explicit Ed25519.
+
+### Reference Files
+
+- `references/f13-multi-sovereign-collision-audit-2026-07-25.md` — Full audit report: source-by-source analysis of all 4 PATH 3 tests against the EXTERNAL_FALSIFICATION_SPEC, with specific line numbers, found/wired/unwired classification, recommended fix code, and VAULT999 collision state machine analysis.
+- `references/external-falsification-spec-path3.md` — Extracted PATH 3 section of the falsification spec: the 4 tests (3.1–3.4), pass/fail criteria, and verdict rules.
 
 ## Reference Files
 
@@ -516,4 +618,4 @@ See: `references/zen-surface-reduction-verification-2026-07-16.md`
 
 ## Provenance
 
-First applied 2026-07-09 in AAA session 36988 against 11 arifOS wrapper calls in one session. Sovereign auth debugging added 2026-07-12 (nonce consumption trap, one-shot signing, wire splice confirmation). Birth-fix (+ token model + alias collapse) approved; full fix deferred to Phase B. T3a BOOT gate demotion discovered 2026-07-24 during 287-iteration seal-debug session — root-caused to boot_state=PARTIAL + `passes == "OK"` gate — fixed by accepting PARTIAL as pass.
+First applied 2026-07-09 in AAA session 36988 against 11 arifOS wrapper calls in one session. Sovereign auth debugging added 2026-07-12 (nonce consumption trap, one-shot signing, wire splice confirmation). Birth-fix (+ token model + alias collapse) approved; full fix deferred to Phase B. T3a BOOT gate demotion discovered 2026-07-24 during 287-iteration seal-debug session — root-caused to boot_state=PARTIAL + `passes == "OK"` gate — fixed by accepting PARTIAL as pass. **F13 Multi-Sovereign Collision Audit** added 2026-07-25: deep source-level audit of conflict_resolver wiring, session ownership enforcement, VAULT999 collision detection, and sovereign identity map consistency against the EXTERNAL_FALSIFICATION_SPEC PATH 3. Findings: resolver exists but unwired; session ownership recorded but unenforced; VAULT999 append-only with no collision reconciliation. Boundary is undefined — 8/50 composite.

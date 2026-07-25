@@ -5,13 +5,18 @@ description: >-
   anatomy (Identity, Skills, Tools, Memory, State, Kernel, Actuator) and the
   constitutional chain (000-INIT through 999-SEAL). Includes breach protocol
   for fault-physics handling.
-tags:
-  - governance
-  - anatomy
-  - constitutional
-  - primitive-spec
-  - breach-protocol
-  - agent-design
+triggers:
+  - "governance"
+  - "anatomy"
+  - "constitutional"
+  - "primitive-spec"
+  - "breach-protocol"
+  - "agent-design"
+  - "flow doctrine"
+  - "three agent"
+  - "FQ"
+  - "Flow Quotient"
+  - "governed physiology"
 triggers:
   - "constitutional primitive"
   - "agent anatomy"
@@ -316,6 +321,7 @@ When auditing: calling `arif_judge` with a checklist you loaded as a skill is se
 
 - **`governed-execution-substrate`** — Designing execution engines and state machines under constitutional governance. The execution substrate is the runtime between the intelligence and governance planes. Read after mastering agent anatomy.
 - **`explore-before-collapse`** — The Epistemic Navigator. Use BEFORE the 12-step chain to search reality before collapsing into an answer.
+- **`three-agent-flow-doctrine`** — The Flow Doctrine: FQ as physiological biomarker for agentic execution. Complements anatomy by adding operational physiology — how Hermes (anterior insula), OpenClaw (sensor), and OpenCode (otot) relate through FQ. Anatomy = structure; Flow Doctrine = how the structure breathes.
 
 ## References
 

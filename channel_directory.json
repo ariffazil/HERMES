@@ -1,17 +1,11 @@
 {
-  "updated_at": "2026-07-25T07:22:24.184705",
+  "updated_at": "2026-07-25T14:37:38.361631",
   "platforms": {
     "telegram": [
       {
-        "id": "8149595687",
-        "name": "🦞 AGI",
+        "id": "267378578",
+        "name": "ARIF",
         "type": "dm",
-        "thread_id": null
-      },
-      {
-        "id": "-1003815535761",
-        "name": "SADO",
-        "type": "group",
         "thread_id": null
       },
       {
@@ -21,8 +15,8 @@
         "thread_id": null
       },
       {
-        "id": "267378578",
-        "name": "ARIF",
+        "id": "8149595687",
+        "name": "🦞 AGI",
         "type": "dm",
         "thread_id": null
       },
@@ -31,6 +25,24 @@
         "name": "AAA / topic 36572",
         "type": "group",
         "thread_id": "36572"
+      },
+      {
+        "id": "-1003815535761",
+        "name": "SADO",
+        "type": "group",
+        "thread_id": null
+      },
+      {
+        "id": "1042200555",
+        "name": "No name",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:1",
+        "name": "AAA / topic 1",
+        "type": "group",
+        "thread_id": "1"
       },
       {
         "id": "8727562763",
@@ -43,18 +55,6 @@
         "name": "AAA / topic 36988",
         "type": "group",
         "thread_id": "36988"
-      },
-      {
-        "id": "-1003753855708:1",
-        "name": "AAA / topic 1",
-        "type": "group",
-        "thread_id": "1"
-      },
-      {
-        "id": "1042200555",
-        "name": "No name",
-        "type": "dm",
-        "thread_id": null
       },
       {
         "id": "-1003753855708:37092",

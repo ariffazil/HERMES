@@ -72,6 +72,33 @@ See `references/federation-scale-zen-pruning.md` for the systematic methodology 
 
 Before writing ANY execution prompt, gather with search_files/read_file:
 
+### Step 0 — Probe for existing compiled implementation (Critical)
+
+Sebelum tulis apa-apa spec execution, check kalau ada binary yang dah compile. Ini prevent scenario spec ditulis untuk TypeScript sedangkan Rust core dah wujud dengan 24 tests — yang akhirnya memerlukan unified spec merge, bukan rewrite.
+
+```bash
+# Check for Rust/go/c++ binary
+find /root -name "ariflow" -type f 2>/dev/null
+find /root -name "Cargo.toml" -o -name "go.mod" -o -name "CMakeLists.txt" 2>/dev/null | head -10
+
+# Check test count
+grep -c "#\[test\]" src/*.rs src/**/*.rs 2>/dev/null
+
+# Check public API
+grep -n "^pub " src/lib.rs 2>/dev/null
+head -50 src/main.rs 2>/dev/null   # STDIN/STDOUT protocol?
+```
+
+**If a compiled binary exists with passing tests, your prompt must say "EXTEND, not REWRITE"** and specify the exact Rust modules to extend. The architecture when finding a Rust core:
+
+```
+Rust (execution substrate) → Python (governance conduit) → TypeScript (governance surface)
+```
+
+Two specs = two schedulers = two merge engines = F1/F3/F13 violation.
+
+### Step 1 — Probe codebase surface
+
 | What to check | Why |
 |---|---|
 | Existing numbering (GENESIS 049 exists?) | Prevent overwrites |

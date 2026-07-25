@@ -24,6 +24,10 @@ triggers:
 - He wants structured breakdown — not a news summary, not hype
 - Federation implications are mandatory — this is the value layer Arif cares about
 
+## Related Skills
+
+- `external-technology-evaluation` — use this when the goal is **integration assessment** (should we deploy/install this model?) instead of just current-awareness briefing. That skill covers the full SABAR/FORGE/HOLD decision framework, hardware assessment, and execution-on-approval workflow.
+
 ## Related References
 - `references/ilmu-bbb-forensic-probe-methodology.md` — Systematic adversarial probe methodology for verifying vendor claims about AI models (fine-tune vs from-scratch, benchmark independence, guardrail consistency)
 

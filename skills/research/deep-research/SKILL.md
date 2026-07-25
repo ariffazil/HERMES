@@ -1,7 +1,7 @@
 ---
 name: deep-research
 description: "Deep multi-source web research for books, tools, frameworks, domains, people, and institutions. Structured synthesis into a deliverable."
-version: 1.3.0
+version: 1.4.0
 author: Hermes Agent + Hermes-PRIME
 tags: [research, synthesis, web-research, books, frameworks, analysis, people, witness-frame]
 triggers:
@@ -46,6 +46,10 @@ triggers:
   - "what do I need based on my body"
   - "use WELL signals"
   - "personalized protocol"
+  - "document rate limits for"
+  - "what are the rate limits for"
+  - "API limits and headers for"
+  - "research [service/product] limits"
 ---
 
 # Deep Research
@@ -380,6 +384,7 @@ Proven: 2026-07-08 — Tier C hybrid, 3 parallel queries found SPE 196314-MS, SP
 ## References
 
 - `references/substance-evaluation-angel-devil-human.md` — Angel/Devil/Human framework for evaluating substances, supplements, and biohacking compounds. Covers the 3-frame structure (benefits/risks/practical reality), agentic intelligence layer (first-principles reclassification beyond human regulatory categories), BM voice delivery pipeline, and population adoption statistics sourcing. Proven 2026-07-16: peptide comprehensive briefing + Semax deep dive + BM voice notes for Syed. Use when user asks "tell me everything about [substance]", "is [X] safe", "angel devil human", "biohacking [topic]", or wants population stats on adoption.
+- `references/api-service-limits-research.md` — Pattern for researching and documenting API/service rate limits, quotas, pricing, and error codes from multiple official sources. Covers: cross-referencing limits/pricing/errors pages, gap analysis on undocumented headers, structured output format. Proven 2026-07-25: Cloudflare Workers AI free tier.
 - `references/synthesis-delegation.md` — prompt construction for spawning synthesis to OpenCode.
 - **VERIFY EVERY MACRO ASSUMPTION against live data before accepting model output.** In session 2026-07-13, Loop 2 of PETRONAS financial prediction assumed USD/MYR at 4.65 (MYR weakening = FX tailwind). External validation against BNM reference rate (10 Jul 2026) showed USD/MYR = 4.08 (MYR STRENGTHENING = FX headwind). This single correction moved the PATAMI forecast by RM 2.3b (-8.8pp YoY). Always validate FX, interest rates, and commodity prices against PRIMARY sources (BNM reference rate at bnm.gov.my, FRED, Bloomberg, TradingEconomics) at time of analysis — not from memory or recent trend assumption. Pitfall: assuming FX direction from 6-month-old data without checking live rate. Correction pattern: add one `web_search` for "[currency] exchange rate today [central bank]" before finalizing any financial model with FX exposure.
 - **IR2025 page 217 has capex by segment AND strategy tag — the ONLY public Gentari financial datapoint.** PETRONAS Integrated Report 2025 page 217 discloses capex by business segment (Upstream 46%/RM19.1b, Gas 29%/RM12.3b, Downstream 11%/RM4.5b, Corporate 14%/RM5.7b) AND by strategy tag (Core 88%, New Business 9.5%, NZCE 2.4%). Page 217 also explicitly states "Included in the Corporate and Others business segment is CAPEX incurred for Gentari Sdn Bhd" and "Gentari accounting for 44% of the total spending" in Corporate. This is the ONLY public Gentari financial datapoint — Gentari standalone P&L is never disclosed. Always check IR pages 209-217 for PETRONAS segment data before building any PETRONAS financial model.

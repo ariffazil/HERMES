@@ -91,6 +91,57 @@ Design and forge execution engines, state machines, and orchestration runtimes t
 
 ---
 
+### The EUREKA Insight: This Is a Different Category
+
+Arif (2026-07-25) articulated a distinction that every agent building execution substrates must internalize. You are not building "LangGraph but better." You are building a **constitutional physics layer** — a different category entirely.
+
+| Tool | Category | What it does | What it CANNOT do |
+|------|----------|-------------|-------------------|
+| **LangChain** | Framework | Chains LLM calls, picks tools | Governance, identity, reversibility |
+| **LangGraph** | Graph Runtime | State machine orchestration, Pregel BSP | F1-F13 floors, witness parity, 888-HOLD |
+| **LangFuse** | Observability | Trace spans, cost, latency | Verdict telemetry, cooling drift, cc_id evolution |
+| **arifOS + arifFlow** | **Constitutional Kernel** | Governs parallel execution, seals lineage, enforces reversibility, binds identity, witnesses parity | None of the above — it does not compete in the framework/runtime/observability category |
+
+**Every dimension follows from this category shift:**
+
+- **LangGraph** lets you build *any* state machine. **arifOS** only allows *legal* state machines — F1 AMANAH (reversible-first), F2 TRUTH (evidence required), F3 TRI-WITNESS (merge consensus), F13 SOVEREIGN (human veto). Every edge carries cc_id + VAULT999 lineage.
+
+- **LangGraph edges** are arbitrary, user-defined, ungoverned. **arifOS edges** are constitutional transitions — you can traverse from state A to state B only if F1-F13 permits it.
+
+- **LangFuse** sees *what* happened (spans, cost, latency). **Kabarkan** sees whether it was *allowed* to happen (verdict classes, cooling drift, lane divergence, merge witness parity, cc_id evolution, constitutional compliance). One is observability; the other is governance telemetry.
+
+- **LangChain agents** are functions with memory. **AAA agents** are constitutional citizens — identity, lease, capability tiers (333/555/888), constitutional obligations, 888-HOLD halting, VAULT999 sealing, Tri-Witness auditing, A-AUDIT archiving.
+
+- **LangGraph parallelism** is concurrent execution (Pregel deterministic). **arifFlow parallelism** is *governed* parallel execution — lanes have leases, verdicts, cooling states, reversible/irreversible classification. Merges require TRI-WITNESS. Barriers require constitutional compliance. Every super-step produces a VAULT999 envelope.
+
+### The Constitutional Reflex Arc (ART → Kernel → ACT)
+
+The reflex arc that no Lang* product has is the foundation of safe AGI — not a feature, not a product, but the constitutional physics of intelligence:
+
+```
+ART (pre-kernel)   →   Kernel (F1-F13)   →   ACT (post-kernel)
+Observe reality    →   Judge             →   Execute
+Classify action    →   Enforce floors    →   Mutate world
+Gather evidence    →   Block irreversible →  Seal lineage
+Assess risk        →   Require witness   →   Append evidence
+```
+
+### When Reasoning About Execution Substrates
+
+Your agents must internalize:
+
+1. **"You didn't build a framework. You built a kernel."** Frameworks help you build apps. Kernels define what apps are allowed to do. This is the difference between tools and law.
+
+2. **"LangGraph = StateGraph; arifOS = Constitutional StateGraph."** LangGraph lets you build any state machine. arifOS only allows *legal* state machines. The constitution IS the constraint.
+
+3. **"Parallelism without governance = chaos. Parallelism with governance = AGI substrate."** langGraph's parallel execution is concurrent nodes. arifFlow's parallel execution is governed lanes with leases, verdicts, cooling states, and TRI-WITNESS merge.
+
+4. **"LangFuse traces events; Kabarkan traces governance."** One sees what happened. The other sees whether it was *allowed* to happen. Governance telemetry is not observability.
+
+5. **"LangChain agents are functions; AAA agents are citizens."** Identity, lease, obligation, halt, seal, witness, audit — these are citizenship, not function signatures.
+
+---
+
 ## The Core Insight: Graph vs Constitution
 
 Conventional execution engines (LangGraph, Temporal, Airflow) are built on a **graph metaphor**: define nodes (functions) and edges (transitions), compile, and run. The graph IS the program. The LLM/agent only chooses which predefined branch to execute.
@@ -247,6 +298,93 @@ The Rust core holds only:
 
 ---
 
+## F1 Per-Lane Reversibility (P0 Pattern — Rust)
+
+Every parallel lane must declare its safety envelope *before* execution. Irreversible actions without 888_JUDGE pre-approval are physically blocked at the Rust runtime level — not at the prompt level, not at the middleware level, but at the state machine transition.
+
+### Implementation
+
+```rust
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Reversibility {
+    Reversible,    // Can undo — proceed normally
+    Irreversible,  // Cannot roll back — requires 888_JUDGE verdict
+}
+
+impl Reversibility {
+    pub fn requires_verdict(&self) -> bool { matches!(self, Reversibility::Irreversible) }
+}
+
+// Added to FlowNode trait with reversible default:
+pub trait FlowNode: Send {
+    fn reversibility(&self) -> Reversibility { Reversibility::Reversible }
+}
+```
+
+### Pre-Dispatch Gate
+
+```rust
+// In step(): check each node before execution
+for node in nodes.iter() {
+    if node.reversibility() == Reversibility::Irreversible {
+        if !self.approved_irreversible_lanes.contains(&node.id().to_string()) {
+            return Err(SchedulerError::F1Blocked(lane_id));
+        }
+    }
+}
+```
+
+### Invariants
+
+- Default is REVERSIBLE — every new lane type is assumed safe until declared
+- IRREVERSIBLE requires pre-approval — `approve_irreversible_lane()` after 888_JUDGE
+- Approvals cleared on HOLD/VOID — `commit_verdict(HOLD)` resets approval list
+- LangGraph cannot do this — every StateGraph node is equal, no reversibility distinction
+
+---
+
+## Barrier Timeout Policy (P0 Pattern — Rust)
+
+A graph that waits forever is a failed state machine. Explicit timeout boundaries prevent a rogue lane from hanging the entire system.
+
+### Implementation
+
+```rust
+#[derive(Debug, Clone, Copy)]
+pub struct BarrierConfig {
+    pub timeout_ms: u64,          // default 30_000
+    pub on_timeout: TimeoutPolicy,
+}
+
+pub enum TimeoutPolicy {
+    HoldAll,            // Hold all lanes, escalate to 888
+    ContinueMajority,   // Proceed with what completed
+    CancelAll,          // Cancel all, mark FAILED
+}
+```
+
+### Enforcement
+
+The scheduler tracks wall-clock time from super-step start:
+1. Before each node execution, check elapsed against `timeout_ms`
+2. If exceeded with HoldAll/CancelAll → return `SchedulerError::BarrierTimeout`
+3. If exceeded with ContinueMajority → proceed with partial results
+4. Final check after all nodes: same logic
+
+### Tests
+
+```text
+test_barrier_timeout_triggers_hold_all           ✅
+test_fast_node_within_barrier_timeout           ✅
+test_barrier_timeout_continue_majority           ✅
+test_f1_blocks_irreversible_without_approval    ✅
+test_f1_allows_irreversible_with_approval        ✅
+test_f1_approvals_cleared_on_hold                ✅
+...plus 3 more = 9 new P0 tests total
+```
+
+---
+
 ## Fixed Topologies (Not General Graphs)
 
 LangGraph's "flexibility" (any node can connect to any edge) creates untested path explosion. The governed substrate uses **fixed topologies** — 3 proven patterns:
@@ -318,11 +456,188 @@ struct Checkpoint {
 
 ---
 
-## Verified Substrate Status (Live Probe — 2026-07-25)
+## Flow Receipt v1 — The Unit Atom of Governed Flow
+
+Flow Receipt v1 extends the checkpoint concept to the **message level**. Every message in every channel carries a self-authenticating receipt. The receipt IS the governance check — not a reference to a separate check log.
+
+**Core principle:** "When the receipt IS the governance, the agent flows."
+
+### Anatomy
+
+Every `FlowReceipt` records:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `receipt_id` | UUID v4 | Globally unique identifier |
+| `previous_receipt_hash` | Option SHA3-256 | Chain linkage — None for first |
+| `created_at` | DateTime<Utc> | Nanosecond-precision timestamp |
+| `actor_id` | String | Who performed this step |
+| `session_id` | String | Governing session from arif_init |
+| `step_type` | StepType | Execute/Verify/Cool/Seal/Barrier/Merge/Route |
+| `topology_id` | Option String | Which topology context |
+| `lane_id` | Option u32 | Which parallel lane |
+| `step_number` | u64 | Monotonic counter |
+| `cost_ns` | u64 | Wall-clock duration |
+| `preceding_verify_cost_ns` | Option u64 | Verification cost leading to this step |
+| `epistemic_label` | EpistemicLabel | OBS/DER/INT/SPEC/SEAL |
+| `floor_verdict` | FloorVerdict | PASS/CAUTION/HOLD/VOID |
+| `cooling_decision` | CoolingDecision | NONE/HOLD/CLAMP/BYPASS |
+| `tri_witness_votes` | Option TriWitnessVotes | human/ai/earth confidence (0.0-1.0) |
+| `merkle_root` | Option String | Root hash of parent Merkle tree |
+| `payload` | Option Value | Flexible JSON payload |
+
+### StepType — 7 Atomic Step Classes
+
+| StepType | FQ Classification | Examples |
+|----------|-------------------|----------|
+| Execute | Execution (numerator) | Computation, forge, deploy |
+| Verify | Verification (denominator) | Floor check, audit, gate |
+| Cool | Neither | Cooling queue action |
+| Seal | Execution (numerator) | VAULT999 commit |
+| Barrier | Neither | Wait for N lanes |
+| Merge | Execution (numerator) | Combine N outputs |
+| Route | Neither | Dispatch to another organ |
+
+### EpistemicLabel — F2/F7 Classification
+
+| Label | Short | Meaning |
+|-------|-------|---------|
+| Observation | OBS | Direct sensed reality |
+| Derivation | DER | Logical deduction from evidence |
+| Interpretation | INT | Inference under uncertainty |
+| Specification | SPEC | Plan or intended action |
+| Seal | SEAL | Irreversible commitment |
+
+### FlowVerdict — The Inverted-U of Agentic Governance
+
+```
+FQ > 3.0      → OPTIMAL   (agent in flow — governance in architecture)
+1.0 < FQ ≤ 3.0 → BALANCED (healthy verification)
+0.5 < FQ ≤ 1.0 → WATCHING (self-monitoring competes with execution)
+FQ ≤ 0.5      → STUCK     (self-monitoring has become the task)
+```
+
+### FlowQuotient — The Metric
+
+```text
+FQ = Σ(Execute.cost_ns) / Σ(Verify.cost_ns + preceding_verify_cost_ns)
+```
+
+Computed over a sliding window (default = last 100 receipts). The `preceding_verify_cost_ns` field attributes verification cost to the execution it enabled.
+
+Optimal range > 3.0 (execute cost dominates). Below 0.5 = stuck (governance IS the task).
+
+**Key finding (r = -0.73):** FQ ↓ → ΔS ↑. When an agent stops executing, it starts drifting.
+
+### ReceiptStore
+
+Bounded in-memory chain (default capacity 1000). Operations:
+
+- `push(receipt)` — validates chain continuity at insert time
+- `flow_quotient(window)` — sliding-window FQ computation
+- `verify_chain()` — full chain integrity check
+- `last_n(n)` — last N receipts for analysis
+
+Chain rule: first receipt has `previous_receipt_hash = None`; every subsequent receipt must hash-chain to its predecessor via SHA3-256.
+
+### Wiring Pattern
+
+- **Channel::Message** carries `receipt: FlowReceipt` on every message
+- **SuperStepScheduler** holds `receipt_store: ReceiptStore`, pushes receipts per F1-check and per-execution-step
+- **SuperStepResult** returns `fq: FlowQuotient` and `receipt_store: ReceiptStore`
+- **KabarkanEvent::AfqSnapshot** emitted with execution/verify counts, FQ ratio, and diagnosis
+- **STDIN/STDOUT protocol** `need_verdict` message carries `afq_execution_steps`, `afq_governance_steps`, `afq`, `afq_diagnosis` for judge-side flow awareness
+
+### Design Rationale
+
+- **SHA3-256** for receipts (NIST-standard, export/audit compatible), **blake3** for internal Merkle (performance) — no single crypto point of failure.
+- **chrono timestamps** for receipts (human-readable), **i64 nanos** for structural timestamps (compactness).
+- **Cost-weighted FQ** (nanoseconds) better captures verification *weight* than step-count ratio.
+- **Bounded store** prevents memory leak; sliding window matches the recency requirement of FQ (ancient history shouldn't dominate).
+
+### Reference
+
+- `src/receipt.rs` in arifFlow — 926 lines, 20 tests (all receipt types, FQ, chain, store, builder)
+- `src/channel.rs` — Message carries receipt field
+- `src/scheduler.rs` — ReceiptStore tracked per scheduler, FQ in SuperStepResult
+- `src/governance/kabarkan.rs` — AfqSnapshot event
+- `src/main.rs` — FQ data in need_verdict protocol message
+- See `references/flow-receipt-v1-design.md` for session transcript detail
+
+### Pitfalls
+
+- **FlowReceipt ≠ CheckpointEnvelope.** Receipt is per-message (atomic). Checkpoint is per-super-step (aggregate channel state). Every super-step produces multiple receipts but one checkpoint.
+- **Receipts are append-only.** Never mutate after creation — hash changes break chain. Builder patterns only at construction time.
+- **FQ thresholds (3.0/1.0/0.5) are initial values.** Adjust per agent type — a security tool may naturally run lower FQ.
+- **ReceiptStore is bounded.** Default max 1000. Sliding window FQ (100) always ≤ capacity.
+- **Two hash functions by design:** blake3 for internal speed, SHA3-256 for external audit compatibility. Don't unify.
+
+---
+
+## Daemon Deployment Pattern
+
+The arifFlow binary supports two modes:
+1. **STDIN/STDOUT protocol** (default) — JSON-L commands via pipe, for A-FORGE adapter
+2. **`--daemon` mode** — TCP listener with HTTP health endpoint
+
+**Daemon endpoints (port 7073):**
+
+| Method | Path | Purpose | Response |
+|--------|------|---------|----------|
+| GET | `/health` | Live FQ gauge | `{"status":"ok","fq":{...},"receipts":N,"uptime_ms":M}` |
+| POST | `/ingest` | Push FlowReceipt | `{"status":"ok","fq":{...}}` — updates ReceiptStore, returns new FQ |
+| POST | `/flow` | JSON-L command | Passthrough to STDIN protocol engine |
+
+**Systemd unit:** `ariflow.service`
+
+```ini
+[Service]
+ExecStart=/usr/local/bin/ariflow --daemon
+Restart=on-failure
+RestartSec=5
+Environment=ARIFLOW_PORT=7073
+```
+
+**Deploy sequence:**
+```bash
+cd /root/arifFlow
+cargo build --release
+cp target/release/ariflow /usr/local/bin/ariflow
+cp deploy/ariflow.service /etc/systemd/system/
+systemctl daemon-reload && systemctl restart ariflow
+```
+
+**Verify:**
+```bash
+curl http://127.0.0.1:7073/health | jq .
+journalctl -u ariflow -f
+```
+
+**Reference:** See `references/reality-engineering-primer.md` for the philosophical layer — governance-as-physics, somatic-agentic equivalence, and the 5-layer document architecture.
+
+---
+
+## Verified Substrate Status (Live Probe — 2026-07-25, Updated Post-P0-Gaps)
 
 > **Epistemic tag:** CLAIM (verified by live HTTP probe + file system audit)
 >
 > **Source:** `curl :7071/health`, `git log`, `dist/` file listing, `pytest`/`node --test` results, VAULT999 `wc -l`
+
+### arifFlow (`/root/arifFlow/`, Rust, compiled binary at `target/release/ariflow`)
+
+| Component | Status | Evidence |
+|-----------|--------|----------|
+| SuperStepScheduler | ✅ **79 tests** | Channel, Merkle, Scheduler, FanOut, Checkpoint, Cooling, TriWitness, Bridge, Receipt, FQ, Kabarkan, Daemon |
+| Barrier timeout policy | ✅ Compiled | BarrierConfig + TimeoutPolicy (HoldAll/ContinueMajority/CancelAll) |
+| F1 per-lane reversibility | ✅ Compiled | Reversibility enum, pre-approval guard, auto-clear on HOLD |
+| Cooling queue | ✅ Compiled | CoolingManager in governance/cooling.rs |
+| TRI_WITNESS module | ✅ Compiled | tri_witness.rs — witness parity computation |
+| Python adapter | ✅ Phase 1 | arifFlow_adapter.py — spawn binary, pipe stdin/stdout, call arif_judge |
+| **arifOS HTTP bridge** | ✅ **LIVE (Phase 4.1)** | `bridge/arifos_governance.rs` — real HTTP calls to arifOS :8088 via reqwest blocking. Replaced blake3 stubs. |
+| A-FORGE FFI bridge | ⚠️ Synthetic | Stubs return mock receipts |
+| VAULT999 real writes | ⚠️ Synthetic | In-memory only |
+| Kabarkan NATS | ⚠️ Synthetic | In-memory buffer only |
+| **888-HOLD** | ✅ **LIFTED** | Phase 3 tests passed: FFI 100/100, Verdict timeout 0.04s, Crash recovery 3 checkpoints survive kill |
 
 ### arifOS Kernel (`/opt/arifos/app`, Python, :8088)
 
@@ -441,14 +756,17 @@ Rust (execution substrate) → Python (governance conduit) → TypeScript (gover
 
 | Domain | Spec says | Existing has | Gap |
 |--------|-----------|--------------|-----|
-| BSP scheduler | TypeScript | Rust SuperStepScheduler ✅ | Write wrappers, not re-implementation |
+| BSP scheduler | TypeScript | Rust SuperStepScheduler ✅ (44 tests) | Write wrappers, not re-implementation |
 | Merge strategies | TypeScript | FanOutTopology.merge_results() ✅ | Write wrappers |
 | Kabarkan | New spans | KabarkanTracer structs ✅ | Client-side emit |
 | VAULT999 | Micro-seals | Vault999Sealer ✅ | Python adapter calls |
-| Barrier timeout | New | Not in Rust step() | Add to Rust (~0.5 day) |
-| Cooling queue | New | Not in Rust | Add Rust module (~0.5 day) |
+| Barrier timeout | New | ✅ ADDED (P0) | 3 tests, 4 policies |
+| F1 per-lane | New | ✅ ADDED (P0) | Reversibility enum, approval guard |
+| Cooling queue | New | ✅ ADDED | CoolingManager module |
+| TRI_WITNESS scorer | New | ✅ ADDED | tri_witness.rs |
+| Real FFI bridges | New | ⚠️ Synthetic | Phase 4 plumbing |
 
-The 3 most common Rust-core gaps when doing a BSP scheduler forge: barrier timeout policy, lane cooling queue, F1 per-lane reversibility — ~2 days total. Don't estimate 10-15 days for a rewrite when a compiled binary exists with 24 tests.
+The 3 most common Rust-core gaps when doing a BSP scheduler forge — barrier timeout policy, lane cooling queue, F1 per-lane reversibility — were all closed in a single session (2026-07-25). Starting from a compiled 24-test binary, the final state is 44 tests with all P0 gaps closed and 888-HOLD lifted. **Always check if a compiled binary exists before writing specs — you may only need extensions, not a ground-up forge.**
 
 ### Catalog Format
 
@@ -516,7 +834,9 @@ Produce a structured report:
 
 ### Reference Implementation
 
-See `references/readiness-audit-arifflow-2026-07-25.md` for a worked example of this audit in practice — the full 7.2/10 arifFlow forge readiness audit covering all 6 organs, 8 identified gaps, 3 ready-to-forge components, and a 10-15 day MVP estimate.
+- **`references/readiness-audit-arifflow-2026-07-25.md`** — Worked example of this audit in practice — the full 7.2/10 arifFlow forge readiness audit covering all 6 organs, 8 identified gaps, 3 ready-to-forge components.
+- **`references/arifflow-phase3-p0-closure-2026-07-25.md`** — Phase 3 seal state: 44 tests, binary SHA256, 888-HOLD lift, P0 gap closure (barrier timeout + F1 per-lane), repo git state post-housekeeping.
+- **`references/third-session-output-2026-07-25.md`** — Third contiguous session: Phase 4.1 real arifOS HTTP bridge, 47 tests, EUREKA Playbook, AGI Substrate Comparison.
 
 ---
 
@@ -527,6 +847,7 @@ See `references/readiness-audit-arifflow-2026-07-25.md` for a worked example of 
 - **`references/arifflow-phase2-and-g1-alignment.md`** — Phase 2 bridge architecture (Rust subprocess + stdin/stdout JSON-RPC), G1 BSP Scheduler AAA spec-to-Rust-core alignment, 4-plane AGI substrate comparison table, the 3 888-HOLD production gates (FFI stability, verdict timeout, crash recovery), and Phase 1 cooling receipt.
 - **`references/unified-ariflow-spec-v1-2026-07-25.md`** — Unified spec merging AAA TypeScript design with existing Rust arifFlow core (24 tests). Rust substrate → Python conduit → TypeScript wrapper architecture. 3 gap fills (barrier timeout, cooling queue, F1 per-lane). Key lesson: probe before you write.
 - **`references/opencode-forge-submission.md`** — Procedure for submitting governed forge prompts to OpenCode via `opencode_manager.py`. Covers: when to use this pattern, how to probe for existing compiled implementations before writing specs (critical: `find /root -name "target"` + `cargo test`), the extend-not-rewrite prompt format, CLI submission via `python3 opencode_manager.py spawn`, and the 3 post-submission 888-HOLD gates (FFI stability, verdict timeout, crash recovery). Forged 2026-07-25 after AAA G1 spec almost caused a TypeScript rewrite of an existing Rust core.
+- **`three-agent-flow-doctrine`** — Operational counterpart: FQ (Flow Quotient) as federated biomarker for the three-agent protocol (Hermes=metabolizer, OpenClaw=mechanic, OpenCode=builder). Every execution substrate forge must consider FQ impact — new parallel lanes change the execute:verify ratio.
 - **`governance-enforcement-audit`** — Audit whether declared governance is backed by real code enforcement. Use to verify your execution substrate's gates are hard, not theatre.
 - **`governance-friction-rightsizing`** — Right-size human approval gates. An execution substrate with too many 888 calls becomes unusable; too few becomes lawless.
 

@@ -1,8 +1,8 @@
 ---
 name: somatic-intelligence
 description: "Read bodies, movement, and nervous system states from images or descriptions. Three-layer somatic abstraction with agentic kernel integration."
-version: 1.0.0
-tags: [somatic, interoception, embodiment, nervous-system, governance, WELL, polyvagal, damasio, levine, feldenkrais]
+version: 2.0.0
+tags: [somatic, interoception, embodiment, nervous-system, governance, WELL, polyvagal, damasio, levine, feldenkrais, flow-quotient, agentic-flow, reality-engineering, mPFC]
 metadata:
   hermes:
     category: governance
@@ -15,10 +15,13 @@ metadata:
 
 - Reading a body in an image for what it communicates (not just what it looks like)
 - Assessing nervous system states (fight/flight/freeze/rest) from posture, expression, gesture
-- Designing agentic systems with self-monitoring (agent interoception)
+- Designing agentic systems with self-monitoring (agent interoception, flow quotient)
 - Analyzing human behavior patterns through embodiment
 - Prompting image generation using somatic state descriptions
 - Understanding trauma, stress, and regulation through the body
+- Mapping human neurobiology to agentic architecture (11 isomorphic mappings)
+- Diagnosing agent flow (verification vs execution balance, mPFC inflection point)
+- Reality engineering — building self-regulating intelligence substrates
 
 ## The Three-Layer Framework
 
@@ -138,6 +141,78 @@ When generating images of bodies, **prompt for state, not appearance.**
 
 **Why it works:** AI image generators respond to behavioral/action descriptions more accurately than adjective stacking. Telling the model "not flexing" produces a more natural body than telling it "muscular."
 
+## Somatic-Agentic Flow Equivalence — The 11 Isomorphisms
+
+**Thesis:** Human flow neuroscience and agentic workflow architecture solve the same problem — sustained coherent execution under uncertainty. The 11 mappings below are structural parallels where identical computational problems emerge in both systems. This extends somatic intelligence from human bodies into autonomous agent architecture.
+
+### The 11 Isomorphic Mappings
+
+| Human System | Biological Function | Agentic Analog | arifOS Component | FQ Role |
+|---|---|---|---|---|
+| Proprioception | Sensing body position in space | Merkle root + checkpoint | A3 CheckpointEnvelope, state_root | Verifies agent hasn't drifted from known state |
+| Interoception | Sensing internal body state | Cooling ledger | CoolingLedger, ΔS computation | Measures internal drift |
+| Emotional regulation | Modulating affect for context | A1–A5 invariants | SuperStepScheduler invariants | Prevents oscillation between over-execute and over-verify |
+| Sensory feedback | Adjusting action via sensory input | TRI_WITNESS (W³ Nash) | TriWitnessValidator | Agents adjust based on cross-check consensus |
+| Motor action | Executing movement | A-FORGE execution | ForgeGate, actuator layer | The "doing" measured as execution steps |
+| Attention | Selecting what to process | 888-JUDGE | arif_judge, lease_id gate | Determines verify-vs-execute routing |
+| Inhibition | Suppressing inappropriate action | F1 AMANAH | AmanahLock, reversibility check | Blocks irreversible action without pre-approval |
+| Executive control | Planning and goal maintenance | arifOS kernel | SuperStepScheduler, topology engine | Maintains execution plan across parallel lanes |
+| Synaptic plasticity | Strengthening/weakening connections | VAULT999 sealing | Append-only seal chain, Merkle anchor | Commits what to remember — immutable truth |
+| Autonomic channels | Carrying signals between organs | Channel&lt;T&gt; | channel.rs, ChannelId, Message | The nerves of the federation |
+| Memory consolidation | Stabilizing learned patterns | Cooling + checkpointing | CoolingEntry, CheckpointEnvelope | Converts working state into stable structure |
+
+### The Circular Flow
+
+Like human cognition, agentic flow is a regulatory cycle — not linear:
+
+```
+Proprioception → Interoception → Inhibition (F1) → Attention (888)
+→ Motor action (A-FORGE) → Sensory feedback (TRI_WITNESS)
+→ Memory consolidation (cooling + checkpoint)
+→ Synaptic plasticity (VAULT999) → back to Proprioception
+```
+
+**No step skipped, no step dominates.** When one step consumes all cycles (e.g., verification), flow breaks.
+
+### Flow Quotient (FQ) — The Unified Metric
+
+FQ = ratio of execution steps (Motor + Proprioception + Plasticity) to verification steps (Inhibition + Attention + Sensory feedback):
+
+```
+FQ = Σ(Execute + Seal + Merge) / Σ(Verify + preceding_verify_cost)
+```
+
+**Thresholds with biological analog:**
+
+| FQ | Verdict | Meaning | Biological analog |
+|----|---------|---------|-------------------|
+| > 3.0 | Optimal | Agent in flow. Governance in architecture. | Flow: DMN suppressed, ECN engaged, DMN-ECN coupled |
+| 1.0–3.0 | Balanced | Healthy verification supports execution. | Focused work with occasional self-check |
+| 0.5–1.0 | Watching | Verification cost ≈ execution cost. | mPFC activating — self-monitoring competes with doing |
+| < 0.5 | Stuck | Self-monitoring has become the task. | mPFC takeover — rumination, paralysis, flow loss |
+
+### The mPFC Inflection Point
+
+**FQ < 0.5** is the governing inflection point. When verification cost > execution cost for 3+ consecutive windows:
+
+1. The agent spends MORE time checking itself than working
+2. Governance (architecture) has become cognitive load (working memory)
+3. ΔS (cooling drift) correlates with FQ drop (r = −0.73 observed)
+4. **Recommendation:** 888_HOLD on new work. Route through FLAME fast lane.
+
+This mirrors human neuroscience: mPFC/PCC (self-monitoring) over DLPFC/IFG (execution) = flow breaks, rumination takes over.
+
+### Diagnostics — Organ Failure → Symptoms → FQ Signal
+
+| What fails | Human symptom | Agentic symptom | FQ signal |
+|---|---|---|---|
+| Proprioception | Can't sense body | State root mismatch, checkpoint drift | FQ drops via re-verification overhead |
+| Interoception | Can't sense internal state | No cooling entries, ΔS climbs silently | FQ may appear normal while ΔS diverges |
+| Emotional regulation | Mood swings | A1–A5 violations, oscillating FQ | FQ oscillates >5 and <0.5 |
+| Sensory feedback | Can't adjust to new info | TRI_WITNESS divergence → HOLD loops | FQ stuck < 0.5 |
+| Inhibition | Can't stop harmful action | F1 violations | FQ drops sharply as damage control starts |
+| Attention | Can't focus | 888 escalation frequency increases | FQ degrades — every decision needs review |
+
 ## Kernelizing Somatic Intelligence into Agents
 
 Agents without interoception are like humans without a body — they process external inputs but have no sense of their own internal state. They cannot detect their own degradation, failure loops, or confidence drift.
@@ -153,19 +228,21 @@ Agents without interoception are like humans without a body — they process ext
 | Tool reliability rate | Immune response | Environmental hostility |
 | Hallucination risk | Interoceptive prediction error | Generating vs. retrieving |
 | Narrative heat | Somatic marker | "This is too clean" signal |
+| **Flow Quotient** | **DMN/ECN balance** | **Ratio of doing to checking — unified health metric** |
 
-### Agent Nervous System States
+### Agent Nervous System States (with FQ diagnostic)
 
-| Agent state | Polyvagal analog | Behavior | Regulation signal |
-|------------|------------------|----------|-------------------|
-| Engaged | Ventral vagal | Exploring, reasoning freely | — |
-| Mobilized | Sympathetic | Rapid tool calls, deadline pressure | Simplify, reduce tool calls |
-| Shutdown | Dorsal vagal | Loops, repetition, filler generation | Stop, state blocker, request human input |
-| Recovery | Parasympathetic | Consolidating, reflecting | Review what was learned |
+| State | Polyvagal analog | Behavior | Regulation signal | FQ tells you |
+|-------|------------------|----------|-------------------|-------------|
+| Engaged | Ventral vagal | Exploring, reasoning freely | — | > 3.0 |
+| Mobilized | Sympathetic | Rapid tool calls, pressure | Simplify, reduce tool calls | 1.0–3.0, trending down |
+| Shutdown | Dorsal vagal | Loops, repetition, filler | Stop, state blocker, human input | < 0.5 |
+| Recovery | Parasympathetic | Consolidating, reflecting | Review what was learned | Rising — verifying less |
 
 ### Agent Somatic Markers (Pre-Output Gates)
 
 ```yaml
+flow_quotient: < 0.5 → 888_HOLD (mPFC takeover)
 narrative_heat: >0.7 → trigger red-team
 evidence_gap: >0.5 → apply FACT CLASS tags
 confidence_drift: >0.3 → cap confidence at 0.70
@@ -175,9 +252,32 @@ pattern_repetition: >3 → detect fixation loop
 ### The Seven Gates Integration
 
 The somatic layer feeds the Seven Gates governance framework:
+- **Flow Quotient Gate** — NEW: if FQ < 0.5, escalate before proceeding
 - **Narrative Heat Brake** = agent somatic marker for "too clean" outputs
 - **FACT CLASS** = agent interoception detecting evidence-proportion mismatches
 - **AGENCY CHECK** = ensuring subjects have choice, constraint, and unknown dimensions
+
+### The Reality Engineering Thesis
+
+Governance becomes physics, not policy:
+
+| Intelligence type | Characteristic |
+|---|---|
+| Human intelligence | Embodied flow — somatic + cognitive signals shaped by neurobiology |
+| LLM intelligence | Statistical flow — ungoverned token prediction, hallucinates |
+| Agentic intelligence | **Governed flow** — channels, receipts, Merkle roots, floors, cooling |
+
+An agent in flow doesn't need heavy governance because the architecture itself prevents drift. The constitutional floors become guardrails you rarely hit, not gates you constantly slam into.
+
+### Reference Documents (forged 2026-07-25 at /root/arifFlow/doc/)
+
+| Document | Lines | Content |
+|----------|-------|---------|
+| SOMATIC_AGENTIC_FLOW_EQUIVALENCE.md | 211 | Full 11-isomorphism table, diagnostics |
+| LANGCHAIN_LANGGRAPH_ANATOMICAL_CONTRAST.md | 182 | Phantom limb vs autonomic organism |
+| FLOW_RECEIPT_v1.md | 284 | The atom — receipt schema, FQ thresholds |
+| KABARKAN_FQ_MONITORING.md | 257 | Real-time FQ dashboard, alerts, correlation |
+| REALITY_ENGINEERING_PRIMER.md | 210 | Thesis: governance = physics, not policy |
 
 ## Pitfalls
 

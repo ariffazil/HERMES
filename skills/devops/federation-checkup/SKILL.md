@@ -1139,6 +1139,106 @@ server.json: ✅/❌ | .well-known: <status> | GitHub raw: 404 (expected)
 Runtime: ✅/❌ | v<version> | drift: false | surface: CONSISTENT
 ```
 
+## Credential-Config Drift Detection
+
+When a credential (API key, env var, token) is blocked/rotated/deleted in the source of truth but residual references remain in config files across the federation — run this protocol.
+
+### When to Use
+
+- User says "why is quota still draining after I blocked the key?" or "trace where X key is used"
+- After rotating/blocking a credential — verify no residual references survived
+- During security audit — find where a dead/broken key still has config references
+- Before decommissioning a provider — ensure no service still points to it
+
+### The Protocol
+
+```bash
+# Phase 1 — Source of Truth Check
+# Check vault.env (SSOT) — is it actually commented out / missing?
+grep -n '^#.*ILMU_API_KEY\|^ILMU_API_KEY\|^export ILMU_API_KEY' /root/.secrets/vault.env
+
+# Check vault.flat.env (systemd EnvironmentFile) — is it synced?
+grep 'ILMU_API_KEY' /root/.secrets/vault.flat.env
+
+# Check if the env var actually resolves at runtime
+set -a && source /root/.secrets/vault.env && set +a
+echo "KEY=[${KEY_VAR:-EMPTY}]"
+
+# Phase 2 — Startup Script Scan
+# Find ALL scripts that reference the credential — they might read from
+# vault.flat.env (not vault.env) or have hardcoded values
+grep -rn 'ILMU_API_KEY\|API_KEY=' /usr/local/bin/*.sh /opt/*/bin/*.sh 2>/dev/null
+grep -rn 'ILMU_API_KEY' /etc/systemd/system/*.service /etc/systemd/system/*.d/*.conf 2>/dev/null
+
+# Phase 3 — Hardcoded Key Scan (the most dangerous pattern)
+# Search for keys that look hardcoded (sk-..., pplx-..., tp-..., etc.)
+# in config files — these bypass vault.env entirely
+grep -rn '"sk-\|"pplx-\|"tp-\|"csk-' /root/.openclaw/ /root/.config/ /root/A-FORGE/ /root/HERMES/ 2>/dev/null | grep -v '.git/' | grep -v node_modules | grep -v '.jsonl'
+
+# Phase 4 — Docker Container Check
+# For each running Docker container with the credential:
+# Check actual runtime env (not docker inspect — that shows build-time, not run-time)
+docker exec <container> env 2>/dev/null | grep CREDENTIAL
+# Check container config files that reference the credential
+docker exec <container> cat /app/config.yaml 2>/dev/null | grep -i credential
+
+# Phase 5 — Running Process Check
+# Has anything got this key live in its environment?
+for pid in $(ps -eo pid=); do
+  env=$(cat /proc/$pid/environ 2>/dev/null | tr '\0' '\n' | grep 'KEY_VAR=' || true)
+  [ -n "$env" ] && echo "PID $pid: $env"
+done
+
+# Phase 6 — Systemd Unit / Drop-In Check
+# Check all service drop-in dirs for hardcoded references
+for f in /etc/systemd/system/*.service.d/*.conf; do
+  [ -f "$f" ] && grep -l 'KEY_VAR' "$f" 2>/dev/null
+done
+
+# Phase 7 — Agent Config Check
+# OpenClaw agents may have hardcoded keys in models.json
+find /root/.openclaw/agents -name 'models.json' -exec grep -l 'ilmu\|KEY_VAR' {} \;
+# OpenCode config may reference the provider
+grep -rn 'ilmu\|KEY_VAR' /root/.config/opencode/opencode.json 2>/dev/null
+```
+
+### Classification Matrix
+
+| Pattern | Meaning | Severity | Action |
+|---------|---------|----------|--------|
+| Key in vault.env but **commented** | Blocked in source of truth | ✅ Intentional | Leave alone |
+| Key in vault.env but **NOT in vault.flat.env** | flat.env stale (sync script only goes flat→env, not reverse) | 🟡 Stale | Manual sync or regen flat.env |
+| Key in **startup script** hardcoded | Bypasses vault entirely | 🔴 P0 Critical | Replace with env var reference |
+| Key in **systemd drop-in** | Overrides vault.env sourcing | 🔴 P1 High | Remove, let vault sourcing handle it |
+| Key in **Docker env** at runtime | Container has the key live | 🔴 P0 if key dead (401 loop), P1 if key active but shouldn't be | Restart container with correct env |
+| Key in **Docker container config file** | Container reads from config.yaml not env | 🟡 P2 unless the key mismatches vault | Update config file + restart |
+| Key in **agent models.json** hardcoded | Bypasses vault.env — agent sends literal key | 🔴 P1 — hardcoded credential in plaintext | Replace with env var reference or remove |
+| Key in **A-FORGE config** as key_env | Uses env var — will get empty string if key dead | 🟡 P2 — will fail silently on use | Update config to point to working provider |
+| Running process has key in /proc/PID/environ | Process started when key was live, hasn't restarted since | 🟡 P2 — stale but harmless until restart | Note for next restart cycle |
+
+### Pitfalls
+
+- **`docker inspect` shows build-time env, not runtime env.** The `-e OPENAI_API_KEY=` you see in `docker inspect` is what was PASSED at container start — it can be empty string. To see what the container actually resolves, exec inside: `docker exec <container> env | grep KEY`. Confirmed in this session: Graphiti container showed `OPENAI_API_KEY=` (empty) in `docker inspect` AND in `docker exec env` — correctly dead.
+- **Startup scripts may read from `vault.flat.env` while other services read from `vault.env`.** These two files can drift. The sync script only goes `flat→env`, not `env→flat`. So a key commented out in `vault.env` may still be present in `vault.flat.env` (or vice versa). **Check both.**
+- **Hardcoded keys in config files bypass all vault.env management.** If a key is rotated in vault.env but hardcoded in a `models.json`, the hardcoded version keeps working. This is the most dangerous credential-config drift pattern.
+- **`/proc/<PID>/environ` shows env at process start, not current state.** If the process started before the key was rotated, it still has the old key. You must restart the service to pick up the new env.
+- **Don't confuse "credentials still referenced in config" with "credentials still working."** A config file can reference a dead key (env var empty) and the service handles the 401 gracefully. The config reference is drift; the service behaviour is a separate question. Report both, fix the drift independently.
+
+### Real Example (ILMU API Key, 2026-07-25)
+
+From this session's credential trace:
+
+| Location | Status | Action Taken |
+|----------|--------|-------------|
+| `vault.env:97` | Commented out (F13 BLOCKED) | ✅ Intentional |
+| `vault.flat.env` | Missing entirely | 🟡 flat.env stale |
+| `graphiti-start.sh` | Reads from vault.flat.env → gets empty string | 🟡 Startup script reads wrong source |
+| `Graphiti Docker container` | `OPENAI_API_KEY=` (empty) | 🔴 Container configured for dead provider |
+| `opencode/agent/models.json` | Hardcoded `"apiKey": "***"` | 🔴 Hardcoded credential |
+| `main/agent/models.json` | `"apiKey": "ILMU_API_KEY"` (literal string) | 🟡 Sends wrong string as key |
+| `apex_battery_config.yaml` | References `key_env: ILMU_API_KEY` | 🟡 Config references dead env var |
+| OpenClaw gateway config | Has `ilmu` in fallback_providers | 🟡 Fallback chain references dead provider |
+
 ## Heartbeat Poll Response Protocol
 
 **When the system sends a heartbeat poll (BEAT_OK / ARTBEAT_OK / HEARTBEAT_OK / _OK / AT_OK):**

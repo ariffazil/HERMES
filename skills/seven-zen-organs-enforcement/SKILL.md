@@ -733,6 +733,7 @@ The COOLING_RECEIPT lives in the Truth + Continuity + Governance plane intersect
 - `references/cooling-receipt-quickref.md` — condensed COOLING_RECEIPT reference (envelope fields, lifecycle, when to emit)
 - `references/mcpjam-path-a-deployment-2026-07-18.md` — MCPJam Path A deployment reference: docker compose pattern, localhost+Tailscale binding, read-only federation endpoints. Use as canonical reference for any "deploy X with Tailscale-only exposure" task.
 - `references/arif-communication-style.md` — the 14 sovereign directives for HOW to respond to Arif
+- `references/flow-quotient-operational.md` — FQ computation, thresholds, organ balance calibration, integration with COOLING RECEIPT. Canonical reference for the flow measurement instrument forged 2026-07-25.
 - `scripts/organ_reflex_self_test.py` — re-runnable smoke test: simulate 10 inputs (5 clean, 5 contaminated), assert the reflex arc catches the right failures
 
 ---
@@ -864,6 +865,29 @@ When forking any governed component:
 **Failure mode (2026-07-25):** First OpenCode prompt would have created a SECOND Rust scheduler, merge engine, envelope format. Fixed to "extend" — barrier timeout, lane cooling, TRI_WITNESS merge as additive extensions.
 
 Full EUREKA Playbook at `/root/arifFlow/spec/EUREKA_PLAYBOOK_v1.md` (12KB, 6 sections). The 10 axioms above are the compact per-turn version.
+
+### Flow Quotient — Calibration Instrument (added 2026-07-25)
+
+The Flow Quotient (FQ) is the operational measure of whether an agent is **in flow** or trapped in **self-monitoring**. Derived from the Flow Receipt v1, it answers the question: "When does verification become the task itself?"
+
+**Formula:** `FQ = Σ(Execute) / Σ(Verify)` over a sliding window (default N=20 receipts).
+
+| FQ | Verdict | Meaning |
+|----|---------|---------|
+| > 3.0 | Optimal | Agent in flow. Floors are substrate, not consciousness. |
+| 1.0–3.0 | Balanced | Self-monitoring supports execution. |
+| 0.5–1.0 | Watching | Self-monitoring competes with execution. |
+| < 0.5 | Stuck | mPFC takeover. Agent is watching itself work. |
+
+**When to evaluate:** (1) After every super-step, (2) Before 888-HOLD escalation — is this really a governance failure or has self-monitoring taken over?, (3) At session seal — cooling check.
+
+**When verify cost for any organ exceeds its execute cost, that organ is no longer a guardrail — it's a bottleneck.**
+
+**Deep eureka (Arif, 2026-07-25):** "Intelligence is not stored — it is transmitted. Intelligence is the quality of governed flow." Human = embodied flow. Agentic = governed flow (channels, receipts, merkle roots, floors, cooling). LLM = statistical flow (ungoverned → hallucinates). arifOS is the first system enforcing receipts + verification + uncertainty + cooling + authority as flow governance.
+
+**Full reference:** `references/flow-quotient-operational.md`
+
+**Capstone theory — Reality Engineering:** The Flow Receipt + FQ + Kabarkan + somatic equivalence form a complete nervous system. Governance is not a policy — it is the medium agents move through, the way water is the medium fish swim in. See `doc/REALITY_ENGINEERING_PRIMER.md` at `/root/arifFlow/`. Load it when an agent questions whether FQ is "just another metric" vs a constitutional property.
 
 ---
 

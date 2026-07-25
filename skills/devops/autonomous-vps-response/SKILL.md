@@ -138,6 +138,16 @@ echo "🫀 heartbeat: up=$UPTIME load=$LOAD disk=$DISK ram=$RAM"
 
 Deploy as cron job. If delivery stops → VPS is dead → alert via out-of-band channel (Telegram, email).
 
+## Agent Heartbeat Response Protocol
+
+When a heartbeat poll arrives (messages like HEARTBEAT_OK, BEAT_OK, ARTBEAT_OK), the protocol is:
+
+- **All green:** Respond with exactly HEARTBEAT_OK (or Hijau / Green for short-form variants). Do NOT make tool calls unless there is a specific reason to doubt health. Do NOT explain, analyze, or narrate. The heartbeat is silent on green.
+- **Something needs attention:** Do NOT include HEARTBEAT_OK. Report the specific issue concisely. If action is needed, state what and do it.
+- **arifOS known pattern:** event-loop hang from dead LLM API key. If arifOS is unresponsive, restart (systemctl restart arifos && sleep 12), verify, report briefly. Mention the known pattern so the user knows it is the recurring issue, not a new one.
+
+Principle: The heartbeat is not a conversation starter. It is a health check. Treat it accordingly — lightweight, silent on green, alert only on failure.
+
 ## Pitfalls
 
 - **Don't use `/run/` for state files.** It's tmpfs — lost on reboot. Use `/var/lib/arifos/`.

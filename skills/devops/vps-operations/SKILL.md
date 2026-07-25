@@ -201,6 +201,73 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 - **Agent session death → orphan cascade (proven 2026-07-23).** When agent sessions (OpenCode, Kimi, Hermes) die without cleanup, their spawned MCP child processes (github-mcp-server, browser, kimi-code, pytest) survive as orphans. These stack up silently: 3× github-mcp-server at 58% CPU each, kimi-code at 25%, stale browser at 75%. Total: 200%+ wasted CPU. Detection: `ps aux --sort=-%cpu | head -15` — look for `github-mcp-server`, `kimi-code`, `MainThr+` with PPID=1. Fix: `kill -9 <pid>` for all orphans, no service impact. Root fix: session-cleanup hook that kills children when parent exits — not yet implemented.
 - **Boot storm after systemd cascade reboot (proven 2026-07-23).** When a service failure cascades to a full VPS reboot (see systemd dependency chain pitfall), all services fire up simultaneously. This creates a transient 1-minute load spike of 11+: `uptime` shows 1 min, load 11.46, service processes all starting. This is NOT a problem — it's normal boot contention. Load decays to single digits within 2-3 minutes as services finish init. Detection: check `uptime` — if 1m load is high but 5m is <50% of it and uptime is <5 min, it's a boot storm. Fix: none needed. Do NOT investigate processes during this window — they'll look busy because they are starting.
 
+## arifOS Event-Loop Hang — Dead LLM API Key (proven 2026-07-24)
+
+When arifOS accepts TCP connections (`Connected to localhost port 8088`) but serves zero bytes on `/health` and eventually times out, the event loop is hung. **Root cause is almost always a dead LLM API key**, not a code bug or OOM.
+
+### The Chain
+
+```
+Dead API key (e.g., MiniMax M3 401: "invalid api key")
+  → TokenRouter tries the key → 401
+  → Client retries → more requests queue waiting for LLM
+  → asyncio event loop blocks (waiting for response that never comes)
+  → /health stops responding (accepts TCP connection, serves nothing)
+  → systemd hits TimeoutStopSec → kills process
+  → "Failed with result 'timeout'"
+  → systemd auto-restarts → fresh cycle → same problem
+```
+
+### Diagnosis
+
+```bash
+# 1. Confirm the hang pattern
+curl -v --max-time 5 http://localhost:8088/health 2>&1 | tail -5
+# Expect: "Connected to localhost port 8088" then "Operation timed out... 0 bytes received"
+
+# 2. Process is running fine otherwise
+systemctl status arifos --no-pager | grep Active
+# Shows: "active (running) since..." — memory normal (200-400MB), not OOM
+
+# 3. Find the dead key in journal
+journalctl -u arifos --since "5 min ago" | grep -iE '401|unauthorized|invalid api key|model_not_found'
+# Key lines: "TokenRouter HTTP 401: invalid api key" or "TokenRouter HTTP 503: No available channel"
+
+# 4. Check arifOS model config
+grep -r 'provider_key\|model_id' /opt/arifos/app/config/PROFILES/vps_main_arifos.json
+# Shows which provider + model arifOS routes through
+# Secret source: vault.env → secret-registry.yaml → MINIMAX_API_KEY
+```
+
+### Differentiating from OOM Death Spiral
+
+| Symptom | API Key Death Hang | OOM Death Spiral |
+|---------|-------------------|------------------|
+| Memory | Normal (200-400MB) | Near cap (1.5GB+) |
+| Process state | Accepts TCP, no HTTP response | May show D state |
+| Journal hits | `401` / `503` from TokenRouter | `oom-kill` events |
+| System load | Normal or slightly elevated | Very high (50+) |
+| Other services | Only arifOS affected | Most services degraded |
+| Process CPU | Idle or low | A stuck process at 80%+ |
+
+### Fix
+
+```bash
+# Immediate: restart arifos (temporary, will hang again on next LLM call)
+systemctl restart arifos && sleep 12 && curl -sf http://localhost:8088/health
+
+# Root: replace the dead API key OR swap the model provider:
+# Option A — Renew the dead key in vault.env
+# Option B — Edit arifOS profile to use a working provider:
+#   /opt/arifos/app/config/PROFILES/vps_main_arifos.json
+#   Change: provider_key, family_key, model_id
+#   Then: systemctl restart arifos
+```
+
+### Pitfall: "Restart fixed it" is not a fix
+
+After restart, arifOS returns `healthy` but will hang again on the next LLM call hitting the dead key. Each restart buys a few hours at most. **The dead key must be replaced or the provider changed for a permanent fix.** If you're restarting arifOS every 20-30 minutes, it's a dead key, not a memory leak.
+
 ## Reference: Common Resource Hogs
 
 | Process | Typical RSS | Usually Stuck When |

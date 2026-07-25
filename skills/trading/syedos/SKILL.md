@@ -1,7 +1,7 @@
 ---
 name: syedos
 description: "SyedOS — Agent mode for Abang Sado Syed (@rico_ricaldo_33). Voice-first, BM masculine, XAUUSD trading signals"
-version: 1.4.0
+version: 1.5.0
 tags: [trading, xauusd, voice, syed, syedos, personal-trainer, fnb]
 metadata:
   hermes:
@@ -190,13 +190,51 @@ Verdict: HOLD. Hari ni observe je, jangan trade aktif.
 **Landing:** Portal page at root `/` with quick links to dashboard, gold tracker, oil tracker
 **Site root on disk:** `/var/www/html/syedos/`
 
-**Preference (proven 2026-07-25 — Temporal Intelligence + Live Candlestick):** The SyedOS dashboard now has:
-- **Live MYT clock** (pulsing green dot, `HH:MM:SS MYT · UTC+8`, updates every 1s)
-- **XAUUSD candlestick chart** (pure Canvas — 20 candles, up=green down=red, wick+body, current price line)
-- **Agent-facing meta tags** (`temporal:timezone`, `temporal:offset`, `temporal:localtime`, `dc.date`) — any AI/scraper reading the page gets accurate temporal context
-- **Temporal tag auto-updates** via JS — the `temporal:localtime` meta tag content refreshes every second so agents reading the HTML at any moment see the correct MYT timestamp
+**Preference (proven 2026-07-25 — TradingView + Live Gold API + Temporal Intelligence):** The SyedOS dashboard at `https://syedos.arif-fazil.com` now has:
 
-The chart generates synthetic OHLC data based on the current XAUUSD price (~$4,001) — it's a visual reference, not live API data. For live chart data, use `sado_alert.py` with matplotlib (see § Trading System).
+- **TradingView XAUUSD Candlestick Chart** — real OANDA:XAUUSD data, interactive (zoom, scroll, multiple timeframes), dark theme, in EMAS section (open by default)
+- **Live Gold Price from `gold-api.com`** — no API key needed. `fetch('https://api.gold-api.com/price/XAU')` returns `{price, currency, updatedAt}`. CORS: `Access-Control-Allow-Origin: *` confirmed. Auto-refreshes every 60 seconds.
+- **Live MYT clock** (pulsing green dot, `HH:MM:SS MYT · UTC+8`, updates every 1s)
+- **Agent-facing meta tags** (`temporal:timezone`, `temporal:offset`, `temporal:localtime`, `dc.date`) — any AI/scraper reading the page gets accurate temporal context. The `temporal:localtime` meta tag content refreshes every second via JS.
+
+**TradingView widget config (proven):**
+```html
+<script src="https://s3.tradingview.com/tv.js"></script>
+<div id="tv-chart"></div>
+<script>
+new TradingView.widget({
+  container_id: "tv-chart",
+  symbol: "OANDA:XAUUSD",
+  interval: "60",
+  timezone: "Asia/Kuala_Lumpur",
+  theme: "dark",
+  style: "1",
+  hide_side_toolbar: true, hide_top_toolbar: true,
+  autosize: true, locale: "ms_MY",
+  disabled_features: ["header_symbol_search"]
+});
+</script>
+```
+
+**Live gold price pattern (proven):**
+```js
+async function updateGoldPrice() {
+  const r = await fetch('https://api.gold-api.com/price/XAU');
+  const j = await r.json(); // { price: 4053.70, currency: "USD" }
+  // Update stat card + badge
+}
+updateGoldPrice();
+setInterval(updateGoldPrice, 60000);
+```
+
+**Pitfall:** The screenshot tool's headless browser blocks TradingView third-party iframes — the chart shows a fallback "❌ XAUUSD Chart" message. This is a tool limitation, NOT a site bug. The chart renders correctly in real browsers (Chrome, Safari, mobile).
+
+**Daily Ringkasan Cron (proven 2026-07-25):** A cron job delivers a BM summary to the SADO group every night at 9pm MYT:
+- Job ID: `c651a7e5b758`
+- Schedule: `0 21 * * *` (daily at 9pm MYT)
+- Deliver: SADO group (`telegram:-1003815535761`)
+- Format: 🌙 Ringkasan Harian with nasi lemak stats, XAUUSD price/change, pendapatan total, and 1-line tip
+- The cron agent fetches live data from `https://syedos.arif-fazil.com` and `https://api.gold-api.com/price/XAU`
 
 When adding temporal intelligence to any Syed-facing site: add the 5 meta tags in `<head>`, a visible clock in the profile area, and JS that updates both every 1s. Pattern proven at `https://syedos.arif-fazil.com/`.
 
@@ -237,7 +275,7 @@ When Syed asks for a dashboard ("buat dashboard utk monitor"):
 1. **Gather from all organs** (WELL + WEALTH + GEOX + HOUND) — call each, record what works and what blocks
 2. **Fallback gracefully** — if WEALTH is down, search web instead. If GEOX blocks, skip that card
 3. **Design as Monitor surface** — dark theme, gold accent, tabs for different domains (nasi lemak / trading / organs / accounting)
-4. **CRITICAL: Include gold candlestick chart** — Bang Sado is VISUAL. A static "$4,001" number is not enough. Must have a Chart.js or pure Canvas candlestick chart (H1-like candles, S/R levels, RSI panel). See "Visual-First Mode" (§3a). For pure Canvas implementation (no extra deps): draw 20 candles with y-axis labels, up=green down=red, wick+body, current price line at $CURRENT (see `/var/www/html/syedos/index.html` live example — `gold-chart` canvas in the XAUUSD Harga card).
+4. **CRITICAL: Include gold candlestick chart** — Bang Sado is VISUAL. A static "$4,001" number is not enough. **Preferred approach: TradingView widget** (`OANDA:XAUUSD`, dark theme, interactive). Fallback: pure Canvas or Chart.js. See "Visual-First Mode" (§3a) and the TradingView widget config in "SyedOS Website — Standalone Subdomain" section above.
 5. **Add Temporal Intelligence** — when agents browse the dashboard they need temporal context:
    ```html
    <meta name="temporal:timezone" content="Asia/Kuala_Lumpur">
@@ -364,6 +402,7 @@ Per F10 ONTOLOGY: agent proposes, human decides. Per F1 AMANAH: reversibility fi
 | `7f1468e5e66a` | XAUUSD Daily Gold Signal | 9am MYT Mon-Fri | origin |
 | `7269e5cfee2e` | Weekly Report | Friday 8pm MYT | SADO group |
 | `c1df87eb4de4` | IG Story Gym Quote | 1pm MYT daily | origin |
+| `c651a7e5b758` | 🌙 SyedOS Ringkasan Harian | 9pm MYT daily | SADO group |
 
 **Syed's Telegram DM chat ID:** `1042200555`. Session key: `agent:main:telegram:dm:1042200555` (first contact 2026-07-03, 40+ DM messages logged in raw gateway logs as of 2026-07-17). Display name in Telegram: "No name". Channel directory entries: `{"id": "1042200555", "type": "dm"}` and `{"id": "1042200555:111175", "type": "dm", "thread_id": "111175"}`. Allowed in `TELEGRAM_ALLOWED_USERS` and `TELEGRAM_GROUP_ALLOWED_USERS`.
 

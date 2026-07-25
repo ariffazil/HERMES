@@ -138,6 +138,38 @@ playwright install chromium
 
 **Rollback protocol:** `cp <config>.bak-$(date +%s) <config>` before editing. If validate fails, `cp <bak> <config>` to restore.
 
+### 7. Custom MCP Server Deployment (from-scratch)
+
+When building a custom MCP server (not wiring a third-party package), the canonical example is Mage-Flow at `/opt/mage-server/`. Pattern:
+
+```
+/opt/<name>/
+├── main.py          # FastMCP server (tools, helpers, config)
+├── run.sh           # sources vault.env, exec main.py
+└── requirements.txt # if needed
+```
+
+**Registration** uses the same commands as third-party stdio servers (§3):
+```bash
+hermes config set mcp_servers.<name>.command "/opt/<name>/run.sh"
+hermes config set mcp_servers.<name>.enabled true
+hermes config set mcp_servers.<name>.timeout 120
+```
+
+**For GPU-backed tools** (image generation, ML inference), the local VPS has no NVIDIA GPU. Pattern is Modal serverless — see `references/modal-gpu-deployment.md`.
+
+### 7b. Value-First Communication Rule
+
+When reporting on any integration or deployment task, lead with what changed for the user, not what you did. The user processes deltas in their capability, not process narration.
+
+| Bad (process-focused) | Good (value-focused) |
+|---|---|
+| "I wired the MCP server to Modal" | "mage_generate now runs on Modal GPU — ~1s/image when queue clears" |
+| "Cloudflare Workers AI research done" | "3 free models ready (Llama 3.3 70B, Qwen3 30B, Mistral 24B) — just need token scope fixed" |
+| "Modal scaffolding built" | "Mage-Flow deployed on serverless GPU — $0 idle cost" |
+
+Apply to all user-facing status reports across federation development skills. When the user asks "So what?" the answer must be a concrete capability delta, not a step replay.
+
 ### 8. Docker-Deployed MCP Servers (Streamable HTTP)
 
 Some MCP servers ship as containers, not pipx packages — typically Next.js apps with built-in MCP endpoints (deep-research, flowise, etc.).
