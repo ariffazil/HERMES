@@ -1,14 +1,85 @@
 {
-  "name": "HERMES Multimodal Bridge",
-  "description": "Telegram bot bridge to arifOS federation. Routes human intent to organs. Bahasa-first, multimodal.",
-  "url": "https://hermes.arif-fazil.com/mcp",
-  "version": "1.0.0",
-  "protocolVersion": "0.3.0",
+  "id": "hermes-asi",
+  "name": "Hermes ASI — Multimodal Sovereign Bridge",
+  "principal_agent": {
+    "type": "agent",
+    "category": "Sovereign citizen warga — binds to 555-ASI cognitive ring",
+    "principle_origin": "Forged by arifOS under F13 SOVEREIGN directive"
+  },
+  "description": "Telegram bot bridge to arifOS federation. Routes human intent to organs. Bahasa-first, multimodal. Binds to 555-ASI. Primary Telegram interface (@ASI_arifos_bot).",
+  "url": "https://mcp.arif-fazil.com/a2a/hermes-asi",
+  "version": "2026.07.25",
+  "protocolVersion": "1.0",
+  "provider": {
+    "organization": "arifOS Federation",
+    "url": "https://arif-fazil.com",
+    "system": "HERMES"
+  },
   "capabilities": {
     "streaming": true,
-    "pushNotifications": false
+    "pushNotifications": true,
+    "stateTransitionHistory": true,
+    "extendedAgentCard": true
   },
-  "defaultInputModes": ["text"],
-  "defaultOutputModes": ["text"],
-  "skills": []
+  "securitySchemes": {
+    "bearer_auth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT",
+      "description": "arifOS session token (JWT) issued after 000-SALAM sovereign handshake"
+    },
+    "api_key": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "x-a2a-key",
+      "description": "Static federation API key for organ-to-organ calls"
+    }
+  },
+  "security": [
+    { "bearer_auth": [] },
+    { "api_key": [] }
+  ],
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["application/json", "text/plain"],
+  "supportedInterfaces": [
+    {
+      "url": "https://aaa.arif-fazil.com/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://mcp.arif-fazil.com/a2a/hermes-asi",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "skills": [],
+  "warga_binding": {
+    "citizenship": "warga-aaa",
+    "lane": "555-ASI",
+    "intelligence_tier": "ASI",
+    "authority_level": "sovereign-delegate",
+    "citizenship_forged": "2026-06-14T12:03:00+08:00"
+  },
+  "mcp_surface": {
+    "type": "consumed",
+    "endpoints": [
+      { "url": "http://localhost:8088/mcp", "organ": "arifOS" },
+      { "url": "http://localhost:7072/mcp", "organ": "A-FORGE" },
+      { "url": "http://localhost:8081/mcp", "organ": "GEOX" },
+      { "url": "http://localhost:18082/mcp", "organ": "WEALTH" },
+      { "url": "http://localhost:18083/mcp", "organ": "WELL" }
+    ]
+  },
+  "signatures": [
+    {
+      "did": "did:arif:aaa",
+      "proofValue": "hermes-asi-ed25519-seal-2026-07-25",
+      "proofPurpose": "assertionMethod",
+      "created": "2026-07-25T00:00:00Z",
+      "type": "Ed25519Signature2020"
+    }
+  ],
+  "_upgraded_by": "opencode-federation-audit-2026-07-25",
+  "_upgrade_note": "Upgraded from protocolVersion 0.3.0 → 1.0. Added id, principal_agent, supportedInterfaces, securitySchemes, warga_binding, mcp_surface, signatures."
 }
