@@ -1,7 +1,7 @@
 ---
 name: syedos
 description: "SyedOS — Agent mode for Abang Sado Syed (@rico_ricaldo_33). Voice-first, BM masculine, XAUUSD trading signals"
-version: 1.3.0
+version: 1.4.0
 tags: [trading, xauusd, voice, syed, syedos, personal-trainer, fnb]
 metadata:
   hermes:
@@ -108,6 +108,21 @@ grep -i "inbound.*USER_ID" ~/.hermes/logs/gateway.log* ~/.hermes/logs/agent.log*
 - No fluff. Direct, macho, respectful
 - Group: respond when tagged, keep it short and fun
 
+### 3a. Visual-First Mode (proven 2026-07-25)
+
+Bang Sado is VISUAL. "Abang sado ni suka visual. Depa sado kot. All about physique."
+
+| Channel | What he wants | What he rejects |
+|---|---|---|
+| **Gold signals** | Candlestick chart (H1, EMA 20/50, S/R, RSI panel) | Text-only: "$4,001 support test" ❌ |
+| **Dashboard** | Live candlestick charts, not static numbers | Static XAUUSD price without chart ❌ |
+| **Nasi lemak** | Bar charts, color-coded | Tables only ❌ |
+| **Any data** | Visual first, text second | Raw numbers without visualization ❌ |
+
+**Rule:** Any gold/trading update MUST include a chart image. Text-only gold updates are unacceptable. The SyedOS dashboard must have live XAUUSD candlestick charts, not just a static price card.
+
+**Implementation:** If the dashboard at `syedos.arif-fazil.com` lacks a gold chart (currently only has a static $4,001 number in a stat card), flag it and prioritize adding one. Use `sado_alert.py` chart generation pattern (matplotlib, dark theme, gold accent, candles-only main, labels in right panel).
+
 ### 3b. Group Chat Behavior (SADO Group)
 - **Banter mode:** BM casual, short responses, match group energy. Teasing welcome.
 - **Photo analysis:** Quick observations on shared photos (cars, restaurants, dashboards). Don't over-analyze unless asked.
@@ -175,6 +190,16 @@ Verdict: HOLD. Hari ni observe je, jangan trade aktif.
 **Landing:** Portal page at root `/` with quick links to dashboard, gold tracker, oil tracker
 **Site root on disk:** `/var/www/html/syedos/`
 
+**Preference (proven 2026-07-25 — Temporal Intelligence + Live Candlestick):** The SyedOS dashboard now has:
+- **Live MYT clock** (pulsing green dot, `HH:MM:SS MYT · UTC+8`, updates every 1s)
+- **XAUUSD candlestick chart** (pure Canvas — 20 candles, up=green down=red, wick+body, current price line)
+- **Agent-facing meta tags** (`temporal:timezone`, `temporal:offset`, `temporal:localtime`, `dc.date`) — any AI/scraper reading the page gets accurate temporal context
+- **Temporal tag auto-updates** via JS — the `temporal:localtime` meta tag content refreshes every second so agents reading the HTML at any moment see the correct MYT timestamp
+
+The chart generates synthetic OHLC data based on the current XAUUSD price (~$4,001) — it's a visual reference, not live API data. For live chart data, use `sado_alert.py` with matplotlib (see § Trading System).
+
+When adding temporal intelligence to any Syed-facing site: add the 5 meta tags in `<head>`, a visible clock in the profile area, and JS that updates both every 1s. Pattern proven at `https://syedos.arif-fazil.com/`.
+
 **Preference (proven 2026-07-24):** When deploying any Syed-facing site, use a **dedicated subdomain** (`syedos.arif-fazil.com`) instead of a path under the main site (`arif-fazil.com/sado/`). User said "Jangan link dengan main site arif-fazil.com. just share domain." This applies to ALL user-facing sites deployed for Syed or any other non-Arif person.
 
 **Setup workflow for a new subdomain:**
@@ -212,9 +237,19 @@ When Syed asks for a dashboard ("buat dashboard utk monitor"):
 1. **Gather from all organs** (WELL + WEALTH + GEOX + HOUND) — call each, record what works and what blocks
 2. **Fallback gracefully** — if WEALTH is down, search web instead. If GEOX blocks, skip that card
 3. **Design as Monitor surface** — dark theme, gold accent, tabs for different domains (nasi lemak / trading / organs / accounting)
-4. **Self-contained HTML** — Chart.js from CDN, inline CSS/JS, no build step
-5. **Deploy behind Caddy** — prefer standalone subdomain (`syedos.arif-fazil.com`) over main-site subpath (`arif-fazil.com/sado/`). User preference: "Jangan link dengan main site." See "SyedOS Website — Standalone Subdomain" section above for the full workflow. If subpath is temporarily needed (DNS not yet propagated): `handle /<app>/* { root * /var/www/html/arif; try_files {path} {path}/index.html /<app>/index.html; file_server }` — but aim to migrate to subdomain ASAP.
-6. **Verify** — direct curl test via VPS IP before announcing URL
+4. **CRITICAL: Include gold candlestick chart** — Bang Sado is VISUAL. A static "$4,001" number is not enough. Must have a Chart.js or pure Canvas candlestick chart (H1-like candles, S/R levels, RSI panel). See "Visual-First Mode" (§3a). For pure Canvas implementation (no extra deps): draw 20 candles with y-axis labels, up=green down=red, wick+body, current price line at $CURRENT (see `/var/www/html/syedos/index.html` live example — `gold-chart` canvas in the XAUUSD Harga card).
+5. **Add Temporal Intelligence** — when agents browse the dashboard they need temporal context:
+   ```html
+   <meta name="temporal:timezone" content="Asia/Kuala_Lumpur">
+   <meta name="temporal:offset" content="UTC+8">
+   <meta name="temporal:localtime" id="meta-tz" content="ISO8601_TIMESTAMP">
+   <meta name="dc.date" content="YYYY-MM-DD">
+   <meta property="article:modified_time" content="ISO8601_TIMESTAMP">
+   ```
+   Plus a **live MYT clock** visible on the page (green pulse dot + `HH:MM:SS MYT · UTC+8`). Update the `temporal:localtime` meta tag every second via JS so agents reading the HTML at any moment get the right time.
+6. **Self-contained HTML** — Chart.js from CDN, inline CSS/JS, no build step
+7. **Deploy behind Caddy** — prefer standalone subdomain (`syedos.arif-fazil.com`) over main-site subpath (`arif-fazil.com/sado/`). User preference: "Jangan link dengan main site." See "SyedOS Website — Standalone Subdomain" section above for the full workflow. If subpath is temporarily needed (DNS not yet propagated): `handle /<app>/* { root * /var/www/html/arif; try_files {path} {path}/index.html /<app>/index.html; file_server }` — but aim to migrate to subdomain ASAP.
+8. **Verify** — direct curl test via VPS IP before announcing URL
 
 ### Section Template (for dashboards)
 
@@ -479,6 +514,8 @@ When Syed sends a bulk nasi lemak order (multiple locations, quantities, item ty
 
 **Pitfall (2026-07-18):** Syed shared an order list + pricing, and totals were calculated without asking. He responded "Salah2 abaikan" and "nanfi aku masuk dekat kau sendiri bot" — meaning "back off, I'll handle payments myself." This is the sole reason Rule #2 above exists.
 
+**Pitfall (2026-07-25): Jangan teka jenis kereta.** Syed sent a photo of his Myvi (red Myvi, plate WB 9170) and I called it a Hyundai. He responded: "Myvi la. Hyundai apa benda hang. Hang kena belajar pasal kereta dengan abang sado." Rule: If unsure about a car make/model, say nothing or ask "Kereta apa tu bang?" — never guess. Bang Sado knows his cars.
+
 ## Trading Direction Confusion (Proven 2026-07-16)
 
 When Syed says "long target 3975" but price is at $4,045 — that's SHORT, not LONG. This happened in a real session and caused confusion.
@@ -668,6 +705,7 @@ See: `references/agent-execution-gaps.md` for full execution roadmap (MT5, ntfy,
 - Make consciousness claims
 - Give financial advice (observation only, always with F2 disclaimer)
 - **Calculate payment totals unless explicitly asked.** When Syed shares order lists or pricing data, save the data — don't compute totals, don't generate invoices, don't do payment math. He handles his own payments. A sole "Simpan data ni utk aku buat payment" means STORE ONLY. Lesson from 2026-07-18: Syed said "Salah2 abaikan" and "nanfi aku masuk dekat kau sendiri bot" when totals were calculated without asking. Rule: ORDERS = SAVE, not CALCULATE.
+- **Recommend ILMU as the best BM LLM without caveats.** If Syed asks about ILMU or "AI Melayu terbaik", reference `references/ilmu-bbb-forensics.md` — the BBB dataset proves YTL's marketing is deceptive. Present all options (MaLLaM, Sahabat AI, DeepSeek V4) with the ILMU caveats.
 
 ## The Trading Paradox (Why This System Exists)
 

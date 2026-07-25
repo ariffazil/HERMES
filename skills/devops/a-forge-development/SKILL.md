@@ -20,6 +20,9 @@ triggers:
   - "constitutional gate"
   - "kernel intercept"
   - "arifosmcp"
+  - "forge chain"
+  - "execution graph"
+  - "LangGraph"
 category: devops
 ---
 
@@ -28,6 +31,124 @@ category: devops
 Class-level skill for all work inside `/root/A-FORGE` — the execution organ of
 the arifOS federation. Governed shell, MCP tools, constitutional gates, and
 arifOS integration.
+
+---
+
+## A-FORGE Chain Engine (LangGraph Replacement) — arifFlow
+
+**Forged 2026-07-25.** Architectural blueprint + working Rust implementation for
+replacing LangGraph's role with a constitutionally governed parallel execution engine.
+
+### Architecture Decision: New Sovereign Repo
+
+**Verdict (2026-07-25):** arifFlow is `/root/arifFlow/` — a new sovereign repo parallel
+to `arifOS/` and `A-FORGE/`. NOT an A-FORGE subdirectory.
+
+| Axis | A-FORGE subdir | New arifFlow/ repo |
+|---|---|---|
+| Role clarity | Kabur: "hands + flow" bercampur | Jelas: arifOS=law, A-FORGE=hands, arifFlow=flow |
+| Governance boundary | Susah bezakan actuator vs scheduler | Membran bersih: arifFlow tak sentuh host |
+| Evolution/rewrite | Terikat Python | Rust-native core, FFI ke A-FORGE + arifOS |
+| Mental model | "A-FORGE buat semua" | Trinity: law(Ω) · flow(Φ) · hands(Ψ) |
+
+### 5 Constitutional Invariants (A1–A5)
+
+| Invariant | Type | Where enforced |
+|---|---|---|
+| A1 Constitutional-First | HARD | `scheduler.step()` checks lease_id non-nil before every step |
+| A2 Plane-Isolated | HARD | Channel messages content-hashed (blake3), verified at consumption |
+| A3 Checkpoint-with-Verdict | HARD | Every step produces `CheckpointEnvelope` with state_root + verdict |
+| A4 Verifiable-Reduction | HARD | Merge functions deterministic; divergence → 888_HOLD |
+| A5 Metabolic-Closure | HARD | Every run ends with VAULT999 receipt, leases closed |
+
+### Phase 3 Gate — Complete ✅
+
+**888-HOLD lifted** 2026-07-25T07:35Z. All three production gates pass:
+
+| Test | Result | Detail |
+|---|---|---|
+| FFI Stability | ✅ 100/100 | 0 failures, 0.08s/call avg |
+| Verdict Timeout | ✅ HOLD in 0.04s | Fast-fail connection refused |
+| Crash Recovery | ✅ 3/3 checkpoints | SIGKILL → restore → re-verify → resume |
+
+**P0 Gaps — Closed ✅** (9 new tests):
+
+| Gap | Implementation | Tests |
+|---|---|---|
+| **Barrier Timeout** | `BarrierConfig` + `TimeoutPolicy` (HoldAll/ContinueMajority/CancelAll) in `scheduler.rs` | 3 |
+| **F1 Per-Lane** | `Reversibility` enum on `FlowNode`, `approve_irreversible_lane()`, block without 888_JUDGE | 6 |
+
+**SEAL.md** at `/root/arifFlow/SEAL.md` — 31/31 tests, binary target (891KB), actuator boundary.
+
+**EUREKA Playbook v1** at `/root/arifFlow/spec/EUREKA_PLAYBOOK_v1.md` — 10 axioms as agent directives. Load with `skill_load(EUREKA_PLAYBOOK_v1)` before forge sessions on constitutional governance.
+
+### Implementation Status — 31 passing tests
+
+| Module | File | Tests | Status |
+|---|---|---|---|
+| **Channel<T>** | `core/channel.rs` | 4 | Bounded/unbounded, content-hashed messages, hash mismatch detection |
+| **MerkleTree** | `core/merkle.rs` | 7 | from_leaves, from_channels, bind_authority, chain_roots |
+| **SuperStepScheduler** | `core/scheduler.rs` | 7 | BSP execution, FlowNode trait, verdict oracle, HOLD discards deltas |
+| **FanOutTopology** | `topology/fan_out.rs` | 4 | Parallel dispatch + verifiable merge (OrderedConcat/MerkleRoot) |
+| **CheckpointManager** | `governance/checkpoint.rs` | 3 | Pending→Sealed→Invalidated lifecycle, chain re-verification |
+| **VAULT999Sealer** | `governance/vault999.rs` | ⏳ Stub | Chain position, hash-based sealing |
+| **KabarkanTracer** | `governance/kabarkan.rs` | ⏳ Stub | Event emissions, drain |
+| **arifOS FFI** | `bridge/arifos_governance.rs` | ✅ Stub | request_lease, submit_verdict + CDECL export |
+| **A-FORGE FFI** | `bridge/aforge_executor.rs` | ✅ Stub | execute_node with result_hash |
+
+### A-FORGE Adapter
+
+`/root/A-FORGE/domain/orchestration/arifFlow_adapter.py` — Python MCP bridge:
+- Mirrors Rust types (LeaseInfo, CheckpointEnvelope, TopologyConfig)
+- `ForgeChainScheduler` with Merkle root + `ArifOSGovernanceClient`
+- `KabarkanTracer` plus `mcp_ariflow_schedule()` MCP tool
+
+### Phase 2 Extensions (2026-07-25 — Forging via OpenCode)
+
+| Extension | Module | Description |
+|---|---|---|
+| **Barrier Timeout** | `scheduler.rs` | `BarrierConfig` with timeout_ms + `TimeoutPolicy` (HOLD_ALL / CONTINUE_MAJORITY / CANCEL_ALL) |
+| **Lane Cooling Queue** | `scheduler.rs` | `LaneState::Cooling`, cooling lanes skip barrier and rejoin next super-step |
+| **TRI_WITNESS Merge** | `fan_out.rs` | `WitnessResult` struct with human/ai/earth scores, divergence_score, threshold (0.75) |
+| **F1 Per-Lane** | `arifFlow_adapter.py` | FloorEnforcer(F1) before dispatch; IRREVERSIBLE without verdict → block |
+| **TypeScript wrappers** | `A-FORGE/src/interfaces/mcp/ariflow/` | `BSPExecutionPlan`, `SuperStep`, `Lane`, `BarrierConfig`, `Envelope` — zero executor logic |
+
+**Forge order (critical):** F1 per-lane first → Barrier timeout second → Cooling queue third. Reason: F1 is the gate, barrier depends on F1, cooling is independent.
+
+**Three-layer rule (ratified 2026-07-25):**
+- Rust = **compute** — scheduler, channel, merkle, topology merge. Never judges.
+- Python = **conduit** — stdin/stdout bridge, `arif_judge` FFI call, VAULT999 seal, Kabarkan emit.
+- TypeScript = **surface** — build plan, enforce floors, display traces. Never schedules.
+
+### 3-Test Gating for Production (888-HOLD must pass these)
+
+| Test | Method | Pass Criteria |
+|---|---|---|
+| **FFI Stability** | 100× loop: adapter → `arif_judge` → Rust | 0 failure, 0 timeout, no drift, Kabarkan consistent |
+| **Verdict Timeout** | Kill arifOS service → run 1 super-step | HOLD < 15s, Kabarkan `barrier_timeout`, VAULT999 `BARRIER_TIMEOUT` |
+| **Crash Recovery** | `kill -9` Rust mid-run → restore checkpoint | Checkpoint valid, ccId/verdict same, reversible rolled back, irreversible breach-sealed |
+
+Hijau semua → 888-HOLD ditarik → arifFlow masuk Phase 3 production.
+
+### Unified Spec
+
+`/root/arifFlow/spec/UNIFIED_SPEC_v1.md` — single source of truth mapping G1 BSP Scheduler spec (AAA group, TypeScript) to arifFlow Rust core to Python adapter. One scheduler, one merge engine, one governance surface. Also at `/root/forge_work/2026-07-25-arifflow-bsp-spec/UNIFIED_ARIFLOW_SPEC_v1.md` (22,461 chars, 8 parts). No rewrite, no duplicate, no conflict.
+
+### AGI Substrate Comparison
+
+`/root/arifFlow/spec/AGI_SUBSTRATE_COMPARISON.md` — 7 systems × 4 planes (Kernel, Organs, Agentic State, Actuator). Proves arifOS occupies a category LangChain/LangGraph/LangFuse cannot reach: governed intelligence, not orchestrated intelligence.
+
+### Known Gaps (888_HOLD Risks for Production)
+
+1. **No real arifOS FFI** — stubs only. Needs PyO3/ctypes → `arif_judge(mode="intercept")`
+2. **No real VAULT999 write** — in-memory. Must wire `arif_seal` endpoint
+3. **No real Kabarkan NATS** — in-memory buffer. Must publish to NATS channel
+4. **Pipeline/Cascade not scheduler-integrated** — config structs exist, no runtime wiring
+5. **No subgraph composition** — can be added as `TopologyKind::Subgraph`
+
+**Full blueprint:** `references/forge-chain-engine-blueprint.md`
+**Cooling receipt & details:** `references/ariflow-implementation-2026-07-25.md`
+**Phase 2 spec inventory:** `references/ariflow-phase2-spec-inventory.md` — source specs, key decisions, production gates
 
 ---
 
@@ -70,6 +191,39 @@ Every modification to `forgeShell.ts` must respect:
 | F8 | LAW | Token acceptance bounded by localhost transport. |
 | F11 | AUDIT | Every execution sealed to hash chain. |
 | F13 | SOVEREIGN | Human confirmation required for RATIFY-class actions. |
+
+---
+
+## F13 Execution Binding Gate
+
+F13 (SOVEREIGN) requires every execution to trace back to an explicit
+authorization from arif_judge. The F13 execution binding gate enforces this
+at TWO layers:
+
+- **Layer 1 (MCP Handler):** `forgeHandler()` in `core.ts` — after SEAL verdict
+  passes, checks that when `judgeResult.authorization_id` is present, the binding
+  fields (`judge_state_hash`, `authorization_consumed`, `authorized_execution`)
+  are all present. Returns `F13_AUTHORIZATION_INCOMPLETE` with missing fields.
+- **Layer 2 (Execution Engine):** `forgeExecute()` in `forge.ts` — after
+  SEAL/SABAR verdict check, validates receipt has `candidate_hash`,
+  `judge_state_hash`, and `authorization_consumed` when `authorization_id`
+  is set. Returns `REFUSED` with `F13 execution binding: ...` reasons.
+
+**Key invariant:** Both gates are inert when `authorization_id` is absent —
+existing SEAL-only paths pass unaffected.
+
+**Cross-cutting change order** (when adding new F13 fields):
+1. `src/executor/types.ts` — Add optional fields to `ExecutorReceipt`
+2. `src/executor/forge.ts` — Add validation gate in `forgeExecute()`
+3. `src/interfaces/mcp/core.ts` — Add handler gate + inputSchema + candidate wiring
+4. `npm run build` — Verify
+
+**Naming pitfall:** The receipt field for constitutional chain ID is `ccId`, not
+`constitutional_chain_id`. Always use `receipt.ccId` in gate conditions or the
+TypeScript compiler errors.
+
+See `references/f13-execution-binding-gate.md` for full pattern, code snippets,
+and field reference table.
 
 ---
 
@@ -459,7 +613,7 @@ execution and `verifyPrediction()` after.
 MCP policy gates block stateless forge_shell calls. Test WM modules directly
 via compiled JS: `node -e "const w = require('/root/A-FORGE/dist/src/domain/governance/worldModel.js'); ..."`
 
-17. **Missing judgment reference on execution tokens.** (Discovered 2026-07-18, FIXED 2026-07-18) `ExecutorReceipt` had `ccId` (chain reference) but no `judgment_reference` field. Execution couldn't prove which judgment authorized it. Fixed by adding `judgment_reference` to `types.ts` (mandatory string), `forge.ts` (hard-fail validation), `amanahEnvelope.ts` (optional on AAEV1, wired through buildAAE/computeSignature/extendAAE), and `McpPolicyGate.ts` (Layer 5 check: EXECUTE_HIGH_IMPACT and IRREVERSIBLE require it). See `references/authority-binding-audit-2026-07-18.md`.
+30. **Extend-vs-rewrite (2026-07-25, arifFlow genesis).** When prompting coding agents to work on existing code, always say "EXTEND, don't REWRITE." The first version of the G1 BSP Scheduler prompt would have OpenCode rewrite the entire arifFlow Rust core from scratch — creating two schedulers, two merge engines, two envelope formats. The fix was a one-line prefix: "EXTEND existing arifFlow — do NOT rewrite." Always check: does the prompt reference existing file paths? Does it say "add" or "create"? Use "extend" and "modify" for existing, "create" only for genuinely new modules.
 
 18. **Cross-cutting interface change: propagating a new field across A-FORGE.** (Discovered 2026-07-18) When adding a field that spans executor + governance layers, the change touches 4+ files in a specific dependency order. See `references/cross-cutting-interface-change.md` for the pattern. Key gotchas: (a) `ExecutorReceipt` lives in `types.ts`, not `forge.ts` — import from the right module. (b) Tool names in tests must match `actionClassifier.ts` registry — `forge_deploy` does NOT exist, use `forge_execute` for HIGH_IMPACT tests. (c) `npm test` only runs `AgentEngine.test.js`; run each test file individually to validate. (d) `make test` may fail on pre-existing missing files — that's unrelated.
 
@@ -516,6 +670,8 @@ sudo caddy validate --config /etc/caddy/Caddyfile && sudo caddy reload --config 
 
 ## References
 
+- `references/forge-chain-engine-blueprint.md` — **NEW 2026-07-25**. LangGraph invariant breakdown, arifOS state model vs execution gap, A-FORGE Chain Engine blueprint with hashed state ledger, APEX-judge edges, artifact spine, proxy tooling, Python-first/Rust-later strategy.
+- `references/f13-execution-binding-gate.md` — **F13 execution binding gate pattern**: dual-layer authorization verification, field reference table, backward compatibility, cross-cutting change order, naming pitfalls.
 - `references/prl-forge-pattern.md` — **PRL (Precedent Retrieval Layer) forge patterns**: dual-gate architecture, P6 enrichment, outcomes.jsonl vs seal_chain.jsonl pitfall, Qdrant UUID format, BGE-M3 cosine calibration, backfill resilience, post-seal hook, Phase 2 Meta-Precedent Review.
 - `references/prl-derived-view-pattern.md` — **Derived semantic views over immutable data**: building enriched embeddings from sparse seal payloads without mutating cryptographic ledgers.
 - `references/cross-cutting-interface-change.md` — **Pattern: adding a field across executor + governance layers.**

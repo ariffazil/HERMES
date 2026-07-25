@@ -84,10 +84,23 @@ print('new_field:', result.get('new_field', 'MISSING'))
 ## Pitfalls
 
 ### PITFALL: Full test suite times out
-The full test suite (`python -m pytest tests/`) takes >120s. Use targeted test files:
+The full test suite takes >120s. Use targeted test files:
 ```bash
 python -m pytest tests/golden/organs/mind/ tests/test_minda.py tests/test_cognitive_tier_gate.py -q
 ```
+
+### PITFALL: Source != runtime (deployment drift)
+Changes to /root/arifOS/ must be deployed to /opt/arifos/app/ before they take effect. The kernel runs from the runtime path, not the source path. Always deploy after source edits:
+```bash
+cd /root/arifOS && make deploy-local
+```
+This runs rsync, systemctl restart, and conformance spine check. Verify drift=false in the arif_init response.
+
+### PITFALL: Ingress middleware strips unknown MCP params
+When adding new parameters to the MCP tool surface (e.g. action_class, actor_signature, nonce), the IngressToleranceMiddleware may strip them if they are not in the advertised MCP tool schema. The handler accepts them, but the middleware removes unknown fields before the handler runs. After adding new params, restart the server so the tool schema is re-registered.
+
+### PITFALL: Over-claiming about the system
+When describing the arifOS judge, kernel, or floors to Arif, be honest about gaps. **Updated 2026-07-25: F13 now DOES real Ed25519 verification** via `verify_actor_signature()` + free-nonce fallback against the registered public key in `agent_identities.json`. However, E2E public surface test is not yet fully passing (DID registry PermissionError fix applied but debugging ongoing). Do not say "there is no bypass" when direct VAULT writes exist. DITEMPA BUKAN DIBERI means enforcement, not declaration. The judge is real as a blocker, partial as a constitutional judge. Describe what IS, not what SHOULD BE.
 
 ### PITFALL: Pre-existing LSP errors
 `genius.py` and `judgment.py` have pre-existing NumPy typing errors. These are NOT caused by your changes. Only new errors matter.

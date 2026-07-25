@@ -102,6 +102,72 @@ Use this table:
 | C3 auto-proceed (no session_ref) | Session-less agent actions | PARTIAL — add audit | Add fast-path returning SABAR+audit, bypass the HOLD |
 | Auto_deny_irreversible | Irreversible from external clients | YES | KEEP. But skip for internal federation (localhost) |
 
+## The F13 Gate Rightsizing (2026-07-25 Case Study)
+
+The most consequential rightsizing from this session: **the F13 gate was firing on ALL actions because the default reversibility conversion turned unknown inputs into R4_IRREVERSIBLE.**
+
+### Before: Every unknown reversibility → R4 → F13 required
+
+```python
+except ValueError:
+    r_class = ReversibilityClass.R4_IRREVERSIBLE  # ← wrong. Not R4, not irreversible
+```
+
+This meant any action without an explicit reversibility label got treated as irreversible and demanded F13 Ed25519 signing. AUDIT_RECORD (pure recording, no execution grant) was indistinguishable from ACTION_AUTHORIZATION (deploy, mutate, publish).
+
+### After: AUDIT_RECORD → R2, no F13
+
+```python
+if _effective_ac == "AUDIT_RECORD":
+    _rev_raw = "R2"          # audit record = reversible write
+    seal_purpose = "RECORD"
+    authority_effect = "NONE"
+```
+
+| Action Class | reversibility | seal_purpose | authority_effect | F13 needed |
+|---|---|---|---|
+| AUDIT_RECORD | R2 | RECORD | NONE | No |
+| EVIDENCE_ATTESTATION | R2 | RECORD | NONE | No |
+| VAULT_RECEIPT | R2 | RECORD | NONE | No |
+| ACTION_AUTHORIZATION | R4 | AUTHORIZE | EXECUTION_GRANT | Yes |
+| CONSTITUTIONAL_AMENDMENT | R5 | AUTHORIZE | SOVEREIGN_CHANGE | Yes |
+
+### Rightsizing Principle Applied
+
+The fix separated two things that were conflated:
+
+1. **VAULT999 append is permanent** — hardware truth. This fact was used to argue "all seals are irreversible."
+2. **APPEND without execution grant is reversible** — you can supersede a record. No mutation happens.
+
+The class `AUDIT_RECORD` carries no execution grant. F13 was triggered not because it was constitutionally required, but because the kernel couldn't distinguish recording from authorizing.
+
+**Rightsizing test:** If you can undo the effect by appending another record (no prior entry modification needed), it's R2, not R4.
+
+### The C0-C5 Gate Mapping for Seal Types
+
+| Seal Type | reversibility | authority_effect | F13 | Maps to risk class |
+|---|---|---|---|---|
+| SEAL_RECORD | R2 | NONE | No | C0-C2 |
+| SEAL_AUTHORIZATION | R4 | EXECUTION_GRANT | Yes | C4-C5 |
+
+### Key Insight for Future Audits
+
+When a gate keeps firing on operations that feel routine (like saving an audit record), check:
+
+1. Is the action class being classified correctly? (AUDIT_RECORD vs ACTION_AUTHORIZATION)
+2. Is the reversibility level defaulting to R4 instead of a correct value?
+3. Does the gate conflate "store permanently" with "authorize mutation"?
+
+This pattern — **conflating append-permanence with authorization-permanence** — is likely to appear in other gates too.
+
+## Also: The MCP `actor` vs `actor_id` Translation Bug
+
+A subtler friction: the `_arif_kernel_intercept_tool` handler accepts both `actor` and `actor_id`, but `actor_id` goes through `kwargs.pop()` while `actor` is a named parameter. When the client passes `actor_id="arif"` (the natural name), the ingress middleware may strip it as unknown, causing the kernel to see `actor="anonymous"`.
+
+**Fix:** Use `actor="arif"` (the canonical schema name). If both exist in the schema, the no-kwargs-path version wins.
+
+**Rightsizing lesson:** Redundant param names create invisible failures. One canonical name per parameter.
+
 ### Phase 3: Sequence the Fixes
 
 Order by risk (lowest first) x impact (highest first):
@@ -139,7 +205,40 @@ arif_init(mode=canary) → SELAMAT
 # For localhost: call should skip elicitation
 ```
 
-## The "Three Independent Gates" Diagnostic
+## The Rabbit-Hole Test: Governance vs Concept Art
+
+From Arif (2026-07-25): every governance addition must pass this test:
+
+> **Does this remove a real failure mode, or merely create another impressive concept?**
+
+Real failure modes worth solving:
+- Stolen approval replay
+- Wrong actor
+- Altered candidate  
+- Execution without authorization
+- Invisible production mutation
+- Inability to investigate
+- Shared master credentials
+
+A new name for an existing hash is usually NOT worth solving.
+
+## Governance as Invisible Infrastructure
+
+Arif's core directive (2026-07-25): **Governance should become invisible infrastructure, not the main product.**
+
+The F13 work is complete when the user experience is:
+
+> Agent prepares a consequential action → Arif receives one clear approval card → Arif taps Approve → only that exact action executes → the approval cannot be replayed → a receipt records the outcome.
+
+The governance layer should NOT require:
+- Manually copying nonces
+- Running signing scripts
+- Parsing JSON responses for hashes
+- Understanding the crypto flow
+
+If the system needs the user to be a cryptographic clerk, the governance system has become the chaos it was meant to eliminate.
+
+**The indicator:** The system should feel simpler to operate AFTER governance is added, not more complex. A developer should be able to understand "who approved what, when" without tracing through 20 tools, 6 ceremonies, and 3 manual signatures.
 
 When the kernel blocks an operation (e.g. `arif_seal` returns 888_HOLD), it's rarely one bug. Check three independent gates:
 

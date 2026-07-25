@@ -139,6 +139,7 @@ Write findings to `<repo>/_SOT_INVENTORY.md` with:
 ## Reference Files
 
 - `references/geox-sot-inventory-2026-07-13.md` — Full worked example: GEOX organ inventory with command chain, discrepancy table, and epistemic framework map. Consult this for concrete patterns when auditing a new codebase.
+- `references/credential-redaction-verification.md` — Checklist for verifying credential redaction across multi-repo audits, including stale-finding detection, gitignore propagation, and federation-wide pattern coverage.
 
 ## Pitfalls
 
@@ -150,3 +151,5 @@ Write findings to `<repo>/_SOT_INVENTORY.md` with:
 6. **Documentation drift is the norm, not the exception** — any mismatch is a finding worth reporting
 7. **Check epistemic labeling quality** — not just that labels exist, but that they're enforced (contradiction ontology, Gödel wall, meta-audit)
 8. **Use `web_extract` for health URLs only if `curl` is blocked** — the browser stack is overkill for JSON endpoints
+9. **Stale audit cites: always verify line numbers against live code** — audit reports may reference line numbers from a previous commit. Check `wc -l` and `git log --oneline -3` before acting on a finding. A file shorter than the cited line number means the fix was already applied.
+10. **Multi-repo credential redaction: check federation-wide coverage** — when you fix credential exposure in one repo's .gitignore, sibling repos typically need matching guards. See `references/credential-redaction-verification.md` for the verification checklist.

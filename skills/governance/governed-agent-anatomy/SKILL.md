@@ -312,9 +312,15 @@ When auditing: calling `arif_judge` with a checklist you loaded as a skill is se
 
 ---
 
+## Cross-References
+
+- **`governed-execution-substrate`** — Designing execution engines and state machines under constitutional governance. The execution substrate is the runtime between the intelligence and governance planes. Read after mastering agent anatomy.
+- **`explore-before-collapse`** — The Epistemic Navigator. Use BEFORE the 12-step chain to search reality before collapsing into an answer.
+
 ## References
 
-- **Canonical spec:** `/root/AAA/docs/PRIMITIVE-SPEC-v1.md` — the full 16-section document
+- **Canonical spec:** `/root/AAA/docs/PRIMITIVE-SPEC-v1.md`
+- **`governed-execution-substrate`** — Execution engine design under constitutional law. Created 2026-07-25 to codify the LangGraph replacement methodology, A1-A5 invariants, and Rust-core + Python/TS-gates architecture. See `references/arifflow-blueprint.md` for the session output. — the full 16-section document
 - **Gate pipeline architecture (D1+D2):** `references/dependency-gate-pipeline.md` — classification-first dependency graph replacing serial chain. ActionProfile, vault outbox, session closure levels, closure states, canonical tool classification map. Forged 2026-07-13 after Arif identified the serial chain's structural flaw.
 - **EUREKA 6-plane Zen architecture:** `references/eureka-6-plane-architecture.md` — full session detail: Wawa 4 gaps, 12-step flow with perf budget, inter-plane arbitration, degradation modes, Agentic Intelligence equation (pending harmonic mean correction). Console session seal at `/root/A-FORGE/forge_work/2026-07-13/EUREKA-SESSION-SEAL.md`.
 - **COOLING_RECEIPT spec:** `/root/AAA/docs/contracts/COOLING_RECEIPT_SPEC_v1.md` (seal_v3) — metabolic closure envelope for the 12-step flow.
@@ -331,3 +337,4 @@ When auditing: calling `arif_judge` with a checklist you loaded as a skill is se
 - **World Model Instrumentation:** `references/world-model-instrumentation.md` — ECHO/PaW/Qwen-AgentWorld pattern: instrument agent tool calls with wm_metadata, log action→observation trajectories with hash chaining, predict→verify→gap scoring cycle. Five architecture laws (L1-L5), P0/P1/P2 priority tiers, Phase 2 RL readiness gates. Implementation in A-FORGE `domain/governance/`. Forged 2026-07-21.
 - **Hermes Plugin Governance Gates:** `references/hermes-plugin-governance-gates.md` — Concrete implementation patterns for wiring arifOS constitutional floors (F1 Safety, F2 Truth) into Hermes Agent via the native plugin hook system. Covers the `pre_tool_call` F1 safety gate pattern (mcp-health-gate), the `on_session_end` F2 truth/telemetry pattern (seal-queue), and the fail-closed module gate pattern (model_switch.py). Forged 2026-07-24.
 - **Kanban Swarm Verifier = 888 HOLD:** `references/kanban-swarm-verifier-888.md` — Hermes Kanban swarm topology maps directly to arifOS constitutional chain: workers = delegate_task, verifier = arif_judge (888 HOLD), synthesizer = arif_forge. The verifier blocks task promotion until acceptance criteria are met — 888 HOLD at the workflow level. Forged 2026-07-24.
+- **F13 Seal Chain Workflow:** `references/seal-chain-workflow.md` — AUDIT_RECORD vs ACTION_AUTHORIZATION seal types, action_class parameter usage, private key mismatch diagnosis, dev sentinel, and arif_seal chain ID gap. Includes file map for F13 operations. Forged 2026-07-24.

@@ -28,6 +28,18 @@ If a job runs daily but Arif never reads it, the job is either:
 
 The fix is never "make it visible." The fix is "make it matter."
 
+### Event-Based Over Time-Based Polling
+
+**Prefer condition-triggered alerts over fixed-interval checks.** The default instinct is "check every X minutes/hours." The better question is: *What condition should trigger this alert?* When the user sees a 30-minute cron and says "why every 30 mins?" — the issue isn't the interval, it's that the polling model itself is wrong. The job should alert when price hits a support/resistance level, not just "every 30 minutes during market hours."
+
+Apply this hierarchy:
+
+1. **Event-based** (ideal): Monitor conditions (price at S/R, RSI extreme, support break) → alert only when condition fires → exit silently otherwise
+2. **Conditional polling** (acceptable): Check periodically, but SILENT unless condition fires. The poll interval is a latency budget, not an alert schedule.
+3. **Fixed-interval reporting** (worst): "Here's the status every X hours whether anything happened or not." Only acceptable for rhythm-setting jobs (morning brief, evening digest) that have inherent value beyond alerting.
+
+**How to check if a job should be event-based:** Look at its output on a "nothing happened" tick. If the user would say "why did this send me nothing useful?" — it's a polling job that should be event-based. If the answer is "because nothing changed" — convert to silent-when-clean conditional polling. **Proven 2026-07-25:** XAUUSD Price Alert was set to `*/30 8-20 * * 1-5` (every 30 min). Arif asked "Why every 30 mins? Why not based on price support resistance?" The fix: the script was already condition-based internally (only fires on RSI extreme, S/R breach, EMA crossover), but the polling frequency was unnecessarily high. Changed to hourly. The real lesson: match the polling budget to the alert latency tolerance, not the reverse.
+
 ## Tiered Architecture (FORGED 2026-07-12)
 
 | Tier | Purpose | Delivery | Cadence |
@@ -43,7 +55,10 @@ The fix is never "make it visible." The fix is "make it matter."
 - **Trading signals** → SADO group (`telegram:-1003815535761`) — chart + explanation required
 - **System ops** → system cron (not Hermes)
 
-## Current Jobs (verified 2026-07-15)
+## Current Jobs (verified 2026-07-15 — stale, use `cronjob action='list'` for live count)
+
+> **⏰ This table is a historical reference.** The live job count and state change frequently. Always verify with `cronjob(action='list')` before acting.
+> **Last live audit (2026-07-25):** 23 jobs total — 15 active, 7 paused, 1 one-shot. See Cron Zen Audit Procedure for the full audit methodology.
 
 | Job | Schedule | Delivery | Type | Skill |
 |-----|----------|----------|------|-------|
@@ -185,6 +200,79 @@ For LLM-driven jobs that do web research:
 - Epistemic labels on analysis: OBS/DER/INT/SPEC
 - End with one strategic question for the human
 
+### 11. WELL-Biometric Modulation (Phase C)
+
+> **Forged 2026-07-25.** The evening-digest probes WELL health and auto-modulates output based on Arif's cognitive state. Replaces fixed-length output with state-dependent compression.
+
+For T1 human-rhythm LLM jobs (evening-digest, morning-brief), add a WELL probe at the start of the prompt:
+
+```
+=== PHASE C: WELL-BIOMETRIC MODULATION ===
+BEFORE generating, probe WELL state:
+curl -s http://localhost:18083/health | python3 -c "import json,sys; d=json.load(sys.stdin); m=d.get('metrics',{}).get('cognitive',{}); print(f'fatigue={m.get(\"decision_fatigue\",\"?\")} clarity={m.get(\"clarity\",\"?\")} signal={d.get(\"well_signal\",\"?\")} age={d.get(\"state_age_hours\",\"?\")}')"
+
+Apply modulation:
+- decision_fatigue > 0.7 OR well_signal == "WELL_HOLD" → COMPRESSED MODE
+- WELL unreachable OR state_age_hours > 24 → DEFAULT (F1 fallback)
+- else → DEFAULT
+
+COMPRESSED MODE: Max 5 lines. Bullet points only. No analysis. 
+Just: (1) RED organs, (2) failed cron jobs, (3) today's seals. 
+End with "Kau penat. Rehat. Esok ada." Skip everything else.
+
+DEFAULT MODE: Standard full synthesis.
+```
+
+**F1 check:** If WELL is unreachable/stale, falls back to DEFAULT. Reversible — user sees compression immediately and can say "balik normal" to revert thresholds.
+
+**No additional token cost** — WELL data is already updated by the watchdog. Modulation is a 5-line conditional.
+
+**Proven 2026-07-25:** WELL showed `decision_fatigue: 0.80` live. If that threshold is reached at 18:00, evening-digest auto-compresses.
+
+### 12. State File Pattern (Boundary Separation)
+
+To enforce the Tri-Agent Protocol, OpenClaw writes state files that Hermes consumes:
+
+```bash
+# OpenClaw writes (STEEL, drift-alert)
+echo '{ "organs": {...}, "git": {...}, "disk": {...}, "seals": {...} }' \
+  > /root/AAA/state/sys_health.json
+
+# Hermes reads (morning-brief, evening-digest)
+curl -s http://localhost:18083/health  # WELL is real-time — exception
+cat /root/AAA/state/sys_health.json     # Federation state is from file
+```
+
+**Rules:**
+- Only OpenClaw scripts write to state files
+- Only Hermes LLM prompts read from state files
+- WELL health is a designed exception (it IS a biometric probe, not infra)
+- State files update at fixed intervals (every 15min for sys_health.json)
+
+This completes the loop: OpenClaw probes → state file → Hermes translates.
+
+### 13. Prompt Extraction Pattern (F1 Versioning)
+
+> **Forged 2026-07-25.** Extracting prompts from jobs.json into version-controlled .md files gives F1 (Reversibility) to the most operationally impactful part of a cron job.
+
+LLM jobs store their full prompt inline in `jobs.json`. This prompt has no git history — it's a JSON blob in a generated file. If the prompt breaks the output (wrong tone, wrong length, hallucination), the only way to revert is manual editing. **F1 is violated.**
+
+**Fix for any new or modified T1/T3 LLM job:**
+
+1. Extract the prompt body to `/root/AAA/prompts/<job_name>.md`
+2. Make `jobs.json`'s prompt field a short pointer:
+   ```
+   "prompt": "Execute the prompt template at:\ncat /root/AAA/prompts/evening_digest.md"
+   ```
+3. Commit the `.md` file to the AAA repo under `arch/tri-agent-boundaries` branch
+4. Now the prompt has full git history — `git revert` to rollback
+
+**This is the architecture for ALL Hermes T1 LLM jobs (evening-digest, morning-brief, news-briefing, Sensorium, weekly-reflection, weekly-deep-brief).** Each should have its own `.md` file in `/root/AAA/prompts/` and a pointer in jobs.json.
+
+**F1 check:** If the `.md` file is missing, jobs.json's prompt still works as a standalone fallback. Two-layer redundancy.
+
+**Proven 2026-07-25:** Evening-digest prompt extracted from 37-line inline blob to `/root/AAA/prompts/evening_digest.md`, committed as `8cd97ff` on `arch/tri-agent-boundaries`. Jobs.json now contains only a 5-line pointer.
+
 ## Testing
 
 Test any job manually:
@@ -218,6 +306,50 @@ All scripts at `/root/trading/scripts/`. Config at `/root/trading/config/trading
 **price_alert.py behavior:** Empty stdout = no alert conditions met (silent delivery). Non-empty = Telegram-ready alert text. Session-aware — silently exits outside London/NY hours.
 
 → `references/trading-cron-system.md` — full delivery routing, script behavior, known pitfalls.
+
+## Tri-Agent Protocol (Strict Boundaries)
+
+> **Forged 2026-07-25** by Arif during cron zen audit. Corrects boundary bleed where Hermes was doing OpenClaw's work (direct system probing).
+
+The system has three agents with non-overlapping domains. Every cron job must be owned by exactly one agent:
+
+| Agent | Role | Domain | Input → Output | Tools |
+|---|---|---|---|---|
+| **OpenClaw** | *Mechanic* | Infra probing, system health, git drift, disk, VAULT999, cron management | Raw system data → Writes `.json` state files | terminal, cron management |
+| **Hermes** | *Metabolizer* | Human interface, world news, synthesis, tone modulation, biometric awareness | Reads `.json` state files → Natural language (Telegram) | web_search, LLM, MCP skills |
+| **OpenCode** | *Builder* | Writing new scripts, refactoring agents, PRs, technical debt | 888 instructions → `.py`/`.sh` deployed to repos | code editors, git |
+
+### Rule of Thumb
+- Needs terminal to check status? → **OpenClaw**
+- Needs understanding to read status? → **Hermes**
+- Needs new code? → **OpenCode**
+
+### Boundary Violations (Proven 2026-07-25)
+
+The following jobs were doing OpenClaw's work inside Hermes's domain:
+
+| Job | Violation | Fix |
+|---|---|---|
+| morning-brief | Probes VAULT999 seals, git debt, disk directly | Refactor to read `/root/AAA/state/sys_health.json` (OpenClaw writes) |
+| evening-digest | Probes organ health, VAULT999, git directly | Same — consume state file, don't probe live |
+| drift-alert | 100% infra probing | Move to OpenClaw entirely |
+| STEEL Machine Pulse | 100% infra probing | Already OpenClaw-appropriate (script, T2) |
+| Model Drift Watchdog | Cron job management | OpenClaw domain |
+| federation-daily-backup | System backup | OpenClaw domain |
+
+### Target Architecture
+
+```
+OpenClaw probes (STEEL, drift-alert) → writes sys_health.json (every 15min)
+                                          ↓
+Hermes reads JSON (morning-brief, evening-digest) → translates to human language
+                                          ↓
+                                      Arif reads in Telegram DM
+```
+
+Hermes T1 jobs become **pure language metabolizers** — they consume pre-computed state and add human meaning. Zero direct probing.
+
+---
 
 ## Routing Audit Protocol
 
@@ -286,10 +418,128 @@ A self-healing cron job that runs hourly, detects drift across all jobs, and aut
 | Unpinned (null model/provider) | **Yes** | Snapshots captured, compared at fire |
 | Explicit pin on ONE axis only | Only on unpinned axis | Per-axis check |
 
+## Cron Zen Audit Procedure
+
+When Arif asks to "zen all cron jobs" or "audit everything cron," run this systematic full-health check rather than piecemeal checks:
+
+```python
+# Step 1: Get the full job list
+cronjob(action='list')  # returns all jobs with status, delivery, errors
+```
+
+**Step-by-step checklist (8 axes):**
+
+1. **Error sweep** — scan every job's `last_status`, `last_error`, and `last_delivery_error`. Jobs with `last_status=error` need investigation. Distinguish between:
+   - Execution errors (API auth, script not found, timeout) — need code/prompt fixes
+   - Delivery errors only — execution succeeded but Telegram delivery failed
+   - Transient errors (401 on DeepSeek API, rate limits) — note but don't block on them
+
+2. **Delivery routing check** — for every active job, verify deliver target matches content type (see Routing Audit Protocol table below). Common misroutes: machine jobs to DM, trading jobs to origin instead of SADO.
+
+3. **Script path verification** — for every `no_agent: true` job with a `script` field, verify the resolved path exists:
+   ```python
+   # Hermes resolves relative to ~/.hermes/scripts/
+   resolved = script  # if absolute path (starts with /)
+   resolved = f"{scripts_dir}/{script}"  # if relative
+   ```
+   Use `ls -la /root/.hermes/scripts/<script>` to check. Missing scripts produce `Script not found: /root/HERMES/scripts/...` errors.
+
+4. **Schedule collision scan** — list all active jobs grouped by schedule minute. Two LLM-intensive jobs at the same minute (e.g., 07:00) cause resource contention. Stagger by ≥30m. Pay special attention to the :00 minute — it's where everyone lands by default.
+
+5. **Paused job audit** — review every paused/completed job. For each, decide: re-enable, remove, or keep paused. Remove completed one-shots (`state=completed`). Remove jobs that never ran once (proven obsolete). Flag critical infra jobs (backup, remediation) that should be re-enabled.
+
+6. **Model drift** — the Model Drift Watchdog catches this hourly, but verify explicitly: check `model_snapshot` vs current global config in `~/.hermes/config.yaml`. All no_agent jobs are immune; all pinned jobs are immune; unpinned LLM jobs must match the snapshot.
+
+7. **Bot-to-bot delivery** — check for `last_delivery_error` containing `"the bot can't send messages to the bot"`. These are jobs whose `deliver: origin` resolved to the bot's own Telegram ID. Fix: remove the job or change deliver to a valid channel.
+
+8. **Fix + verify** — apply fixes, then re-run affected jobs with `cronjob(action='run', job_id=...)` and verify delivery.
+
+### Reporting format
+
+Present findings in a compact table:
+
+```
+## Zen Audit — N Jobs (date)
+
+### 🔴 Active Errors (X)
+name | error | action taken
+--- | --- | ---
+
+### 🟡 Warnings (X)
+name | issue | recommendation
+--- | --- | ---
+
+### ✅ Fixed
+name | what was fixed
+--- | ---
+
+### ⏸ Paused Jobs (X) — keep / remove / re-enable recommendations
+```
+
+**Proven 2026-07-25:** Full audit of 26 jobs found 3 errors (1 script path missing, 1 DeepSeek API 401, 1 transient delivery), 1 schedule collision at 07:00 (morning-brief + ASI Sensorium), 10 paused/completed jobs (3 removed, 1 re-enabled, 1 delivery re-routed). Result: 23 jobs, 15 active, all routing clean, model drift zero.
+
+## Constitutional Geometry — Upstream Blindspots
+
+> **Forged 2026-07-25.** Maps the cron rhythm and Tri-Agent framework against the EUREKA 6-plane architecture and 000_KERNEL_CANON to identify constitutional voids — gaps that exist at the architecture level, not the script level.
+
+### The 6 EUREKA Planes (relevant here)
+
+| Plane | Owner | Function | Tri-Agent Mapping |
+|---|---|---|---|
+| **1: SOVEREIGN** | Arif (F13) | Final veto, identity | Hermes delivers here — but must go through governance first |
+| **2: GOVERNANCE** | arifOS (:8088) | Floor enforcement, verdicts | **MISSING** — no cron execution traverses this plane |
+| **3: INTELLIGENCE** | Agents | Reason, propose, collect evidence | OpenClaw (probes), Hermes (synthesis), OpenCode (code) |
+| **4: EXECUTION** | A-FORGE (:7071) | Build, deploy, mutate | OpenCode writes files directly — should route through here |
+| **5: CONTINUITY** | Postgres/Qdrant/Redis | Memory, state | sys_health.json is continuity — but has no provenance |
+| **6: TRUTH** | VAULT999 | Immutable sealed records | **MISSING** — nothing from cron/tri-agent lands here |
+
+### The 3 Constitutional Voids
+
+Each void is a **missing membrane** between planes — a governance gate that the architecture requires but does not have.
+
+| # | Void | Ejen | Plane Leak | Doktrin Dilanggar | Patch Amendment |
+|---|---|---|---|---|---|
+| 1 | **Bootstrap Ghost** | OpenClaw | 3→4 without governance | 000→999 pipeline (§4), F11 | `A01_BOOTSTRAP_LEASE_GATE.md` |
+| 2 | **Rogue Digest** | Hermes | 3→1 direct to Sovereign | Plane Interaction Matrix (§3), F3 | `A02_GOVERNED_DIGEST_GATE.md` |
+| 3 | **Outlaw Executor** | OpenCode | 3→4 self-authorizes | Anti-Authorization Theorem (§7), §9 | `A03_SEAL_HARNESS.md` |
+
+### What Each Patch Requires
+
+All three patches share a common pattern — a wrapper that calls arifOS MCP tools before execution:
+
+```
+Wrapper pattern:
+  arif_init (000)  → issues Lease ID
+  arif_think (333) → classifies action/blast radius
+  arif_judge (888) → SEAL / HOLD / VOID verdict
+  [execute only if SEAL]
+  arif_seal (999)  → immutable VAULT999 receipt
+  Cooling          → failure data feeds back to arif_judge
+```
+
+### Kernel Dependency
+
+The wrappers need arifOS to accept **lease-based, sessionless** MCP calls (`arif_init --lease-class=BOOTSTRAP`). This is a kernel-side amendment in the arifOS repo — the AAA amendments stand as canonical geometry regardless.
+
+### When to Reference This
+
+When Arif asks about:
+- "Upstream architecture gaps" or "constitutional geometry"
+- "What does the EUREKA architecture say about this?"
+- "Is this F1-F13 compliant at the constitutional level?"
+- Any question about the 3 Tri-Agent lords (OpenClaw/Hermes/OpenCode) at the architecture layer
+
+→ `governance/amendments/A01_BOOTSTRAP_LEASE_GATE.md` — full amendment text
+→ `governance/amendments/A02_GOVERNED_DIGEST_GATE.md` — full amendment text
+→ `governance/amendments/A03_SEAL_HARNESS.md` — full amendment text
+
 ## Pitfalls
 
+- **Script path resolution: `script` field resolves relative to `~/.hermes/scripts/`.** For `no_agent: true` jobs, Hermes resolves the `script` field relative to `~/.hermes/scripts/`. A script existing at `/root/paper_trading/morning_scan.sh` does NOT mean `script: "paper_trading/morning_scan.sh"` works — Hermes looks at `~/.hermes/scripts/paper_trading/morning_scan.sh`. Fix: copy the script into the Hermes scripts directory tree (preserving subdirectory structure if needed), or use an absolute path. **Proven 2026-07-25:** `🧠 Paper Trading Morning Analysis` errored with `Script not found: /root/HERMES/scripts/paper_trading/morning_scan.sh`. Fixed by `mkdir -p ~/.hermes/scripts/paper_trading && cp /root/paper_trading/morning_scan.sh $_`.
 - **Don't put shell commands in the `script` field.** For `no_agent: true` jobs, `script` is treated as a FILE PATH relative to `~/.hermes/scripts/`, NOT a shell command. Setting `script: "cd /root/trading && python3 scripts/price_alert.py --check"` fails with "Script not found" because the cron system looks for a file with that literal name. Fix: create a wrapper `.sh` script in `~/.hermes/scripts/` that contains the actual commands, then reference just the filename (e.g. `script: "price-alert.sh"`). Verified 2026-07-15.
 - **Don't report state without action.** "199 dirty files" alone is noise. "199 dirty files — want me to review and commit?" is useful.
+- **Don't schedule two LLM jobs at the same minute.** LLM-driven cron jobs (skills-based, agent-driven) can take 30s–5min to complete. Two firing at the same minute (e.g., both at 07:00) cause resource contention, rate-limit collisions, and unpredictable delivery ordering. Stagger by ≥30m. Use the Cron Zen Audit Procedure's schedule collision scan to detect. **Proven 2026-07-25:** `morning-brief` (07:00) and `ASI World Sensorium morning` (was 07:00, moved to 07:30) were colliding.
+- **"Unauthorized" delivery error doesn't mean execution failed.** When a job shows `last_status=ok` but `last_delivery_error="delivery error: Telegram send failed: Unauthorized"`, the LLM execution succeeded — it's the Telegram delivery that failed. Possible causes: bot blocked by the user, bot removed from the chat, bot token rotated. The next scheduled tick may succeed if transient. Check the target chat's bot membership. **Proven 2026-07-25:** both `evening-digest` and `ASI World Sensorium morning` showed this on re-run.
 - **Don't dump pending items raw.** 20+ items with no prioritization creates noise. Synthesize to Top 3 + theme grouping + count. Keep full list queryable on demand.
 - **Don't ignore the human substrate.** If WELL has been YELLOW/RED for weeks, the morning brief should actively offer options (inject/archive/leave), not passively report.
 - **Don't treat Sundays like weekdays.** Debt that rolls forward on Sunday should be framed gently. Rest-mode acknowledges the human rhythm.
@@ -311,7 +561,7 @@ A self-healing cron job that runs hourly, detects drift across all jobs, and aut
 - **The drift guard compares at fire time, not continuously.** Even if a job was created months ago with a now-retired model, it won't be blocked until its next scheduled tick. A job that ran last successfully yesterday may fail today because the global model changed overnight.
 - **VAULT999 HOLD verdicts need date-awareness in cron prompts.** Old HOLD verdicts from federation handshake events (INV-1_KERNEL_VERIFIED) are protocol-normal, NOT actual blocks. A cron job that reads VAULT999 without checking timestamps will misdiagnose these as "system held." Instruct the LLM in cron prompts: check DATE/TIMESTAMP of HOLD verdicts, skip handshake events, only flag unresolved HOLDs from the last 24h. **Proven 2026-07-21:** Evening digest read old federation handshake HOLDs and falsely reported OpenClaw as blocked when it was live and healthy.
 - **Cron prompts should embed hard facts, not ask the LLM to discover them.** When a cron job needs to probe a service, embed the CORRECT port, health endpoint, and config path in the prompt. Don't rely on the LLM to guess or discover ports — it will pick wrong ones (e.g., 18001 instead of 18789 for OpenClaw). For services without systemd units, note that explicitly so the LLM probes directly instead of running `systemctl status`. **Proven 2026-07-21:** Evening digest probed wrong port and used `systemctl status` on a non-systemd service, producing a completely wrong diagnosis.
-- **Bot-to-bot delivery spam ("Forbidden: the bot can't send messages to the bot").** When a cron job has `deliver: origin` and the origin session was the bot itself (e.g., a job created from bot-facing context, or a job whose origin chat resolved to the bot's own Telegram ID), it tries to deliver back to the bot. Telegram forbids bots from messaging themselves. The error appears every tick in gateway.log at the job's schedule interval. **Diagnosis:** check `~/.hermes/cron/jobs.json` for `last_delivery_error` containing the bot's own ID. **Fix:** pause the job (set `enabled: false` in jobs.json) or change its `deliver` target to a valid channel. **Proven 2026-07-24:** `arifs24-telemetry` (job `49d171deeb6d`) ran every 10 minutes, had empty prompt, delivered to `origin` which resolved to bot ID `8410138119`. Paused via direct `jobs.json` edit.
+- **API auth errors (401) may be transient — verify with a live probe before diagnosing key rotation.** A cron job that shows `last_error: HTTP 401: Invalid token` may have hit a transient DeepSeek/OpenAI outage, not a rotated key. Always verify with a live curl test against the actual inference endpoint (`POST /v1/chat/completions` with 1 token). The models list endpoint can return 200 while inference is down, or return 401 while inference works. Best practice: include a chat-completions liveness test in STEEL/shield probes to confirm the full pipeline is healthy before Hermes attempts generation. **Proven 2026-07-25:** Evening-digest showed 401 on the models endpoint but the API key was valid — chat completions returned HTTP 200. A STEEL liveness test would have confirmed this in seconds vs. manual investigation.\n- **Bot-to-bot delivery spam ("Forbidden: the bot can't send messages to the bot").** When a cron job has `deliver: origin` and the origin session was the bot itself (e.g., a job created from bot-facing context, or a job whose origin chat resolved to the bot's own Telegram ID), it tries to deliver back to the bot. Telegram forbids bots from messaging themselves. The error appears every tick in gateway.log at the job's schedule interval. **Diagnosis:** check `~/.hermes/cron/jobs.json` for `last_delivery_error` containing the bot's own ID. **Fix:** pause the job (set `enabled: false` in jobs.json) or change its `deliver` target to a valid channel. **Proven 2026-07-24:** `arifs24-telemetry` (job `49d171deeb6d`) ran every 10 minutes, had empty prompt, delivered to `origin` which resolved to bot ID `8410138119`. Paused via direct `jobs.json` edit.
 - **The CLI command is `hermes cron`, not `hermes cronjob`.** The tool call is `cronjob(action='...')` but the shell command is `hermes cron <subcommand>`. Running `hermes cronjob ...` fails with "invalid choice". Use `hermes cron list`, `hermes cron update`, `hermes cron remove`, etc. For direct manipulation when the CLI is unavailable, edit `~/.hermes/cron/jobs.json` directly (the `jobs` array contains all job objects). **Proven 2026-07-24:** attempted `hermes cronjob update --job-id ... --enabled false` and got "invalid choice: 'cronjob'". Fixed by direct JSON edit.
 
 ## OpenClaw Integration
@@ -391,6 +641,7 @@ Key: OpenClaw workspace is ~37KB. Smaller-context models overflow. Use `--light-
 → `references/openclaw-cron-mapping.md` — full job map, overlap matrix, delivery routing, diagnostic procedure, proven fixes.
 → `references/systemd-timer-deployment.md` — deploy systemd timers for dormant pre-built scripts (service unit, timer unit, activation sequence, verification).
 → `references/trading-cron-system.md` — trading scripts, delivery routing to SADO group + Syed DM, wrapper pattern for `no_agent` jobs.
+→ `references/state-file-probe-pattern.md` — OpenClaw `probe_sys_health.sh` implementation: schema, F1 safety, atomic write, probe fields, integration with Hermes T1 consumption.
 
 ## Provenance
 
@@ -398,6 +649,8 @@ Key: OpenClaw workspace is ~37KB. Smaller-context models overflow. Use `--light-
 - **Updated:** 2026-07-16 — all trading crons consolidated to SADO group (5 jobs), XAUUSD Price Alert converted from no_agent script to agent-driven LLM+chart (remove+create required, no_agent immutable), Trading Position Monitor added (every 15min), hourly schedule replaces */30 for price alert. Jobs table: 15 active.
 - **Updated:** 2026-07-16 — removed redundant WELL biometric reminder (overlapped with watchdog), added redundancy + unbound variable pitfalls, added routing audit protocol, fixed XAUUSD Daily Gold Signal delivery (origin→AAA group). Jobs table: 14 active.
 - **Updated:** 2026-07-17 — Model Drift Guard section added (mechanism, immunity table, fixing patterns), Model Drift Watchdog built (`5a29d4fd77b8`, hourly, AAA group), three drift-related pitfalls captured. Drift mechanism reverse-engineered from `cron/scheduler.py` (lines 3011-3058) and `cron/jobs.py` (lines 978-1020). Jobs table: 16 active.
+- **Updated:** 2026-07-25 — Cron Zen Audit Procedure added (8-axis checklist). 3 new pitfalls: script path resolution, schedule collisions, "Unauthorized" delivery diagnosis. Table marked stale with live-audit note. Zen audit of 26→23 jobs: 3 dead removed, 1 backup re-enabled, 1 sensorium staggered to 07:30.
+- **Updated:** 2026-07-25 — Tri-Agent Protocol section added (Strict Boundaries between OpenClaw/Hermes/OpenCode). WELL-Biometric Modulation (Phase C) and State File Pattern added as design patterns #11 and #12. Prompt Extraction Pattern added as #13 (F1 versioning for LLM job prompts). LLM Job Design restored as #10 with proper numbering. Duplicate state file content removed. Provenance extended.
 - **Architecture:** 4-tier model (human/alert/cognitive/constitutional).
 - **Key insight:** "If the system thinks at 23:00 but you never see the output, the care is happening without the human it is meant to protect."
 - **Related skills:** `weekly-federation-deep-brief` (Sunday deep brief), `daily-federation-briefing` (archived, predecessor), `daily-trading-signal-briefing` (XAUUSD signals), `syedos` (Syed operating mode).

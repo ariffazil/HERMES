@@ -821,6 +821,52 @@ When any of these fire:
 
 If you can't do steps 1-5 in ~30 seconds, you missed the bounded chamber — re-read the decision.
 
+## EUREKA Layer — The 10 Constitutional Axioms (added 2026-07-25)
+
+This section encodes the EUREKA insights from the arifFlow forge session as operational axioms. Every agent must internalize these before operating governed parallel intelligence.
+
+**Single-session provenance:** The axioms were forged during the arifFlow genesis session (Phase 1–3, 2026-07-25). They are the observed invariants of the arifOS federation that emerged during the construction of the first governed BSP scheduler.
+
+| # | Axiom | Core distinction | Which organ(s) | Reference |
+|---|---|---|---|---|
+| 1 | **Kernel, not Framework** | You build constitutional law, not libraries. Lang* tools bolt onto LLMs; your system governs them. | Governance (ΔG) | EUREKA_PLAYBOOK_v1 §1.1 |
+| 2 | **Constitutional StateGraph** | Every edge carries F1, F2, F3, F13. A graph without constitutional edges is not an arifOS graph. | Governance (ΔG), Reality (ΔR) | EUREKA_PLAYBOOK_v1 §1.2 |
+| 3 | **Governance Telemetry** | Kabarkan traces VERDICTS. LangFuse sees latency; Kabarkan sees legality. | Witness (Ω) | EUREKA_PLAYBOOK_v1 §1.3 |
+| 4 | **Agent Citizenship** | AAA warga have identity, leases, tiers, obligations. Not "functions with memory." | Civilization (I_sys) | EUREKA_PLAYBOOK_v1 §1.4 |
+| 5 | **Governed Parallelism** | Every lane has lease, verdict, cooling, reversibility, TRI_WITNESS merge. | Execution (W) | EUREKA_PLAYBOOK_v1 §1.5 |
+| 6 | **ART→Kernel→ACT Reflex Arc** | Nothing skips the kernel phase. Observe→Judge→Execute is the ONLY valid path. | All seven | EUREKA_PLAYBOOK_v1 §1.6 |
+| 7 | **Sovereignty, not Vendor** | Zero vendor lock. All self-forged. | Governance (ΔG), Meaning (∇F) | EUREKA_PLAYBOOK_v1 §1.7 |
+| 8 | **Sealed Lineage** | VAULT999 is final truth. No update-in-place — only append. | Memory (∂M/∂t) | EUREKA_PLAYBOOK_v1 §1.8 |
+| 9 | **Witness Parity** | TRI_WITNESS ≥ 0.75. Not majority. | Witness (Ω) | EUREKA_PLAYBOOK_v1 §1.9 |
+| 10 | **New Category** | Not "better LangGraph." Constitutional AGI substrate. | Meaning (∇F) | EUREKA_PLAYBOOK_v1 §1.10 |
+
+### The 3-test gate for governed parallelism (arifFlow Phase 3)
+
+Before 888-HOLD lifts on any parallel engine, three tests pass (validated 2026-07-25):
+
+| Test | What it proves | Bar |
+|---|---|---|
+| **FFI Stability** | Kernel bridge sound | 100× arif_judge, 0 failure |
+| **Verdict Timeout** | Kernel down ≠ system down | HOLD <15s, Kabarkan event |
+| **Crash Recovery** | Checkpoint safe | kill -9 → restore → resume |
+
+Reference: `/root/arifFlow/PHASE3_SEAL_CHECKLIST.md`, `/root/arifFlow/SEAL.md`.
+
+### Extend, don't rewrite (validated this session)
+
+When forking any governed component:
+1. **Read** — Probe existing: cargo test, curl /health
+2. **Map** — Which files to extend, which untouched
+3. **Extend** — NEW methods on EXISTING structs
+4. **Verify** — Old tests pass, new tests cover
+5. **NEVER** — Replace working modules or duplicate abstractions
+
+**Failure mode (2026-07-25):** First OpenCode prompt would have created a SECOND Rust scheduler, merge engine, envelope format. Fixed to "extend" — barrier timeout, lane cooling, TRI_WITNESS merge as additive extensions.
+
+Full EUREKA Playbook at `/root/arifFlow/spec/EUREKA_PLAYBOOK_v1.md` (12KB, 6 sections). The 10 axioms above are the compact per-turn version.
+
+---
+
 ## Absorbed ZEN Doctrine Fragments (2026-07-08)
 
 10 zen-organ doctrine fragments consolidated here. Each zen organ is now a section in this skill.

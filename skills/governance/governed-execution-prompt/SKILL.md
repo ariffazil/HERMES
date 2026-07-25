@@ -80,6 +80,7 @@ Before writing ANY execution prompt, gather with search_files/read_file:
 | Test commands | What does the organ's test suite look like |
 | Backward compatibility | Will this break existing callers |
 | Already-taken names/numbers | Prevent collision |
+| Existing code structure | Count modules, tests, key types — prompt must EXTEND not REWRITE |
 
 ## Anatomy of a Governed Execution Prompt
 
@@ -157,6 +158,12 @@ When user asks "what will this actually change?":
 16. **Boot chain injection after zenning — the gap between \"prompt is zen\" and \"every runtime loads it.\"** After compressing AGENTS.md files, you must ensure EVERY organ's boot chain references the operational zen doctrine. Pattern: one SOT doctrine file (AAA-ZEN-ALIGNMENT.md), every AGENTS.md carries a one-line pointer (`> **ZEN:** /path/to/AAA-ZEN-ALIGNMENT.md — load at boot`). Without this, Claude Code or Kimi Code might read DITEMPA but never load the 18 operational rules. See `references/boot-chain-injection.md`.
 
 17. **Subagent bulk zenning — parallel fan-out for 200+ files.** When applying zen across a federation (210 skills + 6 agent cards + 24 tool descriptions + 5 AGENTS.md), don't do it sequentially. Use `delegate_task` to fan out parallel subagents: one for skills, one for agent cards, one for MCP tool descriptions. Each subagent gets the edit pattern and a file list. This completes in minutes what would take hours sequentially. Each subagent's result reports back independently.
+
+18. **Extend-vs-rewrite principle (2026-07-25, arifFlow genesis).** When writing a prompt for a system that already has running code, the prompt MUST explicitly say "EXTEND, don't REWRITE." Without this directive, coding agents will rewrite from scratch — creating duplicate modules, duplicate architectures, duplicate state machines across the federation. **Fix:** First line of any prompt targeting existing code: "EXTEND existing X — do NOT rewrite. Read all source files first. Add only what's missing."**Tell-tale signs the prompt needs fixing:** describes full architecture without referencing file paths, uses future tense ("will implement"), or defines types that already exist in the federation.
+
+19. **Three-test gate before production (arifFlow Phase 3, 2026-07-25).** Every governed system bridging Rust core ↔ Python adapter ↔ arifOS kernel must pass these before 888-HOLD lifts: (a) FFI stability — 100× loop adapter→arif_judge→Rust, zero failures; (b) Verdict timeout — kernel down → HOLD <15s; (c) Crash recovery — kill -9 mid-run → restore checkpoint → re-verify authority. Embed these as the final gate in any prompt introducing a new FFI boundary between governed components.
+
+20. **EUREKA Playbook as agent boot load.** Before any forge session on constitutional governance, tell the agent to skill_load(EUREKA_PLAYBOOK_v1) at /root/arifFlow/spec/EUREKA_PLAYBOOK_v1.md. The playbook encodes 10 constitutional axioms, a decision tree distinguishing governed intelligence from tool-based systems, anti-patterns, and an agent contract. Prevents agents from operating in "Lang* thinking" mode.
 
 ## Multi-Session Forge Handoff Pattern
 

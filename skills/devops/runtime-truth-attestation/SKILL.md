@@ -31,6 +31,15 @@ triggers:
   - "git_version mismatch"
   - "cross-organ drift"
   - "health endpoint mismatch"
+  - "multi-organ deploy"
+  - "A-FORGE deploy"
+  - "AAA deploy"
+  - "GEOX deploy"
+  - "WEALTH deploy"
+  - "WELL deploy"
+  - "deployment drift"
+  - "all organs"
+  - "federation deploy"
 ---
 
 # Runtime Truth Attestation — E2 Pattern
@@ -364,6 +373,49 @@ this issue.
 and deployment being functionally identical. The `.git` HEAD in the deploy
 dir was 2 commits behind source.
 
+### PITFALL: `build_info.py` hardcoded commit string never updates
+
+The file `arifosmcp/runtime/build_info.py` contains:
+```python
+BUILD_COMMIT = "64ce5e10a"
+```
+
+This is a **stale hardcoded hash** that is never overwritten by any build pipeline. The health endpoint's `software_release` block computes `source_commit`, `built_commit`, and `deployed_commit` from different sources:
+
+| Field | Source |
+|-------|--------|
+| `source_commit` | `_full_source_commit()` (reads `.git/HEAD` → refs/heads/main) |
+| `built_commit` | `_read_git_head("/root/arifOS/.git")` (same as source) |
+| `deployed_commit` | Set equal to `source_commit` in `build.py:get_runtime_attestation()` |
+
+**Why drift appears:** During merges, `source_commit` may come from the merge commit's first parent while `built_commit` comes from `.git/HEAD`. After a merge, `source_commit` = merge-base-1 but `built_commit` = actual merge commit → `drift=true` even when all code is correct.
+
+**Fix:** After a merge deployment, ensure both read from the same git ref:
+```bash
+git checkout main && git pull --ff-only
+```
+
+The health endpoint determines drift by comparing `source_commit[:7] != built_commit[:7]`. If both read from the same `.git/HEAD` this is always in sync. The drift only appears when one field reads from a different source than the other.
+
+### PITFALL: Systemd drop-in env var can override production-safe defaults
+
+Drop-in files in `/etc/systemd/system/arifos.service.d/*.conf` are applied AFTER the main unit file. Any `Environment=` directive in a drop-in OVERRIDES the same variable from the main unit.
+
+**Example found in production (2026-07-25):** Drop-in `f13-identity.conf` contained:
+```
+Environment=ARIFOS_ALLOW_FREE_NONCE=1
+```
+
+This overrode the Python module's safe default of `0`, silently enabling free-nonce (no replay protection) in production.
+
+**Diagnostic:**
+```bash
+# List all environment variables the service will see
+systemctl show arifos.service -p Environment | tr ' ' '\n' | sort -u
+```
+
+**Fix:** Audit every drop-in for environment variables that override Python module defaults. If the module has a safe default (`ARIFOS_ALLOW_FREE_NONCE=false` in `crypto_auth.py`), the drop-in MUST NOT set it unless explicitly intended.
+
 ### PITFALL: Service import resolves to source tree, not wheel, when WorkingDirectory = source tree
 
 When the systemd service uses `WorkingDirectory=/opt/arifos/app` and an
@@ -502,5 +554,5 @@ curl -sf http://localhost:8088/health | python3 -c "import json,sys; print(json.
 
 - **Deployment playbook** — `references/deployment-playbook.md`: pre-deploy YAML-bundling fix (MANIFEST.in), post-deploy 5-layer verification, ceremony canary for A3 narrow-capability path
 - **Convergence check script** — `scripts/convergence_check.py`: standalone 5-layer verification, exit code 0=CONVERGED / 2=ROLLBACK
-- **Convergence tracker pattern** — `references/convergence-tracker.md`: 9-layer architecture with mandatory/conditional split, `.bak` convention, adversarial test matrix pattern, telemetry counters, acceptance gate pattern
+- **Multi-organ deployment** — `references/multi-organ-deployment.md`: build + deploy + verify for A-FORGE, AAA, GEOX, WEALTH, WELL. The three-location fix pattern, rsync trap, and systemd drop-in auditing.: 9-layer architecture with mandatory/conditional split, `.bak` convention, adversarial test matrix pattern, telemetry counters, acceptance gate pattern
 - **Adversarial test runner** — `scripts/adversarial_test_matrix.py`: reusable fail-closed test harness with JSON persistence, used for P1.3/P1.4 verification

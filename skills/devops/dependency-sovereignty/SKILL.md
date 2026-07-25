@@ -13,13 +13,17 @@ triggers:
   - "should we pay for X"
   - "can we replace X with our own"
   - "this service reached its limit"
+  - "LangGraph"
+  - "orchestration framework"
+  - "replace [tool] with our own"
+  - "evaluate dependency"
 ---
 
 # Dependency Sovereignty Assessment
 
 Pattern for evaluating an external SaaS or dependency and determining whether to self-host the open-source version, forge an in-house replacement using federation infrastructure, or pay the vendor.
 
-Covers Langfuse, OpenRouter, Tavily, and any future external service that hits a cost/limit/sovereignty boundary.
+Covers Langfuse, LangGraph, OpenRouter, Tavily, and any future external service that hits a cost/limit/sovereignty boundary.
 
 ## Workflow
 

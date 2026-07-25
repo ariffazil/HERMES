@@ -445,13 +445,11 @@ When emitting any "done / fixed / completed / all / every / 100%" report after w
 - ❌ "All 14 council works filled." → 2 still empty, emit anyway.
 - ✅ "12 of 14 council works filled. 2 gaps: COUNCIL_GOV_07 (work TBD by sovereign research), COUNCIL_PAR_05 (Al-Ghazali, needs canonical work identification — open to sovereign)."
 
-**The deeper rule:** When a report describes completion of N items where N is round and defensible ("all 14 fixed"), the very roundness of N is a smell. Real completion rates have fractional components: "12/14 plus 2 awaiting sovereign." Round numbers correlate with overclaim.
+**Scope-of-verification nuance (added 2026-07-25):** A specific sub-pattern of completion overclaim is **verification scope mismatch** — claiming "E2E passes" when only unit tests were run. Unit tests verify the function contract (function → return value). E2E tests verify the deployment contract (MCP JSON-RPC request → expected response). The MCP surface exercises middleware, parameter translation, exception handlers, and sentinel-value resolution that no direct Python call touches. In the F13 challenge auth session, `verify_authorization_challenge()` passed every direct test, but `curl :8088/mcp` returned `SAFE_VOID_FALLBACK` because the `authority_token` parameter received `...` Ellipsis from the MCP wrapper — a path no unit test could exercise.
+
+**Rule:** When the report claims "E2E" or "integration verified," the verification must use the **same surface the user will use** — not a narrower one. If the user will call `arif_judge` via MCP, prove it with a curl JSON-RPC call. If the user will see the AAA cockpit, prove it with a browser render. The abstraction layer between the function and the user interface is exactly where deployment-level bugs hide.
 
 ### Gate 12: URL-AS-DIRECTIVE FETCH (Added 2026-07-19)
-
-When the user sends a URL in a message and the message includes a request, the URL is **part of the directive**, not a topic indicator. Fetch and read the actual content of the URL **before** forming any hypothesis about what the user wants done with it.
-
-**Failure mode (scar 2026-07-19, DeepSeek BYOK session):**
 
 - User sent: `https://api-docs.deepseek.com/quick_start/agent_integrations/copilot_cli` with a request to "wire DeepSeek to GitHub Copilot CLI and align with AAA."
 - Agent's pattern-match on URL fragments → inferred the goal was "configure Copilot CLI to use DeepSeek as its backend." Agent answered for two rounds about how Copilot CLI doesn't accept custom models (wrong).
@@ -519,6 +517,37 @@ When emitting any "done / fixed / completed / all / every / 100%" report after w
 - ✅ "12 of 14 council works filled. 2 gaps: COUNCIL_GOV_07 (work TBD by sovereign research), COUNCIL_PAR_05 (Al-Ghazali, needs canonical work identification — open to sovereign)."
 
 **The deeper rule:** When a report describes completion of N items where N is round and defensible ("all 14 fixed"), the very roundness of N is a smell. Real completion rates have fractional components: "12/14 plus 2 awaiting sovereign." Round numbers correlate with overclaim.
+
+### Cross-verify peer-agent audit claims (added 2026-07-25)
+
+When another agent (Codex, ChatGPT, Kimi, OpenClaw) emits a structured audit report claiming N findings with M fixes needed, **do not treat the claims as ground truth.** The other agent may have inspected a different code snapshot, used stale git HEAD, or made category errors. Cross-referencing adds 1-2 minutes and prevents acting on phantom findings.
+
+**Failure mode (scar 2026-07-25, P0/P1/P2 audit session):**
+- Codex emitted an audit report claiming 15+ findings across 18 dirty repos, with specific file:line citations for 6 P1 items.
+- Live probe found 5/6 P1 items were **already fixed** in current HEAD — the line numbers in the report matched a pre-fix snapshot, not current code.
+- One P1 fix was genuine (cli.py fixture data, "SEAL" to "KILL_MATRIX_PASS"), the rest were chasing ghosts.
+- The P0 items were already quarantined by Codex pre-arrival, but it did not state its own timeline — leaving the impression it found them in the same scan.
+- Total time wasted if unverified: potentially hours of fixing already-fixed code.
+
+**The audit protocol (cross-reference before acting):**
+
+| Step | Action | Cost |
+|------|--------|------|
+| 1 | Identify which files the report claims are broken. | - |
+| 2 | Read the specific line numbers against current HEAD. | 30s |
+| 3 | If line does not exist or logic does not match, the report is stale — check git log for when the fix landed. | 15s |
+| 4 | For each remaining claim, run a probe (grep, unit test, curl) that would fail if the fix were incomplete. | 30s |
+| 5 | Only then decide: act, defer, or reject. | - |
+
+**The asymmetry:** A 2-minute cross-reference costs far less than the hour-plus of fixing phantom findings plus the sovereign correction cycle when the agent claims "fixed" what was already fixed.
+
+**Root cause layer:** The peer agent's audit timestamp is usually implicit ("just checked") rather than git-rev-anchored. The receiving agent assumes contemporaneous inspection. The fix convention: when emitting audit line numbers, **also emit the git rev of the observed snapshot.** Receiving agents should then cross-reference that rev against the current deploy/HEAD before any response.
+
+**Signals that a peer-agent report needs cross-referencing:**
+- Line numbers are exact but the file structure has changed (the report may be from a different branch or snapshot)
+- Claim count is suspiciously round ("exactly 6 P1 items," "exactly 15 findings")
+- The agent does not state which git rev it inspected
+- The agent claims fixes were already applied but does not distinguish its own pre-work from findings discovered in the same session
 
 ## Case Studies
 

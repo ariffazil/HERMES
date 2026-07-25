@@ -309,14 +309,34 @@ If the judge's own F11_AUTH floor check blocks (separate from interceptor), the 
 
 ### 4. Restart required after interceptor patch
 ```bash
-cp /opt/arifos/app/arifosmcp/kernel/interceptor.py /root/arifOS/arifosmcp/kernel/interceptor.py
+# Patch source tree (editable install — Python loads from /root/arifOS/)
 systemctl restart arifos
 sleep 3
 curl -sf http://127.0.0.1:8088/health
 ```
 
-### 5. Deployed vs source code
-The deployed code is at `/opt/arifos/app/`. The source repo is at `/root/arifOS/`. Always patch both.
+### 5. Deployed vs source code — editable install (2026-07-25 CORRECTION)
+
+The arifOS package is installed in **editable mode** (`pip install -e`). Python loads from **`/root/arifOS/`** (source tree), NOT from `/opt/arifos/app/`. Patches to `/opt/arifos/app/` are silently ignored by the running service. **Always patch the source tree at `/root/arifOS/`.**
+
+Verify with: `python3 -c "import arifosmcp.runtime.tools; print(arifosmcp.runtime.tools.__file__)"` — should return `/root/arifOS/arifosmcp/runtime/tools.py`.
+
+After patching source:
+```bash
+systemctl restart arifos
+sleep 3
+curl -sf http://127.0.0.1:8088/health
+```
+
+### 5b. Ed25519 params now in MCP schema (RESOLVED 2026-07-25)
+
+The MCP `arif_judge` schema now exposes `actor_signature`, `nonce`, `key_id`, `reversibility_level`, `seal_purpose`, `authority_effect` — confirmed by `tools/list`. The ingress middleware no longer strips these fields. If F13 ESCALATE persists with correct signature+nonce:
+
+1. **Check DID registry PermissionError:** `resolve_actor_public_key()` reads `/root/secrets/did/registry.json` which is root-owned. Fix: move material to `/opt/arifos/` paths, configurable via env vars (`ARIFOS_DID_REGISTRY_PATH`, `ARIFOS_ARIF_PUBLIC_KEY_PATH`, `ARIFOS_AGENT_IDENTITY_REGISTRY`). Systemd drop-in at `/etc/systemd/system/arifos.service.d/10-f13-auth.conf` sets these.
+2. **Check `_verify_sovereign_token()` logging:** Add `logger.info("F13_CHECK: token=%s sig=%s nonce=%s...")` at the top of the function to distinguish "params didn't arrive" from "verification failed".
+3. **Test via REST API:** `curl` bypasses middleware — use for isolating the issue.
+
+**AUDIT_RECORD lane:** Actions with `action_class=AUDIT_RECORD` bypass F13 entirely — no signature needed. Only `ACTION_AUTHORIZATION` and `CONSTITUTIONAL_AMENDMENT` trigger F13.
 
 ### 6. arif_seal needs evidence_sources when NOT SOVEREIGN
 For non-SOVEREIGN actors, the interceptor checks `req.raw_arguments.get("evidence_sources", [])` and needs at least one `EXTERNAL_*` entry. The arif_seal schema doesn't expose this param. SOVEREIGN bypasses this check.

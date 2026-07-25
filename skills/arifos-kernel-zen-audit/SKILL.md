@@ -286,6 +286,146 @@ When the kernel blocks at 888_HOLD with `actor_verified=false`, sign the nonce a
 - **Arif frustration signals are FIRST-CLASS debugging signals:** "Setel" = fix it now. "Relaks tapi tajam" = stop thrashing, be precise. "Did u even nap and check current state?" = you're citing stale state, re-probe. One-word replies = sovereign ack, act immediately. "Bangang la" after a clear diagnosis + fix proposal = **you've over-asked, execute now**.
 - **Service user vs file ownership.** The systemd service runs as `User=arifos`. All files in `/opt/arifos/app/` must be readable by `arifos`. If a file is owned by `root` or `ariffazil` with mode 600, the kernel will crash on startup with `PermissionError`. Fix: `chown arifos:arifos <file> && chmod 640 <file>`. Never `chown -R root:root` — that re-creates the problem.
 
+## RECORD vs AUTHORIZE Seal Architecture (2026-07-24)
+
+The kernel now supports TWO seal paths. NEVER conflate them:
+
+| Dimension | AUDIT_RECORD (SEAL_RECORD) | ACTION_AUTHORIZATION (SEAL_AUTHORIZATION) |
+|-----------|---------------------------|----------------------------------------|
+| reversibility_level | R2 | R4 |
+| seal_purpose | RECORD | AUTHORIZE |
+| authority_effect | NONE | EXECUTION_GRANT |
+| ack_irreversible | false | true |
+| requires_f13 | false | true |
+| F13 Ed25519 | Not required | Required |
+| Execution authority | None | A-FORGE execution grant |
+
+### Canonical Chain for RECORD
+
+```
+arif_judge(action_class="AUDIT_RECORD", reversibility="R2")
+→ ALLOW + SEAL_RECORD
+→ cc_id + judge_state_hash emitted
+→ arif_seal(ack_irreversible=false, seal_purpose="RECORD",
+   cc_id=..., judge_state_hash=...)
+→ VAULT999 receipt (no F13, no human)
+```
+
+### Canonical Chain for AUTHORIZE
+
+```
+1. Sign f"{actor_id}:{nonce}" — actor_id MUST match case exactly
+2. arif_judge(action_class="ACTION_AUTHORIZATION", reversibility="R4",
+   actor_signature=..., nonce=...)
+→ ALLOW + SEAL_AUTHORIZATION + cc_id + judge_state_hash
+→ arif_seal(ack_irreversible=true, seal_purpose="AUTHORIZE",
+   cc_id=..., judge_state_hash=...)
+→ VAULT999 + execution grant
+```
+
+### Ed25519 Verification — Payload Format
+
+The kernel verifies `f"{actor_id}:{nonce}"`. If `actor_id="ARIF"`, sign `"ARIF:{nonce}"` (uppercase). `resolve_actor_public_key` normalizes internally — the payload must match the exact `actor_id` string.
+
+### Production Path (in `_verify_sovereign_token`)
+
+Bypasses `crypto_auth.verify_actor_signature` challenge gate. Does direct verification:
+
+```python
+from arifosmcp.runtime.crypto_auth import resolve_actor_public_key
+pubkey = resolve_actor_public_key(actor_id)
+if pubkey is not None:
+    pubkey.verify(_b64.b64decode(actor_signature), f"{actor_id}:{nonce}".encode())
+    return True
+```
+
+Set `ARIFOS_ALLOW_FREE_NONCE=1` in the service environment to bypass the challenge gate for dev/test.
+
+### Action Class Policy Table
+
+Defined in `arif_kernel_intercept.py` `_ACTION_CLASS_POLICY`:
+
+```python
+_ACTION_CLASS_POLICY = {
+    "AUDIT_RECORD": {"requires_f13": False, ...},
+    "EVIDENCE_ATTESTATION": {"requires_f13": False, ...},
+    "VAULT_RECEIPT": {"requires_f13": False, ...},
+    "ACTION_AUTHORIZATION": {"requires_f13": True, ...},
+    "CONSTITUTIONAL_AMENDMENT": {"requires_f13": True, ...},
+}
+```
+
+## MCP Ingress Debugging — Parameter Propagation
+
+When `actor_signature`, `nonce`, `reversibility_level`, `action_class` don't reach the kernel through MCP, the MOST LIKELY culprit is the ingress filter pipeline:
+
+```
+MCP → _wrap_handler → _filter_kwargs_for_handler → _akal_wrap_judge → _arif_kernel_intercept_tool → _arif_kernel_intercept
+```
+
+### Filter Chain (tools.py)
+
+1. **`_wrap_handler`** (tools.py:23274) — outermost wrapper. Calls `_filter_kwargs_for_handler` then calls handler.
+
+2. **`_filter_kwargs_for_handler`** (tools.py:22945) — **PARAMETER STRIPPING HAPPENS HERE.**
+   - Gets `accepted = set(params.keys())` from the handler's Python signature
+   - Parameters NOT in `accepted` → `contract_c_audit` (silently dropped from kwargs)
+   - Has `_LEGACY_PARAM_ALIASES` that RENAME params: e.g., `actor_id → actor`
+
+3. **`_akal_wrap_judge`** (server.py:775) — wraps judge with AKAL metadata. Uses `@functools.wraps(handler)` setting `__wrapped__`.
+
+4. **`_arif_kernel_intercept_tool`** (tools.py:22091) — the actual wrapper. Has `actor`, `actor_signature`, `nonce`, `action_class` as named params.
+
+### Root Cause: Alias + Named Param Conflict
+
+`_LEGACY_PARAM_ALIASES["arif_judge"] = {"actor_id": "actor"}` renames `actor_id` to `actor`. But the wrapper now has BOTH as named parameters. After renaming, `actor` is set by the alias, but `actor_id` named param stays None. The kwarg translation:
+
+```python
+if actor is None or actor == "anonymous":
+    actor = actor_id or kwargs.pop("actor_id", None) or "anonymous"
+```
+
+`actor` = "ARIF" from alias → condition False → `actor` stays "ARIF". BUT if `actor` was NOT in the filter output (the alias didn't fire), then `actor` stays None → falls to "anonymous".
+
+**Fix:** Ensure the kwarg translation fires when `actor` is `None` OR `"anonymous"`:
+
+```python
+if actor is None or actor == "anonymous":
+    actor = actor_id or kwargs.pop("actor_id", None) or "anonymous"
+```
+
+### Four Deployment Locations
+
+Ed25519/runtime patches must be applied to ALL locations:
+
+| Location | Path |
+|----------|------|
+| Source tree | `/root/arifOS/arifosmcp/runtime/tools.py` |
+| App deployment | `/opt/arifos/app/arifosmcp/runtime/tools.py` |
+| Build artifact | `/opt/arifos/build/lib/arifosmcp/runtime/tools.py` |
+| Build artifact (app) | `/opt/arifos/app/build/lib/arifosmcp/runtime/tools.py` |
+
+The `.pth` file (`__editable__.arifos-1!2026.7.17.post4.pth`) determines which path is used. Check at runtime: `import arifosmcp.tools.arif_kernel_intercept as k; print(k.__file__)`.
+
+### .pyc Cache Invalidation
+
+After every source change:
+```bash
+rm -f /root/arifOS/arifosmcp/runtime/__pycache__/tools.cpython-313.pyc
+rm -f /root/arifOS/arifosmcp/tools/__pycache__/arif_kernel_intercept.cpython-313.pyc
+rm -f /root/arifOS/arifosmcp/runtime/__pycache__/crypto_auth.cpython-313.pyc
+```
+Verify `.pyc` is GONE (`ls` returns empty) before restarting. If `.pyc` is newer than source, Python ignores the source.
+
+### Signature Verification Fallthrough
+
+The `_verify_sovereign_token` function (arif_kernel_intercept.py) has THREE paths:
+1. Direct Ed25519 via `resolve_actor_public_key` + `pubkey.verify` (production)
+2. Free-nonce fallback: tries same without challenge (when `ARIFOS_ALLOW_FREE_NONCE=1`)
+3. Sentinel comparison: env var `ARIFOS_SOVEREIGN_KEY` (dev-only, trivially bypassable)
+
+The challenge-gated path was REMOVED because `verify_actor_signature` requires pre-issued challenges that aren't available through the public MCP surface (the `arif_challenge` tool is `internal_only`).
+
 ## Three-Gate Principle (2026-07-12)
 
 **When the user reports a single failure mode — "kernel blocked seal ×3", "commands failing" — it is almost never one bug.** Three independent gates, each with a different root cause and fix:

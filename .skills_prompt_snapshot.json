@@ -14,8 +14,8 @@
       20802
     ],
     "software-development/deep-codebase-audit/SKILL.md": [
-      1784862216535868497,
-      5829
+      1784956698831276168,
+      6605
     ],
     "software-development/paper-to-code-validation/SKILL.md": [
       1784862082830855363,
@@ -34,8 +34,8 @@
       7633
     ],
     "software-development/governance-enforcement-audit/SKILL.md": [
-      1784861879404470479,
-      18090
+      1784914411099629249,
+      21292
     ],
     "software-development/aaa-knowledge-files/SKILL.md": [
       1784862216536882296,
@@ -78,8 +78,8 @@
       3987
     ],
     "devops/hermes-cron-rhythm/SKILL.md": [
-      1784862216538516289,
-      29196
+      1784957307786093509,
+      47317
     ],
     "devops/agentic-infrastructure-ops/SKILL.md": [
       1784862216538834339,
@@ -90,8 +90,8 @@
       13696
     ],
     "devops/runtime-truth-attestation/SKILL.md": [
-      1784862216539222734,
-      23092
+      1784955421015950339,
+      25648
     ],
     "devops/agentic-vps-operations/SKILL.md": [
       1784862216539542987,
@@ -106,8 +106,8 @@
       7119
     ],
     "devops/arifos-interceptor-patching/SKILL.md": [
-      1784866041665638596,
-      16615
+      1784935609646589427,
+      18288
     ],
     "devops/arif-sites-content-ops/SKILL.md": [
       1784862216540432998,
@@ -162,8 +162,8 @@
       5480
     ],
     "devops/federation-checkup/SKILL.md": [
-      1784911110859663448,
-      68340
+      1784953391256706121,
+      71717
     ],
     "devops/telegram-userbot-telethon/SKILL.md": [
       1784492426257257054,
@@ -218,16 +218,16 @@
       7850
     ],
     "devops/dependency-sovereignty/SKILL.md": [
-      1784903258790479491,
-      12670
+      1784962192177730521,
+      12787
     ],
     "devops/hermes-log-forensics/SKILL.md": [
       1784862216545133485,
       7914
     ],
     "devops/a-forge-development/SKILL.md": [
-      1784618156154368114,
-      34217
+      1784964285757888673,
+      43425
     ],
     "devops/agent-email-transport/SKILL.md": [
       1784862216545425985,
@@ -238,8 +238,8 @@
       22342
     ],
     "devops/arifos-ed25519-sovereign-signing/SKILL.md": [
-      1784862216545971598,
-      28130
+      1784948598215239101,
+      48860
     ],
     "devops/provider-routing-zen/SKILL.md": [
       1784875775517017803,
@@ -254,8 +254,8 @@
       9642
     ],
     "devops/arifos-constitutional-floor-modification/SKILL.md": [
-      1784862216546507836,
-      3899
+      1784935625678803059,
+      5345
     ],
     "devops/opencode-config-zen/SKILL.md": [
       1784874786145166823,
@@ -398,8 +398,8 @@
       15889
     ],
     "trading/syedos/SKILL.md": [
-      1784877361341008604,
-      47069
+      1784962993451920534,
+      50986
     ],
     "trading/daily-trading-signal-briefing/SKILL.md": [
       1784862216552294130,
@@ -410,8 +410,8 @@
       25265
     ],
     "seven-zen-organs-enforcement/SKILL.md": [
-      1784862216552953784,
-      66060
+      1784963915941317973,
+      69413
     ],
     "productivity/DESCRIPTION.md": [
       1784492426334408070,
@@ -510,8 +510,8 @@
       8058
     ],
     "arifos-kernel-zen-audit/SKILL.md": [
-      1784862131571686008,
-      25420
+      1784938866847970176,
+      31418
     ],
     "email/DESCRIPTION.md": [
       1784492426270257139,
@@ -830,8 +830,8 @@
       4719
     ],
     "governance/evidence-before-elegance/SKILL.md": [
-      1784492426288257257,
-      34487
+      1784957346140810581,
+      37757
     ],
     "governance/human-sovereignty-geometry/SKILL.md": [
       1784862216573834452,
@@ -848,6 +848,10 @@
     "governance/somatic-intelligence/SKILL.md": [
       1784862170865574705,
       12922
+    ],
+    "governance/governed-execution-substrate/SKILL.md": [
+      1784962982187861631,
+      31763
     ],
     "governance/institutional-body-language/SKILL.md": [
       1784492426305257369,
@@ -890,8 +894,8 @@
       16662
     ],
     "governance/governance-friction-rightsizing/SKILL.md": [
-      1784862216576277094,
-      12850
+      1784954672992388727,
+      17510
     ],
     "governance/atlas333-cognitive-geometry/SKILL.md": [
       1784862216576531699,
@@ -900,6 +904,14 @@
     "governance/institutional-intelligence/SKILL.md": [
       1784862131611738459,
       13434
+    ],
+    "governance/eureka-playbook/SKILL.md": [
+      1784963546191875682,
+      12958
+    ],
+    "governance/f13-sovereign-authorization-substrate/SKILL.md": [
+      1784954776255108402,
+      29611
     ],
     "governance/governance-feedback-loops/SKILL.md": [
       1784615867502278650,
@@ -910,8 +922,8 @@
       19012
     ],
     "governance/governed-execution-prompt/SKILL.md": [
-      1784904126518848106,
-      9757
+      1784964269176924063,
+      11490
     ],
     "governance/external-wisdom-integration/SKILL.md": [
       1784910604386741666,
@@ -922,8 +934,8 @@
       4942
     ],
     "governance/governed-agent-anatomy/SKILL.md": [
-      1784852540767944878,
-      23366
+      1784962175548590908,
+      24341
     ],
     "governance/agent-init-architecture/SKILL.md": [
       1784862170867964877,
@@ -2573,6 +2585,19 @@
       }
     },
     {
+      "skill_name": "eureka-playbook",
+      "category": "governance",
+      "frontmatter_name": "eureka-playbook",
+      "description": "EUREKA Playbook v1 — Constitutional axioms, agent directi...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
       "skill_name": "evidence-before-elegance",
       "category": "governance",
       "frontmatter_name": "evidence-before-elegance",
@@ -2603,6 +2628,19 @@
       "category": "governance",
       "frontmatter_name": "external-wisdom-integration",
       "description": "Scan external thinkers AND systems architectures, extract...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "f13-sovereign-authorization-substrate",
+      "category": "governance",
+      "frontmatter_name": "f13-sovereign-authorization-substrate",
+      "description": "F13 Ed25519 sovereign authorization substrate — ALL THREE...",
       "platforms": [],
       "conditions": {
         "fallback_for_toolsets": [],
@@ -2694,6 +2732,19 @@
       "category": "governance",
       "frontmatter_name": "governed-execution-prompt",
       "description": "Build execution prompts for coding agents that produce ru...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "governed-execution-substrate",
+      "category": "governance",
+      "frontmatter_name": "governed-execution-substrate",
+      "description": "Design, analyze, and forge execution engines, state machi...",
       "platforms": [],
       "conditions": {
         "fallback_for_toolsets": [],

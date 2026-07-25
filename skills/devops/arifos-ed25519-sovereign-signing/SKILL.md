@@ -4,26 +4,81 @@ description: "Ed25519 sovereign identity signing for arifOS kernel. Correct key 
 triggers:
   - "When signing arif_init challenge nonces for SOVEREIGN authority"
   - "When debugging actor_verified=False despite providing signature"
+  - "When debugging arif_judge ESCALATE due to F13 crypto required"
+  - "When verifying that a private key on disk matches the registered public key"
+  - "When diagnosing key drift between registered pubkey and available keys"
   - "When working with arifosmcp.runtime.crypto_auth or sovereign_verify"
-version: "1.3"
+version: "1.5"
 author: Hermes
-date: 2026-07-24
+date: 2026-07-25
 ---
 
 # arifOS Ed25519 Sovereign Signing
 
-## Key Paths (CRITICAL — three different keys exist)
+> **Cross-ref:** For the Phase 2 canonical challenge flow (15-field binding, `verify_authorization_challenge`, AAA approval_card, structured failure codes), see the `f13-sovereign-authorization-substrate` skill. This skill covers the legacy `actor:nonce` signing path and all key management.
 
-| Key | Path | Matches Kernel? |
+## Key Paths (FOUR keys on disk — three correct for different purposes)
+
+| Key | Path | Purpose | Kernel-trusted? |
+|---|---|---|---|
+| **Sovereign PEM** | `/root/.secrets/aaa-identity/keys/arif_private.pem` | arif_init identity binding (session auth) | ✅ Yes (pub: `3F929mOt...`) |
+| **Sovereign raw hex (seed)** | `/root/compose/sekrits/arifos_sovereign.key` | Same keypair, hex-encoded 32-byte seed | ✅ Same pair |
+| **VAULT SIGNING (OpenSSH)** | `/root/.secrets/vault-signing-ed25519` | arif_seal / VAULT999 payload signing | ✅ Separate purpose key |
+| **JWKS private key** | `/root/.secrets/jwks/ed25519-private.key` | JWKS auto-identity path (same as sovereign) | ✅ Same pair as PEM |
+| Kernel public | `/root/compose/sekrits/arifos_sovereign.pub` | Canonical pubkey reference | ✅ Canonical |
+| Pub (AAA identity) | `/root/AAA/IDENTITY/keys/arif_public.pem` | Pubkey copy | ✅ Same |
+| JWKS public | `/root/.secrets/jwks/jwks.json` | Ed25519 pubkey in JWKS format (`kid: arifos-ed25519-c0704fe2c583ddd8`) | ✅ |
+| Vault pub (OpenSSH) | `/root/.secrets/vault-signing-ed25519.pub` | Public half of vault signing key | ✅ |
+| **WRONG (SSH git)** | `/root/.ssh/operator_did_ed25519` | Git push only | ❌ Different key entirely |
+| **WRONG (SSH pub)** | `/root/.ssh/operator_did_ed25519.pub` | Git push only | ❌ Different key entirely |
+
+**PITFALL: Four keypairs on disk — each for a different job. Don't mix them.**
+
+| Keypair | File | What it's FOR |
 |---|---|---|
-| **Correct private key (PEM)** | `/root/.secrets/aaa-identity/keys/arif_private.pem` | ✅ Yes |
-| **Correct private key (raw hex 32B)** | `/root/compose/sekrits/arifos_sovereign.key` | ✅ Same keypair — hex-encoded seed |
-| Kernel public key | `/root/compose/sekrits/arifos_sovereign.pub` | ✅ Canonical |
-| Alt public key | `/root/AAA/IDENTITY/keys/arif_public.pem` | ✅ Same as above |
-| **WRONG private key** | `/root/.ssh/operator_did_ed25519` | ❌ Different key entirely |
-| **WRONG public key** | `/root/.ssh/operator_did_ed25519.pub` | ❌ Different key entirely |
+| Sovereign identity (PEM) | `/root/.secrets/aaa-identity/keys/arif_private.pem` | arif_init session binding, arif_judge evidence |
+| Vault/SEAL signing | `/root/.secrets/vault-signing-ed25519` | arif_seal payload signing, VAULT999 entry signing |
+| Git push (SSH) | `/root/.ssh/id_ed25519` | git push, ssh operations |
+| Unrelated DID (SSH) | `/root/.ssh/operator_did_ed25519` | Produces `ed25519_signature_invalid` — never use it for kernel auth |
 
-**PITFALL:** The SSH key at `/root/.ssh/operator_did_ed25519` does NOT match the kernel's trusted public key. Using it will always produce `ed25519_signature_invalid`. Always use `/root/.secrets/aaa-identity/keys/arif_private.pem`.
+**PITFALL:** `/root/.secrets/vault-signing-ed25519` is OpenSSH private key format, NOT PEM. `openssl pkeyutl` silently fails on this format — use `ssh-keygen -Y sign` or Python `cryptography` library to sign with it:
+
+```bash
+# CORRECT for vault-signing-ed25519 (OpenSSH format):
+echo -n '<payload>' | ssh-keygen -Y sign -f /root/.secrets/vault-signing-ed25519 -n arifos 2>/dev/null | tail -1
+
+# WRONG — DO NOT use openssl on this key:
+echo -n '<payload>' | openssl pkeyutl -sign -inkey /root/.secrets/vault-signing-ed25519 -rawin | base64 -w0  # ← silent empty
+```
+
+**But `ssh-keygen -Y sign` produces SSH SIGNATURE format (wrapped), NOT raw base64 Ed25519 sig.** When the kernel expects raw base64 (for `actor_signature`, `arif_judge` evidence, or `arif_seal`), parse the key with Python:
+
+```python
+import base64, struct
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+def sign_with_vault_key(payload_bytes: bytes) -> str:
+    """Sign payload using vault-signing-ed25519 (OpenSSH format), return raw base64 sig."""
+    raw = base64.b64decode(''.join(
+        l for l in open('/root/.secrets/vault-signing-ed25519').read().splitlines()
+        if not l.startswith('-----')
+    ))
+    pos = 15  # skip 'openssh-key-v1\0'
+    for _ in range(3):
+        n = struct.unpack_from('>I', raw, pos)[0]; pos += 4 + n
+    pos += 4  # skip num_keys
+    n = struct.unpack_from('>I', raw, pos)[0]; pos += 4 + n  # skip pubkey
+    n = struct.unpack_from('>I', raw, pos)[0]; pos += 4
+    seed = raw[pos+8:pos+8+32]  # skip check1/check2 (8B), read 32B seed
+    key = Ed25519PrivateKey.from_private_bytes(seed)
+    return base64.b64encode(key.sign(payload_bytes)).decode()
+
+# Usage:
+sig = sign_with_vault_key(b'8aa47683e770cde9dd6ea07e744952faf3dcaae9074430979ca3ba30b0ab286f')
+print(sig)  # 88 chars of raw base64 Ed25519 sig
+```
+
+The PEM key at `/root/.secrets/aaa-identity/keys/arif_private.pem` is an OpenSSH-format Ed25519 key. `openssl pkeyutl` also silently fails on PEM. Always use Python `cryptography` library for the PEM key too.
 
 ## Signing Flow
 
@@ -120,7 +175,15 @@ sig = base64.b64encode(key.sign(f'arif:{nonce}'.encode())).decode()
 ### PITFALL: Constitution hash mismatch
 `session.py` uses `CONSTITUTION_HASH = "arifos-constitution-v2026.05.05-SSCT"` (string), but `sovereign_signer.get_constitution_hash()` returns `sha256:612c5a7e...` (sha256 hash). The `verify_init_identity` function receives the string version from session.py, so sign with the STRING, not the sha256 hash.
 
-### PITFALL: Nonce rotation
+### PITFALL: Ingress middleware strips unknown params (2026-07-25 — CRITICAL)
+
+When calling `arif_judge` via MCP with `actor_signature`, `nonce`, `key_id`, these params may be STRIPPED by the `IngressToleranceMiddleware` before they reach the handler. The handler (`_arif_kernel_intercept_tool`) accepts them, but the middleware removes fields not in the advertised MCP tool schema.
+
+**Symptoms:** `arif_judge` returns `ESCALATE` with F13, even though you passed `actor_signature` and `nonce`. The kernel sees `actor_signature=None` and falls through to the sentinel check which fails.
+
+**Diagnostic:** Check the MCP tool schema for `arif_judge` — if `actor_signature` and `nonce` are not listed as `properties`, they are being stripped.
+
+**Workaround:** Use the sentinel `authority_token` parameter instead (which IS in the schema). Or call the kernel via REST API directly with `curl` where no middleware strips fields.
 Each `arif_init` call generates a NEW nonce. You cannot reuse a nonce from a previous call. The flow must be: init → get nonce → sign → resume with same nonce+signature.
 
 ### PITFALL: mode=resume vs mode=init
@@ -129,18 +192,31 @@ Each `arif_init` call generates a NEW nonce. You cannot reuse a nonce from a pre
 ## Verification Script
 
 ```bash
-# Verify key pair matches kernel
+# FULL KEY DRIFT DIAGNOSTIC — checks ALL key files against registry
 python3 -c "
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from cryptography.hazmat.primitives import serialization
-import base64
+import base64, json
 
-with open('/root/.secrets/aaa-identity/keys/arif_private.pem', 'rb') as f:
-    priv = serialization.load_pem_private_key(f.read(), password=None)
-pub = priv.public_key()
-raw = pub.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
-print(f'Private derives: {base64.b64encode(raw).decode()}')
-print(f'Should match:    3F929mOtVn3ivUPCbAt9H3p971Az1c6AQLh7L6T7ulY=')
+# Get registered pubkey (agent_identities.json)
+reg_entry = json.load(open('/root/A-FORGE/data/agent_identities.json'))['arif']
+reg_pub_pem = reg_entry['identity_proof']['public_key_pem']
+reg_pub = serialization.load_pem_public_key(reg_pub_pem.encode())
+reg_raw = reg_pub.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+print(f'Registered pubkey:   {base64.b64encode(reg_raw).decode()}')
+
+candidates = [
+    '/root/.secrets/aaa-identity/keys/arif_private.pem',
+    '/root/A-FORGE/IDENTITY/keys/arif/arif_ed25519_private.pem',
+]
+for path in candidates:
+    with open(path, 'rb') as f:
+        key = serialization.load_pem_private_key(f.read(), password=None)
+    pub = key.public_key()
+    raw = pub.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    b64 = base64.b64encode(raw).decode()
+    match = 'MATCH' if b64 == base64.b64encode(reg_raw).decode() else 'MISMATCH'
+    print(f'{match}: {path} → {b64}')
 "
 ```
 
@@ -218,15 +294,78 @@ echo -n "{nonce}" | sodium sign --key ~/.arifos/sovereign.key  # FAILS
 ```
 Always use Python (`sovereign_signer.py` module) or `arif-bind` instead.
 
-## Three Keys on Disk (2026-07-12 discovery)
+## Four Keys on Disk (2026-07-12 discovery, 2026-07-25 vault-signing added)
 
 | Key | Path | Purpose | Kernel-trusted? |
 |---|---|---|---|
 | PEM sovereign | `/root/.secrets/aaa-identity/keys/arif_private.pem` | Kernel auth | ✅ Yes (pub: `3F929mOt...`) |
+| VAULT SIGNING (OpenSSH) | `/root/.secrets/vault-signing-ed25519` | arif_seal / VAULT999 signing | ✅ Separate purpose key |
 | SSH (arif-forge-push) | `/root/.ssh/id_ed25519` | Git operations | ❌ No (pub: `3if17nc8...`) |
 | DID (arifOS internal) | `/opt/arifos/secrets/did_arifos_private.key` | Kernel identity | Separate system (pub: `vEUBa8a2...`) |
 
-**PITFALL:** Arif may ask to "zen it" (consolidate to one key). The SSH key and PEM key are DIFFERENT keypairs. Swapping requires updating the kernel's trusted pubkey file and restarting. Do NOT assume they're the same.
+**PITFALL:** Arif may ask to "zen it" (consolidate to one key). The SSH key and PEM key are DIFFERENT keypairs. The vault-signing key is a SEPARATE keypair from both. Swapping requires updating the kernel's trusted pubkey file and restarting. Do NOT assume they're the same.
+
+### KEY DRIFT DIAGNOSIS (2026-07-25 discovery — CRITICAL)
+
+**Symptom:** No private key on the filesystem matches the public key registered in `agent_identities.json` under the `arif` entry. You sign with a key file, verify locally (passes), but the kernel rejects because your derived public key doesn't match its registered one. The forge chain audit log shows `ESCALATE: F13 cryptographic signature required` even with FULL session authority.
+
+**Three-way mismatch found on this system (2026-07-25):**
+
+| # | Key file | Derived pubkey (raw b64) | Matches registry? |
+|---|---|---|---|
+| A | `/root/.secrets/aaa-identity/keys/arif_private.pem` | `auxSHdOwyvO+s+/sRYzK9ZgvGj8m57NYzmbY10qsvV4=` | ❌ |
+| B | `/root/A-FORGE/IDENTITY/keys/arif/arif_ed25519_private.pem` (PEM) | `qRNNXyu4pFfvTHEDv8O3ONN+5ZOmBZJ9qTSU69vrpiU=` | ❌ |
+| C | `/root/.secrets/jwks/ed25519-private.key` (32B raw) | Same as B (`qRNNXyu4pFfv...`) — same keypair as A-FORGE PEM, different from secrets PEM | ❌ |
+
+**The key registered in `agent_identities.json` (lines 408-432):**
+```python
+pubkey_pem = """-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEA/8srcNdnITCuEYrwgqO0MsMAMt4h35z1w6+39Tuptrc=
+-----END PUBLIC KEY-----"""
+```
+→ **This pubkey matches NO private key on this server.** The original private key was generated off-server (Arif's laptop?) and never synced.
+
+**Diagnostic script to detect drift:**
+```python
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
+from cryptography.hazmat.primitives import serialization
+import base64, json
+
+# 1. Get registered pubkey as raw b64
+reg_pub_pem = json.load(open('/root/A-FORGE/data/agent_identities.json'))
+    ['arif']['identity_proof']['public_key_pem']
+reg_pub = serialization.load_pem_public_key(reg_pub_pem.encode())
+reg_raw = reg_pub.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+print(f"Registered:      {base64.b64encode(reg_raw).decode()}")
+
+# 2. Check each candidate key
+candidates = [
+    '/root/.secrets/aaa-identity/keys/arif_private.pem',
+    '/root/A-FORGE/IDENTITY/keys/arif/arif_ed25519_private.pem',
+]
+for path in candidates:
+    with open(path, 'rb') as f:
+        key = serialization.load_pem_private_key(f.read(), password=None)
+    pub = key.public_key()
+    raw = pub.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    b64 = base64.b64encode(raw).decode()
+    match = "✅" if b64 == base64.b64encode(reg_raw).decode() else "❌"
+    print(f"{match} {path} → {b64}")
+```
+
+**Resolution options (present to Arif):**
+
+| Option | Action | Risk | Effort |
+|---|---|---|---|
+| **A** | Update `agent_identities.json` with pubkey from existing key at `/root/.secrets/aaa-identity/keys/arif_private.pem` | Old registered key orphaned | 1 min |
+| **B** | Arif provides the original private key that matches the registered pubkey | No registry change, but needs secure transfer | Depends |
+| **C** | Generate fresh keypair, register new pubkey, archive all old keys | Cleanest but requires sovereign approval for F13-level change | 5 min |
+
+**PITFALL:** The PEM key at `/root/.secrets/aaa-identity/keys/arif_private.pem` and the A-FORGE PEM at `/root/A-FORGE/IDENTITY/keys/arif/arif_ed25519_private.pem` are DIFFERENT keypairs, though both are named "arif". Don't assume they're the same — always verify with the diagnostic script.
+
+**PITFALL:** The JWKS key at `/root/.secrets/jwks/ed25519-private.key` (32B raw) produces the SAME public key as the A-FORGE PEM, indicating they're the same keypair. The `secrets/aaa-identity` PEM is a DIFFERENT keypair entirely.
+
+**Root cause:** Multiple key generation events over time. The original key was generated elsewhere (laptop?), registered in `agent_identities.json`, then the key files on this server were regenerated/replaced during troubleshooting without updating the registry.
 
 ## CLI Signer (legacy — prefer arif-bind.py)
 
@@ -238,7 +377,239 @@ python3 /root/.hermes/scripts/arif-signer.py --nonce 'NONCE_FROM_KERNEL'
 
 Use `arif-bind.py` instead for the full atomic flow.
 
-## Debugging: Three-Gate Auth Diagnosis (2026-07-13)
+## Seal Chain: Complete File Map & Curl Commands
+
+**CRITICAL PREFERENCE:** Arif hates theoretical/conceptual descriptions of processes. Always map to concrete file paths and commands first. Never describe what the chain *is* — give the exact paths and curl calls to execute it.
+
+### Artifact to seal (this session's example)
+
+## Resolution Chosen (2026-07-25)
+
+Arif chose **Option A** (update registry to match existing key). After applying:
+
+1. Updated `agent_identities.json` arif entry's `identity_proof.public_key_pem` to match key #2 (`auxSHdOwyvO+...`)
+2. Verified: `arif_init(actor_id="arif", mode="init")` returned SOVEREIGN, actor_verified=true
+
+## The F13 Interceptor Gate (P0 FIX 2026-07-25 — Real Ed25519 now wired)
+
+**`_verify_sovereign_token()` in `arif_kernel_intercept.py` now does real Ed25519 verification.**
+
+Two paths:
+1. **Production** (`ARIFOS_ED25519_ENABLED=true`): Calls `verify_actor_signature()` from `crypto_auth.py`, with a free-nonce fallback that calls `resolve_actor_public_key()` + raw `pubkey.verify()`.
+2. **Dev fallback**: Sentinel string comparison (backward compatible).
+
+**The wrapper passes params correctly:** `_arif_kernel_intercept_tool` in `runtime/tools.py` (lines 22213-22216) passes `actor_signature`, `nonce`, `key_id` to `_arif_kernel_intercept()`.
+
+**MCP schema exposes all params:** `tools/list` confirms `actor_signature`, `nonce`, `key_id`, `reversibility_level`, `seal_purpose`, `authority_effect` are all in the `arif_judge` input schema. Verifiable with:
+```bash
+curl -s http://127.0.0.1:8088/mcp -X POST \
+  -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); \
+     [print(f'{t[\"name\"]}: {sorted(t[\"inputSchema\"][\"properties\"].keys())}') \
+      for t in d['result']['tools'] if t['name']=='arif_judge']"
+```
+
+**AUDIT_RECORD lane (P0 FIX 2026-07-25):** Actions with `action_class=AUDIT_RECORD` are deterministically mapped to R2/RECORD/NONE and do NOT trigger the F13 gate. The `_resolve_action_class()` function defaults to AUDIT_RECORD for all non-R4/R5 actions. This means audit evidence seals are autonomous — no F13 crypto required.
+
+**ACTION_CLASS_POLICY table** in `arif_kernel_intercept.py`:
+```python
+"AUDIT_RECORD":      # seal_purpose=RECORD, authority_effect=NONE, requires_f13=False
+"EVIDENCE_ATTESTATION":  # seal_purpose=RECORD, authority_effect=NONE, requires_f13=False
+"VAULT_RECEIPT":     # seal_purpose=RECORD, authority_effect=NONE, requires_f13=False
+"ACTION_AUTHORIZATION":  # seal_purpose=AUTHORIZE, authority_effect=EXECUTION_GRANT, requires_f13=True
+"CONSTITUTIONAL_AMENDMENT": # seal_purpose=AUTHORIZE, authority_effect=SOVEREIGN_CHANGE, requires_f13=True
+```
+
+**Canonical judge identity:** The ALLOW path now emits `constitutional_chain_id` (format `cc_<sha256>`) and `judge_state_hash` (format `sha256:<hex>`) that bind the judge decision to the candidate hash, session, and audit trail. Generated after the KernelOutput is created, stamped onto the output before model_dump().
+
+**DID registry PermissionError (FIXED 2026-07-25):** The `resolve_actor_public_key()` function in `crypto_auth.py` tried to read `/root/secrets/did/registry.json` (root-owned) while running as `ariffazil` who can't traverse `/root/`. 
+
+**Production fix:** Public key material moved to `/opt/arifos/`:
+| Material | Old path | New path |
+|---|---|---|
+| DID registry | `/root/secrets/did/registry.json` | `/opt/arifos/.secrets/did/registry.json` |
+| Agent identities | `/root/A-FORGE/data/agent_identities.json` | `/opt/arifos/identity/agent_identities.json` |
+| Arif public key | `/root/AAA/IDENTITY/keys/arif_public.pem` | `/opt/arifos/identity/arif_public.pem` |
+
+**Systemd drop-in** (`/etc/systemd/system/arifos.service.d/10-f13-auth.conf`):
+```ini
+[Service]
+SupplementaryGroups=arifos-auth
+Environment=ARIFOS_RUNTIME_BASE=/opt/arifos
+Environment=ARIFOS_ARIF_PUBLIC_KEY_PATH=/opt/arifos/identity/arif_public.pem
+Environment=ARIFOS_AGENT_IDENTITY_REGISTRY=/opt/arifos/identity/agent_identities.json
+Environment=ARIFOS_DID_REGISTRY_PATH=/opt/arifos/.secrets/did/registry.json
+Environment=ARIFOS_DEV_DID_REGISTRY_FALLBACK=0
+ExecStartPre=/usr/bin/test -r /opt/arifos/identity/arif_public.pem
+ExecStartPre=/usr/bin/test -r /opt/arifos/identity/agent_identities.json
+ExecStartPre=/usr/bin/test -r /opt/arifos/.secrets/did/registry.json
+```
+
+**crypto_auth.py configurable paths:** `_PUBLIC_KEY_PATH`, `_AGENT_REGISTRY`, and `_DID_REGISTRY_CANDIDATES` now read from env vars (`ARIFOS_ARIF_PUBLIC_KEY_PATH`, `ARIFOS_AGENT_IDENTITY_REGISTRY`, `ARIFOS_DID_REGISTRY_PATH`) with defaults under `ARIFOS_RUNTIME_BASE`. Dev fallback gated behind `ARIFOS_DEV_DID_REGISTRY_FALLBACK=1`. PermissionError caught with `try/except PermissionError` on `read_text()`.
+
+**Parameter-presence telemetry (recommended):** Add non-secret logging so you can distinguish "signature didn't arrive" from "signature arrived but invalid":
+```python
+logger.info("F13_CHECK: token=%s sig=%s nonce=%s actor=%s ed25519=%s avail=%s",
+    bool(token), bool(actor_signature), bool(nonce), actor_id,
+    _SOVEREIGN_ED25519_ENABLED, _ED25519_AVAILABLE)
+```
+This is already present in the deployed `arif_kernel_intercept.py`.
+
+## Session Artifacts (2026-07-24/25)
+
+- Artifact: `/root/A-FORGE/forge_work/2026-07-24/apex-audit/CORRECTED-SYNTHESIS-2026-07-24.md`
+- Hash: `8aa47683e770cde9dd6ea07e744952faf3dcaae9074430979ca3ba30b0ab286f`
+- Session (INIT, day 1): `SEAL-3059a3e4d1bc4a65`
+- Session (FORGE, day 1): `SEAL-30cd82ab9c454755`
+- Session (day 2, Option A): `SEAL-b4af20acff0048e6`
+- Lease: `LCL-ARIF-mrz6kmoc-pxt2xn`
+- Ed25519 nonce: `494afee082f6dd01b9b04b7e7a3adad1c502c72b2670a14f21bf4dfebbf030dd`
+- Ed25519 sig: `3NEMRTdcDvNR/jKUP8u16ao36IFx9LNA0Xc34WnPer25wHKU+wmZwnAzlQLqnCkTNauSF2MRxUHAUWBW06ylCA==`
+
+### The 5-step seal chain (file map)
+
+#### Step ① — Sign the hash with F13 vault key
+
+```bash
+# Key: /root/.secrets/vault-signing-ed25519
+# Hash: 8aa47683e770cde9dd6ea07e744952faf3dcaae9074430979ca3ba30b0ab286f
+# Output: /root/A-FORGE/forge_work/2026-07-24/apex-audit/f13-signature.txt
+
+echo -n '8aa47683e770cde9dd6ea07e744952faf3dcaae9074430979ca3ba30b0ab286f' | \
+  ssh-keygen -Y sign -f /root/.secrets/vault-signing-ed25519 -n arifos 2>/dev/null | \
+  tail -1 > /root/A-FORGE/forge_work/2026-07-24/apex-audit/f13-signature.txt
+```
+
+**PITFALL:** `/root/.secrets/vault-signing-ed25519` is OpenSSH format — use `ssh-keygen -Y sign`, NOT `openssl pkeyutl` (which silently returns empty output on this format).
+
+**PITFALL:** The vault signing key is the SEPARATE key at `/root/.secrets/vault-signing-ed25519`, NOT the PEM identity key at `/root/.secrets/aaa-identity/keys/arif_private.pem`. The vault key is for payload/artifact hashes; the PEM key is for session identity binding.
+
+#### Step ② — Submit signature to arif_judge
+
+```bash
+# Input: /root/A-FORGE/forge_work/2026-07-24/apex-audit/f13-signature.txt (from step ①)
+# Endpoint: http://127.0.0.1:8088/mcp (arifOS kernel)
+# Expected output: SEAL verdict with constitutional_chain_id + judge_state_hash
+# Save to: /root/A-FORGE/forge_work/2026-07-24/apex-audit/judge-seal-response.json
+
+SIG=$(cat /root/A-FORGE/forge_work/2026-07-24/apex-audit/f13-signature.txt)
+
+curl -s -X POST http://127.0.0.1:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "arif_judge",
+      "arguments": {
+        "mode": "judge",
+        "intent": "SEAL cross-domain synthesis artifact",
+        "epistemic_state": "OBS",
+        "reversibility_level": "irreversible",
+        "blast_radius": "single_artifact",
+        "evidence": [
+          {
+            "type": "f13_ed25519_signature",
+            "value": "'"$SIG"'",
+            "hash": "8aa47683e770cde9dd6ea07e744952faf3dcaae9074430979ca3ba30b0ab286f",
+            "key_id": "arifos-ed25519-c0704fe2c583ddd8"
+          }
+        ],
+        "session_token": "<TOKEN_FROM_SEAL-3059a3e4>"
+      }
+    }
+  }' | tee /root/A-FORGE/forge_work/2026-07-24/apex-audit/judge-seal-response.json
+```
+
+**Expected:** `verdict: SEAL` with `constitutional_chain_id` and `judge_state_hash`.
+
+#### Step ③ — Extract cc_id + judge_state_hash
+
+```bash
+cc_id=$(jq -r '.result.content[0].text | fromjson | .constitutional_chain_id' \
+  /root/A-FORGE/forge_work/2026-07-24/apex-audit/judge-seal-response.json)
+
+judge_hash=$(jq -r '.result.content[0].text | fromjson | .judge_state_hash' \
+  /root/A-FORGE/forge_work/2026-07-24/apex-audit/judge-seal-response.json)
+
+echo "cc_id=$cc_id"
+echo "judge_hash=$judge_hash"
+```
+
+#### Step ④ — Call arif_seal with ack_irreversible=true + nonce
+
+**PITFALL: arif_seal REQUIRES a nonce for Amanah-Replay defense.** Without it:
+```
+KERNEL_DENY: Amanah-Replay: capability 'kernel.seal' is irreversible and
+requires a non-empty 'nonce' argument. Supply a 4-128 char alphanumeric
+nonce with optional dash/underscore.
+```
+
+The nonce prevents HTTP/SSE retry double-fire on irreversible actions. Use a unique identifier per attempt — the kernel rejects reuse.
+
+```bash
+# Inputs: cc_id, judge_hash from Step ③
+# Endpoint: http://127.0.0.1:8088/mcp
+# Save to: /root/A-FORGE/forge_work/2026-07-24/apex-audit/seal-receipt.json
+
+curl -s -X POST http://127.0.0.1:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+      "name": "arif_seal",
+      "arguments": {
+        "mode": "seal",
+        "payload": "8aa47683e770cde9dd6ea07e744952faf3dcaae9074430979ca3ba30b0ab286f",
+        "constitutional_chain_id": "'"$cc_id"'",
+        "judge_state_hash": "'"$judge_hash"'",
+        "nonce": "apx-synth-20260724",           # ← REQUIRED: unique per attempt
+        "session_token": "<TOKEN_FROM_SEAL-3059a3e4>",
+        "actor_id": "ARIF",
+        "witness_type": "ai",
+        "ack_irreversible": true
+      }
+    }
+  }' | tee /root/A-FORGE/forge_work/2026-07-24/apex-audit/seal-receipt.json
+```
+
+**Expected output:** `vault_entry_id` + receipt confirming SEAL.
+
+#### Step ⑤ — Verify receipt
+
+```bash
+# Option A — Direct VAULT999 ledger check
+tail -1 /root/.local/share/arifos/vault999/outcomes.jsonl | jq .
+
+# Option B — VAULT999-writer API (if running)
+SEAL_ID=$(jq -r '.result.content[0].text | fromjson | .vault_entry_id' \
+  /root/A-FORGE/forge_work/2026-07-24/apex-audit/seal-receipt.json)
+curl -s -X POST http://127.0.0.1:5001/verify \
+  -H 'Content-Type: application/json' \
+  -d '{"seal_id": "'"$SEAL_ID"'"}'
+
+# Option C — VAULT999 replay
+make vault999-verify
+```
+
+### Flow summary
+
+```
+Step ①  vault-signing-ed25519 ──sign──→ f13-signature.txt
+Step ②  f13-signature.txt ──→ arif_judge ──→ judge-seal-response.json (SEAL + cc_id)
+Step ③  judge-seal-response.json ──extract──→ cc_id + judge_hash
+Step ④  cc_id + judge_hash ──→ arif_seal(ack_irreversible=true) ──→ seal-receipt.json (vault_entry_id)
+Step ⑤  vault_entry_id ──→ VAULT999 outcomes.jsonl / verify endpoint
+```
+
+Generated files under `/root/A-FORGE/forge_work/2026-07-24/apex-audit/`:
+- `f13-signature.txt` — Step ①
+- `judge-seal-response.json` — Step ②
+- `seal-receipt.json` — Step ④
 
 When `arif_seal`, `arif_init`, or any auth-dependent tool fails, the symptom is often reported as a single "kernel blocked" error. In reality, three separate gates with three different causes produce the same symptom.
 
@@ -496,7 +867,9 @@ arif_seal → 888_HOLD (OBSERVE_ONLY)
 - Session init: `/root/arifOS/arifosmcp/tools/session.py` (arif_init, line ~844)
 - Sovereign verify: `/root/arifOS/arifosmcp/runtime/sovereign_verify.py` (verify_sovereign_signature)
 - Governance identity: `/root/arifOS/arifosmcp/runtime/governance_identity.py` (_verify_ed25519_proof)
+- Kernel intercept: `/root/arifOS/arifosmcp/tools/arif_kernel_intercept.py` (_verify_sovereign_token, _ACTION_CLASS_POLICY)
 - CLI signer: `/root/.hermes/scripts/arif-signer.py`
 - Seal chain: `/root/.local/share/arifos/vault999/seal_chain.jsonl`
 - Seal head: `/root/.local/share/arifos/vault999/seal_chain_head.json`
 - Chain verifier: `/root/AAA/a2a-server/seal_chain.js`
+- AUDIT_RECORD lane: `references/audit-record-lane.md`
