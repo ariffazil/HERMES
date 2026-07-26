@@ -43,10 +43,36 @@ ARIF (F13 SOVEREIGN)
 
 ---
 
+## The Five-Verb Contract (F13 SEAL · 2026-07-26)
+
+```
+INPUT → NORMALIZE → CLASSIFY → ROUTE → RECEIPT
+```
+
+HERMES does exactly five things. Nothing more. Nothing less.
+
+| Verb | Component | What It Does |
+|------|-----------|--------------|
+| **NORMALIZE** | Evidence Envelope | Every signal gets a `signal_id`, `checksum`, `type`, `source`, `timestamp` |
+| **CLASSIFY** | Intent Router Canon | Deterministic `intent → organ` mapping. No LLM routing. |
+| **ROUTE** | Federation Router | Dispatch to target organ via existing transport map |
+| **RECEIPT** | Routing Receipt | Every route produces a hash-linked receipt to Kabarkan |
+
+### What HERMES NEVER Does (the negative space)
+
+```
+❌ Interpret signals (that's arifOS / domain organs)
+❌ Self-authorize routing decisions (that's intent_canon)
+❌ Own domain skills (that's GEOX / WEALTH / WELL / A-FORGE)
+❌ Judge routing correctness (that's arifOS)
+❌ Execute mutations (that's A-FORGE)
+❌ Issue verdicts (that's arifOS)
+```
+
 ## Compression
 
 ```
-HERMES mirrors.
+HERMES normalizes, classifies, routes, receipts.
 AAA coordinates.
 arifOS judges.
 A-FORGE acts.

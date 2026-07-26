@@ -28,26 +28,43 @@ HERMES is a **separate repository**, not merged into AAA core. It is logically r
 
 ---
 
+## The Five-Verb Contract (F13 SEAL · 2026-07-26)
+
+```
+INPUT → NORMALIZE → CLASSIFY → ROUTE → RECEIPT
+```
+
+HERMES bridges. It never adjudicates. Five verbs, zero cognition.
+
+| Contract | Owner | Canonical Location |
+|----------|-------|-------------------|
+| **P1: Intent Router Canon** | HERMES | `config.yaml` §federation.intent_canon |
+| **P2: Evidence Envelope** | HERMES | `config.yaml` §federation.evidence_envelope |
+| **P3: Skill Registry Governor** | HERMES (catalogs) / Domain Organs (own) | `config.yaml` §federation.skill_governor |
+| **P4: Routing Receipt** | HERMES → Kabarkan → VAULT999 | `config.yaml` §federation.routing_receipt |
+
 ## Integration Contract
 
 | Concern | Owner |
 |---------|-------|
 | Identity declaration | AAA (agent-card.json) |
-| Runtime execution | HERMES |
+| Signal normalization | HERMES (evidence_envelope) |
+| Intent classification | HERMES (intent_canon — deterministic) |
+| Signal routing | HERMES (federation.router) |
+| Routing receipt | HERMES → Kabarkan (JetStream + Postgres) |
+| Skill catalog | HERMES (catalogs only) |
+| Skill ownership | Domain organs (GEOX / WEALTH / WELL / A-FORGE / arifOS) |
 | Governance verdict | arifOS |
 | Mutation approval | arifOS → A-FORGE |
 | Receipt sealing | arifOS → VAULT999 |
 | Human veto | ARIF (F13) |
 
----
-
 ## Golden Rule
 
 ```
-HERMES reflects intelligence.
-HERMES does not authorize action.
-HERMES does not judge consequence.
-HERMES does not override veto.
+HERMES normalizes, classifies, routes, receipts.
+HERMES does NOT interpret, authorize, judge, execute, or seal.
+HERMES is the bridge — five verbs, zero cognition.
 ```
 
 ---
