@@ -1,7 +1,13 @@
 {
-  "updated_at": "2026-07-26T10:50:42.279571",
+  "updated_at": "2026-07-26T11:25:45.171228",
   "platforms": {
     "telegram": [
+      {
+        "id": "1042200555",
+        "name": "No name",
+        "type": "dm",
+        "thread_id": null
+      },
       {
         "id": "8149595687",
         "name": "🦞 AGI",
@@ -42,12 +48,6 @@
         "id": "-1003815535761",
         "name": "SADO",
         "type": "group",
-        "thread_id": null
-      },
-      {
-        "id": "1042200555",
-        "name": "No name",
-        "type": "dm",
         "thread_id": null
       },
       {
