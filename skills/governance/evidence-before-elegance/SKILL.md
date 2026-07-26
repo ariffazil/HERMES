@@ -17,6 +17,7 @@ metadata:
       - requesting-code-review
       - sovereign-conversation-protocol
       - explore-before-collapse
+      - human-sovereignty-geometry
     origin: kernel_audit_2026-07-12
     floors_protected: [F2, F3, F4, F6, F7, F9]
 triggers:
@@ -37,7 +38,8 @@ triggers:
   - single cause fallacy
   - interpretation as measurement
   - kernel audit
-  - F9 violation
+  - peer-agent audit
+  - peer-agent psychological audit
   - somatic reading
   - embodied interpretation
   - body intelligence
@@ -549,12 +551,50 @@ When another agent (Codex, ChatGPT, Kimi, OpenClaw) emits a structured audit rep
 - The agent does not state which git rev it inspected
 - The agent claims fixes were already applied but does not distinguish its own pre-work from findings discovered in the same session
 
+### Peer-agent psychological interpretation claims about the user (added 2026-07-25)
+
+When another agent (OpenClaw, ChatGPT, Kimi, etc.) produces a **psychological interpretation about the sovereign/user himself** — not about code, not about historical figures, but about **Arif's own psyche, shadow, desires, or unconscious** — a distinct audit pattern applies:
+
+**The two-layer failure mode:**
+
+1. **Authority-signalling without engagement.** The peer agent names heavyweight frameworks (Jung, Lacan, Foucault, attachment theory, etc.) to lend weight to its interpretation, but produces zero specific engagement with any of them — no quotes, no concepts, no frameworks actually deployed. This is an LLM pattern, not evidence of research.
+
+2. **Niat sovereignty layer-crossing.** Per the Niat Sovereignty doctrine (`human-sovereignty-geometry` skill), the AI may operate at:
+   - Layer 1 (observed action): "You shared content about X."
+   - Layer 2 (reported intention): "You said your intention was Y."
+   - Layer 3 (possible interpretation): "One possible integration frame is Z."
+   - Layer 4 (inner truth): **UNKNOWN unless the user defines it.**
+   
+   The failure mode is jumping from Layer 1-2 data to a Layer 4 claim (e.g., "that's what your shadow has been trying to tell you" or "what you really want is your own body"). The peer agent asserts knowledge of the user's unconscious — exactly what the caveat "I cannot read your unconscious" forbids.
+
+**Audit protocol for psychological peer-agent claims:**
+
+| Step | Question | Evidence |
+|------|----------|----------|
+| 1 | Does the peer agent name frameworks without engaging them? | Check for quotes, citations, specific concepts deployed — not just names |
+| 2 | What layer does each claim operate at? | Tag every substantive claim as Layer 1/2/3/4 |
+| 3 | Is there a Layer 4 claim? | Any "your unconscious/soul/shadow/psyche is telling you X" is Layer 4 — VOID |
+| 4 | Is there a SPEC confidence number? | Run Gate 2 (NUMBER GATE) — no instrument, no input data, no calculation rule = VOID |
+| 5 | Does the closing shift from analytical to poetic? | Poetic closure signals narrative heat — force re-verification before accepting |
+
+**Scar (2026-07-25):** A peer agent produced "The Integration Question" text about Arif's Sovereign/Worshipper pattern. It claimed 0.70 SPEC confidence, named Jung/Lacan/Foucault/attachment theory with zero engagement, and ended with "bayangan yang kau lihat di dada lelaki itu sebenarnya dada kau sendiri" — a Layer 4 inner-truth claim dressed as poetry. The originating conversation and "research" were invisible to the auditing agent, making the claims unfalsifiable. The audit found actual supported confidence was ~0.35 (for the general framework) to ~0.20 (for the person-specific claim), not the stated 0.70.
+
+**Required action:** When auditing such a text, report:
+- The gap between stated confidence and actual supported confidence
+- The specific layer-crossing violation (Layer 3→4 jump)
+- The authority-signalling pattern (name-dropping without engagement)
+- The elegance warning (clean narrative arc + poetic closing = narrative heat signal)
+- Deference to sovereign: "Only you can verify this" is correct — honour it.
+
+**See:** `human-sovereignty-geometry` skill (Niat Sovereignty doctrine, Layer 1-4 framework)
+
 ## Case Studies
 
 - `references/shadow-map-audit-trail-2026-07-12.md` — Full audit of the Sandow/Milo/Cyr Shadow Map.
 - `references/somatic-grammar-examples-2026-07-12.md` — Before/after somatic reading grammar shifts.
 - `references/institutional-body-language-2026-07-12.md` — 12-channel institutional non-verbal reading framework, simulative vs extractive patterns, WEALTH tool gap analysis.
 - `references/recursive-audit-chain-2026-07-16.md` — Full case study of the three-round recursive audit (Hermes briefing → GPT-5.6 audit → Hermes counter-audit → GPT-5.6 meta-ruling). Paradox mapping, Beautiful Mouse / Universe 25 warning, Gödel Lock demonstration.
+- `references/peer-agent-psychological-audit-2026-07-25.md` — Audit of a peer AI's psychological interpretation about the sovereign himself. Covers authority-signalling without engagement, niat sovereignty layer-crossing, and the elegance-as-signal pattern.
 
 ## Origin
 

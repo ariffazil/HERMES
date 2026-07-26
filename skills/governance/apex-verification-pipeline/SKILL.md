@@ -15,9 +15,29 @@ triggers:
   - "governance score"
   - "F8 GENIUS"
   - "apex G"
+  - "G-fold"
+  - "G fold"
+  - "universal vital sign"
+  - "pre-action gate"
+  - "G flow"
+  - "G flow doctrine"
+  - "how G propagates"
+  - "organ G source"
+  - "live G probe"
+  - "G stale stub"
 version: "1.0.0"
 sealed: "2026-07-13"
 sovereign: "ARIF (F13)"
+tags:
+  - G-fold
+  - APEX
+  - F8 GENIUS
+  - multimodal
+  - tri-witness
+  - constitutional
+related_skills:
+  - delta-omega-psi-multimodal-cognition
+  - tri-witness-specification
 ---
 
 # APEX Verification Pipeline
@@ -58,12 +78,15 @@ X = (successful_steps / total_steps) · consequence_stability
 - If ΔS_t > threshold → X = 0
 - If forge_evaluate fails → X = 0
 
-### Φ — Witness
+### Φ — Witness (Tri-Witness Gate)
 Φ = ∛(H · AI · Ext)
 - H = human witness (WELL vitality, dignity, somatic signals)
 - AI = internal witness (arifOS judge, floors, lineage)
-- Ext = external witness (AAA, civilizational mesh)
-- If any witness = 0 → Φ = 0
+- Ext = external witness (GEOX/WEALTH/AAA, civilizational mesh)
+- If any witness = 0 → Φ = 0 (any missing witness collapses the gate)
+- Minimum thresholds: H ≥ 0.42, AI ≥ 0.32, Ext ≥ 0.26
+- Full measurement laws per witness: see skill `tri-witness-specification`
+- GENESIS/056: Tri-Witness Specification — modality maps, conflict protocol, edge cases
 
 ## Verdict Matrix
 
@@ -96,6 +119,17 @@ X = (successful_steps / total_steps) · consequence_stability
 - `references/live-measurement-methodology.md` — **Live G-score computation from apex_metrics.db.** Governance-verdict classification (critical: failure codes include HOLD/SEAL/SABAR/VOID which are NOT errors), primitive derivation from `success/has_evidence/within_lease` columns, the P bottleneck diagnosis, trend bucketing, charting, and the two computation path warning (`apex_primitives.py` deprecated — counts governance verdicts as failures → G ≈ 0.10 instead of 0.71).
 - `references/apex-axiom-proofs-and-variant-mapping.md` — full axiom proofs, 4-variant mapping, A=Authority rationale, measurement laws, gate layer separation
 - `references/market-prediction-application.md` — APEX applied to market prediction: primitive→market mapping, CLARITY/CHAOS/STABLE states, verdict matrix, volume integration, real XAUUSD example
+- `references/g-fold-flow-doctrine.md` — **G-fold as the federation's universal vital sign.** Crystallised flow doctrine (2026-07-25): circulatory path (contributors → kernel → consumers), nine-signal translation, compass property, organ-level G access, delta table (current vs doctrine). If you need to understand G as a federation-wide signal rather than a single computation, start here.
+- `references/g-fold-organ-consumption-pattern.md` — **How any organ fetches and consumes live G from the kernel.** Implementation template, C-class threshold matrix, graceful degradation rules, verification checklist. WELL is the first production deployment (2026-07-26). If you need to wire G-fold into an organ's pre-action gate, start here.
+
+## Related Doctrine
+
+- **Skill `delta-omega-psi-multimodal-cognition`** — Δ·Ω·Ψ multimodal cognition doctrine: how multimodal perception becomes cognition through constitutional metabolism. Every modality → G primitive. GENESIS/054.
+- **Skill `tri-witness-specification`** — Full measurement laws for H/AI/Ext witnesses: modality maps, conflict resolution, edge cases, nine-signal integration. GENESIS/056.
+- **GENESIS/054**: `/root/arifOS/GENESIS/054_DELTA_OMEGA_PSI_MULTIMODAL_COGNITION.md`
+- **GENESIS/056**: `/root/arifOS/GENESIS/056_TRI_WITNESS_SPECIFICATION.md`
+
+- **Note:** The Jacobian Cognition Kernel (forged 2026-07-25 at `/root/A-FORGE/src/domain/cognition/`) computes G = (A·P·X·E²)·(1-h) from task execution state. This is the **deprecated V1 formula** (missing Φ, E² inflation). The two G values serve different planes (operational efficiency vs constitutional permission) but the formula gap should be tracked. See `governed-execution-substrate/references/jacobian-cognition-kernel-2026-07-25.md`.
 
 ## Deprecation
 

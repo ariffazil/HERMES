@@ -81,7 +81,7 @@ flame --json "What is the capital of Malaysia?"
 | `/root/A-FORGE/deploy/systemd/flame.service` | Systemd unit file |
 | `/root/A-FORGE/src/tools/flameClient.ts` | TypeScript client for A-FORGE MCP tools (forge_search, forge_diagnose, forge_summarize, forge_draft_plan) |
 | `/root/A-FORGE/flame/flame_client.py` | Python CLI client for A-FORGE — `flame_infer`, `flame_extract`, `flame_diagnose`, `flame_summarize`, `flame_draft_plan` |
-| `/root/scripts/cerebras_watchdog.py` | Cerebras credit watchdog — tests both models every 30 min, auto-demotes on 3x consecutive fail, alerts via cron |
+| `/root/.hermes/scripts/cerebras-watchdog.sh` | Cerebras credit watchdog wrapper — delegates to `flame_cerebras_watchdog.py`. Runs every 30 min via cron `Cerebras Watchdog`. |
 | `/etc/systemd/system/flame.service` | Active unit (enabled, running) |
 | `/etc/systemd/system/flame.service.d/chain.conf` | Override: `FLAME_CHAIN=RM0-TOOLS-FREELOOP` |
 | `/usr/local/bin/flame` | Symlink → flame_router.py |
@@ -403,7 +403,7 @@ When in doubt → governed cascade. FLAME is for throughput, not truth.
 - **Sea-LION model names**: Must use HF format (`aisingapore/Qwen-SEA-LION-v4-32B-IT`), not short aliases (`qwen-v4-32b`).
 
 - **L5 auto-demote is silent**: Models demoted after 3 consecutive fails are skipped in the call loop with a `logger.debug` message — no alert. The model stays inactive until re-probed (probe_all auto-reactivates on success). Check `flame_state.json` for `active: false` entries.\n
-- **Cerebras credit expires Aug 20 2026**: $5 prepaid. **Watchdog active** — `/root/scripts/cerebras_watchdog.py` runs every 30 min via cron job `Cerebras Watchdog` (no_agent, silent when healthy). Tests both models (gemma-4-31b + gpt-oss-120b). Auto-demotes on 3x consecutive fail (`--demote` flag). Alerts to Home channel when degraded. Auto-removes from config on 3x consecutive fail.\n
+- **Cerebras credit expires Aug 20 2026**: $5 prepaid. **Watchdog active** — `/root/.hermes/scripts/cerebras-watchdog.sh` runs every 30 min via cron job `Cerebras Watchdog` (no_agent, silent when healthy). Delegates to `flame_cerebras_watchdog.py`. Tests both models (gemma-4-31b + gpt-oss-120b). Auto-demotes on 3x consecutive fail (`--demote` flag). Alerts to Home channel when degraded. Auto-removes from config on 3x consecutive fail.\\n
 - **Mistral rate limits unknown**: Not yet load-tested. JSON mode (mistral-small-latest) works for single calls. If 429s appear, add backoff or demote.\n
 - **SambaNova not load-tested**: Claims 1K tok/s. Verify actual throughput before routing high-volume classify to it.\n
 - **SambaNova not load-tested**: Claims 1K tok/s. Verify actual throughput before routing high-volume classify to it. Key stored in vault.env as `SAMBANOVA_API_KEY` (added 2026-07-25 by sibling agent).\n\n- **Mistral key `5WCWowqnpKpSZWUYOSscefH2w4iLyQq1`**: Personal API key (arifbfazil@gmail.com). Free tier models: mistral-small-latest, open-mistral-nemo, ministral-8b-latest, codestral-2508. All 262K ctx except Nemo (131K). Codestral is code specialist.\n\n- **HuggingFace token** (`HF_TOKEN`): Stored in vault.env, used for 30K+ free inference models. Slow cold-start but infinite model variety. Good for specialized models FLAME can't reach otherwise.

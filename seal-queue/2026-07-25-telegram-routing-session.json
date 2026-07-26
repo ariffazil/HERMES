@@ -1,0 +1,29 @@
+{
+  "seal_type": "session",
+  "session_date": "2026-07-25",
+  "verdict": "SEAL",
+  "authority": "888_HOLD_ESCALATED",
+  "actor": "hermes-agent",
+  "sovereign": "Arif (F13 claimed, unverified via kernel)",
+  "summary": "Telegram Bot Routing Doctrine — federation-wide token rotation + config update",
+  "artifacts": [
+    "/root/docs/TELEGRAM_BOT_ROUTING_DOCTRINE.md",
+    "/root/.hermes/skills/federation/telegram-bot-routing-doctrine/SKILL.md"
+  ],
+  "changes": [
+    {"item": "3 bot tokens rotated", "locations": 10, "status": "done"},
+    {"item": "vault.env line 422 ARIFOS_ENV_WHITELIST fixed", "status": "done"},
+    {"item": "ASI💃 → 9 groups + 5 DMs, require_mention=false", "status": "done"},
+    {"item": "🦞AGI restricted to AAA only (allowFrom+groups)", "status": "done"},
+    {"item": "OpenClaw identity corrected (was arifOS_bot)", "status": "done"},
+    {"item": "AAA Guest Rule added to OpenClaw system prompt", "status": "done"},
+    {"item": "FORGE→AAA = HOLD (noise+security)", "status": "done"},
+    {"item": "OpenClaw audit: 3 false claims found+corrected", "status": "done"},
+    {"item": "Bot Routing Doctrine skill saved", "status": "done"}
+  ],
+  "pending": [
+    "arifOS channel activation — no decision yet",
+    "Kernel identity verification — actor_verified=false this session"
+  ],
+  "timestamp": "2026-07-25T18:20:00Z"
+}

@@ -15,7 +15,15 @@ triggers:
   - "pre-execution gate"
   - "SEAL envelope"
   - "arif_verify"
-  - "forge_shell"
+  - "GovernanceBridge"
+  - "G-fold"
+  - "APEX scalar"
+  - "forge.evaluate"
+  - "computeGate"
+  - "renderVerdict"
+  - "canonical G"
+  - "fetchCanonicalG"
+  - "4-layer forge gate"
   - "arif_kernel_intercept"
   - "constitutional gate"
   - "kernel intercept"
@@ -152,6 +160,83 @@ Hijau semua → 888-HOLD ditarik → arifFlow masuk Phase 3 production.
 
 ---
 
+## G-fold Integration (GovernanceBridge + forge.evaluate)
+
+This section covers wiring the APEX canonical G scalar from the arifOS kernel into A-FORGE's domain-layer gate infrastructure. The pattern establishes a **4-layer forge gate** that tries the kernel first and falls back gracefully.
+
+### Architecture
+
+| Layer | Source | Authority | Condition |
+|-------|--------|-----------|-----------|
+| 1 | Local A·P·E·X·Φ product (`computeGate`) | `local_estimate` | Always available |
+| 2 | Canonical kernel G from arifOS health endpoint | `arif_think.mode=apex` | arifOS reachable |
+| 3 | Fallback to local (kernel unreachable) | `local_estimate` | arifOS down |
+| 4 | Authority stamp on GateDecision | Derived from Layer choice | Always set |
+
+### Key Files
+
+| File | Role |
+|------|------|
+| `src/domain/governance/GovernanceBridge.ts` | Bridge to arifOS governance runtime. `fetchCanonicalG()` calls `GET {baseUrl}/health`, extracts `apex_scalars.G.value`. Returns `{G, source}` or `null` (fail-soft). |
+| `src/domain/forge/evaluate.ts` | Forge evaluation gate. `computeGate()` does local A·P·E·X·Φ. `computeGateWithKernelG()` wraps it with kernel override. `renderVerdict()` maps G + C_dark + Ω₀ to SEAL/REVIEW/VOID. |
+| `src/contracts/types.ts` | `GateDecision`, `EstimatorScores`, `CandidateSpec` — types shared between evaluate + GovernanceBridge. `g_authority?: "local_estimate" \| "arif_think.mode=apex"` distinguishes source. |
+
+### Implementation Pattern
+
+**1. `GovernanceBridge.fetchCanonicalG()`** in `src/domain/governance/GovernanceBridge.ts`:
+
+```typescript
+async fetchCanonicalG(): Promise<{ G: number; source: string } | null> {
+  // GET {baseUrl}/health, 2s timeout via AbortController (same pattern as _httpClassify)
+  // Navigate: body.apex_scalars.G.value
+  // Returns null on any failure — graceful degradation
+}
+```
+
+- Uses same `AbortController` + catch-return-null + Record<string,unknown> casting as existing methods
+- No additional A-FORGE dependencies — `G` is just `number`
+
+**2. `computeGateWithKernelG()`** in `src/domain/forge/evaluate.ts`:
+
+```typescript
+async function computeGateWithKernelG(
+  scores: Omit<EstimatorScores, "rationale" | "Omega">,
+  bridge: GovernanceBridge,
+): Promise<{ G; C_dark; g_authority; g_canonical_source }> {
+  // C_dark = A·(1-P)·(1-X) — always local (misalignment signal)
+  const canonical = await bridge.fetchCanonicalG();
+  if (canonical) {
+    // Layer 2 hit: use kernel G, stamp authority
+    return { G: canonical.G, C_dark, g_authority: "arif_think.mode=apex", ... };
+  }
+  // Layer 3 fallback: local A·P·E·X·Φ product
+  const G = scores.A * scores.P * scores.E * scores.X * scores.Phi;
+  return { G, C_dark, g_authority: "local_estimate", ... };
+}
+```
+
+**Key invariants:**
+- `computeGate()` (existing, synchronous) is unchanged — backward compatible
+- `computeGateWithKernelG()` is additive — callers opt in by passing a `GovernanceBridge`
+- C_dark always computed locally (it is a local misalignment signal, not a kernel scalar)
+- `GateDecision.g_authority` tells downstream exactly which layer fired
+
+### Adding to the 4-Layer Forge Pipeline
+
+The forge pipeline (`evaluateCandidate`, `evaluateDryRun`) uses `computeGate()` by default. To use kernel G:
+
+```typescript
+import { GovernanceBridge } from "../governance/GovernanceBridge.js";
+
+const bridge = new GovernanceBridge({ baseUrl: "http://localhost:8088" });
+const gateResult = await computeGateWithKernelG(scores, bridge);
+const { verdict, reason } = renderVerdict(gateResult.G, gateResult.C_dark, omega);
+```
+
+### Cross-reference
+
+- `references/g-fold-wiring-pattern.md` — Full implementation detail, code snippets, and edge cases.
+
 ## Core File Map
 
 | File | Role |
@@ -162,6 +247,9 @@ Hijau semua → 888-HOLD ditarik → arifFlow masuk Phase 3 production.
 | `src/interfaces/mcp/shell/godelLock.ts` | Path-scoping locks. `checkModificationIntent()` and `isGodelLocked()` — never bypass without explicit SOVEREIGN sign-off. |
 | `src/interfaces/mcp/core.ts` | MCP server registration, `callMCP` proxy, `forge_judge_proxy`, `arifOS_health`, `forge_init`. |
 | `src/infrastructure/tools/mcp-client.ts` | `callMCP()` — the one MCP call dispatcher used across A-FORGE. |
+| `src/domain/governance/GovernanceBridge.ts` | **Domain-layer bridge** to arifOS governance. `classifyScript()`, `classifyTool()`, and `fetchCanonicalG()`. |
+| `src/domain/forge/evaluate.ts` | **Domain-layer gate** — `evaluateCandidate()`, `computeGate()`, `computeGateWithKernelG()`, `renderVerdict()`. |
+| `src/contracts/types.ts` | Shared types for GateDecision, EstimatorScores, CandidateSpec, WitnessBundle, SealRecord, ScarRecord. |
 
 ---
 

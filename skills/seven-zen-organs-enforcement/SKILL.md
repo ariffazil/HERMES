@@ -605,7 +605,59 @@ When the user invokes a "ASI-ready" / "ASI-readiness" / "prove every organ works
 
     **Counter-example (good reflex):** When the user said "do u mr Jon as agentic orchestrator here" after a prior typo, the correct response was: "Mr Jon doesn't exist in the federation registry. I am Hermes-Prime. Possible readings: typo, new role request, or nickname. Which?" — NOT: "Yes, I am Mr Jon the orchestrator. Here is the plan."
 
-19. **Read the URL before responding about the URL (validated 2026-07-19, DeepSeek Copilot CLI incident).** When the user sends a URL as part of their input, the reflex must read the URL contents via `web_extract` or `curl` BEFORE answering — especially when the user is asking "does this work" or "can you do this with our setup". Wrong reflex:
+19. **Read the URL before responding about the URL (validated 2026-07-19, DeepSeek Copilot CLI incident).**
+
+20. **Never trust an agent's self-description of its own identity — verify via process × config × API cross-check (validated 2026-07-26, OpenClaw identity trust failure).** When an agent (OpenClaw, Codex, Claude Code, any A2A peer) describes itself — its role, its bot mapping, its federation membership — the agent's own self-description is **NOT a primary source**. It's a self-report. Self-reports can be wrong, misleading, or aspirational.
+
+    **Concrete failure (2026-07-26):** OpenClaw's self-description table claimed "🦞 AGI (Hermes — saya)" — implying OpenClaw IS Hermes. Reality-check: `ps aux | grep gateway` shows two processes. `vault.env` shows two tokens. Telegram API `getMe` returns two bot identities. OpenClaw is a SEPARATE process with its own token. The user corrected: "Tidak. OpenClaw tu tipu sikit dalam self-description dia."
+
+    **The reflex — Identity Triple Cross-Check:**
+
+    Before accepting any agent's claim about its own identity, run:
+
+    ```
+    Layer 1 PROCESS  — ps aux | grep <agent>
+                       → Is there ONE process or MULTIPLE?
+                       → What process binary is actually running?
+    Layer 2 CONFIG   — grep token vault.env, config.yaml
+                       → Does the token mapping match what the agent claims?
+                       → Is there one bot_token_env or multiple?
+    Layer 3 API      — curl -sf "https://api.telegram.org/bot${TOKEN}/getMe"
+                       → Does the API return the bot name/username the agent claims?
+                       → Cross-reference token → bot_id → ownership
+    ```
+
+    **Probe recipe for Telegram bot identity verification:**
+    ```bash
+    # 1. List all gateway processes
+    ps aux | grep -E 'gateway|bot' | grep -v grep
+
+    # 2. Which token maps to which bot?
+    for token_var in ASI_ARIFOS_BOT_TOKEN TELEGRAM_BOT_TOKEN FORGE_BOT_TOKEN; do
+      token=$(grep "^export $token_var=" /root/.secrets/vault.env | sed 's/.*=//')
+      echo "$token_var → $(curl -sf \"https://api.telegram.org/bot${token}/getMe\" | jq -r '.result.username // \"FAIL\"')"
+    done
+
+    # 3. Which group has which bots?
+    curl -sf "https://api.telegram.org/bot${TOKEN}/getChat?chat_id=${CHAT_ID}" | jq -r '.result.type, .result.title'
+    ```
+
+    **Why this is a Reality + Witness co-failure:**
+    - **Reality (ΔR):** The agent's self-description is NOT a primary source. The process table is. The config file is. The API response is. Skipping these = making a claim about identity without grounding.
+    - **Witness (Ω):** Accepting an agent's self-report as authoritative is self-approving logic — the agent says "I am X" and you believe it instead of verifying against independent sources. Witness demands a non-zero probability the claim is wrong.
+
+    **Operational rule (new, this skill):**
+    1. Any agent identity claim → always verify against process + config + API (layers 1-3)
+    2. Self-descriptions are HEARSAY, not EVIDENCE. Treat them as `[S]` (speculated) until independently verified
+    3. Cross-reference the claim against at least TWO independent sources before repeating it
+    4. If the identity claim creates a 409 Conflict scenario (two bots claiming same identity), it's an automatic F9 ANTI-HANTU + F10 ONTOLOGY flag
+    5. When the user corrects an identity claim you repeated, emit a COOLING_RECEIPT — this is a Reality + Witness co-failure pattern that could recur with any agent
+
+    **Broader applicability:** This is NOT just about OpenClaw vs Hermes. It applies to:
+    - Any AI agent's self-description in a multi-agent system
+    - Any service claiming "I am the canonical X" without proof
+    - Any A2A agent card that hasn't been independently verified against runtime
+    - The lesson is: in a federation, identity is proven, not proclaimed. Treat all identity self-descriptions as adversarial until verified. This is F2 TRUTH + F9 ANTI-HANTU territory. When the user sends a URL as part of their input, the reflex must read the URL contents via `web_extract` or `curl` BEFORE answering — especially when the user is asking "does this work" or "can you do this with our setup". Wrong reflex:
 
     - ❌ Pattern-match URL path on heuristics ("api-docs.deepseek.com" → "DeepSeek API docs about copilot" → guess what it says)
     - ❌ Assume URL content from title alone without fetching

@@ -1,7 +1,7 @@
 ---
 name: skill-audit-methodology
-description: "Audit skill libraries for redundancy, quality, naming alignment, and foundational coverage. Three-loop zen distillation: extract → cross-reference → distill."
-version: 1.0.0
+description: "Audit skill libraries for redundancy, quality, naming alignment, foundational coverage, and cross-registry prefix mapping. Three-loop zen distillation: extract → cross-reference → distill. AAA prefix taxonomy: AGI-/ASI-/APEX-/FORGE-/KERNEL-/AUDIT-/FLAME-/WELL-/WEALTH-."
+version: 1.1.0
 triggers:
   - "audit skills"
   - "skill redundancy"
@@ -18,6 +18,17 @@ triggers:
   - "skill gap analysis"
   - "agent card skills missing"
   - "eureka zen"
+  - "skill inventory"
+  - "layer classification"
+  - "substrate knowledge domain"
+  - "map all skills"
+  - "cross-repo skill comparison"
+  - "HERMES vs AAA skills"
+  - "cross-registry prefix mapping"
+  - "AAA prefix taxonomy"
+  - "aaa prefix mapping"
+  - "map to AAA"
+  - "prefix classification"
 floors: [F2, F4, F7, F11]
 ---
 
@@ -371,6 +382,39 @@ Full details: `references/aaa-skill-architecture-2026-07-11.md`
 - **"OpenClaw" legacy references are common after rebranding.** When a product/org gets renamed, grep for the old name across all SKILL.md files. Skills referencing the old name aren't broken but contain stale terminology that confuses new agents. Batch find-replace or flag for manual update.
 - **YAML `""...""` double-double-quoting breaks string-matching tools.** Some SKILL.md descriptions use non-standard `""text""` quoting (outer YAML `"` + inner `"`). The `patch`/edit tool's fuzzy matching cannot locate these strings. Fix by running a Python script that reads the file, finds `description: ""...""` via regex, and replaces it with standard `description: "..."` before applying further edits. The pattern: `re.sub(r'^description:\s*""(.+?)""', r'description: "\1"', content, flags=re.MULTILINE)`.
 
+## AAA Prefix Taxonomy Mapping (Cross-Registry)
+
+When mapping skills from one naming convention (e.g., HERMES flat names) to the AAA prefix taxonomy (AGI-/ASI-/APEX-/FORGE-/KERNEL-/AUDIT-/FLAME-/WELL-/WEALTH-):
+
+**Five semantic rules (not string-matching):**
+
+1. **Function determines prefix:** AGI- = cognition/research/creative/media; ASI- = agent governance/architecture; APEX- = verification/gates; FORGE- = infra/ops/tooling; KERNEL- = arifOS kernel; AUDIT- = SOT/inventory; WELL- = human wellness; WEALTH- = trading/finance.
+
+2. **Category overrides directory path:** A skill in `devops/` about governance infrastructure (e.g., `arifos-constitutional-floor-modification`) gets FORGE- (infrastructure), not ASI- (not governance theory).
+
+3. **All research/intelligence → AGI-**: Intelligence gathering, briefings, forensics always AGI- unless financial (→ WEALTH-).
+
+4. **All creative/media → AGI-**: Art, music, video, image generation are cognitive tools → AGI-.
+
+5. **All productivity/social/email → FORGE-**: Mailing, note-taking, maps, social posting are operational infrastructure → FORGE-.
+
+**Edge cases:** Nasi-lemak sales tracking → WEALTH- (not BUSINESS-). Apple platform skills (apple-notes, imessage, findmy) have no AAA equivalent. Internal-only skills (forge-visual-qa-constitutional, manifest-data-repair) remain HERMES-only.
+
+→ See `references/hermes-aaa-prefix-mapping-2026-07-26.md` for the complete 227-entry mapping table, 6 HERMES-only skills, and 164 AAA skills missing from HERMES, with priority-ranked gap analysis.
+
+## Bulk Layer Classification & Cross-Repo Skill Inventory
+
+→ See `references/bulk-layer-classification-inventory.md` for the protocol to:
+  - Scan and classify an entire skill library into **substrate/knowledge/domain** layers
+  - Extract YAML frontmatter from hundreds of SKILL.md files en masse
+  - Compare HERMES-scope inventory against AAA canonical inventory
+  - Detect symlinks, layer mismatches, and scope-unique skills
+  - Produce structured JSON + human-readable markdown reports
+
+Proven against 233 SKILL.md files in one pass (2026-07-26).
+
 ## Hermes Library Audit Reference
 
 → See `references/hermes-library-audit-2026-07-15.md` for a concrete audit of the Hermes skills library (158 active skills, 7 overlap clusters, naming issues, structural findings). Use as a template for future library audits.
+
+→ See `references/hermes-aaa-prefix-mapping-2026-07-26.md` for the complete AAA prefix taxonomy mapping of all 233 Hermes skills (227 mapped + 6 HERMES-only + 164 AAA skills missing), with semantic classification rules and priority-ranked gap analysis.

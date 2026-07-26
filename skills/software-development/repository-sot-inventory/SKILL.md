@@ -11,6 +11,10 @@ triggers:
   - before a significant refactor, migration, or cleanup to establish baseline truth
   - user asks to contrast/compare two agents, instruments, or forge tools across their full registry/config/card surface
   - user asks to find gaps or asymmetries between instruments in a multi-registry governance system
+  - user asks 'list all skills from all agent cards', 'skill declarations', 'skills inventory', 'which agents declare which skills'
+  - user asks 'find duplicate skills across agent cards', 'skills audit', 'what skills does agent X have'
+  - user asks 'find agents with no skills', 'missing skill declarations'
+  - you are inspecting a directory of agent-card.json files and need to extract and cross-reference skill IDs
 ---
 
 # Repository SOT Inventory — Multi-Surface Ground Truth
@@ -134,6 +138,144 @@ For repos with agent registrations (AAA, arifOS, federation), inspect:
 
 **Cross-reference:** Agent card versions vs registry versions vs what docs claim. Discrepancies are findings.
 
+### Phase 5b: Agent Card Skills Extraction (Nested Directories)
+
+When the task is specifically to extract, inventory, and cross-reference skill declarations from agent-card.json files across a multi-directory structure (e.g., `a2a-server/agent-cards/` with subdirectories per category), do NOT read cards one at a time. Batch-discover, batch-extract, then cross-reference in one pass.
+
+#### Step 1 — Discover All Agent Cards
+
+Agent cards live in multiple locations. Discover ALL of them simultaneously:
+
+```bash
+# Primary
+find a2a-server/agent-cards/ -name 'agent-card.json' -o -name '*.json' | sort
+
+# External canonical copies (may differ from a2a-server mirrored copies)
+find agents/_external/ -name 'agent-card.json' | sort
+```
+
+Note the directory pattern — cards are nested under category subdirectories (`identity/`, `organs/`, `roles/`, `extensions/`, `functions/`, `harnesses/`, `forge/`, `pillars/`), not flat.
+
+#### Step 2 — Parse the Skills Array (Handle Hybrid Format)
+
+**Critical: agent-card.json `skills[]` arrays may contain BOTH JSON objects AND bare strings.** This is the hybrid format:
+
+```json
+"skills": [
+  { "id": "skill-object-form", "name": "...", "description": "..." },
+  { "id": "another-object", "name": "...", "description": "..." },
+  "bare-string-skill-reference",          // ← bare string, no name/description
+  "another-bare-string-skill-reference"
+]
+```
+
+Both forms are valid skill declarations. Extract skill IDs from both:
+- For objects → read the `id` field
+- For bare strings → use the string itself as the skill ID
+
+Use Python for reliable extraction:
+```python
+def extract_skill_ids(skills):
+    ids = []
+    if not skills or not isinstance(skills, list):
+        return ids
+    for skill in skills:
+        if isinstance(skill, dict) and 'id' in skill:
+            ids.append(skill['id'])
+        elif isinstance(skill, str):
+            ids.append(skill)
+    return ids
+```
+
+#### Step 3 — Distinguish `skills[]` from `kernel_skills[]`
+
+The `skills[]` array is the agent's **declared capability surface** — what it claims it can do.
+
+The `kernel_skills[]` array (present on some cards, not all) is the **kernel dependency list** — skills the kernel requires the agent to load. These are a separate concern:
+
+```python
+declared = extract_skill_ids(data.get('skills', []))     # declared in card
+kernel   = data.get('kernel_skills', [])                  # kernel deps (separate list, often bare strings)
+```
+
+Some cards also have `metadata.kernel_deps` (a dict of kernel skill names the agent depends on) — this is a THIRD list, distinct from both `skills[]` and `kernel_skills[]`. Do not conflate them. Report each independently.
+
+#### Step 4 — Cross-Reference Across All Locations
+
+The same agent may have cards in multiple locations with DIFFERENT skill lists:
+
+| Location | Purpose | Typically |
+|----------|---------|-----------|
+| `a2a-server/agent-cards/harnesses/<name>.json` | CLI-harness-level card | Updated most recently |
+| `a2a-server/agent-cards/forge/fi-00N-<name>.json` | A2A forge registry card | May be older/different |
+| `agents/_external/<name>/agent-card.json` | Canonical external copy | Independent versioning |
+| `agents/<name>/agent-card.json` | Primary internal card | Usually most authoritative |
+
+**Always compare skill lists across copies.** A card in one location may have 21 skills while its counterpart in another location has 23 — that difference IS a finding.
+
+#### Step 5 — Data Quality Checks
+
+Run these checks on the complete extraction:
+
+| Check | How | Severity |
+|-------|-----|----------|
+| **Duplicate skill IDs** | Same `id` appears >1x in same card's skills array | 🟡 Flag — usually means object + bare string listing same ID |
+| **Empty skills array** | `"skills": []` | 🟢 Acceptable if card is a stub/persona |
+| **No skills key** | `"skills"` key missing entirely | 🟡 Rare — check `kernel_skills` and `metadata.kernel_deps` for actual capability |
+| **Deprecated card with skills** | Card has `status: deprecated` but non-empty skills | 🟡 Track but flag for audit trace |
+| **Hybrid-format card count** | Percentage of cards using mixed objects + bare strings | 🟢 Informational — design pattern, not error |
+| **Same agent in multiple locations with different skill counts** | Compare each agent across all discovered locations | 🟡 Needs reconciliation |
+
+#### Step 6 — Produce Structured Report
+
+Write the report to a JSON file in the scanned directory:
+
+```json
+{
+  "report_title": "Agent Card Skills Inventory",
+  "scan_timestamp": "YYYY-MM-DD",
+  "source_directories": [...],
+  "total_cards_scanned": N,
+  "unique_skill_ids_found": N,
+  "agents_with_no_skills": [],
+  "agents": {
+    "agent-id": {
+      "card_path": "relative/path.json",
+      "category": "identity|organs|roles|extensions|functions|harnesses|forge|pillars",
+      "name": "Agent Name",
+      "status": "active|deprecated",
+      "skill_count": N,
+      "skill_ids": ["id1", "id2", ...]
+    },
+    ...
+  },
+  "data_quality_notes": [
+    "N cards have duplicate skill IDs in their skills array",
+    "Agent X exists in both forge/ and harnesses/ with DIFFERENT skill counts",
+    "Non-mirrored external card: agent Y exists only in _external/",
+    "N deprecated cards retained for audit trace"
+  ]
+}
+```
+
+#### Step 7 — Identify Next Actions from the Report
+
+After producing the skills inventory:
+
+- **Agents with zero skills** — verify this is intentional (stub/persona) vs a gap
+- **Most-common skills across the federation** — identify the kernel spine (e.g. `KERNEL-reality-skills`, `RSI-recursive-improvement` appearing on 20+ agents)
+- **Singleton skills** — skills declared by exactly one agent; these are either unique capabilities or audit gaps
+- **Deprecated cards still declaring skills** — verify skills have been migrated to the absorbing agent
+- **Card location asymmetry** — if the same agent has different skill lists in forge/ vs harnesses/ vs _external/, flag for reconciliation
+
+#### Pitfalls
+
+- **The agent `id` field may be in `data.id` or `data.agentId`** — different schema versions use different keys. Check both: `data.get('id') or data.get('agentId')`.
+- **Some cards use `"skills": [...]` while others use `"skills_binding": [...]`** — the skills_binding array is a separate concept (a list of skill filenames/hints, not structured skill objects). Do not conflate them.
+- **Cards in `_external/` may NOT be mirrored in `a2a-server/agent-cards/`.** The canonical card may exist only in the external directory. Always check both trees.
+- **A duplicate `opencode` card exists in both `forge/` (fi-001-opencode.json) and `harnesses/` (opencode.json) with DIFFERENT skill content.** The forge version (FI-entry level) has 23 skills including advanced items like `atlas333-cognitive-geometry`; the harness version (CLI level) has 21 skills. This is intentional — different registry surfaces carry different scope. **Do NOT flag as a pure data bug** unless the same agent's cards are expected to be synchronized.
+- **Bonus: some cards list a bare string skill ID both as an object entry AND as a bare string in the same array** (e.g., `KERNEL-sovereign-recognize` appearing twice). This is a known data quality pattern in the arifOS federation — the bare strings are vestigial from the hybrid format migration. Report the count but don't alarm.
+
 ### Phase 6: Federation Topology Extraction
 
 Extract from port maps and gateway configs:
@@ -237,6 +379,7 @@ When producing a structured report, use this template:
 - Registry files and versions
 - Retired/subsumed agents and reassignments
 - Registry drift (doc vs machine registry)
+- **Skills inventory** — total unique skills, per-agent counts, most-common skills (kernel spine), singleton skills, data quality issues (duplicate IDs, hybrid-format cards, deprecated cards with skills)
 
 ## 5. Cockpit/UI Display Code
 - Entry points, sub-panels, support modules
@@ -343,6 +486,7 @@ When comparing **two forge instruments** (or agents) across a federated governan
 - **CIV-33 directories may not exist under agent-cards/.** CIV-33 orchestration placed domain profiles under `domain-atlas/`, not `agent-cards/`. The CIV-333 directory nesting scheme (identity/functions/extensions/harnesses/organs/pillars) exists at the agent-cards level, but there are no CIV-33-named subdirectories. Search for CIV-33 content under `domain-atlas/` instead.
 
 See also: `references/fi-001-002-008-three-way-2026-07-18.md` for a complete three-way comparison with all specific gap findings.
+See also: `references/agent-card-skills-extraction-2026-07-26.md` for a worked example of scanning 33 agent cards, handling hybrid-format skill arrays, and producing a skills inventory report.
 
 ## Verification
 

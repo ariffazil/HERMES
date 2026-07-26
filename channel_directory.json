@@ -1,12 +1,24 @@
 {
-  "updated_at": "2026-07-25T14:37:38.361631",
+  "updated_at": "2026-07-26T10:10:40.050528",
   "platforms": {
     "telegram": [
       {
-        "id": "267378578",
-        "name": "ARIF",
+        "id": "8149595687",
+        "name": "🦞 AGI",
         "type": "dm",
         "thread_id": null
+      },
+      {
+        "id": "8727562763",
+        "name": "777 FORGE 🔥🧠⚒️🌎💎",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:1",
+        "name": "AAA / topic 1",
+        "type": "group",
+        "thread_id": "1"
       },
       {
         "id": "8410138119",
@@ -15,8 +27,8 @@
         "thread_id": null
       },
       {
-        "id": "8149595687",
-        "name": "🦞 AGI",
+        "id": "267378578",
+        "name": "ARIF",
         "type": "dm",
         "thread_id": null
       },
@@ -35,18 +47,6 @@
       {
         "id": "1042200555",
         "name": "No name",
-        "type": "dm",
-        "thread_id": null
-      },
-      {
-        "id": "-1003753855708:1",
-        "name": "AAA / topic 1",
-        "type": "group",
-        "thread_id": "1"
-      },
-      {
-        "id": "8727562763",
-        "name": "777 FORGE 🔥🧠⚒️🌎💎",
         "type": "dm",
         "thread_id": null
       },

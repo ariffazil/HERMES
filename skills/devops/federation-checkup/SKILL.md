@@ -21,6 +21,7 @@ triggers:
   - "identity diagnostics"
   - "federation repair"
   - "build identity drift"
+  - "padu"
   - "PulseMCP"
   - "pulsemcp"
   - "ecosystem listing"
@@ -36,6 +37,9 @@ triggers:
 ---
 
 # Federation Checkup — Dual-Probe Protocol
+
+> **Quick version?** Type `/padu` in Telegram — one command, 6 layers (Organ, Nadi, Segel, Tenaga, Aliran, Perhatian), 3 seconds.
+> **Full deep check?** Keep reading below.
 
 > Always run both probes. Reconcile before reporting. Surface by flag hierarchy.
 
@@ -1257,6 +1261,32 @@ From this session's credential trace:
 
 **Pitfall — Multi-Turn Heartbeat Loop (proven 2026-07-23):**
 OpenClaw sends heartbeats as user messages. Making a tool call + analysis response feeds OpenClaw's input queue → sends another heartbeat → infinite loop. Break by issuing the exact heartbeat response with no extra output, which OpenClaw's heartbeat handler discards as expected.
+
+## Agent Self-Report Audit Pattern
+
+When auditing any agent's self-description (including OpenClaw/AGI), **verify ALL numeric claims against live sources.** Agents frequently hallucinate numerical specifics — numbers that sound plausible but don't match reality.
+
+**Proven 2026-07-26 — OpenClaw audit found 3 false claims:**
+
+| Claim | Agent said | Live probe | Error |
+|-------|-----------|------------|-------|
+| WELL biometric stale | "2056h (~85 days)" | `freshness_band: FRESH` (0.2h), never received input | Hallucinated figure |
+| a-forge-mcp restarts | "9 restarts" | Only 2 start events (journalctl) | Inflated 7x |
+| Own boot time | "Restored 01:05 UTC" | Booted 18:08 UTC | Off by 17h |
+
+**Correction — verify agent numeric claims:**
+```bash
+# Restart count
+journalctl -u <SERVICE> --no-pager | grep -c 'Started'
+
+# Process start time
+ps -o lstart= -p <PID>
+
+# Organ freshness
+curl -sf http://127.0.0.1:<PORT>/health | grep -E 'freshness|state_age|well_signal'
+```
+
+**Never trust self-reported numbers** without live verification. F2 TRUTH concern — agents should tag estimates as `ESTIMATE`.
 
 ## Pitfalls
 

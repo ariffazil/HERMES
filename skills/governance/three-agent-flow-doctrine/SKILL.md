@@ -153,6 +153,38 @@ Organ tak hidup sorang-sorang.
 
 ---
 
+## FQ Calculation Formula
+
+FQ = Flow Quotient — nisbah execution yang di-verify dengan yang tidak.
+
+**Formula:**
+```
+FQ = max(0.0, (verified_actions + 1) / (executed_actions + 1))
+```
+
+| Pembolehubah | Sumber | Penerangan |
+|---|---|---|
+| `verified_actions` | VAULT999 receipt_count | Setiap SEAL = verified success |
+| `executed_actions` | arifFlow lane completions | Setiap lane COMPLETED = execution |
+
+**Skala:**
+| FQ Range | Status | Tindakan |
+|----------|--------|----------|
+| > 1.0 | BALANCED | Forge maksimum — execute dicecah verify |
+| 0.5 – 1.0 | DRIFT | Kurangkan execute, tambah verify |
+| < 0.5 | HOLD | HENTI semua execute. Sahaja verify dan recover |
+| trending up from < 0.5 | RECOVERING | Verify dulu sebelum execute |
+
+**Siapa tulis:** OpenClaw — baca VAULT999 receipt_count + arifFlow lane completions dari probe sedia ada, kira FQ, tulis ke state file.
+
+**Siapa baca:** Hermes — baca dari state file sebelum output.
+OpenCode — baca dari state file sebelum execute.
+
+**Siapa enforce:** Tiada (v1). FQ adalah advisory.
+v2 cadangan: FQ jadi input ke F1-F13 via arif_judge.
+
+---
+
 ## FQ State File Contract
 
 **Path:** `/root/AAA/state/flow_state.json`

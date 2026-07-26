@@ -41,17 +41,34 @@ Model/provider are stored as **simple string fields** directly on each job dict 
 ```json
 {
   "id": "abc123...",
+  "name": "my-job",
   "model": "deepseek-v4-flash",
   "provider": "deepseek",
   "provider_snapshot": null,
   "model_snapshot": null,
+  "base_url": null,
+  "context_from": null,
+  "skills": [],
+  "skill": null,
   ...
 }
 ```
 
-- Pinned jobs: model/provider have non-empty string values; snapshots are null
-- Unpinned jobs: model/provider are empty/null; snapshots capture the global config at creation time
-- `no_agent: true` jobs: fields are always empty/irrelevant
+| Field | Type | Meaning |
+|-------|------|---------|
+| `model` | string\|null | Explicit model pin. `null` = inherit from global config. |
+| `provider` | string\|null | Explicit provider pin. `null` = inherit from global config. |
+| `model_snapshot` | string\|null | Global model at job creation (for unpinned jobs). `null` for pinned or no_agent jobs. |
+| `provider_snapshot` | string\|null | Global provider at job creation (for unpinned jobs). `null` for pinned or no_agent jobs. |
+| `base_url` | string\|null | Custom API base URL override. `null` = use global default for the provider. |
+| `context_from` | string\|null | References context from another session. `null` = no inheritance. |
+| `skills` | string[] | LLM skills loaded for agent-driven jobs. Empty for no_agent or skill-less jobs. |
+| `skill` | string\|null | Legacy single-skill field. Usually `null` in modern jobs (use `skills[]`). |
+| `no_agent` | boolean | When `true`, the job runs a script without LLM inference. Immune to model drift. |
+
+- Pinned jobs: `model`/`provider` have non-empty string values; snapshots are `null`
+- Unpinned jobs: `model`/`provider` are `null`; snapshots capture global config at creation
+- `no_agent: true` jobs: all model/provider fields are always ignored
 
 ## Fix Patterns
 

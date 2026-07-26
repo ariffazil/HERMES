@@ -137,18 +137,21 @@ Try sources in this order. **Never stop at the first failure.**
 ```
 Tier 1: web_search (fastest, broadest — may fail on 402/payment)
   ↓ fail
-Tier 2: web_extract on news URLs (may fail on paywalls)
+Tier 2: web_extract on news URLs (may fail on paywalls or SearXNG limitation)
   ↓ fail
-Tier 3: browser_navigate → browser_snapshot (always works, slower)
+Tier 3: Hound MCP smart_fetch (handles URL extraction reliably via HTTP/stealthy browser)
+  ↓ fail
+Tier 4: browser_navigate → browser_snapshot (always works, slower)
   ↓ need more detail
-Tier 4: browser_scroll → browser_snapshot(full=true) for deeper content
+Tier 5: browser_scroll → browser_snapshot(full=true) for deeper content
 ```
 
 **Critical pitfalls:**
-- `web_search` via Tavily returns 402 when credits exhausted → fall back immediately to browser
+- `web_search` via Tavily returns 402 when credits exhausted → fall back immediately to Hound MCP or browser
+- **SearXNG backends cannot extract URLs (2026-07-25):** Unlike Tavily, SearXNG is search-only. When `web_extract` returns `"SearXNG is a search-only backend and cannot extract URL content"` this is a backend capability limit, not an outage. Do NOT retry web_extract — switch to Hound MCP `smart_fetch` which handles full URL extraction via HTTP/stealthy browser. Hound is faster than browser_navigate for this use case. Verified Jul 2026.
 - `web_extract` fails on paywalled sites (Malaysiakini, WSJ, Bloomberg) → use browser instead
 - **`web_search` AND `web_extract` both return HTTP 432 simultaneously** → Tavily backend is fully down (not just one source). Do NOT keep retrying — switch immediately to Hound MCP smart_search or browser-based extraction. Verified Jul 2026. The 432 vs 402 distinction matters: 432 = backend-wide outage, 402 = per-call quota.
-- **Search fallback hierarchy (2026-07-22):** When Tavily is down: 1) Hound MCP `smart_search` (10 keyless backends, parallel, always available), 2) `smart_fetch` on known news URLs, 3) `browser_navigate` to news homepages. Hound is significantly faster than browser — make it the default Tier 2.
+- **Search fallback hierarchy (2026-07-22):** Hound MCP is the default Tier 2 — faster than browser, always available. Use `smart_search` for search (10 keyless backends), `smart_fetch` for URL extraction.
 - **WEALTH MCP may be unreachable (2026-07-22):** `capital_market` returns SESSION_REQUIRED or becomes fully unreachable after consecutive failures. Fall back to Hound MCP + browser for market data. Do NOT block on WEALTH availability — briefings ship with DER/UNK labels instead.
 - **Market data staleness (2026-07-22):** Forbes Advisor gold price page may return Internet Archive cached data (e.g., Jul 4 gold on Jul 22 — 18 days stale). Always corroborate with a second live source (FXStreet, USA Today, or Kitco browser snapshot). Investing.com is paywalled — Hound snippet prices are DER, not OBS. XE.com via browser returns live mid-market USD/MYR with UTC timestamp in visible snapshot text — preferred for currency.
 - Category/tag pages often 404 (e.g., `/tags/economy`, `/category/nation/`) → try homepage then scroll
@@ -257,7 +260,7 @@ Pattern:
 5. **Prediction/forward look** — what this means for the next milestone
 
 **Pitfall:** Restating the results in different words. The user wants the PATTERN
-underneath the numbers — what connects, what surprised, what it predicts.
+underneath the numbers — what connects, what surprised, what predicts.
 
 **Pitfall:** Being wishy-washy. If the data shows a supermajority, say "BN
 dominates" — don't hedge with "it remains to be seen." Label confidence levels

@@ -3,11 +3,11 @@ name: arif-daily-sensorium
 description: >
   Produce a current, evidence-disciplined daily world and Malaysia briefing
   for Arif Fazil, architect of arifOS. Self-contained workflow — does not
-  assume other skills, organs, or tools exist unless discovered at runtime.
-  Search current sources, verify dates and numbers, label each conclusion
-  OBS/DER/INT/SPEC/UNK, expose unresolved conflicts, and tailor consequences
-  to Malaysia, petroleum geoscience, capital systems, PETRONAS, arifOS, MCP,
-  and sovereign AI governance.
+  assume other skills, files, organs, connectors, or tools exist merely
+  because they are named. Search current sources, verify dates and numbers,
+  label each conclusion OBS/DER/INT/SPEC/UNK, expose unresolved conflicts,
+  and tailor consequences to Malaysia, petroleum geoscience, capital systems,
+  PETRONAS, arifOS, MCP, and sovereign AI governance.
 triggers:
   - "world sensorium"
   - "daily briefing"
@@ -33,8 +33,8 @@ exists merely because it is named.
 
 1. Search the requested time window. Default: previous 24h in `Asia/Kuala_Lumpur`.
 2. Identify the few changes that alter the world model. Do not repeat background.
-3. Verify every load-bearing factual claim before analysis. Read [evidence-protocol.md](references/evidence-protocol.md).
-4. Prefer primary and authoritative sources. Apply [source-hierarchy.md](references/source-hierarchy.md).
+3. Verify every load-bearing factual claim before analysis. Read `references/evidence-protocol.md`.
+4. Prefer primary and authoritative sources.
 5. Label claims only as `OBS`, `DER`, `INT`, `SPEC`, or `UNK`.
 6. **Never convert "not found" into "false". Never convert a search snippet into "confirmed".**
 7. Separate event date, announcement date, publication date, effective date, and market timestamp.
@@ -73,9 +73,13 @@ Search broadly. For each candidate record: event; event date and time; source
 publication date; geography; affected systems; first known primary source;
 corroborating source; status (announced/scheduled/alleged/ongoing/completed/disputed).
 
+Launch web_search across all domains simultaneously. Review results, then
+smart_fetch only the most promising URLs. Serial search→extract→search loops
+are 3-4× slower. Verified Jul 2026.
+
 ### 3. Verify Load-Bearing Claims
 
-Apply [evidence-protocol.md](references/evidence-protocol.md). Prioritize:
+Apply `references/evidence-protocol.md`. Prioritize:
 - declarations of war, ceasefires, attacks, deaths, blockades, sanctions, elections, dissolutions, appointments, policy changes;
 - prices, rates, GDP, debt, production, trade, market share, model pricing;
 - claims that reverse or materially change yesterday's assessment;
@@ -93,18 +97,24 @@ Do not label estimates or projections as `OBS` merely because a publication repo
 
 ### 5. Apply Domain Lenses
 
-Read [domain-lenses.md](references/domain-lenses.md). Translate events through
-physical, capital, institutional, and governance consequences.
+Apply domain lenses: translate events through physical, capital, institutional, and governance consequences.
+
+- **Physical lens:** How does this affect energy supply, shipping routes, commodity flows?
+- **Capital lens:** How does this affect prices, costs, margins, subsidy burden, portfolio risk?
+- **Institutional lens:** How does this affect PETRONAS, BNM, government fiscal position, subsidy policy?
+- **Governance lens:** How does this affect sovereign AI, MCP protocol evolution, arifOS architecture?
 
 ### 6. Inspect Available Tools
-
-Read [ecosystem-routing.md](references/ecosystem-routing.md).
 
 - Use only tools visible in the current runtime.
 - Verify tool names before invoking them.
 - Treat specialist tools as analytical instruments, not automatic authorities.
 - Continue with public evidence when an optional tool is absent.
 - Keep infrastructure diagnosis separate from content accuracy.
+- When web_extract fails on SearXNG backends (search-only, cannot extract URLs),
+  fall back to Hound MCP smart_fetch. Verified Jul 2026.
+- When WEALTH MCP is unreachable, fall back to Hound MCP + browser for market data.
+  Verified Jul 2026.
 
 ### 7. Rank by Consequence
 
@@ -117,7 +127,7 @@ Discard duplicates, recycled commentary, personality gossip, low-consequence nov
 
 ### 8. Write the Briefing
 
-Use [briefing-template.md](references/briefing-template.md). ~5 minutes readable.
+Use `references/briefing-template.md`. ~5 minutes readable.
 Telegram-optimized (~4000 char). If too long: cut AI section first, then watch horizon.
 
 ### 9. Release Gate
@@ -171,6 +181,10 @@ food logistics, electricity pass-through, and ringgit behaviour are.
 - **Do NOT pad with background.** Arif knows when the Ukraine war started. Report what CHANGED.
 - **Do NOT use arifOS vocabulary merely for theatrical authority.** (Beautiful One scar, 2026-07-16)
 - **For Malaysian politics, search BM.** SPR, gazettes, Bernama, official state notices — not just English outlets.
+- **web_extract fails on SearXNG backends.** SearXNG is search-only; it cannot extract URL content. When `"SearXNG is a search-only backend"` is returned, switch to Hound MCP `smart_fetch`. Do not retry web_extract. Verified Jul 2026.
+- **Parallel-search first, then extract.** Launch `web_search` across all 6 domains simultaneously, review results, then `smart_fetch` only promising URLs. Serial search→extract→search loops are 3-4× slower. Verified Jul 2026.
+- **Watch for the absence of expected events in active conflicts.** In war monitoring, "no strikes for 13 consecutive nights" is itself a reportable OBS signal, not a non-event. Always check whether a pattern was broken. Verified Jul 2026 (US-Iran pause).
+- **Corroborate oil prices from ≥2 independent live sources.** CNBC, crudeoilprices.today, or Trading Economics — pick two. Forbes Advisor may serve cached data (observed 18 days stale Jul 2026). Cross-check timestamps. Verified Jul 2026.
 
 ## Trigger Examples
 

@@ -76,7 +76,36 @@
 
 ---
 
-## Custom Cron-Backed Automations (to wire)
+## Custom Commands (Cognitive + Federation)
+
+| Command | Zen | What It Does |
+|---------|-----|-------------|
+| `/000_salam` | AWAKEN | Reset. Fresh session. Rebind identity. |
+| `/111_tengok` | PERCEIVE | Deep perception. Probe reality. |
+| `/333_forge` | FORGE | Execute via A-FORGE with gate check. Replaces `/333_jalan`. |
+| `/555_betul` | DOUBT | Red-team. Stress-test assumptions. |
+| `/666_rasa` | FEEL | Vitality check. Human state. Energy. |
+| `/777_faham` | UNDERSTAND | Synthesize. See patterns. Insight. |
+| `/888_adil` | JUDGMENT | Constitutional verdict. SEAL/HOLD/SABAR. |
+| `/999_ingat` | REMEMBER | Seal to VAULT999. Never forget. |
+| `/ask_curious` | EXPLORE | Open exploration. No agenda. |
+| `/tell_share` | TEACH | Explain. Share knowledge. |
+| `/dream_what` | CREATE | Creative synthesis. Connect ideas. |
+| `/feel_state` | VITALITY | System + human state check. |
+| `/forget` | RELEASE | Let go. Clear memory/noise. Not VAULT999. |
+| `/learn_today` | CAPTURE | Store insight. Log learning. |
+| `/see_world` | OBSERVE | What's happening externally. |
+| `/rest_now` | PAUSE | Stop acting. Reflect. |
+| `/grow_better` | GROW | Self-improvement. What changed. |
+| `/flow` | BE | Presence. Stop executing. Just be aware. |
+| `/brief_now` | INTEL | Instant federation brief. |
+| `/seal_it` | SEAL | Seal current insight to VAULT999. |
+| `/think_deep` | DEEP REASON | Extended analysis. Structured thought. |
+| `/forge` | BUILD | Create, construct. A-FORGE context. |
+| `/padu` | ZEN FED | All organs. Vitality. Seals. Flow. One probe. |
+
+> **Zen spine:** 000 · 111 · 333 · 555 · 666 · 777 · 888 · 999 (222 and 444 dropped 2026-07-26 per Arif)
+> **Old aliases:** `/333_jalan` → `/333_forge`, `/flow_alive` kept for backward compat
 
 | Automation | Schedule | Purpose |
 |------------|----------|---------|

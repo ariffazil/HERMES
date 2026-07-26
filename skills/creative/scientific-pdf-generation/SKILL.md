@@ -34,6 +34,15 @@ triggers:
   - "full Isaacson biography"
   - "full biography of [person]"
   - "map their shadow and scars"
+  - "narrative dossier"
+  - "storytelling dossier"
+  - "bedtime story pdf"
+  - "reality dream engine"
+  - "multiple case studies"
+  - "storyline pdf"
+  - "story arc dossier"
+  - "forge as architecture"
+  - "institutional betrayal dossier"
 tags:
   - pdf
   - reportlab
@@ -410,6 +419,16 @@ For evidence-heavy competitive comparison PDFs ("Why X beats Y"): exploit tables
 **Proven:** 2026-07-14 — Abang Sado × AI trading agent pitch deck (6 pages, landscape A4, dark/gold theme, card layouts, zigzag flow diagram, before/after lifestyle panels). 12KB output, all pages visually verified.
 **Proven:** 2026-07-22 — "Why Kernel Beats Sandbox" (7 pages, dark/indigo-cyan, Pillar Security evidence, contrast tables, stat pairs, exploit tables). 13.8KB.
 
+### Mode B — Narrative Storytelling Dossier (sub-pattern)
+
+For multi-chapter narrative dossiers that bind multiple case studies with a single framing device — a "bedtime story" or "reality dream engine" format. Each chapter follows the arc: BETRAYAL → RECOGNITION → FORGING → ARCHITECTURE. Rendered as dark noir book (serif body, #0a0a0a background, #c9952b gold). Pure text + tables; no matplotlib needed.
+
+Key components: cover page with radial gradient vignettes, chapter-start page (centered number + title + gold divider), callout boxes (gold/red/teal narrative variants), forging-moment box (green-bordered, marks the transmutation point), verdict box (FORGED FROM → BECAME), epistemic footer per section, TOC, reference section with hanging indent entries.
+
+→ Full CSS + HTML pattern library: `references/narrative-storytelling-dossier.md`
+
+**Proven:** 2026-07-25 — THE FORGE: When Institutional Betrayal Becomes Architecture (33 pages, 296 KB, 8 chapters + frame + epilogue + references, serif noir aesthetic, rendered ~2 seconds via weasyprint HTML).
+
 ## Mode D: Trading Signal (Candlestick Chart)
 
 **Dark background, candlestick-first, OANDA-style.** For daily trading signals, forex/commodity charts, technical analysis PDFs.
@@ -666,6 +685,7 @@ After generating:
 - `references/psm-dossier-workflow.md` — rapid Petroleum System Modeling dossier generation: 5-stage pipeline (research→figures→PDF), 6 standard figures, epistemic discipline, competitive framing vs TemisFlow/PetroMod. Proven 2026-07-22 (2 dossiers, 12 figures, 0 failures).
 - `references/mode-b-marketing-deck.md` — Mode B sub-pattern for marketing pitch decks: direct canvas construction, card layouts with numbered circles, flow diagrams with color-coded boxes, before/after comparison panels, landscape A4 orientation, pdftoppm visual verification. Proven 2026-07-14.
 - `references/dark-theme-css-components.md` — Reusable HTML+CSS component library for Mode B intelligence dossiers (weasyprint): dragon risk cards (.dragon-grid), severity-coded callouts (warning/info/intel/gold), status strips (.strip), verdict boxes (.verdict), epistemic badges (.badge). No matplotlib needed. Proven 2026-07-22 Kelp Deep-1 dossier (13 pages, 163 KB).
+- `references/narrative-storytelling-dossier.md` — Mode B sub-pattern for narrative storytelling dossiers (weasyprint): noir book aesthetic (#0a0a0a, Palatino/Georgia serif, #c9952b gold), cover page with radial gradients, chapter-start pages, forging-moment boxes, verdict boxes (FORGED FROM → BECAME), epistemic footers, narrative callout variants (gold/red/teal). Pure text + tables. Proven 2026-07-25: THE FORGE (33 pages, 296 KB).
 - `references/geological-artifact-figures.md` — reusable matplotlib patterns for **geological deliverable figures**: well correlation panels, 5-track petrophysical log panels, structural cross-sections with trap analysis, well penetration summaries, play fairway thickness maps. Proven 2026-07-09, MBR 2026 GEOX bid proposal.
 
 - `references/business-receipt-template.md` — Quick weasyprint HTML template for vendor claim receipts / business invoices. Proven 2026-07-23. Navy/gold 7-column table (Vendor|Item|Hantar|Baki|Sold|Harga|Jualan). Title convention: "CLAIM VENDOR — V005". Render: `weasyprint file.html file.pdf`. Always include TOTAL row.

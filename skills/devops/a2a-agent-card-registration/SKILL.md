@@ -14,6 +14,12 @@ triggers:
   - "A2A mesh"
   - "A2A protocol"
   - "agent not showing on discover"
+  - "agent shows 0 skills"
+  - "FI stub"
+  - "duplicate agent id"
+  - "a2a-server missing card"
+  - "organ card 0 skills"
+  - "secondary scan path"
   - "custom fields not visible"
   - "agent-card.json"
   - "gateway dropped my payload"
@@ -132,6 +138,67 @@ Per the official A2A v1.0 spec (`a2a-protocol.org/latest/specification/`), every
   },
   "security": [{"bearer": []}]
 }
+```
+
+### principal_agent + warga_binding (Constitutional Identity — Mandatory)
+
+As of 2026-07-25, every agent card in the federation MUST carry TWO mandatory constitutional identity blocks alongside the A2A-spec fields:
+
+```json
+{
+  "principal_agent": {
+    "type": "agent",
+    "category": "Forge instrument — governed by 333-AGI (Delta MIND)",
+    "principle_origin": "Forged by arifOS under F13 SOVEREIGN directive"
+  },
+  "warga_binding": {
+    "citizenship": "warga-aaa",
+    "lane": "333-AGI",
+    "intelligence_tier": "AGI",
+    "authority_level": "engineer",
+    "citizenship_forged": "2026-05-17"
+  }
+}
+```
+
+**principal_agent fields:**
+| Field | Values | Description |
+|-------|--------|-------------|
+| `type` | `"agent"`, `"architect"`, `"human"`, `"institution"`, `"earth"`, `"void"` | Principal class. `agent` for runtime agents, `architect` for constitutional identities (333-AGI, 555-ASI, 888-APEX) |
+| `category` | short phrase | What governs this agent (e.g. `"Forge instrument — governed by 333-AGI (Delta MIND)"`) |
+| `principle_origin` | constant string | Always `"Forged by arifOS under F13 SOVEREIGN directive"` |
+
+**warga_binding fields:**
+| Field | Values | Description |
+|-------|--------|-------------|
+| `citizenship` | `"warga-aaa"` | Always this value for federation citizens |
+| `lane` | see lane table | Which cognitive lane binds this agent |
+| `intelligence_tier` | `"AGI"`, `"ASI"`, `"FORGE"` | Tier classification |
+| `authority_level` | see lane table | Maximum authority this agent can exercise |
+| `citizenship_forged` | ISO date | When this binding was created |
+
+**Lane assignment rules (canonical):**
+| Lane | Applies To | authority_level | Examples |
+|------|-----------|-----------------|---------|
+| `333-AGI` | All coding harnesses (FI-001–011) & organ kernels | `engineer` | OpenCode, Claude Code, Kimi Code, Codex, AGY, arifOS, GEOX |
+| `555-ASI` | Sovereign bridge agents | `sovereign-delegate` | Hermes ASI |
+| `FORGE-777` | A-FORGE execution organ | `executor` | aforge-mcp |
+| `EVIDENCE-111` | GEOX Earth Intelligence | `EVIDENCE_ONLY` | geox-mcp |
+| `ADVISORY-222` | WEALTH Capital Intelligence | `ADVISORY_ONLY` | wealth-mcp |
+| `REFLECT-666` | WELL Human Readiness | `REFLECT_ONLY` | well-mcp |
+
+**Identity cards** (333-AGI, 555-ASI, 888-APEX) use `principal_agent.type: "architect"` with category `"Constitutional architecture (the constitution itself is the principal)"`. They do NOT have `warga_binding` — they ARE the warga lanes.
+
+**Verify all N cards have both blocks:**
+```bash
+cd /root/AAA/agent-cards
+for dir in harnesses organs functions identity; do
+  for f in $dir/*/agent-card.json; do
+    pa=$(python3 -c "import json; d=json.load(open('$f')); print('✅' if d.get('principal_agent') else '❌', '✅' if d.get('warga_binding') else '❌')" 2>/dev/null)
+    id=$(python3 -c "import json; print(json.load(open('$f')).get('id') or json.load(open('$f')).get('agentId','?'))" 2>/dev/null)
+    echo "$id: pa=${pa% *} wb=${pa#* }"
+  done
+done
 ```
 
 ### arifOS Constitutional Extensions (append to card)
@@ -285,7 +352,9 @@ else:
 "
 ```
 
-All constitutional fields should now be visible.
+For the A2A Live Wire routing manifest — which agents route to which other agents, with what auth, creating VAULT999 receipts on every handoff — see `references/a2a-live-wire-pattern.md`.
+
+For transitioning from A2A compliance audit to agent-agent task routing, see `references/a2a-live-wire-pattern.md`.
 
 ## Zen-and-Sync — Agent Card Cleanup (2026-07-13 Validated)
 
@@ -689,6 +758,159 @@ grep -rn '"protocolVersion"\|"protocol_version"' /root/AAA/a2a-server/agent-card
   awk -F: '{print $3, $1}' | sort | uniq -c
 ```
 
+### Full A2A Compliance Audit (6-field sweep)
+
+When tasked with "make all agents A2A ready" or "make sure all are AAA A2A protocol ready" across N cards, run this structured 6-field sweep:
+
+**The 6 mandatory A2A compliance fields:**
+| # | Field | What to check | 
+|---|-------|---------------|
+| 1 | principal_agent | Must have type, category, principle_origin |
+| 2 | warga_binding | Must have citizenship=warga-aaa, lane, intelligence_tier, authority_level |
+| 3 | protocolVersion | Must be 1.0 (harness/identity/function) or 1.2 (organs) |
+| 4 | securitySchemes | Must have bearer_auth + api_key at minimum |
+| 5 | supportedInterfaces | Must have at least one JSONRPC binding |
+| 6 | signatures | Must have Ed25519 signature array |
+
+**One-liner audit script (pastes as one line):**
+```
+cd /root/AAA/agent-cards; for dir in harnesses organs functions identity; do for f in $dir/*/agent-card.json; do python3 -c "import json; d=json.load(open('$f')); id=d.get('id') or d.get('agentId','?'); pa='Y' if d.get('principal_agent') else 'N'; wb='Y' if d.get('warga_binding') else 'N'; pv=d.get('protocolVersion','?'); ss='Y' if d.get('securitySchemes') else 'N'; si='Y' if d.get('supportedInterfaces') else 'N'; sg='Y' if d.get('signatures') else 'N'; print(f'{id}: pa={pa} wb={wb} pv={pv} sec={ss} iface={si} sig={sg}')" 2>/dev/null; done; done
+```
+
+**Known gaps that trigger this audit:**
+- Missing principal_agent on organ cards (aforge, geox, wealth, well -- these use agentId not id, historically lacked the field)
+- ID collisions (Kimi Code and Grok Build both having id=FI-008 -- Kimi Code should be FI-003)
+- Missing harness cards entirely (FI-009 AGY did not exist before 2026-07-25)
+- Organ cards use agentId instead of id -- check BOTH fields when auditing
+
+**Fixing organ cards (different schema pattern):**
+Organ cards use agentId (not id), protocolVersion 1.2 (not 1.0), and arifOS/agent-card/v2.2.0 schema. Insert principal_agent + warga_binding after "name":
+```json
+{
+  "$schema": "arifOS/agent-card/v2.2.0",
+  "schemaVersion": "2.2.0",
+  "id": "<organ-id>",
+  "protocolVersion": "1.2",
+  "agentId": "<organ-id>",
+  "name": "<Organ Name>",
+  "principal_agent": { ... },
+  "warga_binding": { ... },
+  ...
+}
+```
+
+**Live endpoint verification (after fixes):**
+```bash
+for url in \
+  https://aaa.arif-fazil.com/.well-known/agent-card.json \
+  https://aaa.arif-fazil.com/.well-known/agent.json \
+  https://arifos.arif-fazil.com/.well-known/agent-card.json; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null)
+  echo "$url → $code"
+done
+```
+
+## A2A Live Wire Activation — Cross-Agent Message Flow
+
+> **Validated 2026-07-25** — after all agent cards are registered and the 6-field sweep passes, the next step is activating live message flow. The A2A server already has full routing — this is verification and status update, not build-from-scratch.
+
+Once agent cards are A2A-compliant, the gateway (`a2a-server/server.js` on port 3001) already provides live message transport. The following endpoints are active:
+
+| Endpoint | Purpose | Header Required |
+|----------|---------|-----------------|
+| `POST /a2a/message/send` | Full message send with validation, nonce, replay, envelope, lineage, vault seal | `A2A-Version: 1.0` |
+| `POST /a2a/tasks/send` | Task dispatch to named agents | Yes |
+| `POST /a2a/message/stream` | SSE streaming response | Yes |
+| `POST /a2a` | JSON-RPC endpoint (handles standard A2A methods) | Yes |
+| `GET /.well-known/agents.json` | Agent discovery (unversioned) | No |
+
+### Guards Active on Every Message
+
+| Guard | Mechanism | Purpose |
+|-------|-----------|---------|
+| **P34** (root outruns kernel) | Membrane middleware — F1-F13 floor check | Prevents agents from acting outside constitutional bounds |
+| **P30** (audit trail forged) | VAULT999 seal written on completion | Every message leaves a hash-chained receipt |
+| **Nonce** | per-request nonce validation | Anti-replay |
+| **Replay** | Payload hash dedup | Duplicate detection |
+| **Envelope** | Federation envelope validation | DID signature verification (optional) |
+| **Lineage** | Session→context→task chain tracking | Full audit trail |
+
+### Step 1 — Verify Message Endpoint Is Live
+
+```bash
+curl -sf -X POST http://127.0.0.1:3001/a2a/message/send \
+  -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
+  -d '{"jsonrpc":"2.0","method":"tasks/send","id":1,"params":{"sessionId":"test-lw","message":{"role":"user","parts":[{"type":"text","text":"Live wire test"}]},"agent_id":"hermes-asi"}}' \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); r=d.get('result',{}); print(f'Task: {r.get(\"id\",\"?\")} Status: {r.get(\"status\",{}).get(\"state\",\"?\")}')"
+```
+
+**Expected:** `TASK_STATE_COMPLETED` with a valid task ID and history entry. The response also carries a `_membrane` envelope showing the governance receipt.
+
+### Step 2 — Generate Live Wire Manifest
+
+Maps all 33 agents to their A2A endpoints organized by layer:
+
+```bash
+node /root/AAA/a2a-server/forge-live-wire.js
+```
+
+Produces `/root/AAA/a2a-server/live-wire-manifest.json` with:
+- All agents per layer (identity, organs, extensions, harnesses, gateways, governance)
+- 7 defined message flows: 333→555, 555→888, 888→FORGE, FORGE→openclaw, openclaw→hermes, FI→organ, organ→FI
+- P34 and P30 guard documentation
+
+### Step 3 — Update Public Status Indicator
+
+The `a2a/status.json` in the arif-sites repo may still say `message_ingress: "888_HOLD"`. Update both copies to reflect LIVE flow:
+
+```bash
+# Two copies to update:
+# /root/arif-sites/sites/aaa.arif-fazil.com/a2a/status.json
+# /root/ARIF-SITES/sites/aaa.arif-fazil.com/a2a/status.json
+```
+
+Replace the `message_ingress` block:
+```json
+"message_ingress": {
+  "path": "/a2a/message",
+  "status": "LIVE",
+  "protocol": "A2A v1.0.0",
+  "transport": "JSON-RPC 2.0 over HTTP",
+  "gateway": "aaa.a2a-server:3001",
+  "guards": ["membrane (F1-F13)", "nonce", "replay", "envelope", "lineage", "vault-seal"],
+  "flows_active": ["333→555", "555→888", "888→FORGE", "FORGE→openclaw", "openclaw→hermes", "FI→organ", "organ→FI"]
+}
+```
+
+### Step 4 — Full Live Wire Verification
+
+```bash
+# 1. Health check
+curl -sf http://127.0.0.1:3001/health | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Status: {d.get(\"status\",\"?\")}')"
+
+# 2. Agent discovery
+curl -sf -H 'A2A-Version: 1.0' http://127.0.0.1:3001/a2a/discover \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d.get(\"agents\",[]))} agents discoverable')"
+
+# 3. Verify manifest exists
+python3 -c "import json; d=json.load(open('/root/AAA/a2a-server/live-wire-manifest.json')); print(f'{len(d[\"layers\"])} layers, {len(d[\"flows\"])} flows')"
+```
+
+### Message Flow Topology (Reference)
+
+```
+333-AGI ──reason──→ 555-ASI ──critique──→ 888-APEX ──verdict──→ FORGE ──→ openclaw ──→ hermes-asi
+FI-* ──evidence──→ geox | wealth | well ──result──→ FI-*
+```
+
+Every message: ingress → membrane (F1-F13) → nonce + replay → envelope → dispatch → vault seal.
+
+### Known Warnings
+
+- **The `/a2a/tasks/send` route has a hardcoded `CANONICAL_ACTORS` set** (line 2494 of server.js). If a new agent needs to send tasks, add it to: `aaa-architect, aaa-engineer, aaa-auditor, hermes, antigravity, arifos, aforge, geox, wealth, well, openclaw, forge, 777-forge, anonymous`.
+- **All `/a2a/*` routes require `A2A-Version: 1.0` header** — the membrane enforces versioned API access. The `/.well-known/` and `/health` endpoints do NOT require this header.
+- **The `message_ingress: 888_HOLD` was documenting the static site's inability to handle POST** — not the actual A2A server state. The live server on :3001 was always processing messages. Update to LIVE after verification.
+
 ### Checking Signed Card Readiness
 
 ```bash
@@ -829,6 +1051,10 @@ systemctl restart aaa-a2a.service && sleep 2 && systemctl is-active aaa-a2a.serv
 For implementing A2A compliance changes using Kimi Code, see `references/kimi-code-spawning.md` — CLI flags, `--prompt` vs `--auto` rules, and background execution pattern.
 
 For the full agent inventory (22 cards, wajib core breakdown, naming convention), see `references/agent-inventory.md`.
+
+For the full discovery audit & cleanup pattern (detect stale organ stubs, FI duplicates, missing harness cards, secondary-path overrides), see `references/discovery-audit-cleanup.md`.
+
+For the 2026-07-25 full A2A compliance sweep results (all 22 cards verified, gaps fixed, lane assignments), see `references/2026-07-25-agent-card-inventory.md`.
 
 For multi-agent forge instrument comparison (OpenCode vs Claude Code vs Kimi Code across all 11 dimensions), see `references/forge-trinity-contrast.md`.
 
@@ -976,6 +1202,34 @@ assert len(set(hashes)) == 1, 'ALIAS TABLE NOT SYNCED'
 This pattern was validated during the EUREKA-ZEN SUBSTRATE LOCK operation: 122 bindings across 21 cards in one pass, zero blast radius.
 
 ### Pitfalls
+
+- **JSON injection corruption: `},\n,` pattern from bulk-inserting warga_binding into agent cards.** When using Python's `str.replace()` or `.insert()` to add `warga_binding` blocks after `principal_agent`, the existing comma at the start of the next line creates `},\n,` — rendering JSON unparseable with `Expecting property name enclosed in double quotes`. **Fix:** `patch(path, old_string='},\\n,', new_string='},')` to collapse the duplicate comma. Always validate ALL modified files with a JSON parse sweep after any bulk injection. Command: `python3 -c "import json,os; bad=[os.path.join(r,f) for r,_,fs in os.walk('/root/AAA/agents') for f in fs if f=='agent-card.json' and not json.load(open(os.path.join(r,f))) 2>/dev/null is False]; print(f'Broken: {len(bad)}')"`. Run BEFORE restarting the gateway — broken cards degrade `/health` to "degraded" status.
+
+- **Primary-path organ cards with 32 skills can show as 0 in discovery.** The secondary scan path (`/root/AAA/agent-cards/organs/`) often has stale stubs with 0 skills that override the rich cards from primary path (`/root/AAA/a2a-server/agent-cards/organs/`). Always check BOTH paths after updating organ cards:
+  ```bash
+  python3 -c "
+  import json, os
+  for o in ['geox','wealth','well','aforge']:
+      pp = f'/root/AAA/a2a-server/agent-cards/organs/{o}.json'
+      sp = f'/root/AAA/agent-cards/organs/{o}/agent-card.json'
+      if os.path.exists(pp) and os.path.exists(sp):
+          ps = len(json.load(open(pp)).get('skills',[]))
+          ss = len(json.load(open(sp)).get('skills',[]))
+          issue = '⚠️ STALE' if ps > ss else '✅'
+          print(f'{issue} {o}: primary={ps}s secondary={ss}s')
+  "
+  ```
+  Fix: `cp a2a-server/agent-cards/organs/{o}.json agent-cards/organs/{o}/agent-card.json`
+
+- **FI-numbered stub cards (FI-001 through FI-011) in `a2a-server/agent-cards/forge/` duplicate rich named cards in `harnesses/`.** These bare stubs have 0 skills and inflate the agent count. Detect with: `grep '^FI-' <<< "$(find a2a-server/agent-cards -name '*.json' | xargs python3 -c 'import json,sys; [print(json.load(open(f)).get("id","?")) for f in sys.argv[1:]]')"`. Fix: `rm -rf /root/AAA/a2a-server/agent-cards/forge`. The rich named cards (opencode, claude-code, etc.) in `harnesses/` are canonical.
+
+- **Missing harness cards from gateway.** Canonical cards at `agents/_external/<agent>/agent-card.json` are not auto-loaded until copied to `a2a-server/agent-cards/harnesses/<agent>.json`. After adding a new forge instrument, always copy: `cp agents/_external/$agent/agent-card.json a2a-server/agent-cards/harnesses/$agent.json`.
+
+- **The `.well-known/agent-card.json` endpoint is served from `src/seed/agent-card-official.json` (or `agent-card.json`), NOT from the agent-cards directory.** Updating organ cards or harness cards does NOT update the well-known endpoint. The seed file must be updated separately:
+  ```bash
+  python3 -c "import json; d=json.load(open('src/seed/agent-card-official.json')); d['protocolVersion']='1.2'; json.dump(d, open('src/seed/agent-card-official.json','w'), indent=2)"
+  ```
+  Also sync to `AAA/.well-known/`, `AAA/public/.well-known/`, `AAA/dist/.well-known/`, and `AAA/a2a/` copies.
 
 - **Broken symlinks cascade from card cleanup.** After deleting root-level duplicate cards, three categories of broken symlinks appear:
   1. `/root/AAA/*.json` symlinks use `../../agent-cards/` (wrong from root — resolves to `/agent-cards/`). Fix: `ln -sf agent-cards/identity/X.json X.json` (relative from `/root/AAA/`).

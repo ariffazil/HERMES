@@ -1,7 +1,7 @@
 ---
 name: deep-research
 description: "Deep multi-source web research for books, tools, frameworks, domains, people, and institutions. Structured synthesis into a deliverable."
-version: 1.4.0
+version: 1.5.0
 author: Hermes Agent + Hermes-PRIME
 tags: [research, synthesis, web-research, books, frameworks, analysis, people, witness-frame]
 triggers:
@@ -202,6 +202,66 @@ Proven: 2026-07-12 Ray Dalio scan — 3 search batches, 8 URLs extracted (X post
 - For Telegram: use markdown tables, headers, bullet lists
 - Keep it dense but scannable — not a wall of text
 - Lead with what matters to the USER, not what's easiest to describe
+
+### Phase 5b: Technology Evaluation (Eureka Zen Proposal)
+
+When the user asks to evaluate a new technology, tool, framework, or model — especially for federation integration — apply the **EUREKA ZEN PROPOSAL** format. This is a three-lens evaluation that prevents premature commitment, exposes hidden costs, and connects every finding back to the user's constitutional architecture.
+
+**Frame:** The user's implicit question is *"Is this worth integrating? How? Under what constraints?"*
+
+Run three successive lenses. Each is mandatory — skipping any one produces `INADMISSIBLE-EUREKA-INCOMPLETE`.
+
+#### Q1 — Qualitative (≥5 paths + NULL + INVERSE)
+
+Enumerate ALL plausible integration paths (minimum 5). Include:
+- **NULL path** (do nothing)
+- **INVERSE path** (do the opposite of the obvious)
+- At least 3 viable approaches between the extremes
+
+Each path gets: approach + cost + risk + timeline. Categorize (e.g. "wait and see", "API proxy", "self-hosted", "replace existing").
+
+#### Q2 — Quantitative (BR · REV · Time · Conf · PA)
+
+Score each path from Q1:
+
+| Metric | Meaning |
+|--------|---------|
+| **BR** (Benefit) | What capability does this unlock? |
+| **REV** (Reversibility) | FULL / PARTIAL / NONE |
+| **Time** | How soon can we have it? |
+| **Conf** (Confidence) | 0-100% — how sure the path works |
+| **PA** (Post-Action) | What does the system look like after? |
+
+End with **dominance analysis** — which path dominates on most axes. Report ties honestly.
+
+#### Q3 — Quantum (Precedent · Interference · Superposition · Observer)
+
+| Check | Question |
+|-------|----------|
+| **Precedent** | Have we done this before? What did we learn? |
+| **Interference** | Does this break or conflict with existing systems? |
+| **Superposition** | Where could this converge with other capabilities? |
+| **Observer Effect** | How does evaluating this change the evaluation itself? |
+
+#### Constitutional Crosswalk
+
+Map the recommended path against F1-F13. Each floor gets a verdict:
+
+| Floor | Question |
+|-------|----------|
+| F1 AMANAH | Reversible? |
+| F4 CLARITY | ΔS < 0 — reduces fragmentation? |
+| F9 ANTIHANTU | Manipulation/deception risk? |
+| F11 AUDITABILITY | Every action traceable? |
+| F13 SOVEREIGN | Who controls it? Can it be revoked? |
+
+#### Makna Kepada (dual perspective)
+
+End with two concrete subsections:
+- **Makna kepada arifOS:** Constitutional impact — new organ? New plane? Just a tool?
+- **Makna kepada kau (Arif):** Daily experience — saves time? Creates options? Adds noise?
+
+**Proven:** 2026-07-25 — Microsoft Mage-Flow evaluation. User asked "worth it?" → Eureka Zen → decision (PROCEED Path B + E parallel, F1 guarded) → executed.
 
 ## Output Contract
 

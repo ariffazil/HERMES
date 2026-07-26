@@ -1,0 +1,1123 @@
+{
+  "probed_at": "2026-07-25T18:00:21Z",
+  "probe_type": "weekly-recheck",
+  "zen_results": {
+    "claude-fable-5": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-opus-5": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-opus-4-8": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-opus-4-7": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-opus-4-6": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-opus-4-5": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-opus-4-1": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-sonnet-5": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-sonnet-4-6": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-sonnet-4-5": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-sonnet-4": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "claude-haiku-4-5": {
+      "alive": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gemini-3.6-flash": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gemini-3.5-flash-lite": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gemini-3.5-flash": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gemini-3.1-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gemini-3-flash": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.6-sol": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.6-terra": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.6-luna": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.5-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.4": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.4-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.4-mini": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.4-nano": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.3-codex-spark": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.3-codex": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.2": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.2-codex": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.1": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.1-codex-max": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.1-codex": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5.1-codex-mini": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5-codex": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "gpt-5-nano": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "grok-build-0.1": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "grok-4.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "deepseek-v4-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "deepseek-v4-flash": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "glm-5.2": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "glm-5.1": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "glm-5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "minimax-m3": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "minimax-m2.7": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "minimax-m2.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k2.7-code": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k2.6": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k2.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "qwen3.6-plus": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "qwen3.5-plus": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "big-pickle": {
+      "alive": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "deepseek-v4-flash-free": {
+      "alive": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "mimo-v2.5-free": {
+      "alive": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "ling-3.0-flash-free": {
+      "alive": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "nemotron-3-ultra-free": {
+      "alive": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "north-mini-code-free": {
+      "alive": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "laguna-s-2.1-free": {
+      "alive": false,
+      "http_status": 429,
+      "probed_at": "2026-07-25T18:00:21Z"
+    }
+  },
+  "go_results": {
+    "minimax-m3": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "minimax-m2.7": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "minimax-m2.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k3": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k2.7-code": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k2.6": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "kimi-k2.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "glm-5.2": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "glm-5.1": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "glm-5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "deepseek-v4-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "deepseek-v4-flash": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "qwen3.7-max": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "qwen3.7-plus": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "qwen3.6-plus": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "qwen3.5-plus": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "mimo-v2-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "mimo-v2-omni": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "mimo-v2.5-pro": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "mimo-v2.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "hy3": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "hy3-preview": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    "grok-4.5": {
+      "alive": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    }
+  },
+  "summary": {
+    "zen_total": 59,
+    "zen_alive": 6,
+    "zen_dead": 53,
+    "go_total": 23,
+    "go_alive": 0,
+    "go_dead": 23
+  },
+  "liveness_changes": [
+    {
+      "provider": "opencode-zen",
+      "model": "claude-fable-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-opus-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-opus-4-8",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-opus-4-7",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-opus-4-6",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-opus-4-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-opus-4-1",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-sonnet-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-sonnet-4-6",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-sonnet-4-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-sonnet-4",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "claude-haiku-4-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 0,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gemini-3.6-flash",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gemini-3.5-flash-lite",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gemini-3.5-flash",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gemini-3.1-pro",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gemini-3-flash",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.6-sol",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.6-terra",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.6-luna",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.5-pro",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.4",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.4-pro",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.4-mini",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.4-nano",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.3-codex-spark",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.3-codex",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.2",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.2-codex",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.1",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.1-codex-max",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.1-codex",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5.1-codex-mini",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5-codex",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "gpt-5-nano",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "grok-build-0.1",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "grok-4.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "deepseek-v4-pro",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "deepseek-v4-flash",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "glm-5.2",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "glm-5.1",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "glm-5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "minimax-m3",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "minimax-m2.7",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "minimax-m2.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "kimi-k2.7-code",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "kimi-k2.6",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "kimi-k2.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "qwen3.6-plus",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "qwen3.5-plus",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "ling-3.0-flash-free",
+      "change": "dead\u2192alive",
+      "was": null,
+      "now": true,
+      "http_status": 200,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-zen",
+      "model": "laguna-s-2.1-free",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 429,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "minimax-m3",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "minimax-m2.7",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "minimax-m2.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "kimi-k3",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "kimi-k2.7-code",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "kimi-k2.6",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "kimi-k2.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "glm-5.2",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "glm-5.1",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "glm-5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "deepseek-v4-pro",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "deepseek-v4-flash",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "qwen3.7-max",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "qwen3.7-plus",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "qwen3.6-plus",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "qwen3.5-plus",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "mimo-v2-pro",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "mimo-v2-omni",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "mimo-v2.5-pro",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "mimo-v2.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "hy3",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "hy3-preview",
+      "change": "alive\u2192dead",
+      "was": null,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    },
+    {
+      "provider": "opencode-go",
+      "model": "grok-4.5",
+      "change": "alive\u2192dead",
+      "was": true,
+      "now": false,
+      "http_status": 401,
+      "probed_at": "2026-07-25T18:00:21Z"
+    }
+  ],
+  "liveness_changes_count": 77,
+  "status": "CANDIDATE_LARGE_DIFF"
+}
