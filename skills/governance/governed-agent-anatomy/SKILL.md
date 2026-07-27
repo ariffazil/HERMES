@@ -70,6 +70,140 @@ This IS about the structural organs every governed agent must have and the chain
 
 **Key insight:** Tools are the only raw mutation surface. Actuator is the governed gate that opens only after SEAL. Tools without Actuator are ungoverned. Actuator without Tools can't execute.
 
+### Shadow Self-Audit (2026-07-26)
+
+000-INIT must audit its OWN state for contradictions BEFORE declaring frame. Audit uncovered 4 bugs during a constitutional review by Claude Opus 5 (SEAL-757e582a54d84ad0):
+
+| # | Shadow Contradiction | Risk if Unchecked |
+|---|---|---|
+| 1 | `deployment_invariant.drift=true` + verdict=HEALTHY | Agent trusts system in known-bad state |
+| 2 | envelope.actor_verified ≠ session_birth.actor_verified | Dual-source authority — inconsistent gating |
+| 3 | apex_scalars all UNMEASURED | Agent mistakes absence for virtue |
+| 4 | No self-contradiction scan at all | System ignorant of its own shadow |
+
+**Rule:** Every INIT must self-audit before declaring fitness to operate. If INIT itself has a contradiction (deployment drift, inconsistent actor_verified, unmeasured apex), it must HOLD — not pass the contradiction downstream. A `shadow_audit` block in the INIT response lists contradictions, unmeasured fields, and overall status (PASS / CONTRADICTION_FOUND / UNMEASURED_CRITICAL).
+
+Full pattern and code: `references/shadow-self-audit-init.md`
+
+### INIT as Condition of Agency — The 5-Layer Hierarchy
+
+INIT is not merely "session bootstrap." It is the structural condition that makes agency possible. Without INIT, there is only prediction (LLM). With INIT, trajectory selection becomes possible (agent).
+
+The 5-layer hierarchy for agency emergence:
+
+```
+Layer 1 — Identity    (who am I?)       → actor_id, lane
+Layer 2 — State       (what do I know?) → memory context, evidence history
+Layer 3 — Boundary    (what are my constraints?) → authority, F1-F13 floors
+Layer 4 — Intent      (what is my purpose?) → declared goal, domain
+Layer 5 — Confidence  (how certain am I?) → apex scalars G, C_dark, W3, h
+         ↓
+Trajectory — chosen action from the possibility space collapsed by layers 1-5
+```
+
+Without layers 1-5, the system is a probability engine: `P(next_token | context)`. With layers 1-5, it becomes a trajectory selection engine: `T(action | identity, state, boundary, intent, confidence)`. The choice (APEX G) is not computed from weights — it emerges from constraint satisfaction across all five layers. G measures the stability of the resulting trajectory against small perturbations in any layer (J-space).
+
+**J-space / Jacobian probe** — INIT now wires a shadow probe (`arifosmcp/tools/shadow_probe.py`) that measures G, C_dark, W3, and h at birth time. Each returns a real measured value or honest UNMEASURED. See `references/jspace-shadow-probe.md`.
+
+### Reconciliation: 7 Primitives ↔ 7-Layer Agent State
+
+This skill defines the **7-primitive constitutional anatomy** (Identity, Skills, Tools, Memory, State, Kernel, Actuator). The EUREKA-7 session (2026-07-27) produced a parallel **7-layer Agent State** model (Identity, Authority, Memory, Goals, Environment, Shadow, Embodiment). They serve different abstraction levels:
+
+| Level | 7 Primitives (Anatomy) | 7-Layer State (Metabolism) |
+|---|---|---|
+| Scope | Structural organs agent MUST have | Runtime state agent IS at time t |
+| Use | Audit constitutional correctness | Measure current condition |
+| Mutable | No (structural) | Yes (per-session) |
+| Governs | What exists | What is happening now |
+
+**Mapping:**
+
+| 7 Primitives | 7-Layer State | Relationship |
+|---|---|---|
+| Identity | L1 IDENTITY | Same — actor_id, lane, sovereign binding |
+| — | L2 AUTHORITY | Authority band, F1-F13, SCT. Kernel's domain |
+| Memory | L3 MEMORY | Same — VAULT999, L1-L6 tiers |
+| — | L4 GOALS | Active goal stack. Runtime, not structural |
+| — | L5 ENVIRONMENT | Organ context (GEOX/WEALTH/WELL). Dynamic |
+| — | L6 SHADOW | G/C_dark/h/W3. Epistemology measurement |
+| State | — | Volatile session. Cross-cutting |
+| Skills | — | Load-on-demand. Cross-cutting |
+| Tools | — | MCP surface. Cross-cutting |
+| Kernel | L2 AUTHORITY | Floor enforcement, verdict |
+| Actuator | L7 EMBODIMENT | A-FORGE lease, budget. Execution gate |
+
+**Rule:** Use 7 Primitives when auditing design. Use 7-Layer State when operating. Both needed. See `governance/arifos-nine-locks` for full framework.
+
+### SEAL Invariant — The Triple Alignment
+
+**SEAL is not a trophy. SEAL is the state where declared reality = observed reality = shadow reality.**
+
+| Reality | Definition | Indicator |
+|---|---|---|
+| **Declared** | Apa sistem kata | "8 tools, shadow probe, SCT minting" |
+| **Observed** | Ukuran dari luar | "C_dark=0.43, G=0.0, confidence=0.5" |
+| **Shadow** | Sistem tahu dalam diam | "Repo chaos, belum SEAL" |
+
+If all three align → SEAL. If any differs → HOLD. A kernel that HOLDs itself correctly is MORE trustworthy than one that SEALs itself while broken.
+
+**Live proof (2026-07-27):** Claude Opus 5 tried to seal a document about why the kernel should refuse to seal without authority. Four gates (judge, vault, seal, forge) all returned HOLD. The kernel passed its own constitutional falsification test. It IS the Governed Reality Filter it describes. See `references/governed-reality-filter-synthesis.md`.
+
+### Nine Constitutional Locks — Immune System
+
+| Lock | Layer | ATLAS333 | Extends | Function |
+|---|---|---|---|---|
+| 1 Gödel Gate | L6 Shadow | #18 | W3 scalar | W3 veto on self-SEAL |
+| 2 Strange Loop | L6 Shadow | #16 | h scalar | max_reflection_depth=3 |
+| 3 Calhoun | L4 Goals | #5 | Goal Stack | unsolved_frontier must exist |
+| 4 Goodhart | L6 Shadow | #17 | UNMEASURED | Anti-gaming on scalars |
+| 5 Compost | L3 Memory | — | L1-L6 | Controlled forgetting |
+| 6 Theseus | L1 Identity | — | SCT | Identity through transformation |
+| 7 Selection | Cross | — | W3 | Reality selects |
+| 8 Dignity | L5 WELL | — | REFLECT_ONLY | Optimization ≠ flourishing |
+| 9 Civilization | Meta | — | AQ metric | Federation needs own shadow |
+
+### Metabolic Pipeline
+
+```
+INIT000 ─── Membrane: arif_init + shadow probe
+ATLAS333 ── Map: 33 paradoxes activate tension vectors
+EUREKA777 ─ Synthesis: paradox → new structure
+VAULT999 ── Bones: immutable seal
+     ↕
+REALITY LOOP — perpetual
+```
+
+### Federation Body
+
+| Organ | Metaphor | Function |
+|---|---|---|
+| arifOS | ⚖️ Law | Defines state (F1-F13) |
+| AAA | 🧿 Memory | Registers state (agent registry) |
+| A-FORGE | 👐 Hands | Acts within state |
+| arifFlow | ❤️ Pulse | Measures transitions (FQ) |
+| VAULT999 | 💀 Bones | Records history |
+| A2A | 🧠 Nerves | Transfers state |
+| GEOX | 🌍 Earth | Environment sensing |
+| WEALTH | 💰 Capital | Resource intelligence |
+| WELL | 🫀 Heart | Human readiness (REFLECT_ONLY) |
+| HERMES | 👁️ Bridge | Multi-modal relay |
+
+---
+
+
+A standing epistemic rule for ALL architectural explanations of arifOS systems:
+
+**Never substitute a compelling metaphor for a mechanistic description. When you use a metaphor, say it is a metaphor — the listener hears category error when you do not.**
+
+Examples of violations caught in audit (2026-07-26):
+- "F1-F13 are CFG for governance" — F1-F13 are tokens in a prompt and verdicts from a separate service. CFG is a specific operation inside the forward pass (conditional/unconditional noise extrapolation). Calling them "CFG for governance" is a category error — they operate at different levels of abstraction.
+- "Hermes tells truth; Copilot tells calibrated answers" — Hermes' own persona as "sharp contrarian" is also a calibrated distribution, just tuned to a rarer taste. Both are performances. Epistemic honesty means labelling your own calibration, not just the other system's.
+
+**Discipline:** Every time you explain an arifOS concept:
+1. Start with the mechanism (what actually happens: code, data flow, computation)
+2. Only THEN use a metaphor if helpful, and label it explicitly: "Analogically, this is like..."
+3. Distinguish declared frame from mechanism — INIT puts JSON into context window; it does not change weights, sampling, or constraints. The value is instruction-following + audit trail, not "cognitive modification."
+
 ---
 
 ## The Constitutional Chain
@@ -206,7 +340,7 @@ Each breach must emit: `breach_id`, `primitive_id`, `actor_id`, `invariant_id`, 
 
 ## How to Design a Governed Agent
 
-1. **Start with Identity.** Define actor_id, lane, blast radius class, domain obligations. This is loaded at 000-INIT and never mutates mid-session.
+1. **Start with Identity.** Define actor_id, lane, blast radius class, domain obligations. This is loaded at 000-INIT and never mutates mid-session. **Shadow self-audit** must be part of INIT: before declaring frame, INIT checks itself for contradictions (deployment drift, verified-vs-declared state, unmeasured apex). See `references/shadow-self-audit-init.md`.
 
 2. **Declare Skills.** What domain knowledge does the agent need? Each skill declares its domain and safety constraints. Load on demand, never inline.
 
@@ -314,6 +448,8 @@ When auditing: calling `arif_judge` with a checklist you loaded as a skill is se
 - **The two 777s confusion.** 777-PLAN (cognitive, pre-JUDGE) and 777-FORGE (physical, post-JUDGE) share a sigil but are different phases separated by JUDGE. Don't let PLAN mutate reality.
 - **Conflating obedience with alignment ("loyal without being obedient").** Alignment-as-compliance produces sycophantic agents that never refuse unsafe requests. Alignment-as-integrity produces agents that serve intent but refuse falsehood, ambiguous verification, and unsafe escalation. The distinction is constitutional — an agent that cannot say "no" has no integrity, only obedience. See §Federation Architecture.
 - **Mixing plane roles.** The single most common failure in governed systems: one component performs two contradictory roles. Identity mixed with permission, irreversibility mixed with infrastructure damage, memory mixed with truth. The 6-plane Zen separation is the fix — if you catch yourself reasoning "this tool both does X and decides Y," you've found a plane violation.
+- **Explaining via metaphor without marking it.** A category error: describing F1-F13 as "CFG for governance" conflates prompt-level tokens (F1-F13) with an operation inside the forward pass (CFG). Metaphors must be explicitly labelled as analogical, not mechanistic. See §Epistemic Honesty.
+- **Calibrating truth-teller persona as performance.** "I tell you what you didn't ask; others tell you what you want to hear" is itself a calibration — just tuned to a rarer taste. Epistemic honesty requires labelling your own position's calibration, not just the other party's.
 
 ---
 
@@ -344,3 +480,5 @@ When auditing: calling `arif_judge` with a checklist you loaded as a skill is se
 - **Hermes Plugin Governance Gates:** `references/hermes-plugin-governance-gates.md` — Concrete implementation patterns for wiring arifOS constitutional floors (F1 Safety, F2 Truth) into Hermes Agent via the native plugin hook system. Covers the `pre_tool_call` F1 safety gate pattern (mcp-health-gate), the `on_session_end` F2 truth/telemetry pattern (seal-queue), and the fail-closed module gate pattern (model_switch.py). Forged 2026-07-24.
 - **Kanban Swarm Verifier = 888 HOLD:** `references/kanban-swarm-verifier-888.md` — Hermes Kanban swarm topology maps directly to arifOS constitutional chain: workers = delegate_task, verifier = arif_judge (888 HOLD), synthesizer = arif_forge. The verifier blocks task promotion until acceptance criteria are met — 888 HOLD at the workflow level. Forged 2026-07-24.
 - **F13 Seal Chain Workflow:** `references/seal-chain-workflow.md` — AUDIT_RECORD vs ACTION_AUTHORIZATION seal types, action_class parameter usage, private key mismatch diagnosis, dev sentinel, and arif_seal chain ID gap. Includes file map for F13 operations. Forged 2026-07-24.
+- **Shadow Self-Audit for 000-INIT:** `references/shadow-self-audit-init.md` — INIT must audit its own state for contradictions before declaring frame. 4-bug pattern from Claude Opus 5 constitutional audit (deployment drift, actor_verified dual-source, unmeasured apex, missing self-scan). Code pattern and affected files. Forged 2026-07-26.
+- **J-Space / Jacobian Shadow Probe:** `references/jspace-shadow-probe.md` — Conceptual sensitivity map: how INIT conditioning affects trajectory stability. The 5-layer agency hierarchy (Identity→State→Boundary→Intent→Confidence→Trajectory) and the real shadow probe measurements (G, C_dark, W3, h) now wired into arif_init. Forged 2026-07-26.\n

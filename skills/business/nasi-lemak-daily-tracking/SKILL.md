@@ -13,6 +13,23 @@ triggers:
 
 DSW, DSP, LRT Setiawangsa (LRT S), LRT Wangsa Maju (LRT WM), MAMAK 2, KEDAI P, KEDAI L, KEDAI A, EVEN, BSW, DP, BURAN
 
+**Vendor updates (verified 2026-07-24):**
+- KEDAI L = Kedai L (3 jenis, usually 10 setiap satu)
+- KEDAI A = Kedai A (3 jenis, usually 10 setiap satu)
+- EVEN = Event-based location (mungkin ada baki dari order sebelum)
+- DSP dan DSW adalah vendor berasingan
+- LRT S = LRT Setiawangsa (3 sub-kedai)
+- LRT WM = LRT Wangsa Maju
+- MAMAK 2 = 2 kedai di bawah satu nama
+
+### "Nuar asing" Pricing Query Pattern
+
+Apabila user tanya "Nuar asing2 Teluk Mata bape? Telur rebus+telur dadar, Nasi berlauk" — maksudnya:
+- Telur mata sambal asing = RM 1.50
+- Telur rebus + telur dadar sambal asing = RM 1.20
+- Nasi berlauk = RM 1.50 (cash term)
+- "Sambal asing" = sambal dalam bekas berasingan, harga sama dengan "sambal campur"
+
 ### Pricing (per unit) — proven session 2026-07-22/23
 
 | Jenis | Harga Supplier | Harga Jual Normal | Harga Lelong |
@@ -128,6 +145,14 @@ When asked for trends across days, produce a compact table:
 | 20/7 | 84 | 35 | RM 39.30 | 42% |
 
 Highlight best-performing location and variant with 🔥 indicator.
+
+### Voice/Tone
+
+- **Full BM only.** User akan tegur berkali-kali kalau ada English. Tulis semua dalam Bahasa Melayu. Istilah dagang (XAUUSD, TP, SL) dan nama khas je yang boleh guna English.
+- **Jawab terus.** Soalan ya/tidak — jawab ya/tidak dulu.
+- **Jangan bagi penerangan panjang.** Bila user kata "buat" — terus buat.
+- **Bila kena tegur: satu ayat, lepas tu terus jalan.** Jangan ulang kesilapan sama.
+- **Guna pembetulan untuk baki sesi.**
 
 ### Patient Correction Flow
 

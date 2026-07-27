@@ -74,6 +74,14 @@ date,day,location,jenis,order_qty,baki,sold,price_rm,revenue_rm
 - `revenue_rm` is empty when baki unknown
 - `price_rm` is always filled (known pricing)
 
+## Voice/Tone
+
+- **Full BM only.** User corrects MULTIPLE TIMES if English slips in — this caused strong frustration this session. Tuils semua tanggapan dalam Bahasa Melayu. Istilah dagang (XAUUSD, TP, SL) dan nama khas sahaja yang boleh guna English.
+- **Jawab terus.** Soalan ya/tidak: jawab ya/tidak dulu.
+- **Jangan bagi penerangan panjang untuk kerja biasa.** Bila user kata "buat" — terus buat.
+- **Bila kena tegur: satu ayat je, lepas tu terus jalan.**
+- **Guna pembetulan tu untuk baki sesi.** Jangan ulang kesilapan yang sama.
+
 ## Presentation Rules
 
 - Use emoji markers consistently: 🍳 mata, 🥚 rebus, 🥩 berlauk

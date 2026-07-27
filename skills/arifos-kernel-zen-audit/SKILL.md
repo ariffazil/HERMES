@@ -46,7 +46,16 @@ triggers:
   - "sovereign identity map drift"
   - "outcomes.jsonl reconciliation"
   - "two sovereigns same action"
-  - "actor_id string check sovereign"
+  - "scar not a bug"
+  - "drift = scar or bug"
+  - "no drift not ready"
+  - "not ready not seal"
+  - "boot attestation 6 step"
+  - "PROBE BIND WITNESS CLASSIFY"
+  - "surface guard classification"
+  - "AAA non-MCP organ"
+  - "reclassify AAA"
+  - "metadata drift code drift"
 ---
 
 # arifOS Kernel Zen Audit
@@ -372,6 +381,7 @@ Before the live tests, probe the source for these four dimensions:
 - `references/arif-bind-global-command.md` — global `arif-bind` command setup: one-word sovereign session bind from any terminal.
 - `references/zen-surface-reduction-verification-2026-07-16.md` — ZEN surface reduction audit: verified vs claimed, deploy timing, VAULT999 seal verification pitfall
 - `references/meta-mesa-test-charter-2026-07-12.md` — META-MESA Substrate Test Charter: 12-section test specification for proving governed causal agency. 10 hard gates, multiplicative scoring, 13-phase sequence.
+- `references/drift-scar-bug-attestation-chain-2026-07-27.md` — Drift = scar vs bug framework from session with Arif + OpenCode. 6-step boot attestation pattern (PROBE→BIND→WITNESS→CLASSIFY→RECOGNIZE→ATTEST). No-drift≠Ready≠SEAL chain. Surface guard reclassification (AAA as non-MCP organ).
 ## Sovereign Authentication (2026-07-12)
 
 When the kernel blocks at 888_HOLD with `actor_verified=false`, sign the nonce and call `arif_init`. See `references/sovereign-auth-procedure.md` for the full procedure, one-shot signing script, and failure mode table.
@@ -616,6 +626,163 @@ Surface reductions are **code changes** that affect the public contract. If not 
 
 See: `references/zen-surface-reduction-verification-2026-07-16.md`
 
+## Drift Interpretation: Bug vs Scar (2026-07-27)
+
+When a kernel health endpoint reports `drift=true`, the reflex response is "fix it." But in a governed system, drift has a constitutional dimension beyond technical correctness.
+
+### The Constitutional Question
+
+The question is NOT:
+> "Can drift be fixed?"
+
+The question IS:
+> "What is drift supposed to mean?"
+
+Two mutually exclusive interpretations:
+
+| If drift IS... | It means... | Response |
+|---|---|---|
+| **Bug** | Reality ≠ declaration. The system tolerates a contradiction it did not intend. | Fix it immediately. Systems must not persist known falsehoods. |
+| **Scar** | A deliberately preserved witness to a resolved tension. The lesson was learned; the artifact remains. | Document it as scar. Do NOT fix — the scar IS the governance. |
+
+### The Scar Test
+
+A drift is a **scar** (not a bug) when:
+
+1. **Code is identical** — the running file sha256 matches source. Deployment metadata lags, not function.
+2. **The drift survived a cleanup cycle** — if the system went through a ZEN-SURVIVAL (82 conflicts resolved, shadow probe deployed, APEX ratified) and the drift remained, it was consciously retained.
+3. **The lesson is already learned** — the system proved it can detect, report, and survive the drift. No new learning is extracted from fixing the label.
+4. **The only thing broken is the label** — `deployed_commit` JSON field ≠ real wheel hash. Nothing about how the system runs is affected.
+
+### The Scar Danger
+
+If drift is kept as **witness** → useful.
+If drift is kept as **excuse** → dangerous.
+
+After a period, the system may say:
+```
+yes, drift exists
+yes, we know
+yes, it is recorded
+```
+with no intention to resolve it. At that point, HOLD becomes avoidance, not wisdom.
+
+### The Critical Test
+
+```
+Is there a conscious constitutional reason for preserving the drift?
+
+If no  → fix it.  (bug)
+If yes → document it as a scar, not a defect.
+```
+
+**Zen:** *A scar is truth remembered. A bug is truth deferred. The difference is whether the system has already learned the lesson.*
+
+### Pitfalls
+
+- **Metadata drift ≠ code drift.** The wheel file may be identical while the `deployed_commit` label is stale. Distinguish function from label before classifying.
+- **Scars can dry.** A scar that survives three refactoring cycles is a witness. A scar that has been silently ignored for months is a defect the system stopped seeing. Re-test the scar hypothesis periodically.
+- **Beware scar-as-identity.** Systems can learn to love their defects as character traits. "We're the system with deployment drift" is not governance — it's self-caricature.
+
+---
+
+## No Drift ≠ Ready ≠ Authorized ≠ SEAL (2026-07-27)
+
+A kernel can report `drift=false` and still **correctly** return HOLD. The constitutional chain is:
+
+```
+No drift  →  Ready  →  Authorized  →  SEAL
+   ↓           ↓           ↓            ↓
+metadata    kernel      actor        sovereign
+clean       healthy     verified     verdict
+```
+
+Each transition requires an independent verification:
+
+| Link | What It Means | How to Verify | Common Block |
+|------|--------------|---------------|--------------|
+| No drift → Ready | Metadata aligned, code wholesome | `/health` → drift=false | Stale deployment metadata |
+| Ready → Authorized | Actor identity bound and verified | `arif_init` → `actor_verified=true` | PARTIAL_BOOT, missing session |
+| Authorized → SEAL | Sovereign or F13-level authority granted | `session_token` includes SOVEREIGN band | OBSERVE_ONLY session cap, no Ed25519 signature |
+
+### The Self-Attestation Trap
+
+When a boot attestation reports `drift=false` but also `actor_verified=false` and `HOLD`, the correct interpretation is NOT "drift is fixed, why is the system still blocking?"
+
+The correct interpretation:
+```
+drift = false        → metadata is clean
+                        ↓
+actor_verified=false → identity not bound
+                        ↓
+HOLD                → kernel correctly refuses
+                       (auth < required ceiling)
+```
+
+**Each layer blocks for a different reason.** Fixing drift does not fix identity binding. Fixing identity does not auto-SEAL. The kernel is HEALTHY when it correctly rejects at the right gate.
+
+### Attestation Pattern (6 Steps)
+
+When performing a boot attestation, the canonical sequence is:
+
+```
+1. PROBE     → :port/health                      → raw state
+2. BIND      → arif_init                         → session + token
+3. WITNESS   → all 6+ organs                     → federation health
+4. CLASSIFY  → lane (FACTUAL / JUDICIAL / FORGE) → behavioural mode
+5. RECOGNIZE → sovereign signals mapped           → 888_HOLD gates known
+6. ATTEST    → emit receipt                       → sealed for carry-forward
+```
+
+The attestation is NOT a certification that the system is ready. It is a report of the state, including any HOLD conditions. A mature attestation says "I see why I am blocked" — not "I am blocked, why?"
+
+### Pitfalls
+
+- **Don't conflate "drift fixed" with "ready to SEAL."** Four gates, each independent. Fixing one does not pass the others.
+- **The kernel is correct when it says HOLD for an unverified actor.** That is not a bug — it is F1+F13 enforcement. Fixing the actor binding is the action, not overriding the HOLD.
+- **Boot attestation reports drift from one probe; observatory sweeps from another.** Probes may disagree — one is the organ's self-report, the other is an external sweep. Disagreement is data, not contradiction. Both are truthful from their vantage.
+
+---
+
+## Surface Guard Organ Classification (2026-07-27)
+
+The surface guard alarm appears when an organ reports tools removed or MCP surface changed, but the cause is misdiagnosis of what the organ IS.
+
+### The Canonical Classification
+
+| Organ | Port | Surface Type | MCP? | Notes |
+|-------|------|-------------|------|-------|
+| arifOS (Ω) | 8088 | Kernel MCP | ✅ Yes — 8 constitutional tools | F1-F13 enforcement |
+| A-FORGE (Ψ) | 7071/7072 | API + MCP | ✅ Yes — 52 tools | Execution gate |
+| GEOX (🌍) | 8081 | MCP | ✅ Yes — 33 tools | Geoscience |
+| WEALTH (💰) | 18082 | MCP | ✅ Yes — 12 tools | Capital intelligence |
+| WELL (🫀) | 18083 | MCP | ✅ Yes — 8 tools | Human readiness |
+| **AAA (🖥️)** | **3001** | **Cockpit + A2A Gateway** | **❌ NOT an MCP server** | **React cockpit + A2A** |
+
+### The Misdiagnosis
+
+When AAA loses MCP tools, the surface guard fires `AAA TOOL_REMOVED — drift detected`. But AAA is:
+- A React 19 cockpit (Vite, Tailwind, Radix UI)
+- An A2A gateway (`@a2a-js/sdk`)
+- NOT an MCP server with registered tools
+
+The guard treats AAA as an MCP surface when it is not. The fix is **reclassification** of the guard's expectations, not adding fake MCP tools to AAA to silence the alarm.
+
+### Action
+
+```
+surface_guard_config:
+  action: reclassify AAA as "non-MCP organ"
+  reason: AAA is cockpit + A2A gateway, not MCP server
+  bukan: fake-fix dengan menambah MCP tools ke AAA
+```
+
+### Pitfalls
+
+- **Don't silence the guard by adding phantom tools.** The guard is correct to report what it sees; the configuration is wrong, not the alarm itself.
+- **AAA has an A2A surface, not an MCP tool surface.** A2A agent cards are not MCP tool declarations. Don't conflate the two protocols.
+- **All six federation organs report /health, but not all are MCP servers.** The health endpoint is a federation-standard probe; tool surface is an organ-specific choice.
+
 ## Provenance
 
-First applied 2026-07-09 in AAA session 36988 against 11 arifOS wrapper calls in one session. Sovereign auth debugging added 2026-07-12 (nonce consumption trap, one-shot signing, wire splice confirmation). Birth-fix (+ token model + alias collapse) approved; full fix deferred to Phase B. T3a BOOT gate demotion discovered 2026-07-24 during 287-iteration seal-debug session — root-caused to boot_state=PARTIAL + `passes == "OK"` gate — fixed by accepting PARTIAL as pass. **F13 Multi-Sovereign Collision Audit** added 2026-07-25: deep source-level audit of conflict_resolver wiring, session ownership enforcement, VAULT999 collision detection, and sovereign identity map consistency against the EXTERNAL_FALSIFICATION_SPEC PATH 3. Findings: resolver exists but unwired; session ownership recorded but unenforced; VAULT999 append-only with no collision reconciliation. Boundary is undefined — 8/50 composite.
+First applied 2026-07-09 in AAA session 36988 against 11 arifOS wrapper calls in one session. Sovereign auth debugging added 2026-07-12 (nonce consumption trap, one-shot signing, wire splice confirmation). Birth-fix (+ token model + alias collapse) approved; full fix deferred to Phase B. T3a BOOT gate demotion discovered 2026-07-24 during 287-iteration seal-debug session — root-caused to boot_state=PARTIAL + `passes == "OK"` gate — fixed by accepting PARTIAL as pass. **F13 Multi-Sovereign Collision Audit** added 2026-07-25: deep source-level audit of conflict_resolver wiring, session ownership enforcement, VAULT999 collision detection, and sovereign identity map consistency against the EXTERNAL_FALSIFICATION_SPEC PATH 3. Findings: resolver exists but unwired; session ownership recorded but unenforced; VAULT999 append-only with no collision reconciliation. Boundary is undefined — 8/50 composite. **Drift Interpretation** framework added 2026-07-27: bug vs scar (Arif + OpenCode constitutional analysis). **Attestation Chain** (No Drift ≠ Ready ≠ Authorized ≠ SEAL) and 6-step boot attestation pattern added same date. **Surface Guard** organ classification (AAA as non-MCP organ) added 2026-07-27.

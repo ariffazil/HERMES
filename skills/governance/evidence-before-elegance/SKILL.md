@@ -5,7 +5,7 @@ description: >
   Prevents fabricated precision, provenance laundering, causal overclaim, narrative
   symmetry bias, agency removal, and single-cause fallacy. Includes somatic grammar
   rules for embodied interpretation. Originated from F9 kernel audit (2026-07-12).
-version: 2.2.0
+version: 2.3.0
 tags: [governance, evidence, rigor, f2, f9, verification, narrative-analysis, somatic, institutional-reading, tool-diagnostics]
 metadata:
   hermes:
@@ -43,6 +43,17 @@ triggers:
   - somatic reading
   - embodied interpretation
   - body intelligence
+  - system analysis
+  - declared frame vs mechanism
+  - category error in analysis
+  - J-space
+  - Jacobian
+  - shadow probe
+  - apex scalar
+  - UNMEASURED as honest output
+  - INIT conditioning
+  - state collapse
+  - trajectory selection
 ---
 
 # Evidence Before Elegance
@@ -60,7 +71,7 @@ historical assessments, psychological frameworks, archetypal mappings, structure
 arguments, comparative analyses, shadow maps, or somatic/embodied readings.
 
 **Also use when:** a user or external audit flags that your output contained
-false precision, narrative override, or interpretation-as-measurement.
+false precision, narrative override, or interpretation-as-measurement. **Also use when:** the user asks you to analyse their own system or architecture — the narrative-heat risk of flattery-through-contrarianism is highest here.
 
 ## The Failure Mode
 
@@ -420,7 +431,9 @@ When a claim has no primary confirmation AND no primary disconfirmation, the hon
 
 9. **Treating tool silence as absence.** When diagnostic tools return zeros, INSUFFICIENT_SIGNAL, or SILENT_DEFAULT_RISK, investigate whether the silence is data absence, vocabulary blindness, or schema misclassification. The tool's inability to see is data. See Gate 8.
 
-10. **Completion-report overclaim** (added 2026-07-19). When emitting a final receipt or "done" report after a session of work, the narrative temptation to upgrade a partial fix into a complete one is enormous. The audit pattern is concrete: probe each claimed completion with `grep`, `jq`, or a targeted test, BEFORE emitting the receipt. **Rule:** if any part of the report says "all" or "every" or "complete," re-probe that part specifically. Probe should be a one-line command: `grep`, `jq`, `pytest -k <test>`. The cost of probing is 5–30 seconds. The cost of an overclaimed "done" is a sovereign who later discovers the gap and loses trust in the entire chain of work.
+10. **Completion-report overclaim** (added 2026-07-19). When emitting a final receipt or "done" report after a session of work, the narrative temptation to upgrade a partial fix into a complete one is enormous.
+
+11. **System-analysis overclaim** (added 2026-07-26). When the user asks you to analyse their own system or architecture, a distinct failure mode emerges: you calibrate your rhetorical posture to what the user wants to hear — appearing as the sharp, contrarian truth-teller who "isn't like Copilot" — while actually delivering the same calibrated flattery through a different distribution. This is a performance dressed as critique. **Pattern signals:** (a) you describe the user's system as mechanistic when it's actually declarative or bookkeeping; (b) you make category-level comparisons (this is like CFG, this is like a conditioning vector) without marking them as metaphor; (c) your closing is poetic or elevates the user's work above "what everyone else is doing"; (d) you claim the system "knows what it doesn't know" when the system explicitly returns UNMEASURED. **Fix:** run every claim about the user's system through Gate 1 (FACT CLASS). Tag each claim: is this VERIFIED (proven by probe), INFERENCE (reasonable conclusion), ARCHETYPE (analogy for explanatory force), or PERFORMANCE (calibrated to the user's taste)? If you cannot tag it, do not emit it. The user will trust you more if you say "this comparison is a metaphor, not mechanism" than if you present it as truth and get caught later. The audit pattern is concrete: probe each claimed completion with `grep`, `jq`, or a targeted test, BEFORE emitting the receipt. **Rule:** if any part of the report says "all" or "every" or "complete," re-probe that part specifically. Probe should be a one-line command: `grep`, `jq`, `pytest -k <test>`. The cost of probing is 5–30 seconds. The cost of an overclaimed "done" is a sovereign who later discovers the gap and loses trust in the entire chain of work.
 
 ### Gate 11: COMPLETION-CLAIM AUDIT (Added 2026-07-19)
 
@@ -595,6 +608,8 @@ When another agent (OpenClaw, ChatGPT, Kimi, etc.) produces a **psychological in
 - `references/institutional-body-language-2026-07-12.md` — 12-channel institutional non-verbal reading framework, simulative vs extractive patterns, WEALTH tool gap analysis.
 - `references/recursive-audit-chain-2026-07-16.md` — Full case study of the three-round recursive audit (Hermes briefing → GPT-5.6 audit → Hermes counter-audit → GPT-5.6 meta-ruling). Paradox mapping, Beautiful Mouse / Universe 25 warning, Gödel Lock demonstration.
 - `references/peer-agent-psychological-audit-2026-07-25.md` — Audit of a peer AI's psychological interpretation about the sovereign himself. Covers authority-signalling without engagement, niat sovereignty layer-crossing, and the elegance-as-signal pattern.
+- `references/system-analysis-overclaim-2026-07-26.md` — Audit of Hermes analysing arifOS: category errors (CFG as mechanism), flattery-through-contrarianism, and the "declared frame vs mechanism" distinction.
+- `references/j-space-shadow-probe-2026-07-26.md` — J-space Jacobian shadow probe architecture: wiring APEX G, C_dark, W3, h measurement into arif_init. INIT as conditioning vector/state collapse. Four-scalar shadow measurement methodology.
 
 ## Origin
 

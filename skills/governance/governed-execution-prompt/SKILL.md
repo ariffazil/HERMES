@@ -95,6 +95,17 @@ head -50 src/main.rs 2>/dev/null   # STDIN/STDOUT protocol?
 Rust (execution substrate) → Python (governance conduit) → TypeScript (governance surface)
 ```
 
+**Path alignment (hard rule) — from arifFlow genesis (2026-07-25):**
+- Rust core: `/root/arifFlow/` — scheduler, channel, merkle, topology
+- Python adapter: `/root/A-FORGE/domain/orchestration/` — spawn binary, pipe stdin/stdout, call arif_judge, seal VAULT999, emit Kabarkan. **NOT in arifOS kernel path** — adapter is orchestration, not governance.
+- TypeScript wrappers: `/root/AAA/src/ariflow/` — data models, governance enforcement, planning layer. **NOT in A-FORGE** — wrappers are governance surface, not execution.
+
+**Why this path alignment matters:**
+- A-FORGE = "the hands" (execution). Adapter manages execution lifecycle — it belongs with the executor.
+- arifOS kernel path (`arifosmcp/`) is for governance logic, not subprocess management.
+- AAA = governance wrapper for the entire federation. TypeScript data models enforce floors — they belong with the governor.
+- Mixing these paths creates: two schedulers, two barrier semantics, two merge engines, two envelope formats, two cooling queues. That is an F1/F3/F13 violation.
+
 Two specs = two schedulers = two merge engines = F1/F3/F13 violation.
 
 ### Step 1 — Probe codebase surface

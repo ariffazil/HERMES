@@ -32,7 +32,7 @@ Format table:
 ## Layer 2: Nadi (git dirty state)
 
 ```bash
-for d in /root/{arifOS,A-FORCE,AAA,GEOX,WEALTH,WELL,HERMES}; do
+for d in /root/{arifOS,A-FORGE,AAA,GEOX,WEALTH,WELL,HERMES}; do
   if [ -d "$d/.git" ]; then
     dirty=$(git -C "$d" status -s 2>/dev/null)
     [ -n "$dirty" ] && echo "🌱 ${d##*/} — modified" || echo "🌱 ${d##*/} — clean"

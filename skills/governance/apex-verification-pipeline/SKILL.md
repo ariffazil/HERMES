@@ -7,6 +7,11 @@ description: >
 triggers:
   - "apex compute"
   - "apex intelligence"
+  - "apex analysis"
+  - "product comparison"
+  - "buying guide"
+  - "phone comparison"
+  - "best phone"
   - "G score"
   - "G-score"
   - "apex verification"
@@ -121,6 +126,7 @@ X = (successful_steps / total_steps) · consequence_stability
 - `references/market-prediction-application.md` — APEX applied to market prediction: primitive→market mapping, CLARITY/CHAOS/STABLE states, verdict matrix, volume integration, real XAUUSD example
 - `references/g-fold-flow-doctrine.md` — **G-fold as the federation's universal vital sign.** Crystallised flow doctrine (2026-07-25): circulatory path (contributors → kernel → consumers), nine-signal translation, compass property, organ-level G access, delta table (current vs doctrine). If you need to understand G as a federation-wide signal rather than a single computation, start here.
 - `references/g-fold-organ-consumption-pattern.md` — **How any organ fetches and consumes live G from the kernel.** Implementation template, C-class threshold matrix, graceful degradation rules, verification checklist. WELL is the first production deployment (2026-07-26). If you need to wire G-fold into an organ's pre-action gate, start here.
+- `references/consumer-decision-apex-application.md` — **APEX applied to consumer purchase decisions.** Primitive mapping (A=brand trust, P=hardware specs, E=pricing, X=switching cost, Φ=ranking), 5-phase methodology (T₀ ground truth → universe construction → scoring → head-to-head → verdict), pitfalls, and a worked example comparing HONOR 600 Pro vs S24 vs Xiaomi 17T Pro (MY market, Jul 2026).
 
 ## Related Doctrine
 

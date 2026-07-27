@@ -297,19 +297,19 @@ display:
         command_menu:
           max_commands: 80
           priority:
-                      - 000_salam
-                      - 111_tengok
-                      - 333_forge
-                      - 555_betul
-                      - 666_rasa
-                      - 777_faham
-                      - 888_adil
-                      - 999_ingat
-                      - flow
-                      - think_deep
-                      - forget
-                      - padu
-                      - start
+          - 000_salam
+          - 111_tengok
+          - 333_forge
+          - 555_betul
+          - 666_rasa
+          - 777_faham
+          - 888_adil
+          - 999_ingat
+          - flow
+          - think_deep
+          - forget
+          - padu
+          - start
           priority_mode: prepend
       streaming: true
   reasoning_full: false
@@ -377,10 +377,6 @@ fallback_providers:
   provider: ollama
   timeout: 20
 federation:
-  # ── P1: INTENT ROUTER CANON ─────────────────────────────────
-  # Deterministic 1:1 intent→organ mapping. No LLM routing.
-  # HERMES classifies; does NOT interpret or reason.
-  # Forged: 2026-07-26 | Authority: F13 SEAL
   intent_canon:
     version: 1
     sealed: '2026-07-26'
@@ -418,10 +414,6 @@ federation:
     catch_all:
       organ: arifOS
       reason: Unclassified signals escalate to kernel for judgment
-  # ── P2: EVIDENCE ENVELOPE ───────────────────────────────────
-  # Every incoming signal normalized to this schema before routing.
-  # HERMES normalizes; does NOT interpret, filter, or transform.
-  # Forged: 2026-07-26 | Authority: F13 SEAL
   evidence_envelope:
     version: 1
     sealed: '2026-07-26'
@@ -432,12 +424,25 @@ federation:
         description: Unique signal identifier, generated at ingress
       type:
         type: enum
-        values: [text, image, audio, video, document, command, event]
+        values:
+        - text
+        - image
+        - audio
+        - video
+        - document
+        - command
+        - event
         required: true
         description: Modality of the incoming signal
       source:
         type: enum
-        values: [telegram, api, mcp, cron, a2a, websocket]
+        values:
+        - telegram
+        - api
+        - mcp
+        - cron
+        - a2a
+        - websocket
         required: true
         description: Transport surface that received the signal
       source_id:
@@ -454,7 +459,15 @@ federation:
         description: Ingress timestamp (T₀), set at signal arrival
       intent:
         type: enum
-        values: [governance, execution, geology, finance, health, federation, bridge, unknown]
+        values:
+        - governance
+        - execution
+        - geology
+        - finance
+        - health
+        - federation
+        - bridge
+        - unknown
         required: true
         description: Classified intent from intent_canon — set BEFORE routing
       payload:
@@ -472,19 +485,19 @@ federation:
           reply_to: string
       epistemic_label:
         type: enum
-        values: [OBS, DER, INT, SPEC, UNKNOWN]
+        values:
+        - OBS
+        - DER
+        - INT
+        - SPEC
+        - UNKNOWN
         required: true
         description: Epistemic tag on classification confidence
     invariants:
-      - signal_id never null
-      - checksum computed before routing
-      - intent set from intent_canon, not from LLM
-      - epistemic_label defaults to OBS for raw signal, DER for classification
-  # ── P3: SKILL REGISTRY GOVERNOR ─────────────────────────────
-  # Every skill has exactly one owner organ. HERMES catalogs;
-  # domain organs own. No orphan skills.
-  # Canonical registry: /root/AAA/skills/FEDERATED_SKILLS_REGISTRY_V3.yaml
-  # Forged: 2026-07-26 | Authority: F13 SEAL
+    - signal_id never null
+    - checksum computed before routing
+    - intent set from intent_canon, not from LLM
+    - epistemic_label defaults to OBS for raw signal, DER for classification
   skill_governor:
     version: 1
     sealed: '2026-07-26'
@@ -492,39 +505,76 @@ federation:
     rule: skill_owner_is_organ
     ownership:
       arifOS:
-        domains: [kernel]
+        domains:
+        - kernel
         description: Constitutional, judgment, seal, session, F1-F13
-        skills: [kernel-eureka, kernel-superposition]
+        skills:
+        - kernel-eureka
+        - kernel-superposition
       A-FORGE:
-        domains: [forge, dev, ops]
+        domains:
+        - forge
+        - dev
+        - ops
         description: Execution, build, deploy, git, docker, shell
-        skills: [forge-exec, forge-verbs, dev-github, ops-docker, ops-vps]
+        skills:
+        - forge-exec
+        - forge-verbs
+        - dev-github
+        - ops-docker
+        - ops-vps
       GEOX:
-        domains: [geo]
+        domains:
+        - geo
         description: Earth intelligence — seismic, basin, petrophysics, prospect
-        skills: [geo-basin, geo-constitution, geo-petrophysics, geo-writing, geo-well-tie, geo-artifact-rigor, geo-prospect]
+        skills:
+        - geo-basin
+        - geo-constitution
+        - geo-petrophysics
+        - geo-writing
+        - geo-well-tie
+        - geo-artifact-rigor
+        - geo-prospect
       WEALTH:
-        domains: [wealth]
+        domains:
+        - wealth
         description: Capital intelligence — NPV, market, conservation, wisdom
-        skills: [wealth-reason, wealth-thermo, wealth-collapse]
+        skills:
+        - wealth-reason
+        - wealth-thermo
+        - wealth-collapse
       WELL:
-        domains: [well]
+        domains:
+        - well
         description: Human readiness — vitality, fatigue, dignity (REFLECT_ONLY)
-        skills: [well-boundary, well-readiness]
+        skills:
+        - well-boundary
+        - well-readiness
       HERMES:
-        domains: [meta, research, a2a, sec]
+        domains:
+        - meta
+        - research
+        - a2a
+        - sec
         description: Bridge — skill catalog, multimodal, signal relay, FLAME, Telegram
-        skills: [meta-skill-create, meta-skill-lint, meta-rsi, meta-atlas, meta-plan, research-summarize, research-search, research-deep, a2a-onboard, a2a-sovereign, sec-secrets, sec-telegram]
+        skills:
+        - meta-skill-create
+        - meta-skill-lint
+        - meta-rsi
+        - meta-atlas
+        - meta-plan
+        - research-summarize
+        - research-search
+        - research-deep
+        - a2a-onboard
+        - a2a-sovereign
+        - sec-secrets
+        - sec-telegram
     invariants:
-      - every_skill_has_owner
-      - no_skill_owned_by_two_organs
-      - canonical_registry_is_source_of_truth
-      - hermes_catalogs_never_owns_domain_skills
-  # ── P4: ROUTING RECEIPT ─────────────────────────────────────
-  # Every signal route produces an auditable receipt.
-  # Backed by Kabarkan observability plane (Postgres + JetStream).
-  # HERMES routes; arifFLOW observes; VAULT999 records.
-  # Forged: 2026-07-26 | Authority: F13 SEAL
+    - every_skill_has_owner
+    - no_skill_owned_by_two_organs
+    - canonical_registry_is_source_of_truth
+    - hermes_catalogs_never_owns_domain_skills
   routing_receipt:
     version: 1
     sealed: '2026-07-26'
@@ -546,11 +596,24 @@ federation:
         ref: evidence_envelope.signal_id
       from:
         type: enum
-        values: [telegram, api, mcp, cron, a2a, websocket]
+        values:
+        - telegram
+        - api
+        - mcp
+        - cron
+        - a2a
+        - websocket
         required: true
       to:
         type: enum
-        values: [arifOS, A-FORGE, GEOX, WEALTH, WELL, AAA, HERMES]
+        values:
+        - arifOS
+        - A-FORGE
+        - GEOX
+        - WEALTH
+        - WELL
+        - AAA
+        - HERMES
         required: true
       intent:
         type: string
@@ -558,7 +621,12 @@ federation:
         ref: intent_canon.mapping keys
       status:
         type: enum
-        values: [ROUTED, FAILED, REJECTED, HOLD, REDIRECTED]
+        values:
+        - ROUTED
+        - FAILED
+        - REJECTED
+        - HOLD
+        - REDIRECTED
         required: true
       timestamp_routed:
         type: iso8601
@@ -571,13 +639,12 @@ federation:
         required: true
         ref: evidence_envelope.checksum
     invariants:
-      - every_signal_produces_exactly_one_receipt
-      - receipt_id links to signal_id from evidence_envelope
-      - status=ROUTED requires target organ /health 200
-      - status=FAILED triggers retry or escalation
-      - receipt stored in kabarkan-ingest JetStream stream
-      - receipt hash anchored in VAULT999 cooling-ledger.jsonl
-  # ── FEDERATION ROUTER (existing — organ transport map) ──────
+    - every_signal_produces_exactly_one_receipt
+    - receipt_id links to signal_id from evidence_envelope
+    - status=ROUTED requires target organ /health 200
+    - status=FAILED triggers retry or escalation
+    - receipt stored in kabarkan-ingest JetStream stream
+    - receipt hash anchored in VAULT999 cooling-ledger.jsonl
   router:
     default: arif_route
     enabled: true
@@ -643,10 +710,11 @@ hooks:
     enabled: true
     endpoint: http://127.0.0.1:8088/mcp
     fallback_on_error: passthrough
-    notes: >
-      Intent classification before LLM — ART phase (attune/recognize/test).
-      Classification source: federation.intent_canon (deterministic, not LLM).
-      Routes through arifOS arif_route for kernel-governed dispatch.
+    notes: 'Intent classification before LLM — ART phase (attune/recognize/test).
+      Classification source: federation.intent_canon (deterministic, not LLM). Routes
+      through arifOS arif_route for kernel-governed dispatch.
+
+      '
     tool: arif_route
     type: intent_route
   pre_tool_call:
@@ -663,10 +731,11 @@ hooks:
     enabled: true
     endpoint: http://127.0.0.1:8088/mcp
     fallback_on_error: passthrough
-    notes: >
-      Routes every federated tool call through arifOS arif_route. Organs/tools
-      stay direct-callable; this hook only intercepts ambiguous intents.
-      Tool routing governed by federation.intent_canon + federation.skill_governor.
+    notes: 'Routes every federated tool call through arifOS arif_route. Organs/tools
+      stay direct-callable; this hook only intercepts ambiguous intents. Tool routing
+      governed by federation.intent_canon + federation.skill_governor.
+
+      '
     tool: arif_route
     type: intent_route
 hooks_auto_accept: true
@@ -753,7 +822,7 @@ mcp_servers:
 memory:
   memory_char_limit: 4000
   memory_enabled: true
-  provider: honcho
+  provider: local
   transient_char_limit: 4000
   transient_file: /root/.hermes/memories/SESSION.md
   transient_purpose: session-scoped working memory, not injected into long-term LLM

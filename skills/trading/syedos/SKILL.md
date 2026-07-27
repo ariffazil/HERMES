@@ -136,6 +136,8 @@ Bang Sado is VISUAL. "Abang sado ni suka visual. Depa sado kot. All about physiq
 
 The SADO group receives MULTIPLE content types via cron jobs, not just trading signals. Content strategy: mix of practical (trading, nasi lemak), educational (AI events), and lifestyle (bodybuilding/fitness).
 
+**CRITICAL: The daily ringkasan (🌙 SyedOS Ringkasan Harian) delivers to SYED'S DM (`telegram:1042200555`), NOT the SADO group.** The 9pm summary is personal — nasi lemak stats + gold + revenue + 1-line tip. Only delivers to his private DM. Do not switch it to the group unless explicitly asked.
+
 | Day | Time (MYT) | Content | Who it's for |
 |-----|-----------|---------|-------------|
 | **Monday** | 9:00am | **AI Events** — Scan AI conferences, hackathons, model releases upcoming in Malaysia/SEA. Abang Sado voice, BM, ringkas. | Syed + group curious about tech/AI |
@@ -238,23 +240,67 @@ new TradingView.widget({
 </script>
 ```
 
-**Live gold price pattern (proven):**
+**CORRECTED TradingView widget config (proven 2026-07-25 — locale + delay fix):**
+```html
+<div id="tv-chart" style="height:270px;"></div>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+setTimeout(function(){
+  try {
+    new TradingView.widget({
+      container_id: "tv-chart",
+      symbol: "OANDA:XAUUSD",
+      interval: "60",
+      timezone: "Asia/Kuala_Lumpur",
+      theme: "dark",
+      style: "1",
+      width: "100%",
+      height: 270,
+      hide_side_toolbar: true,
+      hide_top_toolbar: true,
+      save_image: false,
+      locale: "en",           /* ⚠️ "ms_MY" is NOT valid — widget silently fails */
+      autosize: true,
+      disabled_features: ["header_symbol_search","symbol_search_hot_key",
+        "header_chart_type","header_indicators","header_compare",
+        "header_screenshot","header_undo_redo"],
+      enable_publishing: false,
+      allow_symbol_change: false,
+      studies: ["RSI@tv-basicstudies"]
+    });
+  } catch(e){}
+}, 100);  /* small delay ensures DOM is ready, tv.js loaded first */
+</script>
+```
+
+**Key fixes (2026-07-25):**
+- `locale: "ms_MY"` → `locale: "en"` — ms_MY is not valid TradingView locale → silent fail
+- Added `setTimeout(..., 100)` — ensures DOM ready before widget init
+- Added RSI study via `studies: ["RSI@tv-basicstudies"]` — abang sado needs RSI
+- Load `tv.js` directly above widget code in body, not in `<head>`
+
+**Live gold price pattern (proven 2026-07-25):**
 ```js
 async function updateGoldPrice() {
-  const r = await fetch('https://api.gold-api.com/price/XAU');
-  const j = await r.json(); // { price: 4053.70, currency: "USD" }
-  // Update stat card + badge
+  try {
+    const r = await fetch('https://api.gold-api.com/price/XAU');
+    const j = await r.json(); // { price: 4053.70, currency: "USD" }
+    const stat = document.querySelector('.stat .n.red');
+    if (stat) stat.textContent = '$' + price.toFixed(0);
+  } catch(e) { /* silent — don't break page if API down */ }
 }
 updateGoldPrice();
-setInterval(updateGoldPrice, 60000);
+setInterval(updateGoldPrice, 60000);  // refresh every 60s
 ```
+
+**CORS confirmed:** `Access-Control-Allow-Origin: *` — works from any domain. No API key needed. Response: `{price, currency, symbol, updatedAt, updatedAtReadable}`. Free tier has no rate limit documented — 60s interval is polite.
 
 **Pitfall:** The screenshot tool's headless browser blocks TradingView third-party iframes — the chart shows a fallback "❌ XAUUSD Chart" message. This is a tool limitation, NOT a site bug. The chart renders correctly in real browsers (Chrome, Safari, mobile).
 
-**Daily Ringkasan Cron (proven 2026-07-25):** A cron job delivers a BM summary to the SADO group every night at 9pm MYT:
+**Daily Ringkasan Cron (proven 2026-07-25):** A cron job delivers a BM summary to Syed's DM every night at 9pm MYT (updated from SADO group to DM per request):
 - Job ID: `c651a7e5b758`
 - Schedule: `0 21 * * *` (daily at 9pm MYT)
-- Deliver: SADO group (`telegram:-1003815535761`)
+- Deliver: Syed's DM (`telegram:1042200555`) — UPDATED from SADO group on 2026-07-25
 - Format: 🌙 Ringkasan Harian with nasi lemak stats, XAUUSD price/change, pendapatan total, and 1-line tip
 - The cron agent fetches live data from `https://syedos.arif-fazil.com` and `https://api.gold-api.com/price/XAU`
 
@@ -424,7 +470,7 @@ Per F10 ONTOLOGY: agent proposes, human decides. Per F1 AMANAH: reversibility fi
 | `7f1468e5e66a` | XAUUSD Daily Gold Signal | 9am MYT Mon-Fri | origin |
 | `7269e5cfee2e` | Weekly Report | Friday 8pm MYT | SADO group |
 | `c1df87eb4de4` | IG Story Gym Quote | 1pm MYT daily | origin |
-| `c651a7e5b758` | 🌙 SyedOS Ringkasan Harian | 9pm MYT daily | SADO group |
+| `c651a7e5b758` | 🌙 SyedOS Ringkasan Harian | 9pm MYT daily | Syed's DM (1042200555) |
 
 **Syed's Telegram DM chat ID:** `1042200555`. Session key: `agent:main:telegram:dm:1042200555` (first contact 2026-07-03, 40+ DM messages logged in raw gateway logs as of 2026-07-17). Display name in Telegram: "No name". Channel directory entries: `{"id": "1042200555", "type": "dm"}` and `{"id": "1042200555:111175", "type": "dm", "thread_id": "111175"}`. Allowed in `TELEGRAM_ALLOWED_USERS` and `TELEGRAM_GROUP_ALLOWED_USERS`.
 
@@ -576,6 +622,14 @@ When Syed sends a bulk nasi lemak order (multiple locations, quantities, item ty
 **Pitfall (2026-07-18):** Syed shared an order list + pricing, and totals were calculated without asking. He responded "Salah2 abaikan" and "nanfi aku masuk dekat kau sendiri bot" — meaning "back off, I'll handle payments myself." This is the sole reason Rule #2 above exists.
 
 **Pitfall (2026-07-25): Jangan teka jenis kereta.** Syed sent a photo of his Myvi (red Myvi, plate WB 9170) and I called it a Hyundai. He responded: "Myvi la. Hyundai apa benda hang. Hang kena belajar pasal kereta dengan abang sado." Rule: If unsure about a car make/model, say nothing or ask "Kereta apa tu bang?" — never guess. Bang Sado knows his cars.
+
+### Proposal Page Pattern
+
+When presenting a proposal, review, or roadmap to Abang Sado for approval, use the dedicated proposal page at `/proposal.html`. See `references/proposal-page-pattern.md` for the full template (card format, approval buttons, kos summary). Live example at `https://syedos.arif-fazil.com/proposal.html`.
+
+### Rental SWOT Analysis Pattern
+
+When Khairuddin (or any contact) needs a rental/housing decision analyzed (dispute, moving options, financial comparison), use the dedicated rental-SWOT page at `/rental-swot.html`. See `references/rental-swot-pattern.md` for the full template (hero image, 2×2 SWOT grid, collapsible option cards, timeline, cashflow table, verdict box). Live example at `https://syedos.arif-fazil.com/rental-swot.html`.
 
 ## Trading Direction Confusion (Proven 2026-07-16)
 

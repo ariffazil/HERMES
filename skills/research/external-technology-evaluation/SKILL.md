@@ -174,3 +174,8 @@ When Arif says any approval signal ("Yes setup", "Ok hang buat", "Go ahead"):
 - **Don't forget the floor check**: Every EUREKA proposal must carry F1/F7/F10 assessments.
 - **Don't deploy scaffolding without approval**: Build the Modal scaffold but do NOT run `modal deploy`. Arif calls `modal deploy` when he's ready. The scaffold is the execution-ready plan, not the execution itself.
 - **"Apa yang ada guna ja"**: If the current stack already covers the capability, the bar for integration is higher. State the gap explicitly.
+
+## References
+
+- `references/mage-evaluation-2026-07-25.md` — Mage-Flow image generation evaluation
+- `references/furi-mcp-manager-evaluation-2026-07-26.md` — Furi MCP server manager evaluation (pattern for MCP tool/infra assessments)

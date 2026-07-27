@@ -330,6 +330,22 @@ plugins=[{"id": "auto-router", "cost_quality_tradeoff": 5}]
 | 3 | openrouter/free | Survival — 50 RM0 models, 20 req/min | 10 |
 | 4 | ollama/qwen2.5-coder:3b | Last resort — local | — |
 
+## OpenClaw Cron Model Configuration
+
+OpenClaw isolated-session cron jobs (`session: isolated`) use a **hardcoded fallback chain** when `model: -` (not set). This fallback lives in the cron job's `payload.fallbacks` and can contain stale/incorrect model names.
+
+**Problem pattern:** When `model: -`, OpenClaw's isolated session tries an internal chain like `minimax/MiniMax-M3 → deepseek/deepseek-chat → ollama/qwen2.5:7b`. The model `deepseek/deepseek-chat` does NOT exist — correct DeepSeek IDs are `deepseek-v4-pro` and `deepseek-v4-flash`. The `ollama/qwen2.5:7b` model fails if Ollama provider is not configured. All three can fail → `FallbackSummaryError`.
+
+**Fix — Pin model and clear broken fallbacks:**
+```bash
+openclaw cron edit <job-id> --model deepseek-v4-flash --clear-fallbacks
+```
+
+**Best practice:** Always set `--model` explicitly on OpenClaw cron jobs. Never rely on the default fallback chain — `deepseek/deepseek-chat` was correct in 2025 but no longer valid. After fixing, verify with:
+```bash
+openclaw cron show <job-id> | grep -E 'model:|fallbacks|last.*status'
+```
+
 ## Pitfalls
 
 - **Three-tapisan model (forged 2026-07-24):** OpenRouter CAN serve as Hermes's intelligence layer, but 3 hard filters apply:

@@ -353,7 +353,7 @@ See `references/crisis-protocol-identity-bind-failure.md` for the complete proto
 | `/root/arifOS/arifosmcp/tools/arif_kernel_intercept.py` | Kernel intercept — F13 gate, cc_id emission |
 | `/root/arifOS/arifosmcp/runtime/crypto_auth.py` | Ed25519 verification, challenge issuance |
 | `/root/arifOS/arifosmcp/schemas/minimum_kernel.py` | KernelOutput schema with cc_id, judge_state_hash |
-| `/root/A-FORCE/data/agent_identities.json` | Public key registry (arif Ed25519) |
+| `/root/A-FORGE/data/agent_identities.json` | Public key registry (arif Ed25519) |
 | `/opt/arifos/identity/` | Runtime identity paths |
 | `/opt/arifos/.secrets/did/registry.json` | DID registry |
 | `/etc/systemd/system/arifos.service.d/10-f13-auth.conf` | Systemd F13 guard |

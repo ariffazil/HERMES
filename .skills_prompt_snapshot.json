@@ -10,8 +10,8 @@
       2970
     ],
     "software-development/live-probe-audit-pattern/SKILL.md": [
-      1785010991047778480,
-      21148
+      1785113774743593741,
+      24097
     ],
     "software-development/deep-codebase-audit/SKILL.md": [
       1784956698831276168,
@@ -25,12 +25,20 @@
       1784862082830855363,
       9837
     ],
+    "software-development/merge-conflict-cleanup/SKILL.md": [
+      1785111133421608974,
+      8536
+    ],
+    "software-development/kernel-resource-forging/SKILL.md": [
+      1785077919806081660,
+      10547
+    ],
     "software-development/spec-audit/SKILL.md": [
       1784862216536163462,
       8920
     ],
     "software-development/repository-sot-inventory/SKILL.md": [
-      1785006557029150532,
+      1785060730502426351,
       29699
     ],
     "software-development/governed-knowledge-stores/SKILL.md": [
@@ -82,20 +90,20 @@
       3987
     ],
     "devops/hermes-cron-rhythm/SKILL.md": [
-      1785035243312874625,
-      54460
+      1785103806455291552,
+      54745
     ],
     "devops/agentic-infrastructure-ops/SKILL.md": [
-      1784862216538834339,
-      8280
+      1785074922748138587,
+      9068
     ],
     "devops/federation-subsystem-bringup/SKILL.md": [
       1784862131594962148,
       13696
     ],
     "devops/runtime-truth-attestation/SKILL.md": [
-      1784955421015950339,
-      25648
+      1785114157773580844,
+      34852
     ],
     "devops/agentic-vps-operations/SKILL.md": [
       1784862216539542987,
@@ -106,16 +114,16 @@
       17085
     ],
     "devops/flame-free-loop-mesh/SKILL.md": [
-      1784990530632121598,
+      1785060730493426291,
       27049
     ],
     "devops/arifos-interceptor-patching/SKILL.md": [
-      1784935609646589427,
-      18288
+      1785083097683511583,
+      24997
     ],
     "devops/arif-sites-content-ops/SKILL.md": [
-      1784862216540432998,
-      9109
+      1785077321020880962,
+      10777
     ],
     "devops/vps-machine-health/SKILL.md": [
       1784862232338234007,
@@ -138,8 +146,8 @@
       5785
     ],
     "devops/caddy-reverse-proxy/SKILL.md": [
-      1784877335949840540,
-      28907
+      1785077906515751103,
+      30962
     ],
     "devops/autonomous-vps-response/SKILL.md": [
       1784968993335067606,
@@ -150,7 +158,7 @@
       6555
     ],
     "devops/skill-audit-methodology/SKILL.md": [
-      1785006687956472561,
+      1785060730496958944,
       23456
     ],
     "devops/vps-operations/SKILL.md": [
@@ -166,8 +174,8 @@
       5480
     ],
     "devops/federation-checkup/SKILL.md": [
-      1785004408258682238,
-      79816
+      1785114185404133751,
+      93042
     ],
     "devops/telegram-userbot-telethon/SKILL.md": [
       1784492426257257054,
@@ -182,15 +190,19 @@
       9101
     ],
     "devops/hermes-telegram-group-setup/SKILL.md": [
-      1785004539556303598,
+      1785060730494426297,
       36177
+    ],
+    "devops/well-operations/SKILL.md": [
+      1785089105964482474,
+      8349
     ],
     "devops/deep-research-deployment/SKILL.md": [
       1784875791737640555,
       6812
     ],
     "devops/a2a-agent-card-registration/SKILL.md": [
-      1785008430881930101,
+      1785060730492426284,
       65969
     ],
     "devops/federation-mesh-networking/SKILL.md": [
@@ -230,7 +242,7 @@
       7914
     ],
     "devops/a-forge-development/SKILL.md": [
-      1785011033460810635,
+      1785060730491426277,
       47722
     ],
     "devops/agent-email-transport/SKILL.md": [
@@ -238,11 +250,11 @@
       8629
     ],
     "devops/external-mcp-integration/SKILL.md": [
-      1784990260313833751,
-      23937
+      1785079826990175324,
+      25818
     ],
     "devops/manifest-data-repair/SKILL.md": [
-      1785006520382498794,
+      1785060730495426304,
       6430
     ],
     "devops/arifos-ed25519-sovereign-signing/SKILL.md": [
@@ -250,8 +262,8 @@
       48860
     ],
     "devops/provider-routing-zen/SKILL.md": [
-      1784875775517017803,
-      27442
+      1785082319467631083,
+      28544
     ],
     "devops/flame-free-loop/SKILL.md": [
       1784983802426078860,
@@ -310,7 +322,7 @@
       18894
     ],
     "federated-skill-architecture/SKILL.md": [
-      1785007593402024481,
+      1785060730496958944,
       16124
     ],
     "wisdom-scar-session-audit/SKILL.md": [
@@ -394,8 +406,8 @@
       14617
     ],
     "trading/nasi-lemak-tracking/SKILL.md": [
-      1784870150244247185,
-      4907
+      1785071287163568756,
+      8687
     ],
     "trading/agentic-trading-companion/SKILL.md": [
       1784862216551241142,
@@ -406,8 +418,8 @@
       15889
     ],
     "trading/syedos/SKILL.md": [
-      1785005264248751831,
-      54346
+      1785121706222557721,
+      57344
     ],
     "trading/daily-trading-signal-briefing/SKILL.md": [
       1784862216552294130,
@@ -418,7 +430,7 @@
       25265
     ],
     "seven-zen-organs-enforcement/SKILL.md": [
-      1785003508719358737,
+      1785060730501642145,
       75484
     ],
     "productivity/DESCRIPTION.md": [
@@ -454,8 +466,8 @@
       6868
     ],
     "productivity/hospital-patient-advocacy/SKILL.md": [
-      1784883051736676323,
-      6442
+      1785068812132090973,
+      9081
     ],
     "productivity/airtable/SKILL.md": [
       1784862131618407622,
@@ -486,16 +498,16 @@
       2934
     ],
     "cognitive-commands/SKILL.md": [
-      1785005433899991334,
+      1785060730489426264,
       17579
     ],
     "business/nasi-lemak-sales-tracking/SKILL.md": [
-      1784890252836937079,
-      11165
+      1785068163418984332,
+      11706
     ],
     "business/nasi-lemak-daily-tracking/SKILL.md": [
-      1784883043361860873,
-      5924
+      1785124249292492403,
+      7092
     ],
     "business/nasi-lemak-sales/SKILL.md": [
       1784862216558022545,
@@ -514,7 +526,7 @@
       18054
     ],
     "federation/telegram-bot-routing-doctrine/SKILL.md": [
-      1785005046359846196,
+      1785060730496958944,
       6608
     ],
     "arifos-auto-init/SKILL.md": [
@@ -522,8 +534,8 @@
       8058
     ],
     "arifos-kernel-zen-audit/SKILL.md": [
-      1784968698016732556,
-      39703
+      1785114162036309331,
+      48066
     ],
     "email/DESCRIPTION.md": [
       1784492426270257139,
@@ -606,7 +618,7 @@
       12183
     ],
     "creative/lightweight-image-generation/SKILL.md": [
-      1785023527838249021,
+      1785060730490781051,
       11426
     ],
     "creative/sketch/SKILL.md": [
@@ -674,7 +686,7 @@
       4543
     ],
     "creative/scientific-pdf-generation/SKILL.md": [
-      1785001339155966850,
+      1785060730491426277,
       47419
     ],
     "agent-role-mode-flagging/SKILL.md": [
@@ -706,8 +718,8 @@
       8948
     ],
     "research/external-technology-evaluation/SKILL.md": [
-      1784989257670229223,
-      7897
+      1785074952025303415,
+      8137
     ],
     "research/human-intelligence-gathering/SKILL.md": [
       1784862216567391690,
@@ -738,11 +750,11 @@
       7402
     ],
     "research/deep-research/SKILL.md": [
-      1784990628105252473,
-      57133
+      1785126860380555372,
+      59815
     ],
     "research/news-research-briefing/SKILL.md": [
-      1784992213706150940,
+      1785060730501642145,
       19566
     ],
     "research/code-analysis-skills/SKILL.md": [
@@ -810,8 +822,8 @@
       13330
     ],
     "research/arif-daily-sensorium/SKILL.md": [
-      1784992178755908908,
-      10272
+      1785115904823667003,
+      15079
     ],
     "consult-external-llm/SKILL.md": [
       1784862131574437806,
@@ -829,6 +841,10 @@
       1784862216572662655,
       11762
     ],
+    "governance/arifos-nine-locks/SKILL.md": [
+      1785112711862950321,
+      3935
+    ],
     "governance/explore-before-collapse/SKILL.md": [
       1784492426292257284,
       18005
@@ -838,16 +854,16 @@
       13513
     ],
     "governance/apex-verification-pipeline/SKILL.md": [
-      1785011581630673121,
-      6254
+      1785126864711914720,
+      6769
     ],
     "governance/ai-cognitive-amplification-diagnosis/SKILL.md": [
       1784862094144930235,
       4719
     ],
     "governance/evidence-before-elegance/SKILL.md": [
-      1785028008853581698,
-      41437
+      1785083351036636106,
+      43605
     ],
     "governance/human-sovereignty-geometry/SKILL.md": [
       1784862216573834452,
@@ -866,7 +882,7 @@
       19546
     ],
     "governance/governed-execution-substrate/SKILL.md": [
-      1785010730934635440,
+      1785060730499426331,
       60348
     ],
     "governance/institutional-body-language/SKILL.md": [
@@ -906,20 +922,28 @@
       5326
     ],
     "governance/multimodal-agentic-intelligence/SKILL.md": [
-      1785010953474455746,
+      1785060730499426331,
       3688
+    ],
+    "governance/agentic-web-surface-architecture/SKILL.md": [
+      1785077867223685174,
+      10716
     ],
     "governance/akal-civilizational-frame/SKILL.md": [
       1784862216575946846,
       9326
     ],
     "governance/tri-witness-specification/SKILL.md": [
-      1785011605763827869,
+      1785060730499426331,
       4453
     ],
     "governance/sovereign-sexuality-conversations/SKILL.md": [
       1784862094177930454,
       16662
+    ],
+    "governance/agentic-rl-readiness-audit/SKILL.md": [
+      1785078590033986505,
+      6529
     ],
     "governance/governance-friction-rightsizing/SKILL.md": [
       1784954672992388727,
@@ -930,7 +954,7 @@
       10011
     ],
     "governance/agent-channel-sovereignty/SKILL.md": [
-      1785003784441547055,
+      1785060730496958944,
       7344
     ],
     "governance/institutional-intelligence/SKILL.md": [
@@ -938,12 +962,16 @@
       13434
     ],
     "governance/eureka-playbook/SKILL.md": [
-      1784963546191875682,
-      12958
+      1785113451843829607,
+      21291
     ],
     "governance/f13-sovereign-authorization-substrate/SKILL.md": [
-      1785002593148671850,
+      1785074582388286876,
       34585
+    ],
+    "governance/federation-invariants-audit/SKILL.md": [
+      1785079504799819848,
+      9521
     ],
     "governance/governance-feedback-loops/SKILL.md": [
       1784615867502278650,
@@ -954,19 +982,19 @@
       19012
     ],
     "governance/three-agent-flow-doctrine/SKILL.md": [
-      1785001160961229630,
-      9797
+      1785114514474662264,
+      22368
     ],
     "governance/governed-execution-prompt/SKILL.md": [
-      1784967126135223535,
-      12580
+      1785082635111439002,
+      13638
     ],
     "governance/external-wisdom-integration/SKILL.md": [
       1784910604386741666,
       34623
     ],
     "governance/delta-omega-psi-multimodal-cognition/SKILL.md": [
-      1785011596929858104,
+      1785060730498365856,
       4035
     ],
     "governance/temporal-constitution/SKILL.md": [
@@ -974,12 +1002,12 @@
       4942
     ],
     "governance/governed-agent-anatomy/SKILL.md": [
-      1784967213441942031,
-      24770
+      1785113396548345525,
+      34266
     ],
     "governance/agent-init-architecture/SKILL.md": [
-      1784862170867964877,
-      17077
+      1785112586765794911,
+      18993
     ],
     "smart-home/DESCRIPTION.md": [
       1784492426437258236,
@@ -2429,6 +2457,19 @@
       }
     },
     {
+      "skill_name": "well-operations",
+      "category": "devops",
+      "frontmatter_name": "well-operations",
+      "description": "Diagnose and operate the WELL organ (port 18083) — freshn...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
       "skill_name": "himalaya",
       "category": "email",
       "frontmatter_name": "himalaya",
@@ -2576,6 +2617,32 @@
       }
     },
     {
+      "skill_name": "agentic-rl-readiness-audit",
+      "category": "governance",
+      "frontmatter_name": "agentic-rl-readiness-audit",
+      "description": "Falsifiable readiness audit for agentic RL / world-model ...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "agentic-web-surface-architecture",
+      "category": "governance",
+      "frontmatter_name": "agentic-web-surface-architecture",
+      "description": "Graph-first methodology for building web surfaces that se...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
       "skill_name": "ai-cognitive-amplification-diagnosis",
       "category": "governance",
       "frontmatter_name": "ai-cognitive-amplification-diagnosis",
@@ -2632,6 +2699,19 @@
       "category": "governance",
       "frontmatter_name": "apex-verification-pipeline",
       "description": "APEX Verification Pipeline — runtime computation of G = A...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "arifos-nine-locks",
+      "category": "governance",
+      "frontmatter_name": "arifos-nine-locks",
+      "description": "Seven-layer agent state + nine constitutional locks. Agen...",
       "platforms": [],
       "conditions": {
         "fallback_for_toolsets": [],
@@ -2749,6 +2829,19 @@
       "category": "governance",
       "frontmatter_name": "f13-sovereign-authorization-substrate",
       "description": "F13 Ed25519 sovereign authorization substrate — ALL THREE...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "federation-invariants-audit",
+      "category": "governance",
+      "frontmatter_name": "federation-invariants-audit",
+      "description": "3-tier invariants framework for auditing what can and can...",
       "platforms": [],
       "conditions": {
         "fallback_for_toolsets": [],
@@ -4072,11 +4165,40 @@
       }
     },
     {
+      "skill_name": "kernel-resource-forging",
+      "category": "software-development",
+      "frontmatter_name": "kernel-resource-forging",
+      "description": "Forge new MCP resources on the arifOS kernel — from resou...",
+      "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
       "skill_name": "live-probe-audit-pattern",
       "category": "software-development",
       "frontmatter_name": "live-probe-audit-pattern",
       "description": "Probe status narratives against live system state before ...",
       "platforms": [],
+      "conditions": {
+        "fallback_for_toolsets": [],
+        "requires_toolsets": [],
+        "fallback_for_tools": [],
+        "requires_tools": []
+      }
+    },
+    {
+      "skill_name": "merge-conflict-cleanup",
+      "category": "software-development",
+      "frontmatter_name": "merge-conflict-cleanup",
+      "description": "Detect and fix merge conflict artifacts across a codebase...",
+      "platforms": [
+        "linux",
+        "macos"
+      ],
       "conditions": {
         "fallback_for_toolsets": [],
         "requires_toolsets": [],

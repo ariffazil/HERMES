@@ -21,6 +21,10 @@ triggers:
   - "catch me up on the world"
   - "ASI briefing"
   - "what just happened"
+  - "should I register"
+  - "should I attend"
+  - "evaluate this event"
+  - "is this worth"
 ---
 
 # Arif Daily Sensorium
@@ -56,6 +60,49 @@ Domains that MATTER. Everything else is background noise.
 If a news item doesn't touch one of these 6 domains, it gets ONE line max or drops.
 
 ## Workflow
+
+### 0. Federation Boot (before any web research)
+
+Every briefing for Arif starts with federation internal state. Do this first —
+it's faster than web search and catches blockers before you invest time in analysis.
+
+```bash
+# 0a — Source vault.env
+set -a && source /root/.secrets/vault.env && set +a
+
+# 0b — Read CONTEXT.md tail (last session's focus, HEADs, T3 items, quick-win queue)
+tail -80 /root/CONTEXT.md | grep -E "CURRENT FOCUS|Open T3|HEAD|QUICK-WIN|DOCKER INFRA|FLOOR STATUS"
+
+# 0c — Probe 6 organs
+for svc in arifos:8088 aforge:7071 aaa:3001 geox:8081 wealth:18082 well:18083; do
+  name="${svc%%:*}"; port="${svc##*:}"
+  curl -sf "http://127.0.0.1:$port/health" >/dev/null 2>&1 && echo "✅ $name" || echo "❌ $name"
+done
+
+# 0d — Dirty repos
+for d in /root/{arifOS,A-FORGE,AAA,GEOX,WEALTH,WELL,arif-sites}; do
+  [ -d "$d" ] && git -C "$d" status -s 2>/dev/null | wc -l | xargs -I{} echo "$(basename $d): {} dirty"
+done
+
+# 0e — Check for merge conflict markers
+for d in /root/{arifOS,A-FORGE,AAA,GEOX,WEALTH,WELL}; do
+  [ -d "$d" ] && cnt=$(git -C "$d" status -s 2>/dev/null | grep -c "^AA\|^UU\|^DD\|^DU" || true) && [ "$cnt" -gt 0 ] && echo "⚠️ $(basename $d): $cnt merge-conflict files"
+done
+
+# 0f — Check deprecation registry
+jq .version /root/AAA/docs/deprecation-registry.json 2>/dev/null
+```
+
+**Red flag detection** — flag these immediately in the briefing header:
+- Any organ unhealthy → escalation needed
+- Merge conflicts in any repo (AA/UU/DU) → BLOCKER for new forge work
+- arifOS repo with 1000+ dirty files → likely merge mess (proven pattern)
+- CONTEXT.md `last_verified` > 48h ago → drift risk
+- MCP tool unreachable but port health green → MCP transport issue, not organ failure
+- T3 open items list growing → accumulated governance debt
+
+Report format: table of 6 organs + arif-sites, status + short HEAD. Flag anomalies
+in a "⚠️ Perhatian" section. This is OBS data — just report, don't analyse.
 
 ### 1. Resolve Scope
 
@@ -113,8 +160,23 @@ Apply domain lenses: translate events through physical, capital, institutional, 
 - Keep infrastructure diagnosis separate from content accuracy.
 - When web_extract fails on SearXNG backends (search-only, cannot extract URLs),
   fall back to Hound MCP smart_fetch. Verified Jul 2026.
-- When WEALTH MCP is unreachable, fall back to Hound MCP + browser for market data.
-  Verified Jul 2026.
+- When WEALTH MCP returns SESSION_REQUIRED or is unreachable, fall back to these local data sources (faster than web search):
+  - Gold/oil API port 3456 — three endpoints for market data:
+  - `curl -sf localhost:3456/api/gold/ticker` — XAUUSD price, change, RSI (+ state: COLD/NEUTRAL/HOT/OVERBOUGHT/OVERSOLD), EMA 20/50/200, EMA trend, S/R levels, signal, confidence
+  - `curl -sf localhost:3456/api/gold/macro` — DXY, VIX, US10Y, silver, USDMYR, gold-silver ratio
+  - `curl -sf localhost:3456/api/gold/calendar` — this week's economic events (FOMC, CPI, NFP, consumer confidence) with dates, times, impacts, forecasts
+  - WEALTH direct port 18082 — `curl -sf localhost:18082/health` for identity hash + tool count
+  These are always available, sub-second response, no API key needed, no browser overhead.
+
+**User-provided market data:** When Arif gives raw market figures himself (Bloomberg M+),
+use them as the BASELINE — do not re-fetch from scratch. Focus on INTERPRETATION:
+why the move happened, what it means for Malaysia, what to watch next.
+If your live source disagrees with his number, flag the discrepancy with both sources cited.
+Verified Jul 2026.
+
+**Economic calendar:** Always check this week's high-impact events (FOMC, CPI, NFP)
+as part of capital lens analysis. Include a compact event table in the briefing
+for the current week.
 
 ### 7. Rank by Consequence
 
@@ -129,6 +191,8 @@ Discard duplicates, recycled commentary, personality gossip, low-consequence nov
 
 Use `references/briefing-template.md`. ~5 minutes readable.
 Telegram-optimized (~4000 char). If too long: cut AI section first, then watch horizon.
+
+For event/conference evaluation, use `references/event-evaluation.md`.
 
 ### 9. Release Gate
 
@@ -184,7 +248,11 @@ food logistics, electricity pass-through, and ringgit behaviour are.
 - **web_extract fails on SearXNG backends.** SearXNG is search-only; it cannot extract URL content. When `"SearXNG is a search-only backend"` is returned, switch to Hound MCP `smart_fetch`. Do not retry web_extract. Verified Jul 2026.
 - **Parallel-search first, then extract.** Launch `web_search` across all 6 domains simultaneously, review results, then `smart_fetch` only promising URLs. Serial search→extract→search loops are 3-4× slower. Verified Jul 2026.
 - **Watch for the absence of expected events in active conflicts.** In war monitoring, "no strikes for 13 consecutive nights" is itself a reportable OBS signal, not a non-event. Always check whether a pattern was broken. Verified Jul 2026 (US-Iran pause).
-- **Corroborate oil prices from ≥2 independent live sources.** CNBC, crudeoilprices.today, or Trading Economics — pick two. Forbes Advisor may serve cached data (observed 18 days stale Jul 2026). Cross-check timestamps. Verified Jul 2026.
+- **Corroborate oil prices from ≥2 independent live sources.** CNBC, Trading Economics, crudeoilprices.today — pick two. Forbes Advisor may serve cached data (observed 18 days stale Jul 2026). Cross-check timestamps. Verified Jul 2026.
+- **MCP unreachable ≠ organ down.** When an MCP tool fails (e.g. WEALTH capital_market) but curl to the port shows `{"status":"healthy"}`, the MCP transport layer is the problem — not the organ. Check port/health directly before escalating. Verified Jul 2026.
+- **WEALTH MCP SESSION_REQUIRED (proven 2026-07-27).** Since FORGE 2026-07-18, all WEALTH tools (capital_market, capital_health, etc.) require a session_id from an arifOS session. Calling them without one returns {"error_code":"SESSION_REQUIRED"}. Fix: call arif_init with mode='init', actor_id='hermes-asi', requested_authority='OBSERVE_ONLY', extract session_id from response, and pass it to every WEALTH MCP tool call. If the transport then flaps, fall back to gold-api port 3456 for market data.
+- **CONTEXT.md staleness is a drift signal.** Check `last_verified` date at the top. If >48h old, flag it in the briefing header. The document may reference stale HEADs, old session state, or resolved T3 items. Verified Jul 2026.
+- **Arif may provide his own market data (M+ Bloomberg).** When he does, DON'T re-search for prices. Take his numbers as OBS, cross-reference trend context from web, and focus on INTERPRETATION (why the move, what it means for Malaysia, what to watch). He doesn't want restated prices — he wants synthesis. Verified Jul 2026 (Brent -5.54% briefing).
 
 ## Trigger Examples
 
@@ -194,6 +262,8 @@ food logistics, electricity pass-through, and ringgit behaviour are.
 - "Contrast today's world state with yesterday's briefing."
 - "apa yang jadi semalam?"
 - "Brief me before work."
+- "Should I register for this conference?"
+- "Is this event worth attending?"
 
 ## Automation (separate from skill)
 

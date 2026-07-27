@@ -420,6 +420,45 @@ curl -sk -o /dev/null -w "HTTP %{http_code}\nSize: %{size_download}\n" https://a
 # Should return 200, not 404/0
 ```
 
+### Common Pitfall: Static Sub-Pages Under SPA Route Need `@spa_routes` + `{path}/index.html` (PROVEN 2026-07-26)
+
+When a site uses React SPA with `handle @spa_routes { try_files ...; file_server }`, adding new static sub-pages (e.g., `/pulse/`) requires TWO fixes or they silently fall through to the 404 handler:
+
+**Fix 1 — add the path to the `@spa_routes` matcher:**
+```caddyfile
+@spa_routes path / /economics* /writing* /world* /doctrine* /pulse*
+#                                                    ^^^^^^^ ADD
+```
+Without this, paths not in the matcher hit the final `handle { respond "404" }` block.
+
+**Fix 2 — use `{path} {path}/index.html /index.html` (NOT just `{path} /index.html`):**
+```caddyfile
+handle @spa_routes {
+    try_files {path} {path}/index.html /index.html
+    #                ^^^^^^^^^^^^^^^^ CRITICAL — tries static index.html before SPA fallback
+    file_server
+}
+```
+The default SPA pattern `try_files {path} /index.html` skips `{path}/index.html`. For `/pulse/`, `{path}` is `/pulse/` (a directory), `{path}/index.html` resolves to `/pulse/index.html` (the static page). Without this middle term, the resolver serves the SPA shell (`/index.html`) instead.
+
+**Symptom:** Static HTML exists at `/var/www/html/arif/pulse/index.html` with correct 644 permissions. `curl https://site.com/pulse/` returns the SPA title (e.g., "Arif Fazil — Exploration Geoscientist") instead of the static page title (e.g., "Federation Pulse — arifOS"). Response size matches SPA index.html.
+
+**Verification:**
+```bash
+curl -s https://site.com/pulse/ | grep '<title>'
+# Expected: "Federation Pulse — arifOS"
+# Wrong:    "Arif Fazil — Exploration Geoscientist" (SPA shell)
+```
+
+**Post-deploy: cron-generated data files** — `rsync --delete` removes files not in `dist/`. If the page reads a data.json written by cron:
+```bash
+# Recreate after deploy via post-deploy hook
+bash /root/scripts/post-deploy-pulse.sh
+
+# Better: fq-probe.sh writes to both webroot + a backup dir,
+# so a simple post-deploy restore script resurrects it
+```
+
 ## Existing arif-fazil.com Route Map
 
 Reference — routes already configured in the main site block (as of 2026-07-22):

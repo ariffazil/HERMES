@@ -30,6 +30,12 @@ triggers:
   - "hardcoded stub"
   - "live-fetched"
   - "health endpoint wiring"
+  - "verbosity trimming"
+  - "response pipeline"
+  - "apex scalars missing"
+  - "MCP response minimal"
+  - "direct call vs MCP call"
+  - "trim_for_verbosity"
 ---
 # Live Probe Audit Pattern
 
@@ -169,6 +175,7 @@ Reality:
 - **S24 passive sensor unreachability is industrial SCADA logic, not an outage (scar 2026-07-24).** When the S24 Sovereign Sensing Node times out on direct HTTP probe, do NOT frame it as "Termux asleep — expected Android behavior." The correct framing: S24 is a passive sensor in a data diode architecture — it collects data when polled by the central brain (FORGE cron), sleeps between cycles, and never initiates connections. Check the telemetry JSONL (`/root/arifos-memory/telemetry/s24_history.jsonl`) for the last successful entry rather than relying on a live probe. This is industrial telemetry applied to a smartphone, not a consumer app failing to stay awake. Distinguishing design features from implementation gaps is F2 TRUTH discipline.
 - **Canonical manifest tool→resource mappings must match live resources/list (scar 2026-07-19).** When building canonical_manifest.json from GEOX_APPS + live MCP, some app URIs (e.g., `ui://geox/basin-explorer`, `ui://geox/catalog`) are defined in GEOX_APPS but NOT registered as live MCP resources. Include only mappings where the resource URI exists in live `resources/list`. Otherwise conformance tests fail with "Resource X mapped from tool Y but not in resources/list."
 - **FastMCP 3.x AppConfig: use `app={"resourceUri": "ui://..."}` in `@mcp.tool()` decorator, not post-registration `_meta` injection (scar 2026-07-19).** FastMCP 3.4.2+ accepts `app` as a dict or `AppConfig` instance directly in the decorator. The old enrichment code at the bottom of tools_wiring.py using `tool._meta` / `tool.__dict__["_meta"]` is fragile and only worked for one tool. Explicit decorator params are the FastMCP-native approach.
+- **MCP verbosity trimming can silently strip response fields (scar 2026-07-27).** When an MCP tool handler has a `verbosity` parameter defaulting to `"minimal"`, the response trimmer drops `apex_scalars`, `atlas333`, `session_birth`, `sct_claims`, `work_contract`, and 30+ other fields. The handler returns the correct data internally, but the MCP transport layer collapses it. Detection: direct Python call vs MCP HTTP call produces different key sets. Fix: check `verbosity` default in the handler, change to `"standard"`. See `references/mcp-response-pipeline-audit.md` for the full detection recipe.
 - **canonical_registry.py authority: use registry.py CANONICAL_PUBLIC_TOOLS, not manifest visibility (scar 2026-07-19).** `build_registry()` was deriving public_names from `tools_manifest.yaml` visibility field (25 tools), but `registry.py::CANONICAL_PUBLIC_TOOLS` (17 tools, ghost-filtered) is the authoritative live surface. This caused `CANONICAL_PUBLIC_SURFACE.json` drift (25 vs 17). Fix: use `set(CANONICAL_PUBLIC_TOOLS)` as the authority set in `build_registry()`.
 - **When multiple apps map to the same tool, the primary mapping wins in `tool_to_resource` (scar 2026-07-19).** Example: both `well_desk` and `analog_digitizer` map to `geox_well_desk`. The canonical `tool_to_resource` should show `geox_well_desk → ui://geox/well-desk` (the primary), not `→ ui://geox/analog-digitizer`.
 ## Pitfalls
@@ -234,6 +241,48 @@ curl -s -X POST http://localhost:8081/mcp -H "Content-Type: application/json" \
 
 **Reporting:** When this bug fires, log the exact truncated ID vs the original in the audit receipt. Document it as 888_HOLD, do not auto-fix.
 
+### MCP Response Pipeline Audit (verbosity trimming)
+
+**Signal:** MCP endpoint returns a different/smaller response shape than a direct Python call to the same handler. Fewer keys, `null` for expected fields, truncated structure.
+
+**Root cause:** The MCP response pipeline has a verbosity-based trimmer (`verbosity.py:trim_for_verbosity`) that collapses the full handler dict to ~11 fields when verbosity defaults to `"minimal"`. Everything else — `apex_scalars`, `session_birth`, `atlas333`, `work_contract`, `clarity_metrics`, `constitution`, `sct_claims` — is stripped.
+
+**Detection recipe:**
+```bash
+# Step 1: Call handler directly from deployed path
+python3 -c "
+import sys; sys.path.insert(0, '/opt/arifos/app')
+from arifosmcp.tools.session import arif_init
+r = arif_init(mode='light', actor_id='ARIF', intent='audit X')
+d = r.model_dump() if hasattr(r, 'model_dump') else r
+print('Direct: status=%s session=%s apex=%s keys=%d' % (
+    d.get('status'), d.get('session_id'),
+    d.get('apex_scalars') or d.get('result',{}).get('apex_scalars'),
+    len(d.keys())))
+"
+
+# Step 2: Call through MCP HTTP
+curl -sf http://localhost:8088/mcp -X POST \
+  -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"arif_init","arguments":{"mode":"light","actor_id":"ARIF","intent":"audit X"}}}' \
+  | python3 -c "
+import sys,json
+d = json.load(sys.stdin)
+t = json.loads(d['result']['content'][0]['text'])
+print('MCP: status=%s session=%s apex=%s keys=%d' % (
+    t.get('status'), t.get('session_id'),
+    t.get('apex_scalars'), len(t.keys())))
+"
+
+# Step 3: If MCP keys < direct keys → verbosity trimming
+# Step 4: Fix the default
+grep -n 'verbosity.*=.*\"minimal\"' /opt/arifos/app/arifosmcp/runtime/tools.py
+```
+
+**Fix:** Change `verbosity` default from `"minimal"` to `"standard"` in the handler, OR add missing fields (e.g., `apex_scalars`) to the trimmer's keep-list.
+
+**Full pattern:** See `references/mcp-response-pipeline-audit.md`.
+
 ## Reference Files
 
 - `references/sovereign-claim-verification-scorecard.md` — verifying sovereign's multi-claim assertions against primary sources, scorecard output (2026-07-21)
@@ -253,6 +302,7 @@ curl -s -X POST http://localhost:8081/mcp -H "Content-Type: application/json" \
 - `references/kernel-probe-as-evidence.md` — Using live arif_init/arif_think/arif_judge probes to verify or disprove external AI claims about kernel behavior; pre-existing test isolation via git stash (2026-07-19)
 - `references/live-apex-scalars-from-kernel.md` — Wiring live G-fold apex scalars from arifOS kernel /health into an organ's health endpoint; reuse existing HTTP call, UNMEASURED fallback, scalar-by-scalar overlay (2026-07-26)
 - `references/code-audit-line-number-verification.md` — Verifying external code audit findings against live code; audit line numbers can be stale, always probe live source before acting (scar 2026-07-18)
+- `references/kernel-contrast-assessment.md` — Structured 7-axis before/after comparison for kernel version upgrades, release audits, and deployment state changes
 
 ## Constitutional Compliance
 

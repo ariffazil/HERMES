@@ -38,6 +38,10 @@ triggers:
   - "peptide/supplement/nootropic [X]"
   - "tell me everything about [substance]"
   - "berapa percent population ambik"
+  - "compare [product] to"
+  - "is [product] the best at this price"
+  - "best phone/laptop/tablet under"
+  - "vs [product]"
   - "find the zero margin"
   - "where does it become devil"
   - "what's the limit"
@@ -436,6 +440,37 @@ After delivering the research, the discipline is to **ask what the user already 
 
 Proven: 2026-07-08 — Tier C hybrid, 3 parallel queries found SPE 196314-MS, SPE 203117-MS, and the 2024 sand-control paper, plus LinkedIn timeline. The user already had the offline connection; the web was confirming, not introducing.
 
+## Consumer Tech Product Comparison
+
+When the user asks to compare a specific consumer tech product (phone, laptop, tablet, wearable) against alternatives at the same price point — especially with a reference to their current device.
+
+### When to Use This (instead of general deep research)
+
+- User names a specific product + a price bracket
+- User says "compare [Product A] vs [Product B]"
+- User says "is [Product] the best I can get for [amount]?"
+- User references their current device as a baseline
+
+### Procedure
+
+1. **Spec the target product** — fetch GSMArena (phone) or authoritative spec source. Cross-check with local MYR pricing (TechNave, SoyaCincau, official brand store).
+2. **Price the user's current device** — if they have one, get its current market price for fair comparison.
+3. **Find competitors at the price bracket** — search `"best phone under RM[amount] Malaysia"`, identify 2-3 direct alternatives. Get their specs too.
+4. **Build the comparison table** — chip, screen, battery, charging, camera, waterproofing, OS/updates, weight, launch date.
+5. **Pros/Cons per device** — 3 bullets max, honest about tradeoffs.
+6. **Verdict** — YES / NO / DEPENDS on the core question. Name the ONE thing that flips the recommendation.
+
+### Pitfalls
+
+- **GSMArena URL IDs are numeric and opaque.** A search can return a completely different device. Always verify the page title matches before extracting specs. If smart_fetch returns the wrong device, find the correct URL via web_search and re-fetch.
+- **Malaysia pricing may not match international pricing.** Prefer local sources (TechNave, SoyaCincau, official Malaysia store) over USD conversion.
+- **"Best at this price" is rarely a clean YES.** Decompose by use case: battery life vs camera vs updates vs ecosystem.
+- **Don't skip the user's current device.** Even if older/cheaper, it's the user's reference frame. A "better" phone that's heavier, has worse software updates, or a weaker ecosystem might not be a real upgrade.
+
+### Reference
+
+Full workflow with data sources, URL patterns, and failed approaches: `references/consumer-product-comparison.md`.
+
 ## Related Skills
 
 - **`negative-space-geometry`** (governance/) — The cognitive methodology behind `references/ai-narrative-forensics.md`. Teaches the faculty of detecting AI through systematic blindspots rather than surface signals. Load alongside deep-research when the task involves detecting AI mediation in institutional communications.
@@ -455,6 +490,7 @@ Proven: 2026-07-08 — Tier C hybrid, 3 parallel queries found SPE 196314-MS, SP
 - `references/institutional-financial-deep-dive-pattern.md` — 8-section spine for "predict next quarter/half-year for [Company]" requests. Includes parametric scaling model, hedge-exposure reality table, WEALTH MCP fallback playbook, and a worked PETRONAS 1H FY2026 example. Proven 2026-07-13. Use when user says "deep research [Company] financial prediction", "predict Q1/H1 FY_X for [Company]", or "what's the outlook for [Company] earnings".
 - `references/public-figure-social-scan.md` — pattern for scanning a public figure's X and Threads presence, platform-specific extraction limits, and synthesis structure. Proven 2026-07-12: Ray Dalio scan (X + Threads + Fortune/HBR/Bloomberg → governance reflection).
 - `references/competitive-field-research.md` — pattern for researching an entire competitive field (athletes, artists, developers), ranking participants by weighted criteria, and compiling social media handles via federation/sponsor cross-reference. Use when user asks "rank the top X in [domain]" or "find all [competitors] in [field]." Proven 2026-07-12: Malaysia Men's Physique bodybuilder ranking (10 athletes, NPC/IFBB/WBPF data).
+- `references/consumer-product-comparison.md` — Workflow for comparing consumer tech products (phones, laptops, tablets) at a given price point. Covers data sources (GSMArena, TechNave, Kimovil), Malaysia MYR pricing sources, competitor identification, comparison table structure, verdict format, and GSMArena URL pitfalls. Proven 2026-07-27: Honor 600 Pro vs Samsung S24 vs Xiaomi 15 at RM3,099-3,299 bracket.
 - `references/protocol-compliance-audit.md` — two-loop pattern for researching external protocol standards (A2A, MCP, ACP, ANP) and producing a structured gap analysis against our living implementation. Covers spec extraction, ecosystem research, gap classification, and remediation architecture. Use when user says "deep research [protocol] and map to our [system]". Proven 2026-07-13: A2A v1.0 vs AAA gap analysis.
 - `references/institutional-financial-deep-dive.md` — pattern for deep research on sovereign-backed / state-owned enterprises that publish half-yearly (NOCs, sovereign wealth vehicles, GLCs). Subsidiary read-through + segment elasticity model + macro price-shock propagation + backtest + falsification. Proven 2026-07-13: PETRONAS Group 1H 2026 projection + Q1 2026 read-through. **Use when the user asks for a period the Group hasn't published yet, or for any "predict [state-owned entity] quarterly" task.**
 - `references/analyst-grade-report-template.md` — 12-section sell-side HTML spine + CSS components + 8 figure recipes + weasyprint render command. Proven 2026-07-13 PETRONAS 1H FY2026 (14 pages, 8 figures, 682 KB). Use when the user asks for "UOB-style", "analyst-grade", "broker report", "sell-side format", or names any ASEAN broker explicitly (UOB KayHian, Kenanga, CIMB, Maybank IB, RHB, Affin Hwang, PublicInvest).

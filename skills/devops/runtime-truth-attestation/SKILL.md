@@ -30,6 +30,8 @@ triggers:
   - "build identity"
   - "git_version mismatch"
   - "cross-organ drift"
+  - "merge conflict artifacts"
+  - "<<<<<<< HEAD"
   - "health endpoint mismatch"
   - "multi-organ deploy"
   - "A-FORGE deploy"
@@ -38,8 +40,15 @@ triggers:
   - "WEALTH deploy"
   - "WELL deploy"
   - "deployment drift"
+  - "authority_ceiling OBSERVE_ONLY"
+  - "actor_verified false"
   - "all organs"
   - "federation deploy"
+  - "git_commit stamp"
+  - "ref: refs/heads"
+  - "dual .git_commit"
+  - "two .git_commit files"
+  - "hidden drift"
 ---
 
 # Runtime Truth Attestation — E2 Pattern
@@ -245,6 +254,31 @@ Separate health endpoint fields:
 
 ## Pitfalls
 
+### PITFALL: Merge conflict artifacts in source indicate deploy ≠ repo HEAD
+
+Unresolved merge conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) in the repo source at `/root/arifOS/` while the deployed version at `/opt/arifos/app/` is clean means the deployment came from a different branch/commit than the current repo HEAD. The conflict-ridden code is NOT what is running.
+
+**Detection:**
+```bash
+# Check for conflict markers in repo source
+grep -rn '<<<<<<< HEAD' /root/arifOS/arifosmcp/ 2>/dev/null || echo "No conflicts"
+
+# Compare deployed vs repo file-hash for key modules
+md5sum /opt/arifos/app/arifosmcp/runtime/tools.py | cut -d' ' -f1
+md5sum /root/arifOS/arifosmcp/runtime/tools.py | cut -d' ' -f1
+# If they differ, the deployed version is NOT from the current repo HEAD
+```
+
+**Fix:** The repo must be cleaned and the deploy must be re-synced from a clean commit. To fix merge conflicts in the repo:
+```bash
+cd /root/arifOS
+git merge --abort  # or resolve conflicts manually
+# After resolving:
+git add -A && git commit -m "fix: resolve merge conflict artifacts"
+```
+
+**Implication:** The source tree SHOULD be the source of truth (`source_commit` in health endpoint), but if the deployed version is from a different revision than the repo HEAD, the `runtime_matches_build` field in the health endpoint is unreliable as a truth signal for the repo state. The MD5 comparison above is the ground truth.
+
 ### PITFALL: wheel silently drops non-Python data files (YAML/JSON/CSV)
 If your package runtime loads YAML/JSON/CSV config files, `python -m build`
 will exclude them by default. Symptom after deploy: `FileNotFoundError`
@@ -372,6 +406,158 @@ this issue.
 **Proven:** 2026-07-16 kernel audit — runtime_drift was TRUE despite source
 and deployment being functionally identical. The `.git` HEAD in the deploy
 dir was 2 commits behind source.
+
+### PITFALL: `.git_commit` stamp can contain `ref:` prefix instead of commit hash
+
+Writing the deployment stamp by copying `.git/HEAD` directly writes a
+symbolic ref like `ref: refs/heads/main` instead of the commit hash:
+
+```bash
+# WRONG — copies the ref pointer, not the hash
+cp /root/arifOS/.git/HEAD /opt/arifos/app/.git_commit
+# Result: /opt/arifos/app/.git_commit contains "ref: refs/heads/main"
+
+# RIGHT — resolves the ref to the actual commit hash
+git -C /root/arifOS rev-parse HEAD > /opt/arifos/app/.git_commit
+# Result: /opt/arifos/app/.git_commit contains "1ce09ba145b1..."
+```
+
+**Why `.git/HEAD` contains `ref: refs/heads/main`:**
+Git's default state uses symbolic refs. `HEAD` points to `refs/heads/main`,
+which in turn contains the commit hash. Copying `HEAD` directly copies the
+pointer, not the resolved value.
+
+**Verification after writing the stamp:**
+```bash
+cat /opt/arifos/app/.git_commit
+# EXPECTED: a 40-char hex string or at least 7-char short hash
+# RED FLAG: "ref: refs/heads/main" or anything starting with "ref:"
+```
+
+**Impact:** If the stamp contains `ref:` prefix, `_full_source_commit()`
+in `build.py` reads `len(value) >= 7` — false for short strings — and
+falls through to the deployment dir's `.git/HEAD` (which may be stale
+from a prior deploy). The health endpoint shows a false drift because
+`source_commit` came from a stale `.git` HEAD instead of the intended
+commit.
+
+**Proven:** 2026-07-27 kernel deploy fix — first stamp attempt wrote
+`ref: refs/heads/main`. Corrected with `git rev-parse HEAD > stamp`.
+
+### PITFALL: Two `.git_commit` stamp files serve different subsystems — update both
+
+The arifOS kernel has **two separate `.git_commit` marker files** consumed by different subsystems:
+
+| File | Consumer | Impact if stale |
+|------|----------|----------------|
+| `/opt/arifos/app/.git_commit` | `build.py:_full_source_commit()` → health endpoint `source_commit`/`deployed_commit` | `software_release.drift=true` in `/health` |
+| `/opt/arifos/app/arifosmcp/.git_commit` | `drift_detector.py:_read_deployed_commit()` → build-vs-runtime comparison | `Build hash != runtime hash` drift report |
+
+**Updating only one leaves a hidden drift source.** The health endpoint may show `drift=false` (because `app/.git_commit` was fixed) while the drift_detector independently reports `HIGH` drift because `arifosmcp/.git_commit` still has an old hash. Neither is a false positive — they're two different comparisons with two different data sources.
+
+**Detection — check all three sources:**
+```bash
+echo "app/.git_commit:              $(cat /opt/arifos/app/.git_commit 2>/dev/null || echo MISSING)"
+echo "app/arifosmcp/.git_commit:    $(cat /opt/arifos/app/arifosmcp/.git_commit 2>/dev/null || echo MISSING)"
+echo "git HEAD:                     $(git -C /root/arifOS rev-parse HEAD 2>/dev/null || echo MISSING)"
+```
+
+All three MUST match. If `app/.git_commit` matches HEAD but `arifosmcp/.git_commit` doesn't, drift is hidden from the health endpoint but still active in the drift detector.
+
+**Fix:**
+```bash
+HEAD=$(git -C /root/arifOS rev-parse HEAD)
+echo "$HEAD" > /opt/arifos/app/.git_commit
+echo "$HEAD" > /opt/arifos/app/arifosmcp/.git_commit
+# Also update the source repo copy for future builds
+echo "$HEAD" > /root/arifOS/arifosmcp/.git_commit
+# No restart needed — _full_source_commit() reads the file live each time.
+# However, if the file didn't exist before (was created now), drift_detector
+# caches its initial read on construction; a restart clears that cache.
+```
+
+**Prevention during deploy:** Add both files to the deployment stamp step:
+```bash
+COMMIT=$(git -C /root/arifOS rev-parse HEAD)
+echo "$COMMIT" > /opt/arifos/app/.git_commit
+mkdir -p /opt/arifos/app/arifosmcp
+echo "$COMMIT" > /opt/arifos/app/arifosmcp/.git_commit
+echo "$COMMIT" > /root/arifOS/arifosmcp/.git_commit
+```
+
+**Proven:** 2026-07-27 — `app/.git_commit` had HEAD (`1ce09ba...`) but `arifosmcp/.git_commit` had stale `805949d5d`. Health showed `drift=false` while drift_detector silently compared two different hashes. After updating both files, all subsystems agreed.
+
+### PITFALL: `authority_ceiling=OBSERVE_ONLY` + `actor_verified=false` can be a deployment drift symptom
+
+When the health endpoint reports both `authority_ceiling: OBSERVE_ONLY`
+and `actor_verified: false`, the natural instinct is to diagnose identity
+binding, Ed25519 key config, or governance gate logic. **Before chasing
+those, rule out deployment drift:**
+
+```bash
+# Check: is drift the root cause?
+curl -sf http://127.0.0.1:8088/health | python3 -c "
+import json,sys; d=json.load(sys.stdin)
+sr=d.get('software_release',{})
+print(f'source: {sr.get(\"source_commit\",\"?\")[:7]}')
+print(f'built:  {sr.get(\"built_commit\",\"?\")[:7]}')
+print(f'drift:  {sr.get(\"drift\")}')
+print(f'status: {d.get(\"deployment_drift_status\")}')
+print(f'authority: {d.get(\"authority_ceiling\")}')
+print(f'actor_verified: {d.get(\"state_axes\",{}).get(\"actor_verified\")}')
+"
+```
+
+**If `drift=true` and `deployment_drift_status=aligned`:**
+This means `source_commit` (the deployed code on disk) differs from
+`built_commit` (what the source tree HEAD shows). The deployed code IS
+the source code, but the source HEAD is ahead. The authority degradation
+is from running stale code that doesn't have the latest identity binding
+fixes.
+
+**Fix:** Deploy the latest source:
+```bash
+cd /root/arifOS && git pull --ff-only
+rsync -a --delete arifosmcp/ /opt/arifos/app/arifosmcp/
+git rev-parse HEAD > /opt/arifos/app/.git_commit
+systemctl restart arifos
+# Verify: authority_ceiling should return to SOVEREIGN, actor_verified true
+```
+
+**Proven:** 2026-07-27 — `authority_ceiling` was `OBSERVE_ONLY` and
+`actor_verified` was `false` while `drift=true` (source 13 commits ahead
+of built). After deploying the correct commit, both returned to
+`SOVEREIGN` and `true` without any config/identity changes. The degraded
+state was entirely a deployment gap artifact.
+
+### PITFALL: Health endpoint contradicting drift fields (drift=true ∧ runtime_drift=false ∧ deployment_drift_status=aligned)
+
+In a single `/health` response, three drift fields may contradict:
+
+```json
+{
+  "deployment_drift_status": "aligned",
+  "runtime_drift": false,
+  "software_release": { "drift": true }
+}
+```
+
+| Field | Source | Contradiction pattern |
+|-------|--------|----------------------|
+| `deployment_drift_status` | `_check_deployment_drift()` (source vs deployed git) | `"aligned"` |
+| `runtime_drift` | `_check_runtime_drift()` (module vs build) | `false` |
+| `software_release.drift` | `build.py` comparing `source_commit[:7]` vs `built_commit[:7]` | `true` — stale build_info.py hash |
+
+**Root cause:** Three different drift checks, three different comparison methods. `software_release.drift` reads `built_commit` from hardcoded `build_info.py:BUILD_COMMIT` which is never updated by any build pipeline. The code IS correct — only version metadata is stale.
+
+**Verification:** If `source` commit from git matches `deployed` commit from `.git_commit` marker but `drift=true`, it's cosmetic:
+```bash
+SRC=$(git -C /root/arifOS rev-parse --short=7 HEAD)
+DEP=$(cat /opt/arifos/app/.git_commit 2>/dev/null)
+[ "$SRC" = "$DEP" ] && echo "COSMETIC DRIFT" || echo "REAL DRIFT"
+```
+
+**Distinct from .git HEAD divergence pitfall:** That pitfall = deploy dir `.git/HEAD` behind source (rsync without git reset). This pitfall = commits match but `build_info.py` hash disagrees. They can compound: old deploy dir + stale build_info = three different hashes across three drift fields.
 
 ### PITFALL: `build_info.py` hardcoded commit string never updates
 

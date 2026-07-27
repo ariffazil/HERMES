@@ -147,8 +147,40 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 13. **Static HTML pages deployed separately.** Pages under `public/` (e.g., `public/gas/index.html`) are copied by `scripts/copy-static-html.js` during postbuild. They sync to the webroot via rsync like the React build. Changes to these files need the full build→deploy cycle.
 
+## ABCD Framework Alignment
+
+The Doctrine page (`/doctrine/`) is the canonical source for the ABCD framework:
+- **A** = APEX Theory (four letters, grand equation, verdict lattice)
+- **B** = Federation Body (9 organs, rings, roles, "Never:" rules)
+- **C** = Constitution (F1–F13 floors)
+- **D** = DITEMPA (sovereign compact, 000→999 pipeline)
+
+### Zen Rule for Redundant Pages
+
+If any page duplicates content already in ABCD, replace it with a redirect to the appropriate section. Example: `/organs/` was a static page listing 7 organs (less detail, stale tool counts). The Doctrine page already renders 9 organs with rings, roles, ports, and "Never:" rules (the B section). Fix: replace `public/organs/index.html` with:
+
+```html
+<meta http-equiv="refresh" content="0; url=/doctrine/">
+<link rel="canonical" href="https://arif-fazil.com/doctrine/">
+```
+
+This preserves the URL, sets the canonical link, and sends users to the authoritative source.
+
+**When to check:** Before adding any new standalone page, check if its content already exists within ABCD. If yes → redirect or supplement, never duplicate.
+
+### BDX Content Architecture (MakcikGPT / civic intelligence surfaces)
+
+| Layer | Role | Example |
+|-------|------|---------|
+| **B** — Body | Main article content | MakcikGPT article body |
+| **D** — Discovery | Related articles, graph edges | "You may also need" |
+| **X** — eXplore | Cross-domain navigation | Federation map, topic clusters |
+
+Replaces traditional "article + sidebar + footer" with agentic content surface.
+
 ## See Also
 
 - `makcikgpt-article-forging` — for creating new MakcikGPT articles (content creation, not deployment)
 - `site-deployment-verification` — for verifying a deployed site against claims
 - `caddy-reverse-proxy` — for routing changes (888_HOLD required)
+- `agentic-web-surface-architecture` — graph-first methodology for building agentic web surfaces (Phase 0-10 framework)

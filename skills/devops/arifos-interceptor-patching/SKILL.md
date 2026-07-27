@@ -268,9 +268,143 @@ If journalctl shows NO 401/503/TokenRouter errors, the hang is likely:
 - **Inter-process deadlock** — azevent bus, thermodynamic pulse lock
 - In these cases, restart is the correct fix. The root cause needs deeper investigation (strace, thread dump).
 
+## Pitfall: Pre-existing merge conflicts in modified files
+
+**Common ambient condition.** Many arifOS kernel files (`session.py`, `rest_routes.py`) carry pre-existing merge conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) from incomplete merges. When you patch a function in these files, the conflict markers cause SyntaxErrors that the patch tool reports as new errors — but they were already there.
+
+**Detection before patching:**
+```bash
+grep -c '<<<<<<<' path/to/file.py   # count conflicts
+```
+
+**Fix pattern (one conflict at a time):**
+1. Read the conflicted section with `read_file`
+2. Understand both versions (HEAD = local changes, incoming = the other branch's changes)
+3. Pick the correct version or merge them manually
+4. Use `patch` with old_string containing the marker + both versions, new_string with just the correct version
+
+**Rule:** Fix conflicts in the function you're patching AND in any import/documentation blocks that conflict markers corrupt. Do NOT fix unrelated conflicts across the file — that's scope creep. Leave a note when you encounter pre-existing conflicts you didn't resolve.
+
+**Pitfall:** The `patch` tool's syntax check will always report a SyntaxError at the first conflict marker in the file, even if it's in an unrelated section you didn't touch. Confirm the error is pre-existing by searching for conflict markers elsewhere before spending time debugging it.
+
+## Shadow probe --- wiring real APEX measurement into INIT
+
+### The pattern
+
+Session init (`_project_light()` in `session.py`) previously called `unmeasured_apex()` unconditionally, returning G=UNMEASURED, C_dark=UNMEASURED, W3=UNMEASURED, h=UNMEASURED. This was epistemically honest but practically useless --- the APEX scalars were always UNMEASURED at birth.
+
+**Fix:** Create a `shadow_probe.py` module that provides `probe_shadow(model_input, reference_domain)` and wire it into the init path:
+
+```python
+# In _project_light():
+_apex = None
+if intent:
+    try:
+        from arifosmcp.tools.shadow_probe import probe_shadow
+        _probe_result = probe_shadow(model_input=intent)
+        if _probe_result and _probe_result.get("G") != "UNMEASURED":
+            _apex = _probe_result
+    except Exception:
+        logger.debug("shadow probe failed --- falling through")
+if _apex is None:
+    _apex = unmeasured_apex()  # fallback
+```
+
+### Shadow probe module structure
+
+Create `arifosmcp/tools/shadow_probe.py` with these four measurements:
+
+| Scalar | Method | What it measures |
+|--------|--------|-----------------|
+| G | Contradiction scan | Governance alignment --- GEOX contradiction scan (or text-fallback) |
+| C_dark | Entropy estimation | Latent chaos --- character-level adaptive entropy on INIT input |
+| h | Pattern classification | Humility --- overconfident vs humble phrase ratio |
+| W3 | Source counting | Witness weight --- distinct evidence sources (URLs, citations, IDs) |
+
+**Key principle:** The probe MUST return honest `UNMEASURED` when it cannot run (no dependencies, empty input, exception). Never fabricate measurements.
+
+**Pitfall:** The GEOX contradiction scan dependency (`from mcp import Tool; Tool.proxy(...)`) may not exist at runtime. Always catch exceptions and fall through to the text-scan fallback, then to `unmeasured_apex()`.
+
+**Pitfall:** `unmeasured_apex()` in `sct.py` now has `FALLBACK ONLY` in its docstring --- the init path calls `probe_shadow()` first when intent is available.
+
+## actor_verified single source of truth
+
+### The bug
+
+`session_birth.actor_verified` was set from the same `actor_verified` function parameter as the top-level `out["actor_verified"]`, but the `session_birth` dict didn't document that it was a derived view. This meant the two values could drift if someone edited `session_birth` independently. Additionally, `tools.py`'s `_ATTENTION` field checked `envelope.actor_verified` but never compared it against `result.session_birth.actor_verified`.
+
+### The fix --- 3 steps
+
+**Step 1 --- Session birth is a derived view:**
+```python
+"session_birth": {
+    ...
+    "actor_verified": bool(actor_verified),  # single source: top-level param
+    ...
+}
+```
+Add a clarifying comment. Never let `session_birth.actor_verified` be computed independently.
+
+**Step 2 --- Add a self-audit assertion:**
+```python
+# Self-audit --- actor_verified must be consistent across layers
+_sb_av = out.get("session_birth", {}).get("actor_verified")
+assert bool(actor_verified) == bool(_sb_av), (
+    "actor_verified mismatch: top_level=" + str(bool(actor_verified)) +
+    " vs session_birth.actor_verified=" + str(_sb_av)
+)
+```
+Place this right before `return out` in `_project_light()`.
+
+**Step 3 --- Fix `_ATTENTION` in `tools.py`:**
+The `_ATTENTION` field should compare `envelope.actor_verified` vs `result.session_birth.actor_verified` and only flag when they genuinely differ:
+
+```python
+_envelope_av = envelope.get("actor_verified")
+_result_av = None
+if isinstance(result_payload, dict):
+    _birth = result_payload.get("session_birth", {})
+    _result_av = _birth.get("actor_verified") if isinstance(_birth, dict) else None
+
+if _result_av is not None and bool(_envelope_av) != bool(_result_av):
+    envelope["_ATTENTION"] = (
+        "actor_verified MISMATCH --- envelope=" + str(_envelope_av) +
+        " vs result.session_birth.actor_verified=" + str(_result_av) +
+        ". Single source of truth violated."
+    )
+elif not envelope.get("actor_verified", False):
+    envelope["_ATTENTION"] = (  # original fallback
+        "IDENTITY_NOT_VERIFIED --- actor_verified=false. "
+        "This response was generated without authenticated identity. "
+        "All verdicts are OBSERVE_ONLY. Do not treat as authoritative. "
+        "Call arif_init(mode='init') to establish a governed session."
+    )
+```
+
+## Health endpoint extension --- adding new states to seven_state_health
+
+When adding a new state to `seven_state_health()` in `observatory_routes.py`, follow this pattern:
+
+1. Add a comment block explaining the new state's purpose and the rule it enforces
+2. Wrap computation in try/except with a safe default (`"unknown"`)
+3. Use the existing `_pf()` helper for per-field envelopes
+4. Set `observation_method` honestly (self_reported vs derived vs independent)
+5. When the state is "down" or "degraded", set confidence >= 0.95 for definitive failures
+
+Example --- DEPLOYMENT state:
+```python
+try:
+    from arifosmcp.runtime.rest_routes.rest_routes import _compute_runtime_drift
+    drift = _compute_runtime_drift()
+    state = "down" if drift.get("runtime_drift") else "aligned"
+    states["DEPLOYMENT"] = _pf(state, source=..., confidence=0.99, ...)
+except Exception:
+    states["DEPLOYMENT"] = _pf("unknown", confidence=0.0, ...)
+```
+
 ## Common pitfalls
 
-### 0. Embodied handler override — the silent dispatch hijacker
+### 0. Embodied handler override --- the silent dispatch hijacker
 
 **The deadliest pitfall in arifOS debugging.** `_CANONICAL_HANDLERS` in `runtime/tools.py` registers tools like `"arif_think": _arif_mind_reason_tool`. But `server.py` line ~693 OVERRIDES this at startup:
 

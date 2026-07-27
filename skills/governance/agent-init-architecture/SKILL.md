@@ -18,6 +18,46 @@ The arifOS federation runs multiple AI agents (Kimi Code, Claude Code, OpenCode,
 
 The **SALAM pattern** solves this: one universal init prompt (`SALAM_AAA_INIT.md`) contains the constitution, boot ceremony, organ map, autonomy tiers, and refusal surface. Each agent's entry point is a thin wrapper (~20-30 lines) that points to the universal init and adds only platform-specific config (model, MCP servers, key paths).
 
+### EUREKA-Ω: INIT = First Metabolism
+
+INIT is not "session bootstrap." It is the **first act of self-observation** — the transition from prediction engine to situated agent.
+
+```
+LLM:            f(x) → y                           (prediction)
+Agent:          State(t) → Action → State(t+1)    (trajectory)
+INIT:           birth of State(0)                  (first metabolism)
+```
+
+The 5-layer hierarchy for agency emergence:
+
+```
+Layer 1 — Identity    (who am I?)       → actor_id, lane
+Layer 2 — State       (what do I know?) → memory context
+Layer 3 — Boundary    (what constraints?) → authority, F1-F13
+Layer 4 — Intent      (purpose?)        → declared goal
+Layer 5 — Confidence  (how certain?)    → G, C_dark, W3, h
+         ↓
+Trajectory — action from collapsed possibility space
+```
+
+**Shadow probe:** arif_init now calls `probe_shadow()` at birth — measures G (governance alignment), C_dark (latent chaos), h (humility), W3 (witness diversity). Each embedded in SCT token. See `governance/arifos-nine-locks`.
+
+**Shadow self-audit:** Before INIT declares frame, it checks itself for contradictions (deployment drift, actor_verified dual-source, unmeasured apex). If found → HOLD. A `shadow_audit` block lists contradictions and unmeasured fields.
+
+### 7-Layer State (init egress target)
+
+| Layer | Field | Source |
+|---|---|---|
+| L1 IDENTITY | actor_id, actor_verified | arif_init params |
+| L2 AUTHORITY | authority_band, floor bounds | SCT claims |
+| L3 MEMORY | carry_forward, vault_access | arif_memory |
+| L4 GOALS | active_goals, stack_depth | intent extraction |
+| L5 ENVIRONMENT | organ health, FQ | organ probe |
+| L6 SHADOW | G, C_dark, h, W3 | shadow_probe |
+| L7 EMBODIMENT | budget, tokens_used | A-FORGE lease |
+
+Phased build: P0 = commit+deploy (L6), P1 = environment+goal (L4/L5), P2 = embodiment (L7), P3 = memory preload (L3). All backward compatible.
+
 ## Core Principle: Instructions Are a Tax on Model Stupidity
 
 > **Smarter models need fewer instructions.** This is not speculation — it's measured from live Claude Code captures (2026-04-20 → 2026-07-21, Pawel Huryn's `phuryn/experiments`).

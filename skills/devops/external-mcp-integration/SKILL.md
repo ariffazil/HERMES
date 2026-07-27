@@ -481,6 +481,45 @@ Required in headless/agent environments — the default prompt expects interacti
 | No logs for failed deployment | Build failed at git clone/resolution stage before logging started | Fix must be in Dockerfile or build commands — no log trail |
 | Missing ML packages | `pip install .` skips optional extras declared in pyproject.toml | Use `pip install .[heavy,ml]` or drop ML from validation step |
 
+## Pattern-Absorb Decision Framework
+
+**Before integrating any external tool, ask: do we need a package manager, or just a registry?**
+
+### Case Study: Furi (2026-07-26)
+
+Furi is a CLI + HTTP API for managing MCP servers — GitHub install, PM2 process control, SSE aggregation, tool discovery. It solves "one place to install and operate MCP servers."
+
+**Decision: Skip.** Not because it's bad, but because this federation has zero external MCP servers. What it needs is a *registry* for its 6 native organs, not a *package manager* for third-party packages.
+
+**Decision framework:**
+
+```
+┌─ Does it solve a problem we actually have?
+│  Furi: "manage MCP servers" → we have 0 external MCPs
+│  Need: "discover tools across 6 organs" → 1 resource needed
+├─ Can we build it natively?
+│  arifos://tools/registry — ~100 lines Python, 0 new deps
+│  Furi — BSL 1.1 license, PM2 dependency, new infra
+├─ What's the pattern we actually need?
+│  Not: package manager for external MCPs
+│  But: unified tool discovery for federation organs
+└─ Decision: Skip integration. Absorb pattern into native.
+   Built: arifos://tools/registry (6/6 organs, 128 tools, 5s TTL cache)
+```
+
+### When to Integrate vs When to Build Native
+
+| Scenario | Integrate | Build Native |
+|----------|-----------|--------------|
+| Solves a problem we *actually* have | ✅ If license/cost acceptable | Only if faster |
+| Solves a problem we *might* have | ❌ Wait | ❌ Wait |
+| Duplicates existing capability | ❌ | ✅ Absorb pattern |
+| Requires new protocol/dependency | ❌ Evaluate first | ✅ If ≤200 lines |
+| Restrictive license (BSL, AGPL-prod) | ❌ Production blocked | ✅ Forge native |
+| Solvable in ≤100 lines | ❌ | ✅ Always |
+
+**Key insight:** "Furi is a good tool for a different architecture. Our architecture needs a registry, not a package manager."
+
 ## Pitfalls
 
 - **OpenClaw startup fails without vault.env**: OpenClaw auto-detects models on boot and requires their API keys in the environment. If a model references e.g. `OPENROUTER_API_KEY` and it's not set, the gateway startup fails with `SecretRefResolutionError`. **Fix:** Always start OpenClaw with secrets sourced:

@@ -2,6 +2,27 @@
 
 Reverse-engineered 2026-07-17 from live system behavior + source inspection.
 
+## Structural Property: Model Pinning Vacuum
+
+**Confirmed 2026-07-27 by Model Drift Watchdog live run.** Cron jobs in Hermes have NO per-job model/provider pinning mechanism at the CLI level. This is not a transient state — it is a structural property of the system:
+
+- `hermes cron create` has NO `--model` or `--provider` flags
+- `hermes cron edit` has NO `--model` or `--provider` flags
+- The `cron:` section in `config.yaml` has NO per-job sub-objects — only a top-level `provider: ''` field (for global fallback)
+- ALL jobs inherit model/provider from the global `model:` section in `config.yaml`
+- The only way to pin a job's model/provider is by editing `~/.hermes/cron/jobs.json` directly
+
+**Consequence:** The Model Drift Watchdog's "zero drift" finding is the expected steady state. Any drift can only be introduced by direct `jobs.json` edits (which the watchdog then detects and fixes). The CLI cannot create or maintain drift — only remediate it.
+
+**Watchdog detection procedure (confirmed 2026-07-27):**
+1. Read global config from `~/.hermes/config.yaml` → `model.provider`, `model.default`/`model.model`
+2. List jobs via `hermes cron list` — this shows all jobs but OMITS model/provider fields (CLI blind spot)
+3. Verify `hermes cron create --help` and `hermes cron edit --help` have no `--model`/`--provider` flags — confirms pinning is structurally impossible via CLI
+4. Only then inspect `~/.hermes/cron/jobs.json` directly for any explicit `model`/`provider` fields per job
+5. Jobs with `no_agent: true` are structurally immune (snapshots always null)
+6. Jobs with null/empty model and provider inherit from global — no drift possible
+7. Only jobs with non-null model/provider that differ from global are drifted — and those can only exist via direct JSON edit
+
 ## Source Locations
 
 | What | File | Lines |
@@ -134,7 +155,79 @@ for j in data['jobs']:
             print(f'{k}: {j.get(k)}')
 "
 
-# Find all drifted jobs
+# Full inventory sweep — categorize ALL jobs by drift status in one view
+python3 << 'PYEOF'
+import json, yaml, os
+
+home = os.path.expanduser('~/.hermes')
+with open(f'{home}/config.yaml') as f:
+    cfg = yaml.safe_load(f) or {}
+m = cfg.get('model', {})
+if isinstance(m, dict):
+    cur_prov = (m.get('provider','') or '').strip().lower()
+    cur_model = (m.get('default','') or m.get('model','') or '').strip().lower()
+else:
+    cur_prov, cur_model = '', ''
+
+print(f'Global: {cur_prov}/{cur_model}')
+print()
+
+with open(f'{home}/cron/jobs.json') as f:
+    data = json.load(f)
+
+no_agent_count = 0
+pinned_match = 0
+pinned_drift = []
+inherited_null = 0
+snapshot_drift = []
+
+for j in data['jobs']:
+    name = j.get('name', j['id'])
+    no_agent = j.get('no_agent', False)
+    model = (j.get('model') or '').strip()
+    provider = (j.get('provider') or '').strip()
+    ms = (j.get('model_snapshot') or '').strip().lower()
+    ps = (j.get('provider_snapshot') or '').strip().lower()
+
+    if no_agent:
+        no_agent_count += 1
+        continue
+
+    if model and provider:
+        if model.lower() == cur_model and provider.lower() == cur_prov:
+            pinned_match += 1
+        else:
+            pinned_drift.append((name, model, provider))
+    else:
+        inherited_null += 1
+        if ps and cur_prov and ps != cur_prov:
+            snapshot_drift.append((name, 'provider', ps, cur_prov))
+        if ms and cur_model and ms != cur_model:
+            snapshot_drift.append((name, 'model', ms, cur_model))
+
+print(f'Total jobs: {len(data["jobs"])}')
+print(f'  no_agent (skipped):           {no_agent_count}')
+print(f'  Pinned + matching:            {pinned_match}')
+print(f'  Pinned + DRIFTED:             {len(pinned_drift)}')
+print(f'  Inheriting global (no pin):   {inherited_null}')
+print(f'  Snapshot DRIFTED:             {len(snapshot_drift)}')
+print()
+
+if pinned_drift:
+    print('=== PINNED DRIFT ===')
+    for n, m, p in pinned_drift:
+        print(f'  {n}: pinned {p}/{m} != global {cur_prov}/{cur_model}')
+    print()
+if snapshot_drift:
+    print('=== SNAPSHOT DRIFT ===')
+    for n, axis, old, cur in snapshot_drift:
+        print(f'  {n}: {axis} snapshot {old} != global {cur}')
+    print()
+if not pinned_drift and not snapshot_drift:
+    print('All clear — no drift detected.')
+PYEOF
+
+# Legacy drift finder (checks snapshots only — the sweep above is more comprehensive)
 python3 -c "
 import json, yaml, os
 home = os.path.expanduser('~/.hermes')

@@ -10,6 +10,30 @@ Release: RELEASE | RELEASE_WITH_HOLDS | HOLD
 
 Use emoji dividers between sections: `━━━━━━━━━━━━━━━━━━━━━━━`
 
+## Section Template — Federation Health (top section, always present)
+
+Title: **✅ FEDERATION STATE** or **⚠️ FEDERATION STATE** (if any red flags)
+
+Format: compact table of 6 organs. Include any anomalous repos.
+
+```
+| Organ | Port | Status |
+|-------|------|--------|
+| arifOS | 8088 | ✅ |
+| A-FORGE | 7071 | ✅ |
+| AAA | 3001 | ✅ |
+| GEOX | 8081 | ✅ |
+| WEALTH | 18082 | ✅ |
+| WELL | 18083 | ✅ |
+```
+
+Docker infra status: one-liner — postgres ✅ · qdrant ✅ · redis ✅ · etc.
+
+**⚠️ Perhatian:** bullet list of any active red flags detected during Federation Boot
+(dirty repos with merge conflicts, T3 items stacking up, CONTEXT staleness, MCP transport issues).
+
+If everything is green, no Perhatian section needed. Green is silent.
+
 ## Section Template — War / Geopolitics
 
 Title: **⚔️ WAR / GEOPOLITICS / ENERGY**

@@ -109,6 +109,35 @@ For the older stand-alone reality snapshot compiler (deprecated since v2 probe):
 
 **When to use:** Arif wants to paste federation context into a cloud AI chat (Gemini, Claude, etc.) — the artifact provides grounded reality without exposing credentials, shell access, or mutation capability.
 
+### Step 0 — Federation Tool Registry (Single Source of Truth)
+
+Before probing individual organs, check `arifos://tools/registry` on the arifOS kernel. This single resource aggregates tools/list from all 6 organs concurrently (5s per-organ timeout) with a 5s TTL cache. Cold read ~0.5s, cached read ~0.037s (14× faster).
+
+```bash
+# Read the registry — one call, all organs
+curl -sf -X POST http://localhost:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "Mcp-Session-Id: checkup-$(date +%s)" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"resources/read","params":{"uri":"arifos://tools/registry"}}' | \
+  python3 -c "
+import sys,json; d=json.load(sys.stdin); t=d['result']['contents'][0]['text']
+o=json.loads(t)
+s=o['summary']
+print(f'Organs: {s[\"organs_healthy\"]}/{s[\"organs_total\"]} healthy')
+print(f'Tools: {s[\"tools_total_mcp\"]} MCP-discovered')
+print(f'Probe: {s[\"probe_timeout_seconds\"]}s timeout')
+for org in o['organs']:
+    print(f'  {org[\"organ\"]:12s} :{org[\"port\"]}  {\"🟢\" if org[\"healthy\"] else \"🔴\"}  MCP={org[\"tool_count_mcp\"]}  health={org.get(\"tool_count_health\",\"-\")}')
+"
+```
+
+**Why first:** The registry is the single source of truth for live organ state. 6/6 healthy → individual `curl :port/health` probes are confirmatory, not diagnostic. Registry shows unhealthy → THEN probe that organ directly.
+
+**Pitfall:** Session-gated organs (GEOX, WEALTH, WELL) return `tool_count_mcp=0` via MCP but report real counts via health endpoints. The registry captures both (`tool_count_health` field) with a `_note` explaining the session gate. Do not flag 0 as failure — check `tool_count_health` for real count.
+
+**Registry source:** `/root/arifOS/arifosmcp/resources/tools_registry.py` — 296 lines, async concurrent probes, 5s TTL in-memory cache.
+
 ## Step 1 — Fast Liveness (what's running)
 
 ```bash
@@ -197,6 +226,105 @@ curl -sf -H "Accept: application/json" -H "Content-Type: application/json" \
 ```
 This is specific to arifOS MCP port 8088. Other organs (GEOX :8081, WEALTH :18082, etc.) work fine with plain `curl`.
 
+## Step 2.5 — Consolidated Organ Drift Table (Multi-Organ Parallel Probe)
+
+After the deep arifOS probe (Step 2), run a **parallel drift scan across ALL organs** to extract a unified field set (status, drift flag, source/built/deployed commits, tool count, apex scalars). This goes beyond liveness (Step 1) to answer: *which organs are drifting, and on what axis?*
+
+### When to Run
+
+- After any deployment, restart, or organ update
+- Before producing a federation health report for Arif
+- When the Kernel Contrast Analysis (Step 4 of that pattern) calls for multi-organ drift data
+- Whenever you need a single source-of-truth table of all 7 organs' health states
+
+### The Parallel Probe
+
+```bash
+# Probe ALL organs in parallel — extracts standardized fields from each /health endpoint
+for port_info in "arifOS:8088" "A-FORGE:7071" "AAA:3001" "GEOX:8081" "WEALTH:18082" "WELL:18083" "FLAME:18084"; do
+  name="${port_info%%:*}"
+  port="${port_info##*:}"
+  echo "=== $name ($port) ==="
+  curl -sf --max-time 5 "http://localhost:$port/health" 2>/dev/null | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    status=d.get('status','?')
+    dd=d.get('deployment_drift',{}) or d.get('software_release',{}) or {}
+    drift=dd.get('drift') if 'drift' in dd else d.get('deployment_drift_status','?')
+    src=dd.get('source_commit','?') or d.get('git_version','?') or d.get('commit','?')
+    bld=dd.get('built_commit','?') or d.get('build_commit','?')
+    dep=dd.get('deployed_commit','?')
+    tools=d.get('tools_loaded','?') or d.get('public_tools','?') or d.get('tool_count','?')
+    print(f'  Status: {status}')
+    print(f'  Drift:  {str(drift)[:8]} | src={str(src)[:12]} built={str(bld)[:12]} dep={str(dep)[:12]}')
+    print(f'  Tools:  {tools}')
+    owner=d.get('owner_summary',{}) or {}
+    if owner.get('color'):
+        print(f'  Owner:  {owner[\"color\"]} — {\"; \".join(owner.get(\"reasons\",[]))}')
+    apex=d.get('apex_scalars',{}) or {}
+    measured=[k for k,v in apex.items() if v and v.get('status')=='MEASURED']
+    if measured:
+        vals=', '.join([f'{k}={apex[k][\"value\"]}' for k in measured])
+        print(f'  Apex:   {vals} MEASURED')
+    else:
+        print(f'  Apex:   All UNMEASURED')
+except Exception as e:
+    print(f'  ERROR: {e}')
+" 2>/dev/null || echo "  ❌ Unreachable"
+  echo ""
+done
+```
+
+### The Consolidated Table Format
+
+Report the results in this standard table, which provides a single-source-of-truth view of federation drift:
+
+```
+| # | Organ      | Port | HTTP | Status      | Drift      | Source     | Built      | Deployed   | Key Notes              |
+|---|------------|------|------|-------------|------------|------------|------------|------------|------------------------|
+| 1 | arifOS     | 8088 | 200  | healthy     | false      | 1ce09ba    | 1ce09ba    | 1ce09ba    | All aligned            |
+| 2 | A-FORGE    | 7071 | 200  | healthy     | false      | 1ceda13    | 1ceda13    | 1ceda13    | Identity UNAVAILABLE   |
+| 3 | AAA        | 3001 | 200  | healthy     | false      | 0a697d9    | 0a697d9    | 0a697d9    | Vault CONNECTED        |
+| 4 | GEOX       | 8081 | 200  | healthy     | false      | 1ce09ba    | 1ce09ba    | 1ce09ba    | 33/33 tools, HOLD      |
+| 5 | WEALTH     | 18082| 200  | healthy     | UNKNOWN    | N/A        | N/A        | N/A        | No git provenance      |
+| 6 | WELL       | 18083| 200  | degraded    | UNKNOWN    | 4f20c24    | —          | —          | 11.8h stale, MOCK bio  |
+| 7 | FLAME/WIT  | 18084| 200  | warn        | DIVERGENCE | 4f20c24    | —          | —          | 3/4 checks agree       |
+```
+
+### Known Common Findings (Checklist)
+
+Check these on every scan — they are frequent patterns:
+
+| Signal | Organ | What to check | If found |
+|--------|-------|---------------|----------|
+| `git_commit: UNAVAILABLE` | WEALTH (:18082) | No git provenance in health endpoint — instrumentation gap | Log as P2. Can't verify drift from health alone. |
+| `state_age_hours > 4` | WELL (:18083) | Biometric state data stale beyond `stale_after_seconds=14400` | Flag HIGH — needs state refresh |
+| `honesty.code: MOCK` | WELL (:18083) | Biometrics are mock/test data, not live sensor input | Flag MEDIUM — replace with real pipeline |
+| `consensus.verdict: DIVERGENCE` | FLAME/WITNESS (:18084) | WITNESS checks disagree (N-1 of N off) | Flag MEDIUM — investigate which check diverges |
+| `deployment_drift.drift: true` | Any organ | Source != built != deployed | Flag P0 if contradicting `status: healthy` |
+| All apex UNMEASURED | WEALTH, A-FORGE, AAA | Organ doesn't probe arifOS for apex scalars | Log as INFO — only arifOS+GEOX report measured apex |
+| `identity: UNAVAILABLE` | A-FORGE (:7071) | Identity not initialized | Log as LOW — owner YELLOW |
+
+### Per-Organ Axes
+
+For each organ, check these specific axes:
+
+| Organ | Primary drift axis | Tool surface axis | Apex axis | Authority axis |
+|-------|--------------------|--------------------|-----------|----------------|
+| arifOS | `deployment_drift_status` + `software_release.drift` | MCP tools count in /health | G, C_dark, QDF MEASURED | SOVEREIGN |
+| A-FORGE | `deployment_drift.drift` | `tools_loaded` vs canonical | All UNMEASURED | 777_FORGE (OBSERVE_ONLY) |
+| AAA | `deployment_drift` | A2A agents, not MCP tools | All UNMEASURED | F13 ARIF |
+| GEOX | `deployment_drift.drift` + `surface_drift.ok` | `tools_loaded` vs `canonical_tools` (33/33) | G, C_dark, QDF MEASURED | HOLD |
+| WEALTH | No git info available | 12 loaded vs 8 canonical | All UNMEASURED | ARIF |
+| WELL | No deployment_drift field | tool_count | All UNMEASURED | REFLECT_ONLY |
+| FLAME/WITNESS | `consensus.verdict` (DIVERGENCE) | source_integrity check | N/A | WITNESS |
+
+### Reference File
+
+For a complete worked example with per-organ detail, action items, and diagnostic commands:
+→ `references/organ-drift-table-2026-07-27.md`
+
 ## Step 3 — Seal Chain Freshness
 
 ```bash
@@ -245,6 +373,69 @@ Always report in this priority order:
 1. **🔴 True failures** — floors genuinely failing, real risk, needs sovereign decision
 2. **🟡 Items to watch** — deploy lag, dirty repos, stale data, amber state
 3. **✅ Normal** — all green
+
+## Kernel Contrast Analysis — Before vs Now Pattern
+
+When Arif asks "what changed?" or "explain the contrast" about the kernel or any organ — **don't just list features.** Use this structured synthesis pattern.
+
+This is NOT a drill-down diagnostic (use Contract Entropy Audit for that). This is a **human-language explanation** of what capabilities shifted and why.
+
+### When to Use
+
+- Arif asks "how is the kernel different now?" / "explain in human language"
+- After a major release or ZEN migration
+- When a release name signals a philosophical shift (e.g., `ZEN-SURVIVAL`)
+- After deploy/merge-conflict/repair cycles
+- Before SEAL: needs to confirm the gap between prior and current state
+
+### The Pattern (6 Steps)
+
+**Step 1 — Identify the release boundary.** Extract version/release name from `:8088/health`. Name IS the story (e.g., `ZEN-SURVIVAL` implies pruning, hardening, survival-of-the-fittest).
+
+**Step 2 — Git log scan.** Read `git log --oneline -20` for the organ. Classify each commit into categories:
+
+| Category | Example |
+|----------|---------|
+| Merge conflict fixes | `fix(docs): resolve merge conflicts` |
+| APEX ratification | `feat(apex): APEX T-000/T-001 canon` |
+| Shadow probe / INIT wiring | `fix(kernel): deploy shadow probe into arif_init` |
+| Reality ledger hooks | `[FORGE] Z5b — reality ledger auto-hooks` |
+| Tool/feature kill | `quarantine(apex): move X out of kernel path` |
+| Security repair | `[REPAIR] sync kernel ABI surface` |
+| Cosmetic/schema align | `chore: Z2 — pointerize organ.yaml` |
+
+**Step 3 — Critical modules inventory.** Extract `critical_module_hashes` from `:8088/health`. This is the live list of what survived. Compare against prior list (from session history or a prior seal artifact) to find what was added/removed.
+
+**Step 4 — Multi-organ drift scan.** Check EVERY organ for deployment drift (source_commit == deployed_commit). Flag any that say "healthy" but have `drift=true` — this is a CONTRADICTION per the kernel's own invariant rule.
+
+**Step 5 — Contradiction detection.** Find all places where declared state ≠ observed state:
+
+| Declaration | Observation | Contradiction |
+|-------------|-------------|---------------|
+| `drift: true` + `status: healthy` | Invariant says refuse healthy on drift | ❌ Self-contradiction |
+| `actor_verified: false` as bug | Correct for anonymous sessions | ⚠️ False alarm |
+| F1-F12 pass but verdict=HOLD | May be honest self-HOLD | Depends on reason |
+
+**Step 6 — Human-language synthesis.** Structure as tables:
+
+```
+## ⚡ Before — What Kernel TAK BOLEH Buat Sebelum Ni
+## ⚡ Now — What Kernel BOLEH Buat Sekarang
+## 🌪️ Chaos — Kontradiksi Yang Kena Hapus
+## 🏆 Survival of the Fittest Tools
+```
+
+### Pitfalls
+
+- **`healthy + drift=true` is the #1 contradiction.** The kernel's own invariant says "must refuse to report healthy when drift is true." If both appear, the system is in a known-contradictory state.
+- **Don't conflate cosmetic drift (build_info.py stale hash) with real drift.** `build_info.py` has a hardcoded BUILD_COMMIT never updated — cosmetic only. Real drift = `built_commit ≠ deployed_commit`.
+- **Release name IS metadata.** Read `ZEN-SURVIVAL`, not just `v2026.07.24`.
+- **HOLD ≠ broken.** A kernel reporting HOLD with healthy status is honest self-assessment.
+- **Drift on ONE organ ≠ federation failure.** Per-organ reporting, not boolean aggregate.
+
+### Example Output
+
+See `references/kernel-contrast-2026-07-27.md` for a complete worked example from the ZEN-SURVIVAL release.
 
 ## Web Surface Audit Pattern — AAA / arifOS / WEALTH / WELL Sites
 
@@ -887,6 +1078,27 @@ Full transport state findings from 2026-07-14:
 
 Observatory dual-engine architecture + organ probe hostname fix (2026-07-18):
 → `references/observatory-dual-engine.md`
+
+### Domain Orthogonality Audit Sub-pattern
+
+When the deep audit needs to go beyond "are organs alive and consistent?" into **"do their domain boundaries actually overlap?"** — run the domain orthogonality protocol.
+
+**When to use:** Federation-wide structural audit, before adding new tools to an organ, after refactoring an organ's tool surface, or when cross-organ data flows look suspicious.
+
+**The core question:** Does every tool belong to exactly one organ, or are there capability overlaps disguised as shared boundaries?
+
+**The 6-step protocol:**
+1. **Collect self-declared boundaries** — read each organ's AGENTS.md `## Boundary` section. Every organ should say what it does AND what it never does.
+2. **Map the complete tool surface** — from three sources (live MCP tools/list, manifest YAML, source code) to catch ghost tools, phantom exports, and session-gated tools.
+3. **Classify by concern axis** — map every tool to its organ's domain prefix (`geox_*`, `capital_*`, `well_*`, `arif_*`, `forge_*`). No tool should have the wrong prefix.
+4. **Check naming collisions** — search for the same tool name across organs. Zero is expected.
+5. **Verify cross-organ bridges** — intentional bridges (like `geox_to_wealth_bridge`) are data transforms, not duplicates. Verify they call the target organ instead of re-implementing it.
+6. **Verify NOT-boundaries against reality** — every "❌ Never" must be verifiable. GEOX must not have capital tools. WEALTH must not issue verdicts. WELL must not diagnose.
+
+**3-axis classification prevents false positives:** For any domain that appears in two organs, ask *What* (domain), *How* (mode: observe/compute/reflect/bridge), and *Why* (purpose). Same What + same How + same Why = TRUE OVERLAP. Same What only = adjaceny.
+
+Full protocol with exact commands, classification matrix, and worked example:
+→ `references/domain-orthogonality-audit.md`
 
 ## Cage Audit (Deep Constitutional Stress Test)
 
