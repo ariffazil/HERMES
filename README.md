@@ -1,6 +1,6 @@
 <!-- SOT-MANIFEST
-federation_release: v2026.07.24
-last_verified: 2026-07-24T16:00Z
+federation_release: v2026.07.28
+last_verified: 2026-07-28T18:00Z
 live_commit: fa890a2
 organ: HERMES
 role: multi-modal-bridge (organ 7 of 7)
@@ -11,7 +11,7 @@ truth_rule: tools/list + /health beat any static count in prose
 # 🔮 HERMES — Multi-Modal Bridge
 
 [![Domain CI](https://github.com/ariffazil/HERMES/actions/workflows/domain-ci.yml/badge.svg?branch=main)](https://github.com/ariffazil/HERMES/actions/workflows/domain-ci.yml)
-[![Federation](https://img.shields.io/badge/Federation-v2026.07.24-0a7b83)](https://arifos.arif-fazil.com)
+[![Federation](https://img.shields.io/badge/Federation-v2026.07.28-0a7b83)](https://arifos.arif-fazil.com)
 [![License](https://img.shields.io/github/license/ariffazil/HERMES?label=License)](LICENSE)
 
 > **HERMES routes. It never adjudicates.**
@@ -113,8 +113,7 @@ cd /root/HERMES
 | **WELL** | Vitality guard | [repo](https://github.com/ariffazil/well) | [mcp](https://well.arif-fazil.com/mcp) | [health](https://well.arif-fazil.com/health) | [llms.txt](https://well.arif-fazil.com/llms.txt) |
 | **HERMES** | Multi-modal bridge | [repo](https://github.com/ariffazil/HERMES) | — | — | — |
 
-**Public:** [arif-fazil.com](https://arif-fazil.com) · **Federation root:** [arifos.arif-fazil.com](https://arifos.arif-fazil.com)
-**SOT:** 2026-07-24
+**SOT:** 2026-07-28
 
 ## 5. License & Sovereignty
 
@@ -143,4 +142,4 @@ Routes, never adjudicates. DITEMPA BUKAN DIBERI.
 
 > AAA routes and displays. arifOS judges. Domain organs witness. A-FORGE executes. HERMES bridges. VAULT999 records. ARIF decides.
 
-> **SOT:** 2026-07-24 | **seal_seq:** `fa890a2`
+> **SOT:** 2026-07-28 | **seal_seq:** `fa890a2`
