@@ -1,7 +1,13 @@
 {
-  "updated_at": "2026-07-28T18:05:04.361388",
+  "updated_at": "2026-07-28T18:10:04.418962",
   "platforms": {
     "telegram": [
+      {
+        "id": "-1003753855708:36572",
+        "name": "AAA / topic 36572",
+        "type": "group",
+        "thread_id": "36572"
+      },
       {
         "id": "8410138119",
         "name": "ASI💃",
@@ -13,12 +19,6 @@
         "name": "ARIF",
         "type": "dm",
         "thread_id": null
-      },
-      {
-        "id": "-1003753855708:36572",
-        "name": "AAA / topic 36572",
-        "type": "group",
-        "thread_id": "36572"
       },
       {
         "id": "-1003753855708:1",
