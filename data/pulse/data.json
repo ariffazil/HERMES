@@ -6,7 +6,7 @@
   "receipt_count": 2,
   "executed_count": 2,
   "verify_count": 0,
-  "uptime_ms": 3897687,
+  "uptime_ms": 31234,
   "source": "arifFlow daemon :7073 \u2014 single source of truth \u2014 /var/lib/arifflow/receipts.jsonl",
-  "timestamp": "2026-07-28T18:00:03Z"
+  "timestamp": "2026-07-28T18:15:01Z"
 }
