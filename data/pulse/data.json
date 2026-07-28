@@ -1,0 +1,17 @@
+{
+  "fq": 1.2,
+  "fq_score": 1.2,
+  "status": "BALANCED",
+  "receipt_count": 11,
+  "executed_count": 9,
+  "success_count": 9,
+  "open_lanes": 0,
+  "cooling_lanes": 0,
+  "restart_detected": true,
+  "baseline_carried_forward": {
+    "exec": 8,
+    "verify": 10
+  },
+  "source": "arifFLOW live telemetry (cron v2 persistence-aware)",
+  "timestamp": "2026-07-28T16:00:02Z"
+}

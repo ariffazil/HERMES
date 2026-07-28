@@ -1,7 +1,7 @@
 ---
 name: medical-document-interpretation
 description: Interpret Malaysian medical documents (CT reports, radiology forms, procedure reports, blood results) and explain them in simple Bahasa Melayu
-tags: [medical, malaysia, hospital, report, radiology, surgery, bm]
+tags: [medical, malaysia, hospital, report, radiology, surgery, bm, ultrasound]
 ---
 
 # Medical Document Interpretation (Malaysia)
@@ -10,8 +10,8 @@ Interpret Malaysian medical documents for layperson understanding. Convert clini
 
 ## Trigger Conditions
 
-- User shares medical document images (CT reports, radiology forms, procedure reports, blood results, discharge summaries)
-- User asks "apa maksud ni", "explain", "translate"
+- User shares medical document images (CT reports, radiology forms, procedure reports, blood results, discharge summaries, ultrasound/sonogram prints)
+- User asks 'apa maksud ni', 'explain', 'translate'
 - User discusses hospital procedures, surgery, recovery timelines
 - User needs private nurse rates, hospital logistics in KL
 - **Chat-fragment reconstruction**: User describes a medical situation via DMs or chat fragments with no document image — reconstruct the full clinical narrative from raw gateway logs when session_search returns empty (see `references/forwardable-recap-template.md` for the standard output format)
@@ -77,6 +77,81 @@ When the user asks for a full recap, dossier, or "tell me everything" about a ho
 For PDF: use `scientific-pdf-generation` Mode B (dark/gold dossier theme). For text: inline the structure. Language: user's preferred tone (BM casual / formal / English).
 
 → Pattern reference: `references/caregiver-support-dossier.md`
+
+## Ultrasound / Sonogram Print Analysis
+
+Ultrasound prints from Malaysian private hospitals (Prince Court, Pantai, Sunway, etc.) are printed on thermal paper. The VLM (`vision_analyze`) reads these directly — no preprocessing needed.
+
+### Equipment Brands
+
+| Brand | Logo | Common At | Notes |
+|-------|------|-----------|-------|
+| **BK Medical** (Denmark) | `bk ultrasound` | Prince Court MC, urology | Common for prostate/kidney scans. High frequency probes (10 MHz). |
+| **GE Healthcare** | `GE` logo | Sunway, Gleneagles | General purpose |
+
+### Reading the Header
+
+```
+[bk logo] [Patient Name / ID]     [Facility Name]
+[Probe/Equipment ID]               PRINCE COURT MC
+[Date: DD/MM/YYYY] [Time: HH:MM:SS]
+```
+
+**Key fields:**
+- **Patient name** — Format: `FIRSTNAME LASTNAME TITLE` or Malaysian `BIN/BINTI`. Thermal print + VLM garbles names often.
+- **MR Number** — 6-7 digit registration number in parentheses
+- **Facility** — e.g. `PRINCE COURT MC`, `PRINCE COURT KL`
+- **Date** — ⚠️ **Machine clock often wrong.** Years show 2016/2020 when actual is 2026. Cross-reference with conversation context.
+- **Probe type** — e.g. `8808 S` (curvilinear abdominal), `Obstetric Probe 5` (model name, not use indicator)
+
+### Organ from Measurement Labels
+
+BK Medical standard abbreviations:
+
+| Label | Organ | Normal Range | Notes |
+|-------|-------|-------------|-------|
+| `Pr-W`, `Pr-H`, `Pr-Vol` | **Prostate** | Vol 20-30 cm³ | Patient male ("MR."). Width ~48mm, Height ~28mm typical. |
+| `Rt-K-L`, `Lt-K-L` | Kidney length | 9-12 cm | Cortical thickness measured separately. |
+| `CBD` | Common bile duct | <6-7 mm | Biliary |
+| `GB-W`, `GB-L` | Gallbladder | Varies | Wall thickness, sludge, stones |
+| `BPD`, `HC`, `FL`, `CRL`, `AC` | **Fetal** (obstetric) | Gestation-dependent | Standard fetal biometry |
+| Simple caliper in cm | General | Context-dependent | Infer from image appearance |
+
+### Common Scan Patterns
+
+1. **Prostate** — Transabdominal pelvic: dark bladder anteriorly, prostate posteriorly. Labels: `Pr-W`, `Pr-H`, `Pr-Vol`. 10 MHz end-fire probe.
+2. **Renal/kidney** — Bean shape with echogenic central sinus. Measurement e.g. 5.4 cm may be cortical thickness or dilated calyx (if hydronephrosis). Curvilinear probe 8808S.
+3. **Bladder** — Dark anechoic circle. May measure post-void residual.
+
+### Clinical Cross-Reference
+
+| Ultrasound Finding | Clinical Context |
+|-------------------|-----------------|
+| 4/4 Obstructive Bladder + kidney 5.4 cm | Possible **hydronephrosis** — 5.4 cm too small for kidney length (9-12 cm normal), likely dilated calyx or cortical thickness. |
+| Prostate vol 25.9 cm³ | Normal. Unlikely cause of obstruction in young male. |
+| Date shows 2016/2020 | Machine clock error — actual is 2026. Don't flag as discrepancy. |
+
+### Extraction Pattern (proven 2026-07-28)
+
+When user shares ultrasound photos:
+
+```
+1. vision_analyze(image_url, "Read ALL text. Patient name? Organ? Measurements? Facility? Date? Doctor?")
+2. vision_analyze(image_url, "What does the IMAGE look like? Identify organ from visual appearance.")
+3. If multiple images: separate each patient by name field.
+4. Cross-reference dates against session timestamps.
+```
+
+**Two-pass approach** — thermal print garbles text; VLM hallucinates if asked everything in one call.
+
+### Pitfalls
+
+- **Machine date error is universal** — BK Medical machines at Prince Court show wrong years (2016/2020 for 2026). Do NOT alarm user.
+- **Probe model name ≠ use case** — "Obstetric Probe 5" is the probe hardware model, not an indicator of fetal scanning.
+- **Garbled names** — `MHMMD/AUIF ALHUSAIN` → actually `MUHAMMAD ALIF ALI`. Cross-reference with known correct name from memory.
+- **Multiple images may mix patients** — Check patient name field on each.
+- **Normal prostate volume does not rule out bladder obstruction** — obstruction may be at bladder neck or urethra.
+- **Frame as machine output, not diagnosis** — "This is what the machine printed and standard ranges" — never diagnostic authority.
 
 ## Common Malaysian Medical Terms
 

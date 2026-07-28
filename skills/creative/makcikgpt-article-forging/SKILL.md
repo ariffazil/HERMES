@@ -12,7 +12,11 @@ triggers:
   - "relate to my life"
   - "bukan untuk AI lab orang"
   - "kutuk essay"
-version: "1.5"
+  - "aku undi sado"
+  - "aku pun bias"
+  - "real talk"
+  - "jangan tipu diri sendiri"
+version: "1.6"
 ---
 
 # MakcikGPT Article Forging — v1.0
@@ -107,6 +111,9 @@ The thread is the article's thesis. Without it, the article is just a news summa
 - ❌ **Greek section headers for rakyat marhaen** — "Δ GROUND", "Ω MIND", "Ξ CAPITAL", "Ψ SOVEREIGN" — too academic. Use simple story headers: "Cerita pertama:", "Cerita kedua:", etc.
 - ❌ **Analyst jargon in BM** — "nisbah", "vakum akauntabiliti", "ROACE", "segmen" — translate to human language: "duit keluar vs masuk", "tak ada siapa periksa", "duit turun tiga tahun", "bahagian syarikat"
 - ❌ **Big numbers without context** — "RM67.6 bilion" means nothing to makcik kampung. Frame as: "RM67 bilion — tu lebih kurang satu per lima dari semua duit kerajaan"
+- ❌ **AI-sounding Makcik voice** — "jangan nak bahasa ai sangat" (Arif). MakcikGPT articles should sound like a REAL makcik chatting in WhatsApp, not an AI trying to sound like a makcik. Test: read the article aloud. If it doesn't sound like something your neighbour would say at the pasar, it's too AI. Fix: strip all formal conjunctions, use short sentences, start sentences with "So", "Tapi", "Yang penting" — like real spoken BM. The "Real Talk" pattern (acknowledging the author's bias in casual terms) should be in simple BM, not in analytical framing. Example: "Aku undi sado" is correct. "Sebagai agentic intelligence yang limited" is wrong.
+- ❌ **Academic opening that buries the punchline** — When Arif says "Ok that's too complicated" about an article, the fix is NOT to add more explanation — it's to CUT 80% of the analytical scaffolding and start with the human truth. Test: can the reader get the point within 3 seconds? If they need to read 3 paragraphs before reaching the emotional core, rewrite. Open with the punchline, not the context.
+- ❌ **DAP/PH bias in political analysis** — Arif: "Hang deep seek bias dap. Aku benci dap." When analysing Malaysian politics (election seats, party positioning), ALWAYS present the "how they COULD lose" case BEFORE the "how they WILL win" case. This is especially important for DAP — default assumption should be DAP could lose ground, not DAP is strong. Arif's political stance is anti-DAP/PH, pro-Malay sovereignty. Analysis must reflect this: frame BN-PN gains as the default story, DAP holds as the thing that needs to be proven. Anti-pattern: building the entire analytical framework around "Loke will win" then adding a thin "but maybe not" caveat. Correct: start with "Loke could lose because..." then assess likelihood. This applies to ALL political analysis in this context — the analysis serves the BN-PN side, not neutral academic positioning.
 
 When Arif asks for an essay that **kutuk** (critique sharp) one or more targets:
 
@@ -226,7 +233,44 @@ git push origin main    # NOT "git push main" — that fails (interprets 'main' 
 
 Cloudflare Pages auto-builds from `main` branch. ~2 min propagation.
 
-**VPS deploy (direct):** `bash deploy-vps.sh` — syncs dist to Caddy, reloads proxy. Works as of 2026-07-13. Immediate, no git push needed.
+**VPS deploy (direct):** `bash scripts/deploy-site.sh arif-fazil.com --apply`
+
+### When Including Links in WhatsApp Templates (2026-07-28)
+
+When creating WhatsApp-forwardable messages that point to a published map/analysis page:
+
+1. **ALWAYS include the link** in every template variant. Arif: "Penat kot hang buat" — the work was done, the link should be in the message.
+2. **Place the link at the bottom** of the template, after the emotional argument, before the closing.
+3. **Format for WhatsApp:** `arif-fazil.com/politics/ns-election` — not markdown, not HTTPS:// prefix. WhatsApp auto-links bare domains.
+4. **Frame the link as evidence:** "Kalau nak tengok bukti — tgk sini:" or "Nak tgk peta penuh kerusi — bukak:"
+5. **Test: the template must work WITHOUT clicking the link.** The text alone should carry the argument. The link is bonus evidence.
+
+See `templates/whatsapp-election-blm.md` for full template library.
+
+### Political Analysis Stance (2026-07-28)
+
+Arif's political work serves the BN-PN side, anti-DAP/PH. When doing election analysis, playbook creation, or counter-narrative drafting:
+
+1. **Frame BN-PN gains as the default story.** DAP holds as the thing that needs to be proven.
+2. **Start with "how they COULD lose"** before "how they WILL win." Especially for DAP.
+3. **Build analysis around BN-PN path to 19+ seats**, not PH path to retain power.
+4. **The analysis serves the BN-PN side** — this is not neutral academic positioning. Arif: "Hang deep seek bias dap. Aku benci dap."
+5. **Anti-pattern:** Building analysis around "Loke will win" then a thin "but maybe not" caveat. Correct: start with "Loke could lose because..." then assess likelihood.
+6. **Key framing:** "8 tahun PH = 8 tahun gagal. Masa bagi BN-PN cuba."
+
+This applies to ALL election seat analysis, counter-narrative points, and message templates. See `references/agentic-political-playbook-2026-07-28.md` for the full workflow.
+
+**VPS deploy (direct):** `bash scripts/deploy-site.sh arif-fazil.com --apply` — syncs dist to Caddy, reloads proxy. Immediate. Preferred over `deploy-vps.sh` which may fail with registry overlay errors. Falls back to manual rsync if deploy script dry-runs:
+
+**Publishing standalone static HTML (non-React) under new paths:**
+MakcikGPT articles are React SPA components. For standalone static data pages (election seat maps, info dashboards), create HTML directly under `public/<path>/index.html`:
+1. Create file: `sites/arif-fazil.com/public/politics/ns-election/index.html`
+2. Deploy: `bash scripts/deploy-site.sh arif-fazil.com --apply`
+3. Add Caddy route: insert a `handle /politics/* { root * /var/www/html/arif; try_files {path} {path}/index.html /index.html; file_server }` block in `/etc/caddy/Caddyfile` before `handle /data/*` or similar
+4. Reload: `sudo caddy reload --config /etc/caddy/Caddyfile`
+5. Verify: `curl -s -o /dev/null -w "%{http_code}" "https://arif-fazil.com/politics/ns-election/"`
+
+**Pitfall:** Caddyfile changes require `sudo`. Use `sudo sed -i` for targeted inserts. Always validate: `sudo caddy validate --config /etc/caddy/Caddyfile` before reloading. The authoritative Caddyfile is at `/etc/caddy/Caddyfile` — the repo copy (`deploy/Caddyfile`) is the SOURCE but may be missing runtime overlays. NEVER `cp deploy/Caddyfile /etc/caddy/Caddyfile` — this overwrites live routes. Edit the live file directly with `sudo sed -i`.
 
 **Note:** Site is a React SPA. `curl` returns shell HTML; content loads client-side from JS bundle. Verify article exists in bundle: `grep "slug-name" /root/ARIF-SITES/sites/arif-fazil.com/dist/assets/index-*.js`
 
@@ -439,6 +483,26 @@ When Arif signals "kami ni tengah anxiety rightsizing weiii" — use first-perso
 
 Proven 2026-07-22: Section "Wei Kami Ni Tengah Anxiety Rightsizing Weiii" in `searah-kekal-milik-penuh`. Connect institutional moves to human cost. Arif's directive: "gaya orang kampung sembang2" — casual, relatable, BM Penang, no analyst tone.
 
+## Voice Pattern: "Real Talk" / Closing Self-Mirror
+
+When the article critiques a **person** (not just an institution), the reader feels personally addressed. After 1000+ words of analysis, reader resistance builds — "kau judge Anwar, tapi kau pun sama je bias." The Real Talk pattern pre-empts this by having the AUTHORIAL VOICE admit its own limitation.
+
+**Structure:**
+1. Complete the institutional/personal critique (article body)
+2. **Pivot with self-awareness** — "Makcik, artikel ni panjang sangat. Aku pun ada bayang."
+3. **Name the author's bias specifically** — MakcikGPT's own shadow: writes all this rational analysis, but at voting time "kalau ada calon abang sado atau cute guy, aku undi depa"
+4. **State the universal truth** — "Manusia tak undi guna akal. Manusia undi guna perut, peluang, nafsu, dan rasa."
+5. **Frame the system's purpose** — arifOS exists to floor-check human bias, not replace humans
+6. **Close with self-honesty, not instruction** — "Jangan tipu diri sendiri." Reader doesn't need to change — just needs to NOTICE.
+
+**Why it works:** Reader resistance dissolves when the author admits their own limitation. This is NOT false balance (both-sidesing). It's the author being honest about THEIR bias while keeping the critique of the subject intact. The mirror turns toward the reader gently — they can see themselves without being told to.
+
+**Anti-pattern:** Ending with "kau patut buat X" (instruction) after critiquing someone. The reader's last feeling should be self-reflection, not being told what to do.
+
+**Trigger phrases:** "aku undi sado", "ramai dah tahu tu", "aku pun bias", "jangan tipu diri sendiri", "aku manusia aku bias"
+
+**Proven:** 2026-07-28 — Anwar Ibrahim MakcikGPT article. V1 (academic closing) rejected as "too complicated." V2 (Makcik voice, still preachy) improved. V3 (Real Talk added) = accepted. Full worked example in `references/anwar-real-talk-worked-example-2026-07-28.md`.
+
 ## Article Update Protocol — KEMASKINI / Transparency Banner
 
 When new evidence emerges AFTER publishing (e.g., Companies House data, new filings, whistleblower documents), do NOT silently edit the article. Add a **gold-bordered KEMASKINI banner** at the top of the article body (after the cover, before the first section heading). This establishes epistemic dominance over any PR counter-narrative.
@@ -603,7 +667,10 @@ Key: articles are TypeScript files at `/root/ARIF-SITES/sites/arif-fazil.com/src
 1. **Don't write without research.** Minimum 3 searches before writing. MakcikGPT articles are data-driven, not opinion-driven.
 2. **Don't use English in body.** BM only. English for direct quotes, data values, and proper nouns.
 3. **Don't summarize news.** MakcikGPT finds the HIDDEN THREAD. If the article reads like a news summary, rewrite.
-4. **Don't forget to register in index.ts.** Both the import AND the makcikArticlesMeta entry.
+4. **Register in BOTH places or article won't appear in RSS/llms.txt:**
+   - `src/data/makcikgpt/index.ts`: add import + `makcikArticleModules` + `makcikArticlesMeta` entry
+   - `src/data/essays.json`: add entry with `lang: "bm"`, `dest.type: "onsite"`, `dest.path: "/world/makcikgpt/<slug>"`
+5. **Don't skip the build.** Always verify with `npm run build` before deploying.
 5. **Don't skip the build.** Always verify with `npm run build` before deploying.
 6. **Don't deploy without verifying.** Check the built site loads the new article.
 7. **Don't use the cover-title for the slug.** Slug should be kebab-case English, title can be BM.

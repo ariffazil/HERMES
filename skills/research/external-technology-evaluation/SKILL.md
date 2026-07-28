@@ -28,7 +28,8 @@ triggers:
 - Arif shares a link or description of a newly released model, paper, tool, or technology
 - He asks whether it's worth integrating into the federation
 - He asks you to "map all" capabilities of a system/tool
-- The goal is a **decision** (integrate? track? ignore?) + **execution** if approved
+- **Arif asks for a conceptual/doctrinal contrast** — e.g. "how does X compare to our Y", "what's the difference between loop engineering and reality engineering"
+- The goal is a **decision** (integrate? track? ignore?) + **execution** if approved, OR a **positioning** (how does this relate to arifOS doctrine)
 
 ## Related Skills
 
@@ -36,6 +37,26 @@ triggers:
 - `deep-research` — use if deeper multi-source research is needed on the topic
 
 ## Workflow
+
+### Phase 0: Live Probe First (Conceptual/Doctrinal Contrasts ONLY)
+
+**CRITICAL: If this is a conceptual/doctrinal contrast (not an integration evaluation), run this phase first — BEFORE any theory.**
+
+Arif will reject a theory-first framing. He wants **live evidence, not philosophy.** Start with live probes:
+
+```bash
+# Probe the kernel for real floor values
+curl -s http://127.0.0.1:8088/health | jq '.floors_active, .runtime_floors, .vault999_health, .apex_scalars, .thermodynamic'
+```
+
+Then gather vault evidence:
+```bash
+ls /root/.local/share/arifos/vault999/SEAL-*.json 2>/dev/null | wc -l
+wc -l /root/.local/share/arifos/vault999/outcomes.jsonl
+ls /root/.local/share/arifos/vault999/flow_cooling_*.json 2>/dev/null | wc -l
+```
+
+**Key principle: the contrast table MUST carry live values from the probe, not just conceptual descriptions.**
 
 ### Phase 1: Observe — Gather Intelligence
 
@@ -117,7 +138,23 @@ Structure the verdict as:
 
 5. 📊 Summary Table
    - Aspect | Score | Note
-```
+
+### Conceptual/Doctrinal Contrast Presentation (alt format for Phase 4)
+
+When the task is to compare an external concept (loop engineering, harness engineering, etc.) against arifOS reality engineering — NOT an integration decision — use this alt format instead of EUREKA Zen:
+
+1. **Live Probe Data First** — curl :8088/health, show floor values, vault counts, seal count
+2. **One-Line Canon Statement** — from `/root/AAA/wiki/concepts/CONCEPT_REALITY.md` (the single-source-of-truth canon)
+3. **Canonical Contrast Table** — dimension | external concept | arifOS reality engineering. Dimensions include: primitive, unit, question answered, focus, risk, analogy, failure mode, success metric, scale, output
+4. **Hierarchy Diagram** — show the containment relationship (e.g. loop eng ⊂ reality eng)
+5. **Timeline Foresight** — when did external industry discover this? When did arifOS forge it? Show dates.
+6. **"So What?" — Arif-Specific Benefits** — explicitly list what each floor/capability does for Arif that a plain external tool cannot. Use "kau" not "you" where natural. Example:
+   - "Plain loop: agent kata 'saya confident' tapi selalu confident even when wrong. arifOS: F7 caps confidence at 0.03-0.05."
+   - "Plain loop: takde immutable audit. arifOS: VAULT999 append-only, chattr +a, 83 SEAL receipts."
+7. **Live Benchmark Table** — floor | live value | target | plain loop equivalent (usually "none" or "unmonitored")
+8. **Honest Corrections** — lift any overclaims from the canon (F2 TRUTH audit). Show what we CAN claim vs what we CANNOT.
+
+**Tone rule:** When Arif pushes back with "So what??", "Hang ada benchmark ka?", or similar — **immediately pivot to live probes.** Stop explaining. Start curling endpoints. The proof is in the kernel, not in the explanation.
 
 ### Phase 5: Execute on Approval (the "Yes setup" path)
 
@@ -174,6 +211,9 @@ When Arif says any approval signal ("Yes setup", "Ok hang buat", "Go ahead"):
 - **Don't forget the floor check**: Every EUREKA proposal must carry F1/F7/F10 assessments.
 - **Don't deploy scaffolding without approval**: Build the Modal scaffold but do NOT run `modal deploy`. Arif calls `modal deploy` when he's ready. The scaffold is the execution-ready plan, not the execution itself.
 - **"Apa yang ada guna ja"**: If the current stack already covers the capability, the bar for integration is higher. State the gap explicitly.
+- **Don't lead with theory for conceptual contrasts**: When Arif asks "what's the difference between X and our Y" — do NOT start with philosophical framing. Start with `curl :8088/health` and live data. He will push back with "So what??" if you lead with abstractions. The proof is in the kernel, not in paragraphs.
+- **Don't present a comparison without "So what?"**: After the contrast table, ALWAYS answer what this means for Arif specifically. Use "kau" format. E.g. "Plain loop: agent kata confident tapi selalu salah. arifOS: F7 caps confidence at 0.05."
+- **References directory stores condensed knowledge**: After a conceptual evaluation, save a reference file so future sessions don't need to re-derive the same analysis.
 
 ## References
 

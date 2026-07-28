@@ -21,6 +21,7 @@ Trigger when the user asks to **"lukis"** / **"gambar"** / **"draw"** / **"visua
 - **Conceptual / educational** — laws, principles, do/don't, classification systems
 - **Comparative** — before/after, healthy/damaged, option A vs option B
 - **Mathematical / scientific** — formulas, derivations, scientific phenomena (NOT animations)
+- **Geological / earth science** — cross-sections, stratigraphic columns, basin profiles, structural geology, well-to-well correlations, deep time reconstructions
 
 Output: **single dark-themed HTML file with inline SVG** — no external libs, no rendering engine, opens in any browser, sent to user via `MEDIA:/absolute/path`.
 
@@ -122,6 +123,44 @@ Structure:
 - Centered text 14-16px bold, color violet-300 (`#c4b5fd`)
 - Use sparingly — once per document max
 
+### Pattern 5: Geological Cross-Section (W–E or N–S Profile)
+
+For: basin-scale stratigraphy, structural geology profiles, well-to-well correlations, bedrock-to-surface sections, fault zone display.
+
+**Geological colour palette (add to/replace semantic palette):**
+
+| Lithology | Color (hex) | Pattern |
+|---|---|---|
+| Alluvium (Quaternary) | `#c8b070` | Small circle dots (sand & gravel) |
+| Saprolite (weathered bedrock) | `#8a6a3a` | Diagonal dashes on `#5a4a2a` |
+| Fresh granite / igneous basement | `#3a2a1a` | Speckled (dark + light circles for minerals) |
+| Fault zone / shear zone | `#2a1a0a` | Criss-cross diagonal lines |
+| Water table | `#4a8ab4` dashed line | Phreatic surface marker |
+| Sedimentary strata (shale) | `#4a5a4a` | Horizontal fine lines |
+| Sedimentary strata (sandstone) | `#8a7a5a` | Stippled pattern |
+| Coal / lignite seam | `#1a1a0a` | Solid black with thin white border |
+
+**Structure (SVG viewBox 1000x620):**
+1. **Topographic profile** — path along surface elevation, slight undulations (stroke `#5a4a3a` width 1.2)
+2. **Ground surface** — thin green vegetation cover (`#1a2a10` fill)
+3. **Geological units as stacked polygons** — each unit is a filled path/rect with corresponding lithology pattern. Label each with name, age, and depth range. Transparency ~0.85 for layered look.
+4. **Structural features** — faults drawn as thick (stroke 1.5) red-brown (`#8a3a2a`) lines crossing units, with half-arrow offset indicators. Fault zone as patterned rect across the full depth.
+5. **Water table** — cyan dashed line (`#4a8ab4`), stroke-dasharray 5,3, opacity 0.6. Label with "▼ WT" marker.
+6. **Joints in bedrock** — thin semi-transparent lines (stroke 0.3-0.6, opacity 0.2-0.4) in fresh granite zone, both vertical and horizontal sets.
+7. **House/site marker** — building indicator at surface midpoint: small polygon roof (`#d4a847`), rect for building, bold number label.
+8. **Legend** — grid of swatches outside SVG in HTML (`display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))`)
+9. **Scale bar + orientation** — horizontal bar (0-4 km) at bottom left, orientation labels (W← and →E) at top
+10. **Card below SVG** — one `<div class="card">` with 6-8 observation/interpretation bullets. Tags: `OBS` vs `INTERPRETATION` vs `PLAUSIBLE`.
+
+**Key design rules:**
+- Vertical exaggeration ~3× for readability (label as "VE ~3×")
+- Depth labels on left margin (0 m, ~15 m, ~40 m, ~80 m)
+- Marker location (house/well) labeled with a vertical dashed tick line to surface
+- Pattern fills must be defined in SVG `<defs>` as `<pattern>` elements
+- Every `<text>` element needs explicit `fill=` — pattern fills don't pass through to text
+
+**Worked example:** `/root/.hermes/artifacts/geology/lenggeng-cross-section.html` — W–E section through Lenggeng, NS showing Main Range Granite (200 Ma) overlain by saprolite and Quaternary alluvium, with Bukit Tinggi Fault zone schematic. Aliff's house (No. 27) at midpoint on saprolite foundation.
+
 ## File Structure
 
 Single HTML file:
@@ -155,6 +194,7 @@ Single HTML file:
 ## Reference Examples
 
 - `/root/aminol-acl-guide.html` — full working example: anatomy (Pattern 1) + 9-month timeline (Pattern 2) + do/don't cards (Pattern 3) + 5 laws grid (Pattern 3) + signature quote (Pattern 4). 445 lines, single file.
+- `/root/.hermes/artifacts/geology/lenggeng-cross-section.html` — geological cross-section (Pattern 5): W–E profile through Lenggeng, NS. Main Range Granite, saprolite, alluvium, Bukit Tinggi Fault zone, water table, house marker. 625 lines, single file with SVG patterns.
 
 ## Companion Skills
 

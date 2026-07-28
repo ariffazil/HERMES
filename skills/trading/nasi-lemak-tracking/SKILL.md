@@ -77,16 +77,23 @@ Use `execute_code` to compute:
 
 ## Known Locations
 
-Setiawangsa, Wangsa Maju, BSW, DP, MAMAK 1, MAMAK 2, KEDAI P, KEDAI L, KEDAI A,
-LRT S, LRT WM, EVEN, DSW, DSP
+DSW, DSP, LRT S (LRT Setiawangsa), LRT WM (LRT Wangsa Maju),
+MAMAK 2, KEDAI P, KEDAI L, KEDAI A, EVEN, BSW, DP
 
 ### Sub-Kedai Counts (for per-kedai averages)
 
-| Location | Sub-Kedai |
-|---|---|
-| MAMAK 2 | 2 |
-| LRT S | 3 |
-| Others | 1 each |
+| Location | Sub-Kedai | Notes |
+|---|---|---|
+| MAMAK 2 | 2 | Two kedai under one name |
+| LRT S | 3 | LRT Setiawangsa — 3 sub-kedai |
+| LRT WM | 1 | LRT Wangsa Maju |
+| KEDAI P | 1 | Standalone |
+| KEDAI L | 1 | Standalone — confirmed 24/07/26 |
+| KEDAI A | 1 | Standalone — confirmed 24/07/26 |
+| EVEN | 1 | Event/function-based — may have baki to carry over |
+| DSW | 1 | — |
+| DSP | 1 | — |
+| Others | 1 each | BSW, DP |
 
 ## Sambal Types
 
@@ -129,6 +136,17 @@ When user says something like "Telur mata EVEN baki 5" or "baki 5" after a previ
    - Meaning: 5 telur mata remain unsold, 5 dadar remain, 5 rebus remain → new order = 5 each (adjust from previous 10 each)
 3. Apply adjustment immediately. Don't ask "confirm ke" — just do it.
 4. Update total quantity accordingly.
+
+**Exact pattern from session 26-27/07/2026:**
+- User: "Telur mata EVEN Baki 5, Telur dadar EVEN Baki 5, Telur rebus EVEN Baki 5"
+- Then: "Yeap setiap 1 Baki 5" (confirming each variant has baki 5, new order = 5 each)
+- RESPONSE: "Okey, EVEN ganti jadi 5 setiap satu." No need to ask for confirmation.
+
+**When user says "baki X" for one location on a future order, without saying 'adjust':**
+- It MAY mean the order itself is only 5 (not that 5 items remain unsold from before)
+- Distinguish: if the user is sending a NEW order for a future date, treat quantities as their new order value. 
+- If the user is talking about a PAST order that was followed by "baki" reports, then it's a baki adjustment.
+- When in doubt: check day context. "Order Jumaat" = new order. "Baki dari hari sebelum" = adjustment.
 
 When user says "Baki X" without specifying location — check context from last location mentioned.
 

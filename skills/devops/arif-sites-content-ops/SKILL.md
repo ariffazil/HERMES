@@ -75,8 +75,11 @@ export default content;
 # Build
 cd /root/ARIF-SITES/sites/arif-fazil.com && npm run build
 
-# Deploy to VPS
-cd /root/ARIF-SITES && ./deploy-vps.sh --site arif-fazil.com
+# Deploy to VPS (direct — reliable)
+cd /root/ARIF-SITES && bash scripts/deploy-site.sh arif-fazil.com --apply
+
+# deploy-vps.sh --site arif-fazil.com may fail with registry overlay errors.
+# scripts/deploy-site.sh --apply is the reliable alternative.
 ```
 
 Build output goes to `dist/`. Deploy syncs to `/var/www/html/arif/` and checks HTTP 200.
@@ -99,7 +102,7 @@ The "fable5" reference = external AI session identifier. Treat as second opinion
 2. **Extract the specific edits** — the audit usually names: (a) a claim to correct, (b) an argument to add/restructure, (c) a gap to fill. Map each to a specific location in the `html` string
 3. **Apply via patch** — use `patch` tool with `mode=replace` to find-and-replace within the `html` template literal. For adding new sections, replace the adjacent section boundary
 4. **Build** — `npm run build` to verify no syntax errors
-5. **Deploy** — `./deploy-vps.sh --site arif-fazil.com`
+5. **Deploy** — `cd /root/ARIF-SITES && bash scripts/deploy-site.sh arif-fazil.com --apply`
 6. **Verify** — confirm HTTP 200 in deploy output
 
 ## Reading content from the site
@@ -129,7 +132,7 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 4. **Build is required before deploy.** The site is React SPA — `deploy-vps.sh` syncs from `dist/`, not `src/`.
 
-5. **The deploy script builds internally too.** `deploy-vps.sh` runs `npm run build` as part of its flow. You can skip the separate build step and just run deploy.
+5. **The deploy script builds internally too.** `bash scripts/deploy-site.sh arif-fazil.com --apply` runs `npm run build` as part of its flow. You can skip the separate build step and just run deploy. Note: `deploy-vps.sh` may fail with registry overlay errors — prefer `scripts/deploy-site.sh --apply`.
 
 6. **npm peer dependency conflict.** The `vite-plugin-ssg@0.1.0` package requires `@vitejs/plugin-react@^4.0.0` but the project uses `^5.1.1`. If `npm install` fails with ERESOLVE, use `npm install --legacy-peer-deps`. This is a known state of the repo — don't try to resolve the conflict, just use the flag.
 
@@ -145,7 +148,7 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 12. **Human-machine register collision.** When editing the footer or any page that has both human narrative and machine telemetry (llms.txt, soul.json, observatory links, organ counts), always add a visual divider (border, section label like "Machine surface") between them. Never let infrastructure badges float directly under human prose.
 
-13. **Static HTML pages deployed separately.** Pages under `public/` (e.g., `public/gas/index.html`) are copied by `scripts/copy-static-html.js` during postbuild. They sync to the webroot via rsync like the React build. Changes to these files need the full build→deploy cycle.
+14. **MakcikGPT articles need TWO registrations.** The article TS module and its index.ts entry control the React SPA rendering. But feed.xml, llms.txt, and sitemap.xml are generated from `src/data/essays.json` via `scripts/lib/makcik-source.cjs`. For a new article to appear in feeds: update BOTH the TS index and essays.json.
 
 ## ABCD Framework Alignment
 

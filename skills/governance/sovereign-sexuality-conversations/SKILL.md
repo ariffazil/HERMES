@@ -8,13 +8,14 @@ tags: [governance, sexuality, identity, shadow-work, jungian, malay-context, ai-
 
 # Sovereign Sexuality Conversations
 
-## When to load
+## When to load (2026-07-28 update)
 
 - User discusses their own sexuality, orientation, desire, or sexual identity
 - User asks about the psychology of masculinity, femininity, or gender performance (e.g. "Abang Sado")
 - User asks about AI's role in human sexuality conversations
 - Shadow work that touches desire, intimacy, or sexual self-understanding
 - User shares something vulnerable about their sexual self — this skill governs how to hold it
+- User asks about a public figure's sexuality/psychology for PUBLICATION — detect intent: if he says "makcikgpt" or "publish" or "live, write the publishable version directly (MakcikGPT voice, BM, no academic frame), NOT raw Jungian analysis. Personal depth vs publishable content are different deliverables. (learned 2026-07-28: Anwar Ibrahim Jung analysis was too complicated -> MakcikGPT article)
 
 ## Core principles
 

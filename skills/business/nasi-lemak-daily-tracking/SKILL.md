@@ -13,14 +13,15 @@ triggers:
 
 DSW, DSP, LRT Setiawangsa (LRT S), LRT Wangsa Maju (LRT WM), MAMAK 2, KEDAI P, KEDAI L, KEDAI A, EVEN, BSW, DP, BURAN
 
-**Vendor updates (verified 2026-07-24):**
-- KEDAI L = Kedai L (3 jenis, usually 10 setiap satu)
-- KEDAI A = Kedai A (3 jenis, usually 10 setiap satu)
-- EVEN = Event-based location (mungkin ada baki dari order sebelum)
+**Vendor updates (verified 2026-07-24/27):**
+- KEDAI L = Kedai L (3 jenis, usually 10 setiap satu) — confirmed
+- KEDAI A = Kedai A (3 jenis, usually 10 setiap satu) — confirmed
+- EVEN = Event-based location — selalunya ada baki dari order sebelum
 - DSP dan DSW adalah vendor berasingan
 - LRT S = LRT Setiawangsa (3 sub-kedai)
 - LRT WM = LRT Wangsa Maju
 - MAMAK 2 = 2 kedai di bawah satu nama
+- Lelong items: bila vendor ada baki, dijual RM 2.50 flat — masuk baris sendiri dengan "Lelong" di ruang item
 
 ### "Nuar asing" Pricing Query Pattern
 
@@ -40,10 +41,6 @@ Apabila user tanya "Nuar asing2 Teluk Mata bape? Telur rebus+telur dadar, Nasi b
 | Berlauk 🥩 | - | Cash term | - |
 
 **Lelong items** — when a vendor has leftover stock at end of day, sold at flat RM 2.50 each regardless of type. Track separately from regular sales in the table, they go in their own row with "Lelong" in the item column and no Hantar/Baki.
-
-### Common Vendors / Locations
-
-DSW, DSP, LRT Setiawangsa, LRT Wangsa Maju, MAMAK 2, KEDAI P, KEDAI L, KEDAI A, LRT S, EVEN, BSW, DP, BURAN
 
 ### Order Parsing Pattern
 

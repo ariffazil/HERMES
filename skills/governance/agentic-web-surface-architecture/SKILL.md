@@ -1,7 +1,7 @@
 ---
 name: agentic-web-surface-architecture
 description: "Graph-first methodology for building web surfaces that serve both humans and agents. Identity-first pages, computed navigation from graph edges, 4-layer navigation (hierarchy, semantic, temporal, dependency), discovery engine, and session-to-page linking. Transforms a collection of pages into a navigable knowledge graph."
-version: 1.0.0
+version: 1.1.0
 author: arifOS Federation
 forged: 2026-07-26
 category: governance
@@ -320,6 +320,138 @@ This replaces the traditional "article + sidebar + footer" pattern with an agent
 4. **Session title = graph node.** Every agent session should produce a page. Every page should be linked to its source session, decisions, and receipts.
 
 5. **ABCD alignment is not optional for arifOS surfaces.** The Doctrine page (`/doctrine/`) is the canonical source for the ABCD framework. Any page that overlaps with A, B, C, or D content must either redirect to the appropriate section or declare itself as a supplement with explicit cross-reference.
+
+---
+
+## Phase 11 — MCP Resource Count Governance
+
+> **Added:** 2026-07-28 — Post-Zen Deploy (SEAL-2026-07-28-zen-deploy)
+> **Origin:** 327 resources → 34, FastMCPSkillsDirectoryProvider removed
+> **Rule:** Constitutional limit on MCP resource proliferation. Resources measure agentic surface breadth.
+
+### Maximum Resources Per Surface
+
+**Hard cap: 40 resources per MCP surface (organ or subdomain).**
+
+This prevents resource sprawl that degrades agent discovery performance and creates hidden attack surface. Each resource must earn its slot — no resource exists without a demonstrated agentic need.
+
+### Index+Template Pattern (No Individual Static Resources)
+
+The `skill://` namespace MUST use a two-resource pattern:
+
+| Resource URI | Type | Role |
+|---|---|---|
+| `skill://index` | Static list resource | Index of all available skills with brief descriptions |
+| `skill://{name}/SKILL.md` | Template resource | Dynamic retrieval of any skill by name |
+
+**Do NOT** register individual static resources like `skill://agentic-web-surface-architecture` or `skill://federation-checkup`. This pattern scales O(2), not O(N). When N=327, agent discovery collapses.
+
+### Enforcement
+
+```
+CONSTITUTIONAL CHECK:
+  IF resource_count > 40 → HOLD (must consolidate before deployment)
+  IF individual static resources exist in skill:// namespace → VOID (must use index+template)
+  IF no skill://index exists → SABAR (wait — agents cannot discover skills)
+```
+
+### Zen Deploy Reference
+
+On 2026-07-28, the arifOS federation reduced from 327 resources to 34 by:
+1. Removing `FastMCPSkillsDirectoryProvider` (which registered every skill as a static resource)
+2. Replacing with `skill://index` + `skill://{name}/SKILL.md` template
+3. Pruning redundant organ-level resources
+4. Enforcing the 40-resource cap per surface
+
+---
+
+## Phase 12 — Dual-Species Navigation Pattern
+
+> **Added:** 2026-07-28 — Proven in PRN16 surface
+> **Rule:** Every domain serves exactly 2 MCP resources: 1 index + 1 template. Two species (humans and agents) navigate the same domain through different entry points.
+
+### The Pattern
+
+```
+Domain: /politics/ns-election/
+
+Agent entry (MCP):     skill://politics-ns-election/index
+                        skill://politics-ns-election/{name}/SKILL.md
+
+Human entry (Web):      https://arif-fazil.com/politics/ns-election/
+                        (whatsapp-friendly, visual, interactive)
+```
+
+### 2 Resources per Domain
+
+| Resource | What it contains | Consumer |
+|---|---|---|
+| `{domain}/index` | List of all pages, structured metadata, graph edges | Agent |
+| `{domain}/{name}/SKILL.md` | A single page's full content (template) | Agent |
+| `{domain}/` HTML | Interactive web surface with GIS, playbook, templates | Human |
+
+### Why Dual-Species
+
+- **Humans** need visual interfaces: maps, buttons, WhatsApp-ready templates, infographics
+- **Agents** need structured data: JSON, markdown, llms.txt, MCP resource maps
+- **Same URL** serves both — content negotiation via Accept header and MCP resource discovery
+
+### Invariant
+
+```
+A dual-species surface is NOT two separate surfaces.
+It is ONE surface with TWO navigation modes.
+
+VIOLATION: /politics/human/ and /politics/agent/ as different directories
+CORRECT:   /politics/ns-election/ responds differently based on consumer type
+```
+
+---
+
+## Phase 13 — PRN16 Reference Implementation
+
+> **Added:** 2026-07-28
+> **Surface:** `/politics/ns-election/` on arif-fazil.com
+> **Status:** LIVE — SEAL-2026-07-28-zen-deploy
+
+### What PRN16 Demonstrates
+
+The Negeri Sembilan election surface is the first **dual-species political intelligence surface** on the arifOS federation. It proves the architecture works for high-stakes, time-sensitive domains.
+
+### Dual-Species Artifacts
+
+| Artifact | Human | Agent |
+|---|---|---|
+| **Seat Matrix** | Interactive Leaflet GIS map with 36 DUN polygons | Structured JSON with seat IDs, swing rating, voter demographics |
+| **Playbook** | Visual playbook tabs (Izzu-friendly, non-coder) | `playbook/` resource with structured steps per seat |
+| **WhatsApp Templates** | Copy-paste messages for Makcik, Anak Muda, FELDA segments | JSON templates with demographic targeting metadata |
+| **Live Telemetry** | Colour-coded dashboard | `ns_live_telemetry.json` — sensory JSON stream with seat state timestamps |
+
+### Application to Any Surface
+
+Use the PRN16 pattern when:
+
+- A domain needs **both** visual human interaction **and** structured agent access
+- You need **WhatsApp-ready content** that doesn't require the user to leave chat
+- **Non-coder operators** need to update content (the playbook pattern empowers them)
+- **Real-time state** needs to be machine-readable AND human-understandable
+
+### Reference Structure
+
+```
+arif-fazil.com/politics/ns-election/
+├── index.html             ← GIS seat matrix, playbook, templates (human)
+├── llms.txt               ← Agent discovery entry
+├── data/
+│   └── ns_live_telemetry.json  ← Sensory JSON (agent + human dashboard)
+├── playbook/              ← Non-coder operator playbook
+├── templates/
+│   ├── makcik.md
+│   ├── anak-muda.md
+│   └── felda.md
+└── assets/
+    └── seat-matrix.js     ← Leaflet integration
+```
 
 ## See Also
 

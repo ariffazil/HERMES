@@ -36,6 +36,47 @@ Key details to capture:
 
 **Critical pitfall**: FastMCP uses lowercase `mcp-session-id` header, not `Mcp-Session-Id`. Your test headers must match. Use `{k.lower(): v for k, v in resp.headers.items()}` for case-safe comparison.
 
+### Critical Pitfall: `tools/list=0` ≠ Broken
+
+Many MCP servers use **session gating** (L11 AUTH enforcement). When `tools/list` returns 0 via raw MCP POST, it does NOT mean the server has no tools:
+
+| Symptom | Likely Cause | Action |
+|---------|-------------|--------|
+| `/health` says N tools, MCP `tools/list`=0 | Session gating active | Perform `initialize` handshake first |
+| `/health` says N tools, GET `/tools` returns N | Transport mismatch | Use GET as fallback |
+| All probes fail, health says N | Session gating + middleware | Check per-organ transport dialect |
+
+**Known session-gated organs:** WEALTH (:18082) requires initialize handshake before tools/list. GEOX (:8081) and WELL (:18083) also gate. Their health endpoints report the REAL tool counts via in-process `mcp.list_tools()`.
+
+**Proven 2026-07-28:** OpenCode reported "WEALTH tools/list = 0 — broken." Cross-witness audit found: health says tools_loaded=12, GET /tools returns 12, MCP returns 0 only WITHOUT session init. The actual bugs were version=UNAVAILABLE and git_commit=UNAVAILABLE — minor instrumentation, not a tool-surface collapse. **Always verify "0 tools" across 3 sources before flagging as broken.**
+
+### Resource Collapse Pattern (Zen)
+
+When an MCP server exposes large numbers of static resources (e.g., skill:// directory dumps), collapse them:
+
+| Anti-pattern | Zen pattern |
+|-------------|-------------|
+| Every file as separate resource | 1 index + 1 URI template |
+| 294 static resources | skill://index + skill://{name}/SKILL.md |
+| Agent crawls N items to find one | Queries index, loads on demand |
+
+**Proven 2026-07-28:** arifOS collapsed 327 resources → 34 (90% reduction) by replacing `SkillsDirectoryProvider` with index + template. Zero content changed.
+
+```python
+@mcp.resource("skill://index", name="Federation Skill Index", ...)
+def skill_index_resource() -> str:
+    return json.dumps({"skills": _skill_index, "total": len(_skill_index)}, indent=2)
+
+@mcp.resource("skill://{name}/SKILL.md", name="Federation Skill by Name", ...)
+def skill_by_name_resource(name: str) -> str:
+    path = _skill_root / name / "SKILL.md"
+    if not path.is_file():
+        raise FileNotFoundError(f"Skill not found: {name}")
+    return path.read_text()
+```
+
+**Verify:** `resources/list` shows ~34 items. `resources/read` with `skill://index` returns full list. `resources/read` with `skill://{name}/SKILL.md` loads specific skill on demand.
+
 Save output to `artifacts/conformance/initialize-capture.json`.
 
 ### P0.2: Ghost tool classification

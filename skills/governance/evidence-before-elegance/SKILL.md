@@ -51,9 +51,17 @@ triggers:
   - shadow probe
   - apex scalar
   - UNMEASURED as honest output
-  - INIT conditioning
-  - state collapse
-  - trajectory selection
+  - so what
+  - benchmark
+  - prove it
+  - contrast X with arifOS
+  - comparison table
+  - live probe
+  - comparison
+  - contrast
+  - loop engineering
+  - reality engineering
+  - external framework
 ---
 
 # Evidence Before Elegance
@@ -464,6 +472,82 @@ When emitting any "done / fixed / completed / all / every / 100%" report after w
 
 **Rule:** When the report claims "E2E" or "integration verified," the verification must use the **same surface the user will use** — not a narrower one. If the user will call `arif_judge` via MCP, prove it with a curl JSON-RPC call. If the user will see the AAA cockpit, prove it with a browser render. The abstraction layer between the function and the user interface is exactly where deployment-level bugs hide.
 
+### Gate 13: CONCEPTUAL CONTRAST — When Theory Displaces Evidence in Comparison Tasks (Added 2026-07-28)
+
+When a user asks "what's the difference between X and arifOS" (or any contrast/comparison question), a distinct failure mode emerges: the agent produces a theoretically elegant contrast table without a single live probe.
+
+**The failure mode chain:**
+
+1. User provides an external article/framework/idea → "what's the difference?"
+2. Agent reads the external source, identifies conceptual differences
+3. Agent produces a clean theoretical contrast (nested rings, comparison tables, lineage descriptions)
+4. Agent does NOT probe the actual live system to verify whether the contrast holds
+5. Agent does NOT ask "so what?" — what concrete benefit does any difference provide?
+6. User pushes back: **"So what?? Apa benefits dia untuk aku?? Hang ada benchmark ka?"**
+
+**The root cause:** Conceptual contrast is easier than evidence collection. Explaining "arifOS has constitutional floors and external loop engineering doesn't" takes 30 seconds. Proving that those floors are actually live and enforced at :8088 takes 5 minutes of curl commands and json parsing. The elegant answer is satisfying to produce but displaces the harder, more truthful work of live verification.
+
+**The "so what" reflex — probe before contrast:**
+
+| Step | What to do | Example (this session) |
+|------|-----------|----------------------|
+| 1 | Read external source | MLMastery article on loop engineering |
+| 2 | Form initial contrast hypothesis | Loop eng = how agent moves, reality eng = what agent may claim |
+| 3 | **Before presenting hypothesis → probe live system** | `curl :8088/health \| jq .floors_active, .runtime_floors` |
+| 4 | Verify canonical docs match live state | CONCEPT_REALITY.md loaded, kernel :8088 probed |
+| 5 | **Only now: present contrast WITH live evidence appended** | "F2=0.99 live, F7=0.04 live, vault999=healthy" |
+| 6 | Add a "so what" framing per dimension | "Plain loop unbounded confidence → yours capped at 0.05" |
+
+**The rule:** Every theoretical claim in a contrast answer must be paired with either (a) a live probe result, or (b) an explicit "UNVERIFIED — model inference" tag. If you cannot probe it, do not claim it as a strength.
+
+**The "so what" frame (anticipate the question):**
+
+| Your theoretical claim | Arif's unspoken question | Your probe answer |
+|----------------------|-------------------------|-------------------|
+| "We have F7 humility" | So what? What's the actual value? | `curl :8088/health → F7=0.04, within [0.03,0.05] target` |
+| "We have constitutional governance" | So what? Show me it enforces something. | `arif_judge → floor_passed=false, hold_required=true` |
+| "We have immutable audit" | So what? Show me the seals. | `ls SEAL-*.json → 83 receipts, 4802 outcomes` |
+
+**The concrete protocol (5-minute loop):**
+
+```bash
+# 1. Kernel health + floor values
+curl -s :8088/health | jq '.service_health, .floors_active, .runtime_floors'
+
+# 2. Surface consistency
+curl -s :8088/health | jq '.surface_consistency.verdict'
+
+# 3. Vault integrity
+curl -s :8088/health | jq '.vault999_health'
+
+# 4. Organ sweep
+for svc in arifos:8088 aforge:7071 aaa:3001 geox:8081 wealth:18082 well:18083; do
+  curl -sf "http://127.0.0.1:$port/health" >/dev/null && echo "✅ $port" || echo "❌ $port"
+done
+
+# 5. Specific floor values
+curl -s :8088/health | jq '.runtime_floors.F7, .runtime_floors.F4, .runtime_floors.F2'
+```
+
+**Scar (2026-07-28):** Hermes produced a full Reality-Engineering-vs-Loop-Engineering contrast with nested-ring diagrams, comparison tables, and canon citations. Zero live probes. Arif replied: **"So what?? Apa benefits dia untuk aku?? Hang ada benchmark ka?"** The correction was: probe `:8088/health` → present `F7=0.04, F4=-0.0, F2=0.99, vault999=healthy` as live evidence. Every subsequent answer carried a probe result. Arif stopped pushing back.
+
+**Anti-patterns:**
+- ❌ "The constitutional kernel enforces 13 floors" ← no probe, just canon citation
+- ✅ "The kernel has 13 floors active, F7=0.04, F4=-0.0 — `/health` confirms at `curl :8088/health`" ← probe attached
+- ❌ Explaining why something IS before establishing that it IS (evidence before ontology)
+- ❌ Using nested-ring diagrams or architecture slides as evidence (those illustrate, they don't prove)
+- ❌ Answering a "so what" with more theory (makes the problem worse — the user asked for evidence, not elaboration)
+
+**When the user says "so what" — the recovery path:**
+1. Stop explaining immediately
+2. Identify which claim they're challenging
+3. Probe that claim with a live command
+4. Report the probe result, not a refined explanation
+5. If the probe supports the claim, present the evidence flatly
+6. If the probe doesn't support the claim, say so and adjust — do not preserve the earlier claim by reinterpreting the probe result
+
+**See:** `references/live-probe-over-theory-2026-07-28.md` — full transcript of the "So what?" correction cycle, protocol for contrast tasks, and the 5-minute probe loop.
+
 ### Gate 12: URL-AS-DIRECTIVE FETCH (Added 2026-07-19)
 
 - User sent: `https://api-docs.deepseek.com/quick_start/agent_integrations/copilot_cli` with a request to "wire DeepSeek to GitHub Copilot CLI and align with AAA."
@@ -564,6 +648,54 @@ When another agent (Codex, ChatGPT, Kimi, OpenClaw) emits a structured audit rep
 - The agent does not state which git rev it inspected
 - The agent claims fixes were already applied but does not distinguish its own pre-work from findings discovered in the same session
 
+### Dual-agent convergence (added 2026-07-28)
+
+When TWO agents independently examine the same system and arrive at findings, the most reliable truth state is the **intersection of their verified claims** — not either agent's full report alone.
+
+**The convergence protocol:**
+
+| Phase | Action | Purpose |
+|-------|--------|---------|
+| 1. Independent scan | Agent A produces audit/findings/fixes | Generates hypotheses |
+| 2. Independent verify | Agent B probes each claim against live state, not against Agent A's report | Separates signal from noise |
+| 3. Tag each claim | CONVERGE (both agree + probe confirms) | Strong truth |
+|  | CORRECT (B found A was wrong) | False alarm identified |
+|  | UNVERIFIED (B cannot confirm or deny) | No conclusion — route to sovereign |
+| 4. Seal converged truth | VAULT999 entry records CONVERGE claims + CORRECT deltas | Immutable audit trail |
+
+**Convergence score:** After Phase 2, compute `converged / (converged + corrected + unverified)`. A score of 0.6–0.8 is typical for honest agents with different tooling. Below 0.3 suggests one agent is hallucinating the system state. The explicit "score" is less important than the exercise: two agents must agree before truth is declared.
+
+**Scar (2026-07-28, OpenCode + Hermes audit):** OpenCode (FI-001) produced a 7-layer reality alignment audit claiming 60% accuracy with 5 concrete findings. Hermes independently probed each claim. Result: 3 of 8 claims were FALSE — MCP resources were 34 (not 0), vault had seals from today (not 4 days silent), kernel F2 was not violated (correct behavior). Convergence score: 5/8 = 0.625. The 3 false alarms would have been sealed as truth without cross-witness. **Lesson:** Single-agent audit is OBS. Cross-witness is TRUTH.
+
+**The Zen Resource Collapse pattern (added 2026-07-28):** A specific MCP resource management technique emerged from this session. When an MCP server exposes individual static resources per filesystem file (e.g., one `skill://{name}/SKILL.md` per skill directory), the resource count grows linearly with the data. The fix is collapsing N static resources into 1 index + 1 URI template:
+- **Before:** 294 resources (138 skill://SKILL.md + 156 skill://_manifest)
+- **After:** 2 resources (`skill://index` + `skill://{name}/SKILL.md` template)
+- **Net:** 327 → 34 total (−293, 90% reduction, ΔS = −293)
+- **Principle:** Agents discover via index, then fetch on demand. No data is lost — the access pattern shifts from broadcast to on-demand. Resource templates (`{name}` parameters) handle the on-demand fetch.
+
+This pattern applies to ANY MCP server that mirrors a filesystem directory as static resources. The fix lives in `server.py`: remove the directory-scanning provider and add one `@mcp.resource` handler with a parameterised URI.
+
+**See:** `references/dual-agent-convergence-2026-07-28.md` for full case study.
+
+### Presentation preference: Data before framing (added 2026-07-28)
+
+When the user asks for a comparison, analysis, or evaluation of a system or concept — especially when they send an article, paper, or external reference first — **lead with concrete data from the live system before offering conceptual framing.**
+
+**The failure mode (scar 2026-07-28):** Arif sent an article about "loop engineering" and asked "what's the contrast with reality engineering?" The response was a detailed conceptual comparison covering philosophy, architecture, and theory — all technically correct. Arif replied: **"So what?? Apa benefits dia untuk aku?? How do u even prove it's work? Hang ada benchmark ka?"**
+
+**The signal:** When the user asks "so what" or "how do you prove it" or asks for benchmarks, they are telling you that your answer was **framing without evidence.** The framing may be correct, but without concrete data (scores, probe results, artifact paths) it reads as philosophy — and philosophy without evidence is elegance without truth.
+
+**The fixed pattern:**
+
+| Instead of | Do |
+|------------|----|
+| Start with conceptual contrast | Start with live probe data: `/health`, `curl :port`, `cat /path` |
+| Offer architectural comparison | Probe first, then frame. The probe IS the comparison. |
+| Claim "our system does X better" | Show a floor score, a vault entry, a seal count, a drift check |
+| Answer a conceptual question conceptually | Answer with: "I probed the live system and here's what I found. The conceptual contrast is secondary." |
+
+**The reflex:** When the user sends an external article/concept and asks for comparison, the first action is `curl :8088/health | jq .floors` (or equivalent organ probe). Live data comes before conceptual framing. Theory is only offered AFTER concrete evidence is shown. If the user asks "so what" after the data, then offer framing. If they asked for the contrast directly, the answer is: **data table** → **interpretation** → **conceptual framing** (in that order, not the reverse). The data table should use real MCP tool output (curl, seal IDs, floor values), not invented metrics. A single floor score like `F2=0.99` or `drift=False` is worth more than three paragraphs of architecture prose.
+
 ### Peer-agent psychological interpretation claims about the user (added 2026-07-25)
 
 When another agent (OpenClaw, ChatGPT, Kimi, etc.) produces a **psychological interpretation about the sovereign/user himself** — not about code, not about historical figures, but about **Arif's own psyche, shadow, desires, or unconscious** — a distinct audit pattern applies:
@@ -610,6 +742,7 @@ When another agent (OpenClaw, ChatGPT, Kimi, etc.) produces a **psychological in
 - `references/peer-agent-psychological-audit-2026-07-25.md` — Audit of a peer AI's psychological interpretation about the sovereign himself. Covers authority-signalling without engagement, niat sovereignty layer-crossing, and the elegance-as-signal pattern.
 - `references/system-analysis-overclaim-2026-07-26.md` — Audit of Hermes analysing arifOS: category errors (CFG as mechanism), flattery-through-contrarianism, and the "declared frame vs mechanism" distinction.
 - `references/j-space-shadow-probe-2026-07-26.md` — J-space Jacobian shadow probe architecture: wiring APEX G, C_dark, W3, h measurement into arif_init. INIT as conditioning vector/state collapse. Four-scalar shadow measurement methodology.
+- `references/dual-agent-convergence-2026-07-28.md` — Dual-agent convergence case study: OpenCode audit → Hermes cross-witness → 5/8 convergence score. The Zen Resource Collapse pattern (327→34 resources). Proof that single-agent audit is OBS, cross-witness is TRUTH.
 
 ## Origin
 

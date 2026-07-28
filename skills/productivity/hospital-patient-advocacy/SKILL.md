@@ -138,3 +138,64 @@ Patients often say "endoscopy" generically, but post-op management differs signi
 | **ERCP** | Scope to duodenum + wire into bile/pancreatic duct + contrast + X-ray + possible sphincterotomy/stone extraction | 0.3-0.6% (1/200-300) |
 
 **Always cross-reference the actual procedure report** (not just what the patient/family says) to determine which procedure was done. EUS is diagnostic-only (no duct entry), ERCP is therapeutic (enters the duct system). The perforation risk and post-op management differ significantly.
+
+## Private Hospital Cost Benchmarking
+
+When a user shares costs from a private hospital visit, provide a market-rate comparison scale. See `references/private-hospital-costs-malaysia.md` for procedure-specific ranges.
+
+### Tier System (KL/Selangor)
+
+| Tier | Example | Markup vs market |
+|---|---|---|
+| 🟢 **Klinik biasa** | Klinik swasta kecil | 1x (baseline) |
+| 🟡 **Hospital panel sederhana** | KPJ, Pantai, Thomson, Assunta | 1-1.5x |
+| 🟠 **Hospital panel utama** | Sunway, Gleneagles | 1.5-2.5x |
+| 🔴 **Premium corporate anchor** | Prince Court | 2-4x |
+
+### The Prince Court / PETRONAS Effect
+
+PETRONAS staff have unlimited inpatient coverage through their corporate plan. Prince Court, adjacent to the Twin Towers, is the primary beneficiary — prices inflated 2-4x above market because PETRONAS insurance pays without negotiation, creating a **price anchor** that pulls up rates at other KL private hospitals. Non-PETRONAS patients get charged the same inflated rates. Impact: same procedure at Prince Court can be 2-3x the cost of KPJ or Pantai.
+
+**When a PETRONAS employee shares Prince Court costs:** acknowledge the premium, but focus on clinical outcome — the cost burden falls on the insurer.
+
+### Cost Benchmarking Workflow
+
+When user shares a procedure cost: (1) research market rate (2) build tier table (3) estimate markup (4) layer in insurance coverage — outpatient (limited annual cap RM10k) vs inpatient (unlimited corporate).
+
+### ESWT (Shockwave Therapy) Recognition
+
+ESWT / Li-ESWT in urology is used for **Chronic Prostatitis/CPPS** (reduce inflammation, 4-6 sessions, 10-15 min), **Peyronie's disease** (break plaque, 4-6 sessions, 10-15 min), or **Vasculogenic ED** (angiogenesis, 6+ sessions, 15-20 min).
+
+**If a doctor performs ESWT:** the original referral diagnosis may differ. ESWT is NOT for bladder obstruction or urachal cyst — it implies an **inflammatory** or **vascular** diagnosis. Flag the diagnostic shift, don't diagnose.
+
+## Insurance Coverage Analysis
+
+When user shares an insurance screenshot or referral letter:
+
+### Layer Identification
+
+| Layer | What it covers | Typical limit (PETRONAS AIA) |
+|---|---|---|
+| **Outpatient (Specialist Care)** | Consultation, diagnostic scans, medication | RM 10,000/year (shared) |
+| **Inpatient (Hospitalization)** | Admission, surgery, ward stay, theatre | Unlimited or very high limit |
+
+### GL Process
+
+Referral letter valid 30 days → call insurer verify eligibility + get GL → present GL at admission → hospital bills insurer cashless. For multi-session therapy (e.g. 6x ESWT), confirm billing category.
+
+## Cross-Session Case Tracking
+
+For a person tracked across multiple medical sessions, maintain a timeline:
+
+| Date | Event | Tag |
+|---|---|---|
+| YYYY-MM-DD | Initial complaint | OBS |
+| YYYY-MM-DD | Referral issued | OBS |
+| YYYY-MM-DD | Insurance confirmed | DER |
+| YYYY-MM-DD | Consultation | OBS |
+| YYYY-MM-DD | Procedure | OBS |
+| YYYY-MM-DD | Outcome | OBS |
+
+### Diagnosis Shift Detection
+
+When later sessions reveal new info contradicting earlier docs: flag the contradiction explicitly, explain what the new procedure implies about actual diagnosis, let the user/patient confirm. Example: Referral says "urachal cyst" → Doctor does shockwave → Shockwave is for inflammation → Likely diagnosis shifted to prostatitis/CPPS.

@@ -70,8 +70,10 @@ it's faster than web search and catches blockers before you invest time in analy
 # 0a — Source vault.env
 set -a && source /root/.secrets/vault.env && set +a
 
-# 0b — Read CONTEXT.md tail (last session's focus, HEADs, T3 items, quick-win queue)
-tail -80 /root/CONTEXT.md | grep -E "CURRENT FOCUS|Open T3|HEAD|QUICK-WIN|DOCKER INFRA|FLOOR STATUS"
+# 0b — Read carry-forward state (session focus, HEADs, T3 items, quick-win queue)
+# CONTEXT.md is DEPRECATED as of 2026-07-27. Read reality from these instead:
+jq '.[-1] // empty' /root/.local/share/arifos/carry_forward.json 2>/dev/null | head -80
+cat /root/AAA/state/flow_state.json 2>/dev/null | head -80
 
 # 0c — Probe 6 organs
 for svc in arifos:8088 aforge:7071 aaa:3001 geox:8081 wealth:18082 well:18083; do
@@ -89,15 +91,16 @@ for d in /root/{arifOS,A-FORGE,AAA,GEOX,WEALTH,WELL}; do
   [ -d "$d" ] && cnt=$(git -C "$d" status -s 2>/dev/null | grep -c "^AA\|^UU\|^DD\|^DU" || true) && [ "$cnt" -gt 0 ] && echo "⚠️ $(basename $d): $cnt merge-conflict files"
 done
 
-# 0f — Check deprecation registry
-jq .version /root/AAA/docs/deprecation-registry.json 2>/dev/null
+# 0f — Check deprecation registry (file may not exist — handle gracefully)
+jq .version /root/AAA/docs/deprecation-registry.json 2>/dev/null || echo "No deprecation registry found"
 ```
 
 **Red flag detection** — flag these immediately in the briefing header:
 - Any organ unhealthy → escalation needed
 - Merge conflicts in any repo (AA/UU/DU) → BLOCKER for new forge work
 - arifOS repo with 1000+ dirty files → likely merge mess (proven pattern)
-- CONTEXT.md `last_verified` > 48h ago → drift risk
+- carry_forward.json missing or stale (last entry > 48h old) → session continuity risk
+- flow_state.json missing → federation pulse gap (arifFLOW may be down)
 - MCP tool unreachable but port health green → MCP transport issue, not organ failure
 - T3 open items list growing → accumulated governance debt
 
@@ -251,7 +254,7 @@ food logistics, electricity pass-through, and ringgit behaviour are.
 - **Corroborate oil prices from ≥2 independent live sources.** CNBC, Trading Economics, crudeoilprices.today — pick two. Forbes Advisor may serve cached data (observed 18 days stale Jul 2026). Cross-check timestamps. Verified Jul 2026.
 - **MCP unreachable ≠ organ down.** When an MCP tool fails (e.g. WEALTH capital_market) but curl to the port shows `{"status":"healthy"}`, the MCP transport layer is the problem — not the organ. Check port/health directly before escalating. Verified Jul 2026.
 - **WEALTH MCP SESSION_REQUIRED (proven 2026-07-27).** Since FORGE 2026-07-18, all WEALTH tools (capital_market, capital_health, etc.) require a session_id from an arifOS session. Calling them without one returns {"error_code":"SESSION_REQUIRED"}. Fix: call arif_init with mode='init', actor_id='hermes-asi', requested_authority='OBSERVE_ONLY', extract session_id from response, and pass it to every WEALTH MCP tool call. If the transport then flaps, fall back to gold-api port 3456 for market data.
-- **CONTEXT.md staleness is a drift signal.** Check `last_verified` date at the top. If >48h old, flag it in the briefing header. The document may reference stale HEADs, old session state, or resolved T3 items. Verified Jul 2026.
+- **CONTEXT.md is DEPRECATED (since 2026-07-27). Do NOT rely on it.** Read `/root/.local/share/arifos/carry_forward.json` (session state) and `/root/AAA/state/flow_state.json` (federation pulse) instead. The file itself says "Reality > files." Flagging CONTEXT.md staleness as a drift signal is no longer relevant — it is permanently stale by design. Verified Jul 2026.
 - **Arif may provide his own market data (M+ Bloomberg).** When he does, DON'T re-search for prices. Take his numbers as OBS, cross-reference trend context from web, and focus on INTERPRETATION (why the move, what it means for Malaysia, what to watch). He doesn't want restated prices — he wants synthesis. Verified Jul 2026 (Brent -5.54% briefing).
 
 ## Trigger Examples

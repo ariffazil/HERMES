@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geological Cross-Section — Lenggeng, NS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; display: flex; justify-content: center; padding: 2rem; font-family: 'Courier New', monospace; }
+  .frame { max-width: 1100px; width: 100%; }
+  h1 { color: #d4a847; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; }
+  h2 { color: #e8d5b5; font-size: 1rem; margin-bottom: 0.25rem; }
+  .sub { color: #7a7a7a; font-size: 0.65rem; margin-bottom: 1.5rem; }
+  svg { width: 100%; height: auto; background: #0d0d0d; border: 1px solid #2a2a2a; display: block; }
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 1rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.65rem; color: #b0a090; }
+  .swatch { width: 20px; height: 12px; border: 1px solid #333; flex-shrink: 0; }
+  .note { color: #666; font-size: 0.6rem; margin-top: 1rem; border-top: 1px solid #1a1a1a; padding-top: 0.75rem; line-height: 1.6; }
+  .tag { color: #d4a847; }
+  .tag2 { color: #7a9a7a; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <h1>🔶 Geox · Geological Cross-section</h1>
+  <h2>Bandar Tasek Senangin — Lenggeng, Negeri Sembilan</h2>
+  <p class="sub">Section W–E · Approx 2.884°N · Vertical Exaggeration ~3× · Aliff's House at Midpoint</p>
+
+  <svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Granite fresh pattern -->
+      <pattern id="granite" patternUnits="userSpaceOnUse" width="20" height="20">
+        <rect width="20" height="20" fill="#3a2a1a"/>
+        <circle cx="4" cy="5" r="1.2" fill="#5a4a3a" opacity="0.6"/>
+        <circle cx="14" cy="12" r="0.8" fill="#2a1a0a" opacity="0.5"/>
+        <circle cx="8" cy="16" r="0.6" fill="#6a5a4a" opacity="0.4"/>
+        <rect x="10" y="2" width="1.5" height="0.5" fill="#8a7a5a" opacity="0.3" transform="rotate(30 11 2)"/>
+        <rect x="2" y="10" width="1" height="0.4" fill="#8a7a5a" opacity="0.3" transform="rotate(-20 2 10)"/>
+      </pattern>
+
+      <!-- Saprolite pattern -->
+      <pattern id="saprolite" patternUnits="userSpaceOnUse" width="12" height="12">
+        <rect width="12" height="12" fill="#8a6a3a"/>
+        <rect x="0" y="0" width="12" height="12" fill="none" stroke="#a08050" stroke-width="0.3" stroke-dasharray="2,3"/>
+        <circle cx="3" cy="3" r="0.8" fill="#b09050" opacity="0.5"/>
+        <circle cx="9" cy="8" r="0.6" fill="#705030" opacity="0.4"/>
+      </pattern>
+
+      <!-- Alluvium pattern -->
+      <pattern id="alluvium" patternUnits="userSpaceOnUse" width="8" height="8">
+        <rect width="8" height="8" fill="#c8b070"/>
+        <circle cx="2" cy="2" r="0.5" fill="#d8c080"/>
+        <circle cx="6" cy="6" r="0.4" fill="#b89850"/>
+        <circle cx="2" cy="6" r="0.3" fill="#d8c080"/>
+        <circle cx="6" cy="2" r="0.35" fill="#b89850"/>
+      </pattern>
+
+      <!-- Fault zone -->
+      <pattern id="fault" patternUnits="userSpaceOnUse" width="6" height="6">
+        <rect width="6" height="6" fill="#2a1a0a"/>
+        <line x1="0" y1="0" x2="6" y2="6" stroke="#4a3a2a" stroke-width="0.5" opacity="0.4"/>
+        <line x1="6" y1="0" x2="0" y2="6" stroke="#4a3a2a" stroke-width="0.5" opacity="0.4"/>
+      </pattern>
+
+      <!-- Water table dash pattern -->
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="1" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0a0a12"/>
+        <stop offset="100%" stop-color="#1a1a2a"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1000" height="620" fill="url(#sky)"/>
+
+    <!-- Title labels -->
+    <text x="80" y="25" fill="#6a6a6a" font-size="8" font-family="monospace">W ←</text>
+    <text x="900" y="25" fill="#6a6a6a" font-size="8" font-family="monospace">→ E</text>
+    <text x="420" y="25" fill="#d4a847" font-size="9" font-family="monospace" text-anchor="middle">LINE OF SECTION W–E (approx 8 km)</text>
+
+    <!-- TOPOGRAPHY PROFILE -->
+    <!-- Alluvium/colluvium plain surface -->
+    <path d="M 50,190 Q 200,185 350,188 Q 500,192 600,190 Q 750,195 900,190 L 950,188"
+          fill="none" stroke="#5a4a3a" stroke-width="1.2"/>
+
+    <!-- Ground surface with vegetation -->
+    <path d="M 50,185 Q 100,182 130,175 Q 160,168 180,172 Q 200,178 230,170 
+             Q 260,162 280,165 Q 300,168 320,160 Q 340,155 355,158 
+             Q 370,162 385,155 Q 400,150 420,152 Q 440,155 460,150 
+             Q 480,145 500,148 Q 520,152 540,146 Q 560,140 580,144 
+             Q 600,148 620,142 Q 640,138 660,140 Q 680,144 700,138 
+             Q 720,132 740,135 Q 760,138 780,132 Q 800,128 820,130 
+             Q 840,134 860,130 Q 880,126 900,130 Q 920,134 940,130 
+             Q 960,126 980,130"
+          fill="#1a2a10" stroke="#3a5a2a" stroke-width="0.8" stroke-dasharray="none"/>
+
+    <!-- Ground level line -->
+    <path d="M 30,190 L 970,190" fill="none" stroke="#d4a847" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+
+    <text x="55" y="210" fill="#7a7a7a" font-size="6" font-family="monospace">~150 m asl</text>
+    <text x="875" y="210" fill="#7a7a7a" font-size="6" font-family="monospace">~130 m asl</text>
+
+    <!-- GEOLOGICAL UNITS -->
+
+    <!-- UNIT 1: Alluvium/Colluvium (Quaternary) - TOP LAYER -->
+    <path d="M 30,190 L 970,190 L 970,230 L 30,230 Z" fill="url(#alluvium)" opacity="0.85"/>
+    <path d="M 30,190 C 200,188 400,192 600,190 C 750,195 900,190 970,190"
+          fill="none" stroke="#d8c060" stroke-width="0.8" opacity="0.5"/>
+
+    <text x="420" y="215" fill="#4a3a1a" font-size="8" font-family="monospace" text-anchor="middle" font-weight="bold">Qh — Quaternary Alluvium / Colluvium</text>
+    <text x="420" y="227" fill="#5a4a2a" font-size="6" font-family="monospace" text-anchor="middle">Sand, silt, clay, tin-bearing cassiterite · 0–8 m</text>
+
+    <!-- Thin soil on top -->
+    <path d="M 30,190 L 970,190 L 970,196 L 30,196 Z" fill="#3a2a1a" opacity="0.6"/>
+
+    <!-- UNIT 2: Saprolite (Weathered Granite) -->
+    <path d="M 30,230 L 970,230 L 970,370 Q 800,365 600,370 Q 400,375 200,368 L 30,370 Z"
+          fill="url(#saprolite)" opacity="0.8"/>
+    <!-- Saprolite texture lines -->
+    <path d="M 100,250 L 150,260 M 250,280 L 300,290 M 400,320 L 450,330 M 600,340 L 650,350 M 800,300 L 850,310"
+          fill="none" stroke="#b09050" stroke-width="0.3" opacity="0.4"/>
+    <path d="M 150,310 L 200,315 M 350,260 L 400,265 M 550,300 L 600,305 M 750,280 L 800,285"
+          fill="none" stroke="#a08040" stroke-width="0.3" opacity="0.3"/>
+    <!-- Relict joint traces in saprolite -->
+    <line x1="200" y1="230" x2="195" y2="370" stroke="#705030" stroke-width="0.3" opacity="0.25" stroke-dasharray="3,4"/>
+    <line x1="500" y1="230" x2="497" y2="370" stroke="#705030" stroke-width="0.3" opacity="0.25" stroke-dasharray="3,4"/>
+    <line x1="750" y1="230" x2="748" y2="370" stroke="#705030" stroke-width="0.3" opacity="0.25" stroke-dasharray="3,4"/>
+
+    <text x="420" y="310" fill="#5a4a2a" font-size="7" font-family="monospace" text-anchor="middle"><tspan fill="#b09050" font-weight="bold">Saprolite</tspan> · Weathered Main Range Granite</text>
+    <text x="420" y="322" fill="#6a5a3a" font-size="6" font-family="monospace" text-anchor="middle">Kaolinised feldspar + quartz + mica · 8–40 m</text>
+
+    <!-- Water table -->
+    <path d="M 30,285 Q 200,295 400,290 Q 600,285 800,295 Q 900,290 970,292"
+          fill="none" stroke="#4a8ab4" stroke-width="0.7" stroke-dasharray="5,3" opacity="0.6"/>
+    <text x="55" y="280" fill="#4a8ab4" font-size="6" font-family="monospace" opacity="0.7">▼ WT</text>
+
+    <!-- UNIT 3: Fresh Granite Bedrock (Main Range Granite) -->
+    <path d="M 30,370 L 970,370 Q 900,380 800,375 Q 600,385 400,378 Q 200,382 100,375 L 30,375 Z"
+          fill="url(#granite)" opacity="0.9"/>
+    <path d="M 30,370 L 970,370 L 970,620 L 30,620 Z" fill="url(#granite)" opacity="0.9"/>
+
+    <!-- Joints in fresh granite -->
+    <line x1="150" y1="370" x2="140" y2="480" stroke="#5a3a1a" stroke-width="0.6" opacity="0.4"/>
+    <line x1="150" y1="370" x2="155" y2="480" stroke="#5a3a1a" stroke-width="0.3" opacity="0.3"/>
+    <line x1="350" y1="370" x2="345" y2="520" stroke="#5a3a1a" stroke-width="0.6" opacity="0.4"/>
+    <line x1="600" y1="370" x2="605" y2="500" stroke="#5a3a1a" stroke-width="0.5" opacity="0.35"/>
+    <line x1="800" y1="370" x2="795" y2="460" stroke="#5a3a1a" stroke-width="0.4" opacity="0.3"/>
+    <!-- Horizontal joints -->
+    <line x1="100" y1="420" x2="200" y2="420" stroke="#5a3a1a" stroke-width="0.3" opacity="0.2"/>
+    <line x1="280" y1="450" x2="380" y2="450" stroke="#5a3a1a" stroke-width="0.3" opacity="0.2"/>
+    <line x1="500" y1="430" x2="620" y2="430" stroke="#5a3a1a" stroke-width="0.3" opacity="0.2"/>
+
+    <!-- Xenoliths in granite -->
+    <ellipse cx="250" cy="440" rx="12" ry="8" fill="#2a1a0a" opacity="0.4"/>
+    <ellipse cx="550" cy="470" rx="8" ry="6" fill="#2a1a0a" opacity="0.35"/>
+    <ellipse cx="820" cy="410" rx="10" ry="7" fill="#2a1a0a" opacity="0.3"/>
+
+    <text x="420" y="520" fill="#5a3a2a" font-size="8" font-family="monospace" text-anchor="middle"><tspan fill="#8a6a3a" font-weight="bold">Main Range Granite</tspan> · Late Triassic (200–220 Ma)</text>
+    <text x="420" y="534" fill="#6a5a4a" font-size="6" font-family="monospace" text-anchor="middle">I-type hornblende-biotite granite · Jointed, fractured · Fresh bedrock</text>
+
+    <!-- BUKIT TINGGI FAULT ZONE (schematic) -->
+    <rect x="280" y="190" width="30" height="430" fill="url(#fault)" opacity="0.5"/>
+    <line x1="290" y1="190" x2="285" y2="620" stroke="#8a3a2a" stroke-width="1.5" opacity="0.6"/>
+    <line x1="300" y1="190" x2="298" y2="620" stroke="#8a3a2a" stroke-width="1" opacity="0.4"/>
+    <!-- Offset drag indicators -->
+    <path d="M 275,280 L 260,270 L 275,275" fill="none" stroke="#aa4a3a" stroke-width="0.5" opacity="0.5"/>
+    <path d="M 315,380 L 330,390 L 315,385" fill="none" stroke="#aa4a3a" stroke-width="0.5" opacity="0.5"/>
+    <!-- Half-arrows showing motion -->
+    <path d="M 275,350 L 268,345 L 275,345 Z" fill="#aa4a3a" opacity="0.3"/>
+    <path d="M 315,360 L 322,365 L 315,365 Z" fill="#aa4a3a" opacity="0.3"/>
+
+    <text x="275" y="215" fill="#aa4a3a" font-size="6" font-family="monospace" text-anchor="end" transform="rotate(-90 275 215)">Bukit Tinggi Fault Zone</text>
+    <text x="258" y="225" fill="#aa4a3a" font-size="5" font-family="monospace" text-anchor="end">(schematic — ~20 km west)</text>
+
+    <!-- ALIFF'S HOUSE MARKER -->
+    <line x1="610" y1="145" x2="610" y2="195" stroke="#d4a847" stroke-width="1.5" stroke-dasharray="2,2"/>
+    <polygon points="610,140 604,155 616,155" fill="#d4a847"/>
+    <rect x="598" y="165" width="24" height="18" rx="2" fill="#1a1a0a" stroke="#d4a847" stroke-width="0.8" opacity="0.8"/>
+    <text x="610" y="178" fill="#d4a847" font-size="7" font-family="monospace" text-anchor="middle" font-weight="bold">27</text>
+    <text x="630" y="150" fill="#d4a847" font-size="6" font-family="monospace">🏠 Aliff's House</text>
+    <text x="630" y="160" fill="#7a7a5a" font-size="5" font-family="monospace">Nombor 27, Bdr Tasek Senangin</text>
+
+    <!-- SCALE BAR -->
+    <g transform="translate(50, 580)">
+      <line x1="0" y1="0" x2="200" y2="0" stroke="#7a7a7a" stroke-width="0.8"/>
+      <line x1="0" y1="-4" x2="0" y2="4" stroke="#7a7a7a" stroke-width="0.8"/>
+      <line x1="50" y1="-2" x2="50" y2="2" stroke="#7a7a7a" stroke-width="0.5"/>
+      <line x1="100" y1="-4" x2="100" y2="4" stroke="#7a7a7a" stroke-width="0.8"/>
+      <line x1="150" y1="-2" x2="150" y2="2" stroke="#7a7a7a" stroke-width="0.5"/>
+      <line x1="200" y1="-4" x2="200" y2="4" stroke="#7a7a7a" stroke-width="0.8"/>
+      <text x="0" y="12" fill="#7a7a7a" font-size="6" font-family="monospace" text-anchor="middle">0</text>
+      <text x="100" y="12" fill="#7a7a7a" font-size="6" font-family="monospace" text-anchor="middle">2 km</text>
+      <text x="200" y="12" fill="#7a7a7a" font-size="6" font-family="monospace" text-anchor="middle">4 km</text>
+    </g>
+
+    <!-- VE label -->
+    <text x="900" y="585" fill="#6a6a6a" font-size="6" font-family="monospace" text-anchor="end">VE ~3×</text>
+
+    <!-- Depth labels -->
+    <text x="35" y="210" fill="#5a5a5a" font-size="5" font-family="monospace" text-anchor="end">0</text>
+    <text x="35" y="290" fill="#5a5a5a" font-size="5" font-family="monospace" text-anchor="end">~15 m</text>
+    <text x="35" y="370" fill="#5a5a5a" font-size="5" font-family="monospace" text-anchor="end">~40 m</text>
+    <text x="35" y="480" fill="#5a5a5a" font-size="5" font-family="monospace" text-anchor="end">~80 m</text>
+
+  </svg>
+
+  <!-- Legend -->
+  <div class="legend-grid">
+    <div class="legend-item"><div class="swatch" style="background:#c8b070;"></div> Qh Alluvium/Colluvium (0–8 m)</div>
+    <div class="legend-item"><div class="swatch" style="background:#8a6a3a;"></div> Saprolite — Granite weathering (8–40 m)</div>
+    <div class="legend-item"><div class="swatch" style="background:url('#granite');"></div> Fresh Main Range Granite (>40 m)</div>
+    <div class="legend-item"><div class="swatch" style="background:#2a1a0a;border-color:#8a3a2a;"></div> Bukit Tinggi Fault Zone</div>
+    <div class="legend-item"><div class="swatch" style="background:transparent;border-top:1px dashed #4a8ab4;height:0;"></div> Water Table (phreatic surface)</div>
+    <div class="legend-item"><div class="swatch" style="background:#d4a847;border-color:#d4a847;"></div> 🏠 Aliff's House (No. 27)</div>
+  </div>
+
+  <div class="note">
+    <span class="tag">OBS</span> Cross-section schematic, not to rigorous scale. Vertical exaggeration ~3× for readability.<br>
+    <span class="tag">OBS</span> Bukit Tinggi Fault is ~20 km west of Lenggeng (not directly beneath the site). Fault width schematic.<br>
+    <span class="tag">OBS</span> Granite joint orientation inferred from regional Bukit Tinggi Fault stress regime (NW-SE compression).<br>
+    <span class="tag">OBS</span> Alluvium thickness estimated from regional borehole data (JMG, 2015) — Mantin/Lenggeng area.<br>
+    <span class="tag">INTERPRETATION</span> Aliff's house foundations likely bear on saprolite or shallow weathered granite — competent bearing strata.<br>
+    <span class="tag2">For Aliff, Arizona Geologist</span> — this is the Peninsular Malaysia Main Range Granite equivalent to the Basin & Range core complexes you mapped in Arizona. Same I-type granitoid family, different tectonic setting. Your house is on a 200-million-year-old Triassic arc batholith. ⛰️
+  </div>
+</div>
+</body>
+</html>

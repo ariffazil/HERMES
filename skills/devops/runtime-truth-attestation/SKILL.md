@@ -125,6 +125,35 @@ grep -r 'PYTHONNOUSERSITE' /etc/systemd/system/arifos* 2>/dev/null || echo "not 
 
 > **Discovered 2026-07-13 EUREKA probe bug:** running `convergence_check.py` from CWD `/root/arifOS` produces false-positive `module_path: FAIL` (import resolves to source tree shadowing the wheel). Always `cd /tmp` before probe, or use the `_probe_python()` helper. See "Pitfalls" below.
 
+## Post-Fix Verification Checklist (8 Checkpoints)
+
+After correcting the deploy marker (e.g., writing `git rev-parse HEAD > /opt/arifos/app/.git_commit` and restarting arifOS), verify ALL 8 checkpoints before declaring resolution:
+
+| # | Check | Source | Expected |
+|---|-------|--------|----------|
+| 1 | `.git_commit` file | `cat /opt/arifos/app/.git_commit` | Current HEAD hash |
+| 2 | health `source_commit` | `software_release.source_commit` in /health | == HEAD |
+| 3 | health `built_commit` | `software_release.built_commit` in /health | == HEAD |
+| 4 | health `deployed_commit` | `software_release.deployed_commit` in /health | == HEAD |
+| 5 | `deployment_drift_status` | Top-level health field | "aligned" |
+| 6 | `software_release.drift` | Nested health field | false |
+| 7 | arifOS health | Top-level status in /health | "healthy" |
+| 8 | GEOX proxy drift | `deployment_drift.drift` in GEOX /health | false (may lag ~2s) |
+
+**Proven 2026-07-28:** After marker fix, all 8 checkpoints converged within one restart cycle. Check 8 (GEOX proxy) lagged ~3s while GEOX re-probed arifOS build-info.
+
+**Run all 8 in sequence after every marker fix.** The GEOX proxy (Check 8) converges after arifOS restarts; wait and retry if not yet consistent.
+
+## Collateral Awareness for Service Restarts
+
+Updating the deploy marker requires `systemctl restart arifos`. Be aware of dependent processes:
+
+- **arifFlow** restarts when arifOS restarts (dependency chain) -- loses in-memory receipts + FQ state
+- **A-FORGE, AAA, GEOX, WEALTH, WELL** are independent -- unaffected by arifOS restart
+- **arifFlow FQ loss** is a known carry-forward gap (daemon has no disk persistence)
+
+**Proven 2026-07-28:** arifOS restart caused arifFlow FQ reset from 2.0 BALANCED to 0.0 STUCK. All other organs unaffected.
+
 ## Clean Deployment Workflow (Single Venv, Single Wheel)
 
 ### Step 1 — Build wheel from SOT

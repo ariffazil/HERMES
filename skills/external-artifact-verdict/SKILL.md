@@ -17,6 +17,12 @@ triggers:
   - "verify this zip"
   - "audit this code drop"
   - "external AI delivered"
+  - "internal agent audit"
+  - "federation agent delivered findings"
+  - "cross-witness"
+  - "convergence check"
+  - "reconcile audit"
+  - "verdict on the verdict"
   - "self-verdict"
   - "witness claim"
   - "tests pass"
@@ -46,7 +52,50 @@ Use this skill when:
 - The artifact is in `/root/.hermes/cache/documents/` or any drop zone
 - You need to decide: accept as-is, integrate into the federation, promote to CANON, or reject
 
-**Critical distinction from `claim-validation-protocol`:** That skill validates *claims about the federation*. This skill validates *delivered code artifacts*. Different evidence model — code is observable, claims about the federation often are not.
+**Critical distinction from `claim-validation-protocol`:** That skill validates *claims about the federation*. This skill validates *delivered code artifacts* AND *intra-federation agent audit findings*. Different evidence model — code is observable, claims about the federation often are not.
+
+## Intra-Federation Cross-Agent Audit
+
+The same verification protocol applies when another federation agent (OpenCode, OpenClaw, Kimi Code, etc.) delivers a system audit or findings report — not just external AI code drops. The source is different (internal vs external) but the epistemic risk is the same: **a single agent's self-report is INT (interpreted) until cross-witness verification confirms OBS (observed).**
+
+### When to use this variant
+
+- Another federation agent produces an internal audit: organ health, deployment drift, MCP surface, skill mesh, vault integrity
+- The audit includes specific findings with severity ratings (CRITICAL / HIGH / MEDIUM / LOW)
+- The agent may have already acted on some findings (fixing drift, committing dirty files)
+
+### The cross-witness protocol
+
+| Step | What | Why |
+|---|---|---|
+| 1. Receive | Accept the audit report as INT (interpreted observation) | The agent observed reality once, through its own lens |
+| 2. Classify claims | Separate factual claims (OBS-able) from interpreted claims (DER/INT) | Some claims are testable (systemd status), some are judgments (MCP resources = 0) |
+| 3. Probe independently | Re-probe every OBS-able claim via live endpoints: `curl :port/health`, `git log`, `systemctl status`, `wc -l`, `resources/list` | Single-agent blindspots are common — probes don't lie |
+| 4. Reconcile | Build a table: Claim → Agent Verdict → Independent Verdict | Some claims converge (drift exists), some diverge (MCP resources exist, vault not silent) |
+| 5. Assess accuracy | Score the agent audit: what % of claims were correct? | Overclaiming agents need calibration; accurate agents can be trusted more next time |
+| 6. Seal | Append reconciliation to VAULT999 with both agent's evidence and your independent findings | Cross-witness truth is stronger than single-witness truth (F3) |
+
+### Common overclaim patterns in agent audits
+
+| Overclaim | Why it happens | How to catch it |
+|---|---|---|
+| **"MCP resources = 0"** | Agent hit a session-scoped endpoint or protocol mismatch; didn't retry with correct transport | Call `resources/list` directly via MCP client |
+| **"VAULT999 silent N days"** | Agent scanned vault directory but missed recent entries (timestamp filter, file glob, partial read) | `tail -3 outcomes.jsonl` shows the actual last entry |
+| **"Kernel F2 violation"** | Misread `execution_readiness=held` as `service_health=degraded`; didn't distinguish two orthogonal dimensions | Read both fields separately: `service_health` vs `execution_readiness` |
+| **"X% drift estimation"** | Agent calculated a subjective alignment percentage without methodology | Probe each organ independently, count actual drifts |
+| **"Feature not working"** | Agent tested once, got one error, generalized to "broken" | Test three different ways before declaring a feature dead |
+
+### Case study: OpenCode (FI-001) audit of 2026-07-28
+
+Full transcript in `references/opencode-2026-07-28-cross-witness-audit.md`.
+
+**Summary:** OpenCode performed a 7-layer deep scan of the federation — organs, agents, skills, tools, MCP wiring, memory, prompts. Found 14 issues. My independent cross-witness verification found:
+
+- **60% of claims accurate**: Hermes down, kernel drift, WEALTH version UNAVAILABLE, WELL degraded, 14 open loops
+- **3 claims overclaimed**: MCP resources = 0 (false — 327 resources exist), vault silent 4 days (false — sealed today), kernel F2 violation (misread — orthogonal dimensions)
+- **Lesson**: Single-agent audit is OBS until cross-witness confirms. The agent that scans the broadest is not the most accurate.
+
+**Key technique:** For each CRITICAL/HIGH claim in the audit, ask "can I prove this with one command?" If yes, run that command. If the command contradicts the claim, the claim is wrong. Falsification is faster than verification.
 
 ## Core Principle
 

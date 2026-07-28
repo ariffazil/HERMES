@@ -36,6 +36,10 @@ triggers:
   - "MCP response minimal"
   - "direct call vs MCP call"
   - "trim_for_verbosity"
+  - "cross-witness"
+  - "dual agent"
+  - "convergence"
+  - "audit claims against live"
 ---
 # Live Probe Audit Pattern
 
@@ -165,6 +169,53 @@ Reality:
 [OBS] Verified live — Layer A fingerprint rides on tool responses
 [OBS] The quote registry Layer A math computes G per resolve
 ```
+
+## Cross-Witness Audit Protocol (proven 2026-07-28)
+
+**Signal:** An agent (OpenCode, Claude, any subagent, or a peer) produces a deployment report, internal audit, or status assessment full of specific numbers, status flags, and severity ratings.
+
+**The protocol — two agents, one truth:**
+
+```
+Agent A (scanner): Runs deep audit → produces claims + numbers + severity
+Agent B (witness): Independently probes every claim against live state
+                   → confirms true, corrects false, notes overclaim
+Convergence:       Both agents agree → seal the converged truth
+```
+
+**Why this exists:** This session proved a single-agent internal audit is ~60% accurate on first pass. OpenCode (FI-001) produced a 7-layer audit with 14 findings. Hermes independently verified and found 3 of 8 core claims were false (MCP resources=0, vault silent 4 days, kernel F2 violation). The false claims were not malicious — they were interpretation errors, stale data, and missed nuance. Without the cross-witness, those 3 false claims would have been sealed as truth.
+
+**Procedure when another agent sends an audit:**
+
+1. **Extract all falsifiable claims** — numbers, boolean flags, severity labels, route statuses. Ignore narrative framing.
+2. **Probe each claim independently** — do not re-read the agent's probe output. Use your own tools (curl, HTTP, MCP list, git log). The agent's probe is OBSERVATION, not TRUTH.
+3. **Classify each claim:**
+   - ✅ **Confirmed** — your independent probe matches the claim
+   - ❌ **False** — your probe contradicts the claim outright
+   - ⚠️ **Misread** — kernel of truth but interpretation is wrong (e.g., "kernel healthy + held = F2 violation" is actually correct constitutional behavior)
+   - 📊 **Inflated** — numbers overstated by 10-30% (common: "327 resources" counts all skill:// noise as signal)
+4. **Report the convergence:** Show which claims converged, which diverged. Label with epistemic tags.
+5. **Seal the converged truth** — when two independent agents agree, the finding is no longer CLAIM, it is TRI-WITNESS evidence (F3). Append to VAULT999 naming both agents.
+
+**Convergence template:**
+
+| Claim | Agent A | Agent B (witness) | Verdict |
+|-------|---------|-------------------|---------|
+| Drift exists | True | True (curl /health) | ✅ CONVERGE |
+| MCP resources=0 | True | False (list_resources → 34) | ❌ FALSE |
+| Vault silent 4 days | True | False (3 seals today) | ❌ FALSE |
+
+**Pitfall:** Do NOT delegate the cross-witness to a subagent. The cross-witness must be YOU probing live state directly. Subagents are themselves single-agent audits and need their own cross-witness.
+
+### Resource Count Inflation Detection
+
+**Pattern:** When an agent claims an MCP resource count, they may count every `skill://` entry even though those are filesystem mirrors, not operational data. Signal: claimed count >> expected operational resources.
+
+**Detection:** Via MCP `resources/list`, count `arifos://` + `tree777://` URIs only. Expected ~34 resources (doctrine, atlas333, vitals, wisdom, 1 skill://index). Not 294 skill:// static entries (collapsed to 1 index + 1 template on 2026-07-28).
+
+### Convergence Sealing
+
+When two independent agents converge on the same finding, the evidence is stronger than either alone (F3 WITNESS). Seal immediately recording both agents and the converged finding.
 
 ## Pitfalls
 
@@ -303,6 +354,7 @@ grep -n 'verbosity.*=.*\"minimal\"' /opt/arifos/app/arifosmcp/runtime/tools.py
 - `references/live-apex-scalars-from-kernel.md` — Wiring live G-fold apex scalars from arifOS kernel /health into an organ's health endpoint; reuse existing HTTP call, UNMEASURED fallback, scalar-by-scalar overlay (2026-07-26)
 - `references/code-audit-line-number-verification.md` — Verifying external code audit findings against live code; audit line numbers can be stale, always probe live source before acting (scar 2026-07-18)
 - `references/kernel-contrast-assessment.md` — Structured 7-axis before/after comparison for kernel version upgrades, release audits, and deployment state changes
+- `references/mcp-resource-zen-2026-07-28.md` — Cross-witness audit: OpenCode scan → Hermes verify → convergence seal. MCP resource collapse 327→34. Single-agent accuracy ~60% lesson.
 
 ## Constitutional Compliance
 

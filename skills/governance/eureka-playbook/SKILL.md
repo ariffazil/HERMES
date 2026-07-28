@@ -31,6 +31,9 @@ trigger:
   - "anti chaos covenant"
   - "shadow probe"
   - "session carry forward"
+  - "reality engineering"
+  - "loop engineering"
+  - "loop vs reality"
 ---
 
 # EUREKA Playbook v1 — Constitutional Axioms & Agent Directives
@@ -303,6 +306,85 @@ When initiating a session under arifOS, the agent affirms:
 **Test:** "Is this like LangGraph?" If you ask this question, stop and re-frame: "Does this have constitutional floors, immutable lineage, and sovereign veto?" If yes, it's arifOS. If no, it's a tool.
 
 **Floor reference:** All 13 floors — the sum is greater than any part.
+
+---
+
+## Reality Engineering vs Loop Engineering
+
+**Canonical:** `/root/AAA/wiki/concepts/CONCEPT_REALITY.md`
+
+### The One-Line Distinction
+
+| | Loop Engineering | Reality Engineering (arifOS) |
+|---|---|---|
+| **Questions answered** | "How does the agent move?" | "What may the agent do, claim, and record?" |
+| **Primitive** | Recurrence (reason→act→observe) | Invariant (verify→commit→seal) |
+| **Focus** | Efficiency, throughput | Coherence, dignity, truth |
+| **Risk** | Token burn, infinite loop | Hallucination, sovereignty capture |
+| **Output** | Work product | Receipt, seal, scar |
+| **Scale** | Operational | Civilizational |
+
+### Hierarchy
+
+Loop engineering is infrastructure (how the agent cycles). Reality engineering is law (what constrains the cycle). The constitutional substrate (F1-F13) governs loops — it is not a feature added to loops.
+
+```
+REALITY ENGINEERING          ← What agent may do, claim, record
+├── Constitutional (F1-F13)  ← Invariant physics
+├── 7-stage forge (000→999)  ← Governed pipeline
+├── Cross-organ federation   ← 7 organs, each with domain
+└── LOOP ENGINEERING         ← How agent moves (subset)
+    ├── Recurrence patterns
+    ├── Sub-agent delegation
+    ├── Automation/scheduling
+    └── Skills/plugins/MCP
+```
+
+### What loop engineering gives you
+
+Automation, scheduling, worktrees, sub-agents, cron, MCP plugins. All useful. All **infrastructure**.
+
+### What reality engineering adds that loop engineering cannot
+
+| Capability | Loop Eng | arifOS |
+|---|---|---|
+| Session starts | Free-for-all | Constitutional binding (arif_init) |
+| Actor identity | None | Ed25519 verified + SCT token |
+| Confidence | Unbounded | F7 caps at 0.03-0.05 |
+| Entropy | Unmonitored | F4 ΔS ≤ 0 enforced |
+| Governance | Invisible/optional | 888_HOLD + cooling ledger |
+| Audit trail | Logs (volatile) | VAULT999 immutable chain |
+| Reversibility | Depends on tool design | F1 AMANAH — kernel checks before action |
+| Truth fidelity | Model's self-report | F2 TRUTH — ≥0.99 + epistemic tags |
+| Deception guard | None | F9 ANTI-HANTU — C_dark < 0.30 |
+| Sovereignty | None | F13 — Arif veto is strongest floor |
+
+### Timeline: the foresight gap
+
+- **2026-06-07/08:** Steinberger tweet + Osmani "Loop Engineering" essay (industry discovers loops)
+- **2026-06-11:** arifOS integrates constitutional substrate into agent loops (you had this before industry named it)
+- **2026-06-20:** Osmani acknowledges "loop without governance" problem
+- **2026-06-25:** You audit the canon (F2 correction: 3 overclaims removed)
+- **2026-07-23:** MLMastery article still has no governance layer
+
+Gap: **9 days of foresight** on this specific problem. The structural difference: governance is a **prerequisite** for safe loops (arifOS), not a **feature added to loops** (industry).
+
+### Corrected claims (F2 TRUTH audit)
+
+- ✅ arifOS (2026-06-11) formally integrated constitutional governance into agent loops
+- ✅ arifOS loop = loop + constitutional envelope = novel integration
+- ❌ "Transcend loop engineering" → Reality engineering **subsumes**, not replaces
+- ❌ "2 years ahead" → Magnitude fabricated. Gap is 9 days on this specific problem.
+- ❌ "Building physics vs tools" → We build tools too (kernel, MCP, A-FORGE, WELL, etc.)
+
+### When deployed: verifying the gap
+
+```bash
+# Live probe: is constitutional enforcement real?
+curl -s http://127.0.0.1:8088/health | jq '.floors_active, .floors_enforcement, .runtime_floors.F7, .thermodynamic.entropy_delta'
+
+# Expected: 13 floors, active enforcement, F7 0.03-0.05, ΔS ≤ 0
+```
 
 ---
 

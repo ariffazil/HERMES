@@ -755,6 +755,35 @@ Fix: Candles-only in main chart. All labels/data in RIGHT-SIDE PANEL. Use `fig.a
 
 ## Tech Support — iPhone / Telegram / WhatsApp Troubleshooting
 
+### Chinese/foreign UI Appliance Help
+When Syed asks for help with an appliance showing Chinese UI (e.g. Samsung washer dryer, Haier aircond). See: `references/foreign-ui-tech-support.md` for the full pipeline — identify model from SmartThings sticker, find English manual on manualslib, provide Chinese→English step-by-step navigation.
+
+**Style correction (proven 2026-07-28):** When Syed says "step by step" — STOP explaining the context. Give steps only. He wants the Chinese characters to look for and the English meaning, nothing more.
+
+**Samsung washer BM limitation:** Most Samsung models for Gulf/Asia market TIDAK ada Bahasa Melayu. Hanya English, Arabic, Turkish, French. Confirm model code before promising language change. See `references/foreign-ui-tech-support.md` §7.
+
+## Property / Rental Search Pattern
+
+When Syed asks to find a **condo/apartment for rent** (e.g., Astrum Ampang, 3 bilik):
+
+### Workflow
+1. **Search** — web search with specific query: `[nama condo] sewa [bilik] bilik fully furnished`
+2. **Price range** — Syed typically looks for RM1,500-RM2,000. Adjust based on context.
+3. **Filter explicitly** — Syed does NOT want to filter himself. Do the filtering, present results directly.
+4. **Pre-check area** — Web results may be wrong. Cross-reference multiple sources.
+5. **Present as table** — Harga → Bilik → Saiz → Features → Link
+6. **Ask to click** — Provide clean clickable links.
+7. **If no exact match** — say honestly. "Astrum Ampang 3 bilik fully furnished bawah RM2,000 memang takde. Nak saya cari condo lain area sama?"
+8. **If prices seem off** — flag it before sending links.
+
+### Pitfalls
+- **Astrum Ampang** is mostly STUDIO units (280sf). 3 bilik units are rare and RM2,000+/month.
+- Don't confuse Astrum Ampang with Astrum Shah Alam.
+- Syed may misspell: Astarium → Astrum Ampang. Correct gently, don't dwell.
+- "fullyfunish" = "fully furnished". Understand the intent, don't correct the spelling.
+
+## Tech Support — iPhone / Telegram / WhatsApp Troubleshooting
+
 ### "Telegram x boleh bukak" — Diagnose Before Assuming Ban
 
 Syed may think the agent banned him ("Aku rasa agen heng kan telegram aku kot sbb aku maki dia 😂"). **NEVER assume ban — always check raw logs first.** Agent takde ego.

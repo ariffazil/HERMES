@@ -34,6 +34,11 @@ triggers:
   - "SPEC rejection"
   - "seal status audit"
   - "constitutional source audit"
+  - "one-shot"
+  - "delegation seal"
+  - "buat ja semua"
+  - "autonomous execution"
+  - "next-horizon"
 ---
 
 # Federation Checkup — Dual-Probe Protocol
@@ -298,7 +303,7 @@ Check these on every scan — they are frequent patterns:
 
 | Signal | Organ | What to check | If found |
 |--------|-------|---------------|----------|
-| `git_commit: UNAVAILABLE` | WEALTH (:18082) | No git provenance in health endpoint — instrumentation gap | Log as P2. Can't verify drift from health alone. |
+| `git_commit: UNAVAILABLE` | WEALTH (:18082) | **RESOLVED 2026-07-28.** Three root causes: (1) `/root/WEALTH/identity.toml` was a stub (just `# superseded by AAA`) with no `version` field → WEALTH_VERSION="UNAVAILABLE". (2) `_resolve_source_commit()` fallback read `.git_commit` file but only pushed it to `git_commit_fallback`, never promoted to `git_commit`. (3) `.git_commit` file was stale (had `0aba13a`, HEAD was `802942d`). Fix: restore proper identity.toml, patch fallback logic to promote, update `.git_commit` to HEAD. **Restart required after fix.** | See `references/wealth-identity-commit-sourcing-fix-2026-07-28.md` for full diagnostic. |
 | `state_age_hours > 4` | WELL (:18083) | Biometric state data stale beyond `stale_after_seconds=14400` | Flag HIGH — needs state refresh |
 | `honesty.code: MOCK` | WELL (:18083) | Biometrics are mock/test data, not live sensor input | Flag MEDIUM — replace with real pipeline |
 | `consensus.verdict: DIVERGENCE` | FLAME/WITNESS (:18084) | WITNESS checks disagree (N-1 of N off) | Flag MEDIUM — investigate which check diverges |
@@ -1473,6 +1478,49 @@ From this session's credential trace:
 
 **Pitfall — Multi-Turn Heartbeat Loop (proven 2026-07-23):**
 OpenClaw sends heartbeats as user messages. Making a tool call + analysis response feeds OpenClaw's input queue → sends another heartbeat → infinite loop. Break by issuing the exact heartbeat response with no extra output, which OpenClaw's heartbeat handler discards as expected.
+
+## Cross-Witness Audit Verification Pattern
+
+When one agent produces an audit, report, or findings list — **never accept it as truth without independent verification.** The producing agent is a SINGLE witness. Reality Engineering requires ≥2 independent witnesses before a claim graduates from OBS to TRUTH.
+
+### The Protocol (3-Probe)
+
+| Probe | Question | Method |
+|-------|----------|--------|
+| **Live?!** | Can the claim be verified against a live endpoint RIGHT NOW? | `curl :PORT/health`, `ps aux`, `systemctl status`, `cat /path/to/file` |
+| **Cross-referenced?!** | Does a second independent source agree? | Different endpoint, different tool, different agent's perspective |
+| **Plausible?!** | Does the claim pass the sniff test given known system constraints? | Domain knowledge, prior session state, documented invariants |
+
+### Classification
+
+| Outcome | Meaning | Action |
+|---------|---------|--------|
+| **Confirmed True** | Live probe matches claim | Accept and escalate as needed |
+| **Confirmed False** | Live probe contradicts claim | Document the correction. **Do NOT propagate the original claim.** |
+| **Gap — needs evidence** | Cannot verify (organ down, no direct endpoint, stale data) | Tag as UNKNOWN. Do not accept or reject. |
+
+### Proven Example (2026-07-28)
+
+OpenCode (FI-001) produced a 7-layer internal audit with 8 findings against the federation. Hermes independently verified each claim:
+
+| OpenCode Claim | Live Probe | Verdict |
+|----------------|------------|--------|
+| "MCP resources = 0" | `list_resources` returned all ATLAS333, doctrine, vitals | ❌ False — protocol mismatch |
+| "VAULT999 silent 4 days" | 3 seals from today in outcomes.jsonl | ❌ False — seals exist |
+| "Kernel healthy+F2 violation" | service_health=green, execution_readiness=held | ❌ False — correct constitutional separation |
+| "Hermes systemd inactive" | `systemctl is-active hermes` = inactive | ✅ True |
+| "Kernel deployment drift" | source≠built commit in /health | ✅ True |
+| "WEALTH version UNAVAILABLE" | git_commit=UNAVAILABLE in /health | ✅ True |
+| "14 open loops" | carry_forward.json confirms | ✅ True |
+
+**Accuracy: ~60%.** 5 correct, 3 false. When a single-agent audit is ~60% accurate, **every claim needs verification**, not just the suspicious ones. The false claims were not malicious — they were confident misinterpretations (protocol issues, stale reads, conflating distinct kernel fields).
+
+### The Lesson
+
+- **Single-agent audit = OBSERVATION, not TRUTH.** Always cross-witness before declaring.
+- **An agent that sounds confident is not more reliable.** OpenCode presented all findings with equal confidence — the false ones were phrased as damningly as the true ones.
+- **Interpretive claims are the least reliable** — "this means X" is always weaker than "this shows Y."
+- **When an audit triggers alarms**, verify the most alarming claims first. They are statistically the most likely to be misinterpretations.
 
 ## Agent Self-Report Audit Pattern
 
