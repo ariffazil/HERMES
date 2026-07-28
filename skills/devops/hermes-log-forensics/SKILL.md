@@ -126,6 +126,9 @@ grep "inbound.*1042200555" /root/.hermes/logs/agent.log* /root/.hermes/logs/gate
 5. **Assuming "no session = no contact."** The session DB is lossy. Logs are authoritative.
 6. **Confidently asserting absence from session_search alone.** NEVER say "no, they never contacted the bot" based solely on session_search returning empty. The session DB is a lossy index. Raw logs are the source of truth. If a human witness (especially the sovereign) says "I saw it happen," that overrides session_search. Check raw logs before asserting absence. Saying "no" confidently and being wrong is worse than saying "let me verify."
 7. **Searching only DM logs.** A user may interact in GROUPS, not DMs. Search both `chat=<USER_ID>` (DM) AND group activity where the user's session key contains their ID (e.g., `group:<GROUP_ID>:<USER_ID>`).
+8. **session_search matches name mentions, not just that user's messages.** A query like `session_search("Izzu")` returns sessions where "Izzu" appears in the assistant's own response too — not just messages FROM Izzu. This creates false positives for "did X message the bot?" Always cross-check against the `user=` field in raw gateway logs before concluding someone messaged.
+9. **Log parser truncates display names at first space.** The gateway log's `user=` field stops at the first space. So "🦞 AGI" becomes `user=🦞`, "777 FORGE 🔥🧠" becomes `user=777`, "No name" becomes `user=No`. Cross-reference `chat=<ID>` against `sessions.json` to resolve full names.
+10. **Use sessions.json to resolve chat IDs to names.** When you have a Telegram chat ID from a log line: `grep -A10 '"chat_id": "<ID>"' /root/.hermes/sessions/sessions.json` shows the `display_name` field. This resolves "who is user=al at chat 1024343313" without guessing from truncated log names.
 
 ## Gateway Restart Loop Diagnosis
 
@@ -165,6 +168,123 @@ ps -o etime= -p <PID>  # check uptime
 ### 6. Check for recurring bot-to-bot delivery errors
 The `Forbidden: the bot can't send messages to the bot` error at regular intervals (e.g., every 10 minutes) is a cron job delivering to the bot's own Telegram ID. Not a crash trigger, but clutters logs. See `hermes-cron-rhythm` skill for the fix pattern (check `~/.hermes/cron/jobs.json` `last_delivery_error` field).
 
+## User Activity & Frequency Analysis
+
+When the sovereign asks "how often does X message me?" — go beyond "yes they exist." Reconstruct frequency, channel preference, and behavioral pattern.
+
+### Step 0: Verify the user has actually messaged (not just been mentioned)
+
+**Critical distinction:** `session_search("Izzu")` returns sessions where "Izzu" appears ANYWHERE — including the ASSISTANT's own response mentioning the name, or other users' messages that talk about them. This means session_search can return **false positives** for the question "did X message the bot?" FTS5 indexes every word in every message, not just the `user=` sender field.
+
+**Definitive check — enumerate every unique sender from raw gateway logs:**
+
+```bash
+# ALL Telegram senders ever (across all rotations)
+cat /root/.hermes/logs/gateway.log* 2>/dev/null \
+  | grep "inbound message.*platform=telegram" \
+  | grep -oP 'user=[^ ]+' | sort -u
+```
+
+If the user's name does not appear in any `user=` field of an `inbound message:` line, they have **never sent a message to the bot**. Every mention of their name in session_search is either (a) another user talking about them, or (b) an assistant response to someone else.
+
+**Group vs DM breakdown:**
+```bash
+# See every unique sender+destination combo
+cat /root/.hermes/logs/gateway.log* 2>/dev/null \
+  | grep "inbound message.*platform=telegram" \
+  | grep -oP 'user=[^ ]+ chat=[^ ]+' | sort -u
+```
+
+DM chats are positive integers (the user's Telegram ID). Group chats start with `-`.
+
+**Sweep all non-sovereign users (strip agent and self traffic):**
+```bash
+cat /root/.hermes/logs/gateway.log* 2>/dev/null \
+  | grep "inbound message.*platform=telegram" \
+  | grep -v "user=ARIF" | grep -v "user=🦞" | grep -v "user=FORGE" | grep -v "user=777" \
+  | grep -oP 'user=[^ ]+' | sort -u | grep -v '^user=$'
+```
+
+This strips ARIF's own messages plus agent-to-agent traffic, leaving only real human users.
+
+**Warning — truncated display names:** The log parser truncates Telegram names at the first space. `"🦞 AGI"` becomes `user=🦞`, `"777 FORGE 🔥🧠"` becomes `user=777`, `"No name"` becomes `user=No`. Cross-reference with `chat=<ID>` against `sessions.json` to resolve real names.
+
+### Step 1: Count total inbound messages per user
+
+```bash
+grep "inbound message.*chat=<CHAT_ID>" /root/.hermes/logs/gateway.log* 2>/dev/null | sort -u | wc -l
+```
+
+Exclude your own test sends if you sent them from the user's chat (user=ARIF in the log line but chat=<OTHER_USER_ID>).
+
+### Step 2: Break down by channel
+
+DM is `chat=<USER_ID>` (no minus sign). Group is `chat=<GROUP_ID>` (starts with `-`).
+
+```bash
+# DM only
+grep "inbound message.*chat=<USER_ID>" /root/.hermes/logs/gateway.log | grep -v "chat=-"
+# AIA group specifically
+grep "group:-1003521544074:<USER_ID>" /root/.hermes/logs/gateway.log | grep "Flushing text batch\|inbound"
+```
+
+Note: On Jul 27-29, the gateway.log pattern showed that DM inbound messages are logged as `chat=<USER_ID>` directly. Group messages may appear as `Flushing text batch agent:main:telegram:group:<GROUP_ID>:<USER_ID>` in the logs without a corresponding `inbound message:` line — count these as group messages too.
+
+### Step 3: Break down by day
+
+```bash
+for day in $(seq -w 27 29); do
+  count=$(grep "inbound message.*chat=<CHAT_ID>" /root/.hermes/logs/gateway.log | grep "2026-07-$day" | wc -l)
+  echo "July $day: $count DMs"
+done
+```
+
+For multiple days on month boundaries, adjust July → August etc.
+
+### Step 4: Extract actual message content (not just counts)
+
+```bash
+grep "inbound message.*chat=<CHAT_ID>" /root/.hermes/logs/gateway.log | grep -v "user=ARIF" | sed 's/.*msg=/→ /'
+```
+
+This gives you the actual words the user typed — useful for categorising their intent (test, casual, serious).
+
+### Step 5: Identify pattern
+
+Categorise the user's behaviour:
+
+| Pattern | Signal | Shape |
+|---------|--------|-------|
+| **Burst user** | All messages in <30 min then silence | Steep spike, flat tail |
+| **Daily user** | 1-3 messages/day steady | Low-amplitude plateau |
+| **Heavy user** | 10+ messages/day across days | Sustained high volume |
+| **Passive user** | Only in groups, never DMs | Group-only footprint |
+| **Ghost user** | Registered in channel_directory, never messaged | Zero inbound |
+
+### Step 6: Present as a clean summary table
+
+| Metric | Value |
+|--------|:-----:|
+| Total messages | N (N DM + N group) |
+| Active days | X out of Y days since access |
+| Latest activity | Date, channel |
+| Pattern | Burst / Daily / Ghost |
+
+Also show the top-3 topics/themes from the message content so the sovereign knows what they're asking about.
+
+### Log pattern examples (Jul 2026 real data)
+
+```
+# DM from Mohd (chat=1237635275 is Mohd's Telegram user ID, DM means chat_id == user_id)
+2026-07-27 15:27:02 inbound message: user=Mohd chat=1237635275 msg='Who are you'
+
+# Group message from Mohd in AIA group (detected via flush)
+2026-07-28 12:07:31 Flushing text batch agent:main:telegram:group:-1003521544074:1237635275 (164 chars)
+
+# Blocked user (before access was granted)
+2026-07-27 15:19:28 Blocked unauthorized user 1237635275 in chat 1237635275
+```
+
 ## Decision Tree
 
 ```
@@ -174,4 +294,9 @@ Need to find past messages?
     ├── User confirms messages exist? → Search raw logs immediately
     ├── Evidence suggests contact? → Search raw logs as verification
     └── No evidence either way? → Search raw logs to confirm absence
+
+Need to audit user activity?
+├── Sovereign asks "how often does X message?" → Follow User Activity & Frequency Analysis (steps 1-6)
+├── Sovereign asks "what does X talk about?" → Extract message content (step 4)
+└── Sovereign asks "is X active?" → Check DM+Group activity (step 2+3)
 ```

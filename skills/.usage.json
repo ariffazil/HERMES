@@ -2032,26 +2032,26 @@
     "created_at": "2026-07-12T03:24:31.873550+00:00",
     "created_by": "agent",
     "last_patched_at": "2026-07-28T04:16:04.422257+00:00",
-    "last_used_at": "2026-07-28T04:14:29.905098+00:00",
-    "last_viewed_at": "2026-07-28T04:14:29.898884+00:00",
+    "last_used_at": "2026-07-28T16:16:15.470352+00:00",
+    "last_viewed_at": "2026-07-28T16:16:15.461497+00:00",
     "patch_count": 108,
     "pinned": false,
     "state": "active",
-    "use_count": 114,
-    "view_count": 114
+    "use_count": 115,
+    "view_count": 115
   },
   "hermes-log-forensics": {
     "archived_at": null,
     "created_at": "2026-07-16T18:59:46.186165+00:00",
     "created_by": "agent",
-    "last_patched_at": "2026-07-24T00:47:54.943910+00:00",
-    "last_used_at": "2026-07-24T00:47:36.953182+00:00",
-    "last_viewed_at": "2026-07-24T00:47:36.945263+00:00",
-    "patch_count": 2,
+    "last_patched_at": "2026-07-28T16:17:44.699431+00:00",
+    "last_used_at": "2026-07-28T16:17:35.218856+00:00",
+    "last_viewed_at": "2026-07-28T16:17:35.212075+00:00",
+    "patch_count": 6,
     "pinned": false,
     "state": "active",
-    "use_count": 4,
-    "view_count": 4
+    "use_count": 8,
+    "view_count": 8
   },
   "hermes-naked-prior-audit": {
     "archived_at": null,

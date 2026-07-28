@@ -1,18 +1,24 @@
 {
-  "updated_at": "2026-07-28T16:10:00.897930",
+  "updated_at": "2026-07-28T16:15:01.991884",
   "platforms": {
     "telegram": [
-      {
-        "id": "-1003753855708:1",
-        "name": "AAA / topic 1",
-        "type": "group",
-        "thread_id": "1"
-      },
       {
         "id": "267378578",
         "name": "ARIF",
         "type": "dm",
         "thread_id": null
+      },
+      {
+        "id": "8410138119",
+        "name": "ASI💃",
+        "type": "dm",
+        "thread_id": null
+      },
+      {
+        "id": "-1003753855708:1",
+        "name": "AAA / topic 1",
+        "type": "group",
+        "thread_id": "1"
       },
       {
         "id": "-1003815535761",
@@ -36,12 +42,6 @@
         "id": "-1003521544074",
         "name": "🅰❗️🅰",
         "type": "group",
-        "thread_id": null
-      },
-      {
-        "id": "8410138119",
-        "name": "ASI💃",
-        "type": "dm",
         "thread_id": null
       },
       {
