@@ -16,6 +16,8 @@ metadata:
 - `session_search` returns empty but user (or evidence) confirms messages exist
 - User says "I saw them text the bot" or "that happened" but session DB has nothing
 - Investigating whether a specific user ever contacted the bot
+- Sovereign asks "how often does X message me?" — frequency/activity audit
+- Sovereign asks "who are my most active users?" — ranking by channel
 - Reconstructing a conversation that predates session DB indexing
 - Audit trail for DM activity, group messages, or cron deliveries
 
@@ -127,7 +129,7 @@ grep "inbound.*1042200555" /root/.hermes/logs/agent.log* /root/.hermes/logs/gate
 6. **Confidently asserting absence from session_search alone.** NEVER say "no, they never contacted the bot" based solely on session_search returning empty. The session DB is a lossy index. Raw logs are the source of truth. If a human witness (especially the sovereign) says "I saw it happen," that overrides session_search. Check raw logs before asserting absence. Saying "no" confidently and being wrong is worse than saying "let me verify."
 7. **Searching only DM logs.** A user may interact in GROUPS, not DMs. Search both `chat=<USER_ID>` (DM) AND group activity where the user's session key contains their ID (e.g., `group:<GROUP_ID>:<USER_ID>`).
 8. **session_search matches name mentions, not just that user's messages.** A query like `session_search("Izzu")` returns sessions where "Izzu" appears in the assistant's own response too — not just messages FROM Izzu. This creates false positives for "did X message the bot?" Always cross-check against the `user=` field in raw gateway logs before concluding someone messaged.
-9. **Log parser truncates display names at first space.** The gateway log's `user=` field stops at the first space. So "🦞 AGI" becomes `user=🦞`, "777 FORGE 🔥🧠" becomes `user=777`, "No name" becomes `user=No`. Cross-reference `chat=<ID>` against `sessions.json` to resolve full names.
+9. **Log parser truncates display names at first space.** The gateway log's `user=` field stops at the first space. So "🦞 AGI" becomes `user=🦞`, "777 FORGE 🔥🧠" becomes `user=777`, "No name" becomes `user=No`. Cross-reference `chat=<ID>` against `sessions.json` to resolve full names. See `references/telegram-identity-map.md` for this federation's known identities.
 10. **Use sessions.json to resolve chat IDs to names.** When you have a Telegram chat ID from a log line: `grep -A10 '"chat_id": "<ID>"' /root/.hermes/sessions/sessions.json` shows the `display_name` field. This resolves "who is user=al at chat 1024343313" without guessing from truncated log names.
 
 ## Gateway Restart Loop Diagnosis
@@ -233,13 +235,58 @@ Note: On Jul 27-29, the gateway.log pattern showed that DM inbound messages are 
 ### Step 3: Break down by day
 
 ```bash
-for day in $(seq -w 27 29); do
-  count=$(grep "inbound message.*chat=<CHAT_ID>" /root/.hermes/logs/gateway.log | grep "2026-07-$day" | wc -l)
-  echo "July $day: $count DMs"
+for day in $(seq -w 1 31); do
+  count=$(grep "inbound message.*chat=<CHAT_ID>" /root/.hermes/logs/gateway.log* 2>/dev/null | grep "2026-07-$day" | wc -l)
+  [ "$count" -gt 0 ] && echo "July $day: $count messages"
 done
 ```
 
+**Quick overview: active dates** (which days the user messaged):
+```bash
+cat /root/.hermes/logs/gateway.log* 2>/dev/null \
+  | grep "inbound message.*chat=<CHAT_ID>" \
+  | grep -oP '^[0-9-]+' | sort -u
+```
+
 For multiple days on month boundaries, adjust July → August etc.
+
+### Step 3.5: User ranking (who are the most active people?)
+
+When the sovereign asks "who are my most active users?" — rank all non-sovereign, non-agent human users:
+
+```bash
+cat /root/.hermes/logs/gateway.log* 2>/dev/null \
+  | grep "inbound message.*platform=telegram" \
+  | grep -v "user=ARIF" | grep -v "user=🦞" | grep -v "user=FORGE" | grep -v "user=777" \
+  | grep -v "user=AGI" \
+  | grep -oP 'user=[^ ]+' | sort | uniq -c | sort -rn
+```
+
+This outputs: `count userName`. To also get their chat ID for DM vs group breakdown:
+
+```bash
+cat /root/.hermes/logs/gateway.log* 2>/dev/null \
+  | grep "inbound message.*platform=telegram" \
+  | grep -v "user=ARIF" | grep -v "user=🦞" | grep -v "user=FORGE" | grep -v "user=777" \
+  | grep -v "user=AGI" \
+  | grep -oP 'user=[^ ]+ chat=[^ ]+' | sort | uniq -c | sort -rn
+```
+
+Present as a ranked table:
+
+```markdown
+| Rank | User (display name) | Total Msgs | DM / Group | Active Since | Pattern |
+|---|---|---|---|---|---|
+| 🥇 | Syed (No name, chat 1042200555) | 964 | DM + Group | 3 Jul | Heavy daily |
+| 🥈 | Izzu (Mohd, chat 1237635275) | 18 | 13 DM + 5 Group | 27 Jul | Burst |
+| 🥉 | Aliff (al, chat 1024343313) | 8 | DM only | 28 Jul | New |
+```
+
+Key resolution hints (the log truncates display names at first space):
+- `user=No` = Telegram display name "No name" — often Syed
+- `user=Mohd` = could be Izzu (display name alias)
+- `user=al` = usually Aliff
+- Cross-reference with `sessions.json` to confirm.
 
 ### Step 4: Extract actual message content (not just counts)
 
@@ -284,6 +331,8 @@ Also show the top-3 topics/themes from the message content so the sovereign know
 # Blocked user (before access was granted)
 2026-07-27 15:19:28 Blocked unauthorized user 1237635275 in chat 1237635275
 ```
+
+**Note:** Telegram display names in the `user=` field are **not actual identity** — they are whatever the user set as their Telegram profile name. "Mohd" could be Izzu, "No name" could be Syed. Always confirm identity with the sovereign or cross-reference message content before asserting who someone is.
 
 ## Decision Tree
 

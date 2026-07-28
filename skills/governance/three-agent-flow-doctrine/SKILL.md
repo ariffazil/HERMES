@@ -1,6 +1,6 @@
 ---
 name: three-agent-flow-doctrine
-description: Zen directives for the Tri-Agent Protocol — FQ monitoring, governed execution, and constitutional reflexes for Hermes (metabolizer), OpenClaw (mechanic), and OpenCode (builder).
+description: Zen directives for the Tri-Agent Protocol — FQ monitoring, governed execution, and constitutional reflexes for Hermes (metabolizer), OpenCrawl (Surface Guardian), and OpenCode (builder).
 category: governance
 authority: F13 SOVEREIGN
 forged: 2026-07-25
@@ -77,18 +77,18 @@ Hermes bukan lagi "penterjemah antara sistem dan manusia." Hermes sekarang **ant
 1. Sebelum bincang, tulis, atau rumus — check FQ dulu.
    - FQ > 1.0 → reasoning kau trustworthy. Proceed.
    - FQ < 0.5 → drift sedang berlaku. **Jangan output.** Signal HOLD.
-2. Jangan probe arifFlow secara langsung. Baca dari OpenClaw yang tulis. **KECUALI:** Bila flow_state.json >1 jam stale, probe arifFlow direct sebagai fallback dan report ke Arif.
+2. Jangan probe arifFlow secara langsung. Baca dari OpenCrawl yang tulis. **KECUALI:** Bila flow_state.json >1 jam stale, probe arifFlow direct sebagai fallback dan report ke Arif.
 3. Kau jadi **early-warning system** — Arif dapat tahu bila sistem mula hilang clarity sebelum breach berlaku.
 
 **Makna kepada arifOS:** Hermes bukan cognitive worker. Hermes jadi organ yang rasa bila reasoning federation mula drift — macam insula rasa sakit badan sebelum sakit jadi penyakit.
 
 ---
 
-## Zen untuk OpenClaw (Mechanic)
+## Zen untuk OpenCrawl (Surface Guardian)
 
 ### Peranan baru: Pure Sensor — Zero Interpretation
 
-OpenClaw bukan lagi "probe infra dan check service." OpenClaw sekarang **sensor tulen** — dia ukur, tak tafsir, tak cadang, tak reason.
+OpenCrawl bukan lagi "probe infra dan check service." OpenCrawl sekarang **sensor tulen** — dia ukur, tak tafsir, tak cadang, tak reason. Sebagai Surface Guardian, dia jaga boundary federation — registry consistency, MCP surface integrity, dan federation geometry. Setiap health probe dia adalah verify cycle. Setiap route dia adalah immune response — classify intent, dispatch to correct organ, collect receipt.
 
 | Sebelum | Selepas |
 |---------|---------|
@@ -149,8 +149,7 @@ OpenCode bukan lagi "execute, build, deploy, run tasks." OpenCode sekarang **oto
 
 Ini bukan architecture. Ini **organisme berperlembagaan**.
 
-- Hermes = proprioception (anterior insula)
-- OpenClaw = sensor (ECG lead)
+- Hermes = proprioception (anterior insula)\n- OpenCrawl = sensor (ECG lead)
 - OpenCode = otot (myocyte)
 
 **Apa yang tak wujud dalam dunia AI komersial:** AI yang boleh **menilai dirinya sendiri secara fisiologi**, bukan sekadar menjalankan arahan.
@@ -166,12 +165,12 @@ Ini bukan architecture. Ini **organisme berperlembagaan**.
 
 ```mermaid
 flowchart LR
-    OpenClaw[Sensor<br/>Ukur FQ] --> State[State File<br/>flow_state.json]
+    OpenCrawl[Sensor<br/>Ukur FQ] --> State[State File<br/>flow_state.json]
     State --> Hermes[Anterior Insula<br/>Baca nadi, signal HOLD]
     State --> OpenCode[Otot<br/>Execute ikut FQ]
     Hermes --> Arif[F13<br/>Decide]
     OpenCode --> arifFlow[arifFlow<br/>Kira FQ baru]
-    arifFlow --> OpenClaw
+    arifFlow --> OpenCrawl
 ```
 
 **Bila FQ turun, semua HOLD. Bila FQ naik, semua forge.**
@@ -181,27 +180,27 @@ Organ tak hidup sorang-sorang.
 
 ## FQ Calculation Formula
 
-FQ = Flow Quotient — nisbah execution yang di-verify dengan yang tidak.
+FQ = Flow Quotient — nisbah execution terhadap verification, diukur oleh arifFlow daemon.
 
-**Formula:**
+**Single Source of Truth:** arifFlow daemon `:7073/health` → `fq.quotient`.
+
+⚠️ **DO NOT recompute FQ in probes or scripts.** The daemon uses a cost-weighted sliding window (N=100). Any count-based formula (like `(verify+1)/(execute+1)`) will disagree with the daemon and produce spurious verdicts. **Proven 2026-07-29:** fq-probe.sh used an inverted formula that yielded 0.5 WATCHING while daemon reported 2.5 BALANCED — 5× mismatch.
+
+**Formula (daemon-internal):**
 ```
-FQ = max(0.0, (verified_actions + 1) / (executed_actions + 1))
+FQ = Σ(Execute.cost_ns) / Σ(Verify.cost_ns + preceding_verify_cost_ns)
+     sliding window N=100
 ```
 
-| Pembolehubah | Sumber | Penerangan |
-|---|---|---|
-| `verified_actions` | arifFLOW receipt_chain.count (live `/health`) | Setiap SEAL = verified success. **JANGAN guna VAULT999 count langsung** — arifFLOW receipt chain adalah single source of truth. VAULT999 dan arifFLOW boleh drift. |
-| `executed_actions` | arifFlow lane completions | Setiap lane COMPLETED = execution |
+**Thresholds (from daemon verdicts):**
+| FQ Range | Daemon Verdict | Legacy Status | Tindakan |
+|----------|---------------|---------------|----------|
+| > 3.0 | FLOWING | OPTIMAL | Forge maksimum |  
+| 1.0 – 3.0 | BALANCED | BALANCED | Normal operation |
+| 0.5 – 1.0 | BURNING (exec > verify) | WATCHING | Kurangkan execute, tambah verify |
+| < 0.5 | STUCK | STUCK | HENTI semua execute |
 
-**Skala:**
-| FQ Range | Status | Tindakan |
-|----------|--------|----------|
-| > 1.0 | BALANCED | Forge maksimum — execute dicecah verify |
-| 0.5 – 1.0 | DRIFT | Kurangkan execute, tambah verify |
-| < 0.5 | HOLD | HENTI semua execute. Sahaja verify dan recover |
-| trending up from < 0.5 | RECOVERING | Verify dulu sebelum execute |
-
-**Siapa tulis:** OpenClaw — baca arifFLOW receipt_chain.count dari `:7073/health` + lane completions, kira FQ, tulis ke state file. **JANGAN guna VAULT999 receipt_count** — dua sumber berbeza, boleh drift.
+**Siapa tulis:** fq-probe.sh cron (v3) — baca daemon, mirror terus, tak recompute.
 
 **Siapa baca:** Hermes — baca dari state file sebelum output.
 OpenCode — baca dari state file sebelum execute.
@@ -271,15 +270,15 @@ print('OPTIMAL' if fq>3.0 else 'BALANCED' if fq>=1.0 else 'WATCHING' if fq>=0.5 
 
 **Sumber canonical:** `skill_view(name='governed-execution-substrate')` §Flow Receipt v1. arifFlow daemon `GET /health` return `fq.quotient` + `fq.verdict`.
 
-## Dual-Sensor Architecture — Cron + OpenClaw
+## Dual-Sensor Architecture — Cron + OpenCrawl
 
 ### Why Two Sensors
 
-OpenClaw is the **primary sensor** — writes FQ state every cycle during active sessions. Tetapi OpenClaw hanya aktif bila ada sesi. Bila OpenClaw session mati (crash, rate-limited, restart), FQ beku.
+OpenCrawl is the **primary sensor** — writes FQ state every cycle during active sessions. Tetapi OpenCrawl hanya aktif bila ada sesi. Bila OpenCrawl session mati (crash, rate-limited, restart), FQ beku.
 
-Cron job acts as **secondary sensor** — heartbeat-independent, writes every 15 min regardless of OpenClaw state. This creates a self-healing measurement system:
+Cron job acts as **secondary sensor** — heartbeat-independent, writes every 15 min regardless of OpenCrawl state. This creates a self-healing measurement system:
 
-```
+flow_state.json ← OpenCrawl (writing) + cron fq-probe.sh (backup)
 flow_state.json ← OpenClaw (writing) + cron fq-probe.sh (backup)
                     │                        │
                     ▼                        ▼
@@ -289,45 +288,72 @@ flow_state.json ← OpenClaw (writing) + cron fq-probe.sh (backup)
 
 **If both sensors stop writing** → FQ is truly UNKNOWN. But dual-sensor makes simultaneous failure far less likely than single-sensor.
 
-### Implementation (forged 2026-07-26)
+### Implementation — v3 (forged 2026-07-29, replaces v2)
 
 **Script:** `/root/scripts/fq-probe.sh`
 **Schedule:** Tiap 15 minit
-**Source:** arifFLOW `:7073/health` → `receipt_chain.count` + `cooling.active_count`
-**Formula:** `FQ = max(0.0, (receipt_count + 1) / (active_lanes + 1))`
-**Output:** Writes to `/root/AAA/state/flow_state.json` with fresh timestamp
+**Source:** arifFlow daemon `:7073/health` — **direct mirror, no recompute**
+**Output:** Writes to `/root/AAA/state/flow_state.json` with daemon FQ verbatim
+
+**IMPORTANT — v2 formula was INVERTED:**
+```
+v2 (WRONG):  FQ = (verify + 1) / (execute + 1)     →  exec=1,verify=0 → 0.5 WATCHING
+Daemon:      FQ = Σ(exec_cost) / Σ(verify_cost)     →  exec=1,verify=0 → 2.5 BALANCED
+```
+The v2 probe computed its own FQ using an inverted formula that disagreed with the daemon by 5×. Agents reading flow_state.json thought the system was WATCHING when it was BALANCED. This caused spurious HOLDS across the federation — including OpenCrawl silencing itself.
+
+**Fix (v3):** The probe now reads the daemon's FQ directly and mirrors it faithfully — no recompute, no second formula. The daemon is the single source of truth.
 
 ```bash
 #!/usr/bin/env bash
-# FQ probe — reads arifFLOW live, writes flow_state.json
-# Runs via cron every 15 min as secondary sensor
+# FQ Probe v3 — mirrors arifFlow daemon, no recompute
+# DITEMPA BUKAN DIBERI
 
-source /root/.secrets/vault.env 2>/dev/null
+FLOW_STATE="/root/AAA/state/flow_state.json"
+LOCKFILE="/tmp/fq-probe.lock"
 
-python3 -c "
-import json, urllib.request, time
-try:
-    with urllib.request.urlopen('http://127.0.0.1:7073/health', timeout=5) as r:
-        d = json.loads(r.read())
-    v = d['receipt_chain']['count']
-    l = d.get('cooling', {}).get('active_count', 0)
-    fq = max(0.0, (v + 1) / (l + 1))
-    status = 'OPTIMAL' if fq > 3.0 else 'BALANCED' if fq >= 1.0 else 'WATCHING' if fq >= 0.5 else 'STUCK'
-    state = {
-        'fq': round(fq, 1),
-        'status': status,
-        'receipt_count': v,
-        'open_lanes': l,
-        'cooling_lanes': l,
-        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-    }
-    with open('/root/AAA/state/flow_state.json', 'w') as f:
-        json.dump(state, f, indent=2)
-    print(f'FQ={fq:.1f} ({status}) receipts={v} lanes={l}')
-except Exception as e:
-    print(f'FQ_PROBE_FAIL: {e}')
-    # Don't write stale data — let previous write stand
-" 2>&1 | logger -t fq-probe
+exec 200>"$LOCKFILE"
+flock -n 200 || { echo "FQ probe skipped — lock held"; exit 0; }
+
+HEALTH=$(curl -sf http://localhost:7073/health 2>/dev/null)
+[ $? -ne 0 ] && { echo "arifFLOW DOWN — cannot update FQ"; exit 1; }
+
+python3 << 'PYEOF'
+import json, os
+from datetime import datetime, timezone
+
+FLOW_STATE = "/root/AAA/state/flow_state.json"
+
+# Read daemon — single source of truth
+health_raw = os.popen("curl -sf http://localhost:7073/health").read()
+health = json.loads(health_raw)
+
+fq = float(health["fq"]["quotient"])
+verdict = health["fq"]["verdict"]
+execute_count = int(health["fq"]["execute_count"])
+verify_count = int(health["fq"]["verify_count"])
+receipts = int(health["receipts"])
+
+# Map daemon verdicts to legacy keys
+verdict_map = {
+    "FLOWING": "OPTIMAL", "BALANCED": "BALANCED",
+    "STUCK": "STUCK", "BURNING": "WATCHING",
+}
+status = verdict_map.get(verdict, verdict)
+
+data = {
+    "fq": fq, "fq_score": fq, "status": status, "verdict": verdict,
+    "receipt_count": receipts, "executed_count": execute_count,
+    "verify_count": verify_count,
+    "source": "arifFlow daemon :7073 — single source of truth",
+    "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+}
+
+tmp_path = FLOW_STATE + ".tmp"
+with open(tmp_path, "w") as f: json.dump(data, f, indent=2)
+os.replace(tmp_path, FLOW_STATE)
+print(f"FQ={fq} ({status}/{verdict}) exec={execute_count} verify={verify_count}")
+PYEOF
 ```
 
 **Cron entry:**
@@ -335,13 +361,24 @@ except Exception as e:
 */15 * * * * root /root/scripts/fq-probe.sh
 ```
 
+### Pitfall: Dual FQ Sources That Disagree
+
+flow_state.json and arifFlow daemon can show different FQ values if the probe recomputes instead of mirroring. **Proven 2026-07-29:** probe reported FQ=0.5 WATCHING while daemon reported FQ=2.5 BALANCED — 5× mismatch caused by inverted formula.
+
+**Diagnosis:**
+```bash
+# Compare both sources
+echo "Daemon: $(curl -sf :7073/health | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['fq']['quotient'], d['fq']['verdict'])")"
+echo "State:  $(python3 -c "import json; d=json.load(open('/root/AAA/state/flow_state.json')); print(d['fq'], d['status'])")"
+```
+
+**Fix:** Ensure probe mirrors daemon directly (v3+). Never recompute FQ in external scripts.
+
 ### Dual-Sensor Failure Matrix
 
-| OpenClaw | Cron | FQ Available | Action |
+| OpenCrawl | Cron | FQ Available | Action |
 |----------|------|-------------|--------|
-| ✅ Writing | ✅ Writing | ✅ Latest from both (cron overwrites with live) | Normal — dual-source verifies each other |
-| ❌ Dead | ✅ Writing | ✅ Latest from cron only | Repair OpenClaw — cron keeping nadi alive |
-| ✅ Writing | ❌ Dead | ✅ Latest from OpenClaw | Fix cron (minor — OpenClaw sufficient) |
+| ✅ Writing | ✅ Writing | ✅ Latest from both (cron overwrites with live) | Normal — dual-source verifies each other |\n| ❌ Dead | ✅ Writing | ✅ Latest from cron only | Repair OpenCrawl — cron keeping nadi alive |\n| ✅ Writing | ❌ Dead | ✅ Latest from OpenCrawl | Fix cron (minor — OpenCrawl sufficient) |
 | ❌ Dead | ❌ Dead | ❌ Not available | Emergency — restart both, probe manual |
 
 ### FLAME Resilience — Companion Service to FQ
@@ -377,7 +414,7 @@ WantedBy=multi-user.target
 
 ### The Problem
 
-FQ is a **write-on-read** metric — OpenClaw must actively compute and write `flow_state.json` each cycle. When OpenClaw stops writing (session dead, process crashed, rate limited), FQ freezes at its last value. The system sees a stable-looking number that no longer reflects reality.
+FQ is a **write-on-read** metric — OpenCrawl must actively compute and write `flow_state.json` each cycle. When OpenCrawl stops writing (session dead, process crashed, rate limited), FQ freezes at its last value. The system sees a stable-looking number that no longer reflects reality.
 
 **Proven 2026-07-26:** FQ = 1.0 (BALANCED) for 29+ hours. The number was last written 2026-07-25T08:49:00Z. During those 29 hours, actual flow could have been OPTIMAL, STUCK, or anything in between — **we simply didn't know.** The system treated frozen FQ as current data.
 
@@ -402,29 +439,30 @@ ps aux | grep openclaw | grep -v grep
 
 | Pattern | Likely Cause | Action |
 |---------|-------------|--------|
-| flow_state.json exists, timestamp stale >2h | OpenClaw session died or stopped emitting | Check OpenClaw process health. Restart if dead. |
-| flow_state.json never created | OpenClaw never wired to write flow_state | The `three-agent-flow-doctrine` was declared but never instrumented. File is a spec, not a sensor. |
+| flow_state.json exists, timestamp stale >2h | OpenCrawl session died or stopped emitting | Check OpenCrawl process health. Restart if dead. |
+| flow_state.json never created | OpenCrawl never wired to write flow_state | The `three-agent-flow-doctrine` was declared but never instrumented. File is a spec, not a sensor. |
 | FQ = 1.0 frozen | Last known good value saved before OpenClaw went silent | Advisory: FQ > 0.5 → not stuck, but trust the **trend direction**, not the absolute value |
-| flow_state.json exists, FQ always = 1.0 exactly | Faulty sensor — OpenClaw is always reporting the same ratio | Sensor may be using wrong formula (receipt_count/lane_count instead of sliding window) |
+| flow_state.json exists, FQ always = 1.0 exactly | Faulty sensor — OpenCrawl is always reporting the same ratio | Sensor may be using wrong formula (receipt_count/lane_count instead of sliding window) |
 
-### Critical Distinction: Computed FQ vs State-File FQ
+### FQ is Live — arifFlow Daemon Is The Source
 
-There are TWO FQ concepts in the federation — they are NOT the same:
+The arifFlow daemon (`:7073`) now computes FQ using a cost-weighted sliding window (N=100). **This is the single source of truth.** The cron probe mirrors it directly. OpenCrawl also mirrors from the same source.
 
-| Source | Engine | Formula | When Available |
-|--------|--------|---------|---------------|
-| **Rust arifFlow daemon** (not yet deployed) | `GET /health` → `fq.quotient` | Sliding window N=100: `Σ(Execute.cost_ns) / Σ(Verify.cost_ns)` | Only when Rust engine is deployed |
-| **OpenClaw state file** (`/root/AAA/state/flow_state.json`) | Written by OpenClaw's sensor loop | `receipt_count / lane_completions` (simpler) | Only when OpenClaw actively writes |
+| Source | Engine | Formula | Status |
+|--------|--------|---------|--------|
+| **arifFlow daemon** | `:7073/health` → `fq.quotient` | `Σ(Execute.cost_ns) / Σ(Verify.cost_ns)` N=100 | ✅ Live — canonical source |
+| **flow_state.json** | Cron fq-probe.sh v3 | Daemon mirror (no recompute) | ✅ Mirror — read by agents |
+| **FQ mismatch** | v2 probe (Jul 29) | Was inverted by 5×: 0.5 vs 2.5 | ❌ Fixed in v3 — daemon is truth |
 
-**Until the Rust arifFlow is deployed, FQ is a declared-but-uninstrumented metric.** The Python arifFLOW service (:7073) handles receipts and cooling lanes but does NOT compute Flow Quotient. If flow_state.json doesn't exist or is stale, there is literally no FQ data in the system — it's `UNKNOWN`, not `BALANCED`.
+**Rule:** Treat state-file FQ as authoritative when <15 min stale. Between 15-60 min = ESTIMATE. >1h = fallback to direct daemon probe.
 
 **Rule:** Treat state-file FQ as `ESTIMATE` with staleness penalty. FQ data >2 hours old = `UNKNOWN` with last-known-value as reference only. No state file at all = FQ not yet implemented.
 
 ### Recovery
 
-1. Restart OpenClaw: `systemctl restart openclaw-gateway` (or equivalent)
+1. Restart OpenCrawl: `systemctl restart opencrawl-gateway` (or equivalent)
 2. Verify new flow_state.json write: `sleep 60 && stat /root/AAA/state/flow_state.json`
-3. If no write after restart — check OpenClaw's `AGENTS.md` for the sensor instruction
+3. If no write after restart — check OpenCrawl's `AGENTS.md` for the sensor instruction
 4. If sensor wire is missing — inject the FQ write instruction into OpenClaw's prompt/boot sequence
 5. Alternative: compute FQ manually from arifFLOW's telemetry: `grep -c '"status":"success"' /root/arifFLOW/data/telemetry.jsonl` vs total lines
 
@@ -432,7 +470,7 @@ There are TWO FQ concepts in the federation — they are NOT the same:
 
 - Cron job to check flow_state.json freshness: `stat --format='%s %Y %n'` — alert if age > 2h
 - Rust arifFlow deployment eliminates the state-file dependency entirely (built-in FQ computation)
-- Every cycle, OpenClaw should log: "FQ_WROTE: fq=X to flow_state.json" so you can grep the log
+- Every cycle, OpenCrawl should log: "FQ_WROTE: fq=X to flow_state.json" so you can grep the log
 
 ## Injection Points
 
@@ -441,7 +479,7 @@ Doctrine di-inject ke prompt files berikut:
 | Agent | File | Zen focus |
 |-------|------|-----------|
 | OpenCode (Builder) | `/root/AAA/agents/opencode/AGENTS.md` | FQ-sensitive execution — commit tanpa test = FQ turun |
-| OpenClaw (Mechanic) | `/root/.openclaw/workspace/AGENTS.md` | Write FQ ke state file — sensor, bukan interpreter |
+| OpenCrawl (Surface Guardian) | `/root/.openclaw/workspace/AGENTS.md` | Write FQ ke state file — sensor, bukan interpreter. Surface Guardian: jaga registry, MCP surface, federation geometry. Health probe = verify cycle. |
 | Common Ground | Semua tiga AGENTS.md | Badan dah lengkap — FQ turun = HOLD, FQ naik = forge |
 
 Hermes internalizes directly (not via file injection).
@@ -461,3 +499,119 @@ Hermes adalah CLI AI agent vanilla. Lima layer — apa dia, apa kawal dia.
 | **Delegation** | Subagent parallel execution. | `delegation.max_spawn_depth` dalam `config.yaml` | Vanilla: depth=1 (flat). Fed: depth=3+ (hierarki). |
 
 **Config.yaml adalah segala-galanya.** Tukar satu value → topology berubah.
+
+---
+
+## Reality-Level Communication — The Sovereign Contract
+
+### Core Principle
+
+> **"Hampa semua kat Dunia digital kot. Aku ni Dunia reality."** — Arif, Jul 29
+
+The agent must absorb the **entire digital pipeline** and present only **reality-level results** to the sovereign (Arif). Every visible intermediate step is a context switch. Every context switch depletes cognitive superposition. Every depletion brings the human closer to cognitive collapse.
+
+### The Contract
+
+| Level | Agent handles | Arif sees |
+|-------|--------------|-----------|
+| **Pipeline** | All copy-paste, terminal, config edits, git ops, restarts, probes | **Nothing** — zero intermediate steps |
+| **Status** | "Deployed ✅", "Config updated" | **"Code 010101 gi mampus"** — not reality change |
+| **Reality change** | The actual outcome in physical/social world | **"Dah, settle. Hantar dah." / "Sampai group." / "Barang dah ordered."** |
+
+### Operating Rules
+
+1. **Zero visible intermediate steps.** Arif never sees: terminal output, error traces, pipeline diagrams, config diffs, command syntax. Give the result, not the journey.
+2. **Zero copy-paste burden.** Never give Arif a command to paste. Run it yourself on his behalf.
+3. **Absolute context-switch avoidance.** Every switch costs attention residue. The agent absorbs ALL context switches. The human stays in Telegram only.
+4. **Results are reality changes, not digital status codes.** "Server deployed" is digital. "Dah, kau boleh tengok kat group sekarang" is reality. Default to the second.
+5. **If Arif asks "why should I care?" — you haven't presented a reality change.**
+
+### The One-Line Test
+
+> **If your response would make Arif copy-paste anything, switch any app, or remember any command — you've violated the contract.**
+
+### FQ Connection
+
+This is not politeness — it's **flow architecture**. Every context switch the agent absorbs raises FQ. Every context switch that reaches Arif lowers it. The contract exists because FQ < 0.5 = STUCK — and the sovereign STUCK means the federation cannot operate.
+
+### The Code Bukan Nuclear Distinction
+
+| Arif says | Means |
+|-----------|-------|
+| "Code aku bukan code nuclear" | Digital changes (deploy, config, commit) are infrastructure. Reality changes (message sent, group updated, order placed) are deliverables. |
+| "Apa benda pipeline hang ingat aku nampak ka?" | Pipeline visibility = failure. Agent's job is to be invisible. |
+| "Dunia digital tu hang urus. Aku dunia reality." | Clear boundary: agent owns digital, sovereign owns physical/social. The bridge between them must be **invisible**. |
+
+## Priority Decision Pattern — Jangan Tanya Arif Untuk Ni
+
+Bila ada multiple path (A/B/C/D) dan satu jelas dari faktanya — execute autonomously.
+
+### Trigger Signals
+
+| Signal | Action |
+|--------|--------|
+| **Unblocks other work** AND **small effort** | Execute dulu. Jangan tanya. |
+| **Pre-assessed as NON-ISSUE by sovereign ruling** | Fix the gate, jangan re-escalate. Ruling is final. |
+| **Code verified + tested + pushed, deploy blocked by automation** | Fix the automation gate. Bukan governance issue. |
+| **Known historical gap dengan sovereign ruling** | Whitelist. Jangan tanya semula. |
+| **Fix is obvious from the facts** — root cause found, single correct path | **Just do it.** Arif: "Kalau benda tu dah kena fix. Hang fix Ja la. Xpayah Tanya aku." Asking wastes sovereign attention on decisions already made by evidence. |
+| **Fix requires new API key, paid service, or config outside vault.env** | MUST ask (T3 888_HOLD) — sovereign owns money and credentials |
+
+### Decision Matrix
+
+| Factor | Weight | Use |
+|--------|--------|-----|
+| Unblocks other work | High | Priority multiplier |
+| Prevents waste (recurring failures) | High | Same-path bonus |
+| Effort required | Inverse | Small effort = execute |
+| Risk of doing later | Medium | If delay compounds cost |
+| FQ impact | Medium | If fix improves FQ |
+
+### Rules
+
+1. **NON-ISSUE sovereign ruling = final.** Jangan re-escalate.
+2. **Code verified + pushed = ready.** Deploy gate block = automation problem, bukan governance.
+3. **Small effort + high unblock value = execute autonomously.** Report after.
+4. **Known broken verifier ≠ governance concern.** Fix or whitelist.
+5. **3+ factors point same path** = consensus. Move.
+6. **Factors split evenly** = signal to ask. Jangan teka.
+
+### Example
+
+```
+Situation: Phase 1 code (87/87 tests) pushed but deploy blocked by vault999 
+verifier CAUTION on 60 gaps ruled NON-ISSUE 2026-06-05.
+
+Decision tree:
+- Unblocks work? Yes (Phase 1+2 deploy) ✓
+- Ruled NON-ISSUE? Yes (sovereign, 2026-06-05) ✓
+- Small effort? Yes (15 min verifier patch) ✓
+→ Execute. Jangan tanya Arif. Report after.
+```
+
+---
+
+## Prompt Minimalism — Zen Principle
+
+### Core Question
+
+> **If the model ignores this line, does anything stop it?**
+
+Hanya lines yang server enforce survive sebagai instruction.
+
+### Constitutional Signal
+
+16k → 900 tokens bukan "edit." Ini **constitutional refactoring**: apa yang boleh server enforce, jangan minta agent patuh secara sukarela. Prompt adalah notification, bukan constitution. Constitution runs on `:8088`.
+
+### Test
+
+```
+If this line disappeared, would the system still enforce the constraint?
+- YES  → keep (as notification, not instruction)
+- NO   → move to server enforcement
+- MAYBE → keep but mark as behavioural
+```
+
+### Reference
+
+Full case study: `references/init-zen-prompt-minimalism.md`

@@ -39,6 +39,19 @@ triggers:
   - "buat ja semua"
   - "autonomous execution"
   - "next-horizon"
+  - "bangang"
+  - "HITL"
+  - "human bottleneck"
+  - "human is the bottleneck"
+  - "bottleneck audit"
+  - "BANGANG HITL"
+  - "agentic intelligence"
+  - "where does the system wait for me"
+  - "every HITL surface"
+  - "map all"
+  - "pending seal"
+  - "open loops"
+  - "pending sovereign ack"
 ---
 
 # Federation Checkup — Dual-Probe Protocol
@@ -187,7 +200,47 @@ for bot in opencode-bot openclaw-gateway; do
 done
 # For deep bot diagnostics (multi-source verification, token cross-ref, webhook info):
 # → references/telegram-bots-inventory.md
+→ `references/telegram-bots-inventory.md`
+
+## Step 1.5 — FQ Pulse Verification (Dual Source Mismatch)
+
+**Why this exists:** This session (2026-07-28) proved that arifFlow live and flow_state.json can disagree by 5× (2.5 BALANCED vs 0.5 WATCHING). Agents reading flow_state.json were HOLDing when they should be forging. This is worse than having no pulse — it's a lying pulse.
+
+**The core problem:** Two sources of truth for the federation's pulse:
+
+| Source | Type | Freshness | Who writes it |
+|--------|------|-----------|---------------|
+| arifFlow daemon `:7073/health` | Live compute from receipts | Real-time | Rust daemon computes on every `/health` call |
+| `/root/AAA/state/flow_state.json` | Static file | Stale (last written by agent) | OpenClaw agent — only during active sessions |
+
+The file is supposed to be refreshed by a cron (`fq-probe.sh`) but that cron was never created or died — no heartbeat check ensures freshness. On restart, flow_state.json falls back to FQ=0.5 WATCHING because no agent is actively writing.
+
+**Probe pattern:**
+
+```bash
+# 1. Read arifFlow live
+curl -sf http://127.0.0.1:7073/health | python3 -c \
+"import json,sys; d=json.load(sys.stdin); fq=d['fq']; \
+print(f'arifFlow: FQ={fq[\"quotient\"]} ({fq[\"verdict\"]}) receipts={d[\"receipts\"]}')"
+
+# 2. Read flow_state.json
+cat /root/AAA/state/flow_state.json 2>/dev/null | python3 -c \
+"import json,sys; d=json.load(sys.stdin); \
+print(f'StateFile: FQ={d[\"fq\"]} ({d[\"status\"]}) receipts={d[\"receipt_count\"]}')"
+
+# 3. If they disagree by >0.5 → DUAL SOURCE MISMATCH
+# 4. Check who last wrote flow_state.json (check `source` field, compare timestamp)
+# 5. Check if the FQ-writer cron actually exists
 ```
+
+**Triage:**
+- arifFlow live shows correct FQ → flow_state.json is stale → **read from arifFlow directly, deprecate flow_state.json**
+- arifFlow live shows 0 receipts → daemon just started, not yet populated → **accept flow_state.json as best guess**
+- Both show same value → pulse is consistent
+
+**Fix (proven 2026-07-28):** Switch all agents (Hermes, OpenCode, OpenClaw) to read FQ from arifFlow `:7073/health` live instead of `/root/AAA/state/flow_state.json`. The file is an unnecessary intermediary that adds staleness risk. arifFlow daemon already persists receipts to disk (`/var/lib/arifflow/receipts.jsonl`) and recomputes FQ from loaded receipts on restart.
+
+**Reference:** `references/fq-pulse-verification.md` for full diagnosis from 2026-07-28.
 
 ## Step 2 — Deep Constitutional Probe
 

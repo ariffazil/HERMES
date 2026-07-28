@@ -1,17 +1,12 @@
 {
-  "fq": 1.09,
-  "fq_score": 1.09,
+  "fq": 2.5,
+  "fq_score": 2.5,
   "status": "BALANCED",
-  "receipt_count": 11,
-  "executed_count": 10,
-  "success_count": 10,
-  "open_lanes": 0,
-  "cooling_lanes": 0,
-  "restart_detected": true,
-  "baseline_carried_forward": {
-    "exec": 9,
-    "verify": 11
-  },
-  "source": "arifFLOW live telemetry (cron v2 persistence-aware)",
-  "timestamp": "2026-07-28T16:15:01Z"
+  "verdict": "BALANCED",
+  "receipt_count": 2,
+  "executed_count": 2,
+  "verify_count": 0,
+  "uptime_ms": 3897687,
+  "source": "arifFlow daemon :7073 \u2014 single source of truth \u2014 /var/lib/arifflow/receipts.jsonl",
+  "timestamp": "2026-07-28T18:00:03Z"
 }

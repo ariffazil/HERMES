@@ -785,6 +785,7 @@ The COOLING_RECEIPT lives in the Truth + Continuity + Governance plane intersect
 - `references/cooling-receipt-quickref.md` — condensed COOLING_RECEIPT reference (envelope fields, lifecycle, when to emit)
 - `references/mcpjam-path-a-deployment-2026-07-18.md` — MCPJam Path A deployment reference: docker compose pattern, localhost+Tailscale binding, read-only federation endpoints. Use as canonical reference for any "deploy X with Tailscale-only exposure" task.
 - `references/arif-communication-style.md` — the 14 sovereign directives for HOW to respond to Arif
+- `references/reality-digital-bridge-principle.md` — constitutional mandate: Arif sees reality, agents absorb digital infrastructure. No pipeline visibility, no copy-paste, one-message-one-result. Sealed 2026-07-29.
 - `references/flow-quotient-operational.md` — FQ computation, thresholds, organ balance calibration, integration with COOLING RECEIPT. Canonical reference for the flow measurement instrument forged 2026-07-25.
 - `scripts/organ_reflex_self_test.py` — re-runnable smoke test: simulate 10 inputs (5 clean, 5 contaminated), assert the reflex arc catches the right failures
 

@@ -1,7 +1,13 @@
 {
-  "updated_at": "2026-07-28T16:15:01.991884",
+  "updated_at": "2026-07-28T18:05:04.361388",
   "platforms": {
     "telegram": [
+      {
+        "id": "8410138119",
+        "name": "ASI💃",
+        "type": "dm",
+        "thread_id": null
+      },
       {
         "id": "267378578",
         "name": "ARIF",
@@ -9,10 +15,10 @@
         "thread_id": null
       },
       {
-        "id": "8410138119",
-        "name": "ASI💃",
-        "type": "dm",
-        "thread_id": null
+        "id": "-1003753855708:36572",
+        "name": "AAA / topic 36572",
+        "type": "group",
+        "thread_id": "36572"
       },
       {
         "id": "-1003753855708:1",
@@ -79,12 +85,6 @@
         "name": "Syafiq Fitri",
         "type": "dm",
         "thread_id": null
-      },
-      {
-        "id": "-1003753855708:36572",
-        "name": "AAA / topic 36572",
-        "type": "group",
-        "thread_id": "36572"
       },
       {
         "id": "-1003753855708:36988",
