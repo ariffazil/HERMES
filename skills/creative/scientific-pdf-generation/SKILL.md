@@ -669,6 +669,87 @@ After generating:
 6. For Mode C: verify disclaimer + AC block are present on final pages
 7. Run `pdftotext | grep "Figure "` to confirm all figures embedded (catches weasyprint silent image failures)
 
+## Mode E: Narrative Biography / Bedtime Book (A5 Booklet)
+
+**A5 portrait, cream/light background, Times-Roman serif, gold accents.** For long-form narrative nonfiction biographies designed for leisure reading — not professional dossiers, not academic papers. Think: Walter Isaacson's *Steve Jobs* format, but as a single-sitting PDF.
+
+Use Mode E when Arif says "biography PDF," "bedtime reading," "Isaacson-style," or "story of [person] from childhood through [era]." This mode optimises for **emotional arc, narrative continuity, and readability** over source discipline or citation hygiene.
+
+### Mode E Design Principles
+
+```
+Page:        A5 (148.5 × 210 mm) — booklet form factor, NOT A4
+Margins:     15mm all sides (generous for A5)
+Background:  #f5f0e8 cream (NOT white — warmer for bedtime)
+Body font:   Times-Roman 11pt, 15pt leading, JUSTIFY
+Headings:    Times-Bold, 18pt chapter H1 (gold #c9a227), 14pt subsection (gold)
+Quotes:      Times-Italic 13pt, centred, 8mm indents, gold border
+Pull quotes: Times-Italic 13pt, centre, accent navy (#16213e) text
+Chapter nums: Times-Bold 11pt, gold, centred before each chapter
+Footer:      Times-Italic 8pt, dim grey (#888888)
+HR rule:     Gold #c9a227, 60% width, before/after chapter breaks
+```
+
+### Mode E Document Spine
+
+1. **Title page** — book title (26pt gold), subtitle (14pt italic gold), description line, a quotation from the subject, attribution
+2. **Chapter N** — each chapter has: centred chapter number + gold HR → chapter title → body → quotes → pull quotes
+3. **Epilogue** — closes the emotional arc, brings the thread to the present
+4. **Final attribution** — birth/death dates, Nobel/knight recognition
+
+### Mode E Key Patterns (reportlab)
+
+**Title page:**
+```python
+story.append(Paragraph("THE BOY WHO FOLDED PROTEINS", title_style))
+story.append(Paragraph("THE MAKING OF SIR DEMIS HASSABIS", subtitle_style))
+```
+
+**Chapter structure:**
+```python
+story.append(Paragraph("CHAPTER ONE", chap_style))
+story.append(Paragraph("Blood and Bones", section_style))
+story.append(hr())
+story.append(Paragraph(body_text, body_style))
+```
+
+**Pull quote block:**
+```python
+story.append(Paragraph(
+    "\"The AI for the little people in Theme Park was really my first proper AI system.\"",
+    pull_style
+))
+```
+
+**Epilogue close:**
+```python
+story.append(Paragraph("EPILOGUE", chap_style))
+story.append(Paragraph("The Long Game", section_style))
+```
+
+### Mode E Critical Rules
+
+- **Scope declaration is mandatory.** State in the first response: "I'll cover [birth → Theme Park era]. Stop there? Or include a brief coda showing where the story led?" Do NOT silently extend past the user's boundary.
+- **Narrative reconstruction vs sourced fact: declare drift.** If you add atmospheric detail (scenes, dialogue, internal states) for readability, add a note: "Some scene details are narrative reconstructions based on known facts." The user has accepted this for bedtime reading, but the SKILL must mandate disclosure.
+- **No fake precision.** Do not assign scores (8.5/10) to the artifact unless the user's evaluation framework is declared. A bedtime biography does not need a rubric.
+- **A5 only.** Never use A4 for bedtime biography — it reads like a report, not a book.
+- **Source list at end, NOT inline footnotes.** Bedtime reading demands flow, not footnote chasing. A clean "References" page at the back is sufficient. The user knows this is not peer-reviewed.
+- **Do NOT add tables, figures, charts, or diagrams** unless specifically requested. Mode E is pure text + occasional quotes. The visual weight is in typography and layout, not data.
+- **F4 CLOSURE: stop when the arc is complete.** If the user says "from baby until Theme Park," stop there. A one-page epilogue ("What happened next") is acceptable ONLY if the arc would feel emotionally incomplete without it. Anything longer is scope drift.
+
+### Mode E Known Drift Patterns (from 2026-07-28 Demis Hassabis biography)
+
+| Issue | Fix |
+|---|---|
+| User said "baby until roller coaster tycoon" — agent continued to Nobel | Add scope gate: ask user before extending past boundary. One-page coda max. |
+| "Autobiography" in prompt → delivered third-person biography | Acknowledge the correction but don't halt. User meant life story. |
+| Atmospheric scenes not sourced (durian, Changi Beach, cramped flat) | Add disclaimer: "narrative reconstruction based on known facts." |
+| External AI audited with wrong rubric | Mode E is BEDTIME, not AUDIT. If external review applies academic standards, note mode mismatch. |
+
+### Mode E Template
+
+→ `templates/narrative_biography_a5.py` — full reportlab scaffold for A5 narrative biography with chapters, quotes, cover, epilogue, gold/cream design. Copy and modify: replace chapter titles, body text, quotes, and subject name.
+
 ## References
 
 - `templates/scientific_report.py` — Mode A scaffold: title page, abstract, sections, figures, references. Copy and modify.
