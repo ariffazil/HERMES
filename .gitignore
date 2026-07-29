@@ -107,3 +107,4 @@ processes.json
 config.yaml
 skills/.usage.json
 data/pulse/
+channel_directory.json
