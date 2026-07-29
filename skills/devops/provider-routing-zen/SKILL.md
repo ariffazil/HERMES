@@ -25,6 +25,19 @@ description: >-
 
 ## Two-Lane Architecture: OpenRouter (Mind) vs FLAME (Muscles)
 
+### OpenRouter Structural Benefits (Arif, 2026-07-29)
+
+OpenRouter is a centralised LLM gateway routing signals to 400+ models across 70+ providers via a single API key and one standard interface. For arifOS, where the kernel (:8088) is central and AAA MCP is the connection wire, OpenRouter sits at the edge — proxying external calls instead of requiring reintegration for each new model.
+
+| Benefit | Mechanism | Floor |
+|---------|-----------|-------|
+| **Code Entropy Reduction (ΔS < 0)** | One OpenAI-compatible endpoint. Switch models by changing the model string in the payload | F4 CLARITY |
+| **Resilience (F1 Safety)** | Silent failover on upstream outages/rate limits. Chain stays alive without manual 888_HOLD | F1 AMANAH |
+| **Tri-Witness Validation** | Summon entirely different model families (DeepSeek, Mistral, Gemini) via one API to cross-validate signals without structural debt | F3 TRI-WITNESS |
+| **Targeted Execution** | Route latency-sensitive tasks to Groq LPU (320 tok/s), heavy docs to Gemini 1M context, all governed from one control plane | F8 GENIUS |
+
+The structural value is decoupling internal kernel logic from external provider chaos. You dictate routing rules; the gateway executes them.
+
 | Lane | Layer | What | Provider | Cost |
 |------|-------|------|----------|------|
 | **Mind (Agent)** | OpenRouter | Agent intelligence, reasoning, judgment, conversation | auto-beta → DeepSeek V4 Flash/Pro | $30 credit, ~$0.50-1.00/session |
@@ -32,21 +45,53 @@ description: >-
 
 **Never cross the streams:** Tool output must never enter the governed cascade. Agent output must never route through FLAME. Separate lanes, separate concerns.
 
-## Vision Model Strategy — Dual-Lane Architecture
+## Vision Model Strategy — Path B (Full Bypass)
+
+**⚠️ This session (2026-07-29) changed from Path A to Path B via source patches.**
 
 Hermes (Telegram agent) receives images from users. Three routing options:
 
 | Approach | How it works | Pros | Cons |
 |----------|-------------|------|------|
-| **Native vision model (primary)** | Model sees images directly — no transcript pipeline | No transcript hallucination, fast, accurate | Vision models may have text-only trade-offs |
-| **Transcript pipeline** | `vision_analyze` creates [IMAGE TRANSCRIPT], text-only model reads it | Works with any text model, no vision cost | Incomplete/faulty transcript = hallucination |
-| **Separate vision + text** | Vision model transcribes, text model responds | Best-of-both specialist | Latency from two API calls, routing complexity |
+| **Path A: Transcript pipeline** | `vision_analyze` creates [IMAGE TRANSCRIPT], text-only model reads it | Works with any text model, no vision cost | **Broken telephone**: incomplete transcript → hallucination (F2 violation) |
+| **Path B: Full Bypass ⭐** | Payload inspector detects image → **switch model entirely** to vision specialist — no transcript, no second API hop | Clean epistemic boundary, one API call, zero transcript hallucination | Requires runtime patch, model must support vision-native tool calling |
+| **Native vision model (primary)** | Model sees images directly — no transcript pipeline | No transcript hallucination, fast, accurate | Vision models may have text-only trade-offs (price, speed) |
 
-**The problem with text-only models (Flash/Pro):** DeepSeek V4 Flash is text-only. When Arif sends images, Hermes vision pipeline creates an [IMAGE TRANSCRIPT] via an auxiliary model. If the transcript misses key details, Flash confidently fills gaps — creating the hallucination Arif reports. This is NOT a Flash bug; it's an architecture limitation.
+**Path B is the current implementation** (forged 2026-07-29). It combines the epistemic purity of native vision with the text-speed of Flash:
 
-**Recommended strategy for Hermes:** Use a **vision-native model as primary** so images are seen directly, with a text-only model as fallback for sovereign reasoning (666_JUDGE/999_SEAL).
+| Flow | |
+|------|---|
+| Text turn | → Flash primary (0ms overhead) |
+| Image turn | → **gateway model override** to qwen3-vl/OpenRouter → qwen3-vl responds natively → **auto-restore** to Flash |
 
-**Best vision-native candidates (free via OpenRouter, probed 2026-07-29):**
+### Path B Implementation (Gateway-based, 2026-07-29)
+
+Three source patches to `gateway/run.py`, all auto-reverting per-session-clear:
+
+1. **`_prepare_inbound_message_text` — image routing block**  
+   When `_img_mode == "text"` (text-only model like Flash + images present), instead of calling `_enrich_message_with_vision()`:  
+   → Defer images as `pending_native` (same mechanism as native vision models)  
+   → Set `_pending_vision_model_overrides[session_key] = {"model": "qwen/qwen3-vl-30b-a3b-instruct", "provider": "openrouter"}`
+
+2. **`_consume_pending_vision_model_override()` — new consumer**  
+   Same pattern as `_consume_pending_native_image_paths()`. Consumes and clears the override dict for the session, ensuring one-turn-only effect.
+
+3. **`_run_conversation_with_agent` — model swap + restore**  
+   Before `agent.run_conversation()`: if override exists and native images are pending → save `agent.model`/`agent.provider`, swap to qwen-vl/OpenRouter.  
+   After `agent.run_conversation()`: restore original model/provider.  
+   Guarded by `_restore_model is not None` — no-op on non-bypass turns.
+
+**Why gateway, not run_agent.py:** The existing `pending_native_image_paths` pattern already handles deferred native image attachment. Hooking Path B into the same mechanism is less invasive than patching the core agent loop — the gateway already decides routing, so the model swap sits naturally at the routing decision point.
+
+Full patch: `references/path-b-vision-bypass-source-patch-2026-07-29.md`.
+
+### Path A vs Path B — Experimental Finding
+
+Before this session, Path A was the default: qwen3-vl describes image → [IMAGE TRANSCRIPT] → Flash reads and responds. Arif's observation: "Flash always hallucinate on images" was confirmed as a **text-only model limitation**, not a Flash bug. Flash receives a lossy text description and confidently fills the gaps with fabricated detail (F2 TRUTH violation).
+
+Path B eliminates the problem at the architectural level: the vision model never describes for the text model — it IS the solver for that turn. No human-in-the-loop description, no broken telephone.
+
+### Best vision-native candidates (free via OpenRouter, probed 2026-07-29)
 
 | Model | Latency (reasoning) | Tool calls | Context | Cost | Censorship |
 |-------|:---:|:---:|:---:|:---:|:---:|
@@ -213,17 +258,100 @@ Session stickiness requires a source-code change in Hermes runtime — it CANNOT
 
 ## Fallback Chain Architecture
 
-Standard 4-tier fallback pattern:
+### Capability Cliff Anti-Pattern (F2 TRUTH hazard)
+
+A **capability cliff** occurs when a small, cheap model sits immediately below a heavy reasoning model in the fallback chain — e.g., DeepSeek V4 Pro → Groq Llama 8B. If the primary fails, **every complex prompt falls into a model that cannot handle it**, producing hallucination or garbage output instead of intelligent degradation. This is an F2 TRUTH violation (fidelity < 0.99 on failover).
+
+**The fix:** Insert `openrouter/auto-beta` between the heavy primary and the cheap speed lane. Auto-beta classifies prompt complexity and routes to a comparable model — converting *blind survival* to *intelligent failover*.
+
+| Pattern | Chain | F2 impact |
+|---------|-------|-----------|
+| **Cliff (BAD)** | DeepSeek V4 Pro → Groq Llama 8B | Systemic hallucination on failover — truth breaks at step 2 |
+| **Bridged (GOOD)** | DeepSeek V4 Pro → auto-beta → Groq Llama 8B | auto-beta finds comparable model, Groq is last resort only |
+
+**Fallback position strategy:** Under W_scar, reliability and output fidelity beat millisecond savings. Position auto-beta as close to the primary as possible (Position 2). Do NOT bury it after the speed lane (Position 3+) — the complex prompt may never reach it.
+
+### Active Hermes Fallback Chain (2026-07-29)
+
+The live 9-tier Hermes chain in `/root/.hermes/config.yaml` — actual config, not reference pattern.
+
+**Important:** The chain below is the `fallback_providers` array. The PRIMARY model lives outside this list at `model.default: deepseek-v4-flash` (direct DeepSeek). This chain activates when the primary fails.
 
 ```
-Tier 1 (VISION PRIMARY): qwen/qwen3-vl-30b-a3b-instruct via OpenRouter FREE — native vision, 770ms tool calls, 3.9s reasoning
-Tier 1 alt (TEXT PRIMARY): DeepSeek V4 Flash (direct) — if user never sends images
-Tier 2 (REASONING):   DeepSeek V4 Pro (direct) — only for deep multi-step reasoning with max_tokens >= 1000
-Tier 3 (SMART ROUTE): openrouter/auto-beta with ZDR allowlist + per-role CQT
-Tier 4 (COST):        openrouter/free (RM0, light tasks, tool lane)
-Tier 5 (SOVEREIGN):   ollama/qwen2.5-coder:3b (local, survival)
-HOLD:                 888_HOLD (F13 — never auto-resolve)
+PRIMARY:                    deepseek-v4-flash (direct)          — conversational agent, $0.14/M, 4/5 pass
+                              ↓ fail?
+Position 1 (REASONING):    tokenrouter/deepseek-v4-pro          (20s timeout) — deep reasoning reserve
+                              ↓ fail?
+Position 2 (BRIDGE):       openrouter/auto-beta                 (60s) — capability-equivalent failover
+Position 3 (SPEED):        groq/llama-3.1-8b-instant            (20s) — last resort only
+Position 4:                sea-lion/Qwen-SEA-LION-v4-32B-IT     (20s)
+Position 5:                gemini/gemini-2.5-flash              (20s)
+Position 6:                tokenrouter/MiniMax-M3               (20s)
+Position 7:                tokenrouter/z-ai/glm-5.2             (20s)
+Position 8 (SURVIVAL):     openrouter/free                      (60s) — 50 RM0 models
+Position 9 (LOCAL):        ollama/qwen2.5-coder:3b              (20s) — survival
 ```
+
+**Note:** `openrouter/free` at Position 8 is partially redundant with auto-beta at Position 2. Auto-beta already covers OpenRouter routing with capability matching. Free tier remains as a fallback for when credit is depleted or auto-beta is discontinued.
+
+### The Sovereignty Paradox (Arif, 2026-07-29)
+
+OpenRouter as PRIMARY introduces a paradox: to make a smart-router safe for sovereign topics, you must constrain it via `allowed_models` to 1-2 approved model families (e.g., `["deepseek/*", "qwen/*"]`). But constraining the router this aggressively **defeats its purpose** — you're paying the latency tax (~200-500ms classification meta-round-trip) and proxy fee while getting no routing intelligence. You could make those calls directly with less latency and same cost.
+
+**The arithmetic:**
+```
+Smart Router (constrained to 2 families):
+  1. Classifier tax: +200-500ms TTFT
+  2. allowed_models = ["deepseek/*", "qwen/*"]
+  3. Model selected by community spend-share → constrained choice
+  4. same outcome as direct call, slower
+
+Direct call:
+  1. No classifier tax
+  2. model = deepseek/deepseek-v4-flash
+  3. Zero proxy hop
+  4. same outcome, faster
+```
+
+**Rule:** OpenRouter belongs at the **intelligent failover layer**, not at primary. Keep primary direct (DeepSeek V4 Flash). OpenRouter sits at Position 2 — it catches primary failure and routes to comparable models (Claude Sonnet, GPT-4o, etc.) that you don't have direct API keys for. This way:
+- Your primary calls have zero routing overhead
+- Your failover has maximum model variety
+- Sovereign concerns never touch the proxy
+
+### Standard Tier Pattern
+
+```
+Tier 1 (PRIMARY):             DeepSeek V4 Flash (direct)                         — conversational agent, tool calling, $0.14/M
+Tier 1.5 (REASONING RESERVE): tokenrouter/DeepSeek V4 Pro                       — deep reasoning only, reserved for complex multi-step
+Tier 2 (INTELLIGENT FAILOVER): openrouter/auto-beta                             — capability-equivalent failover to comparable model
+Tier 3+ (COST/SPEED):          groq/llama-3.1-8b-instant, SEA-LION, Gemini      — hardcoded speed lanes
+Tier N-1 (FREE SURVIVAL):     openrouter/free                                    — 50 RM0 models, 20 req/min
+Tier N (LOCAL):               ollama/qwen2.5-coder:3b                            — last resort
+HOLD:                         888_HOLD (F13 — never auto-resolve)
+```
+
+### Flash vs Pro — Conversational Agent Decision (Arif, 2026-07-29)
+
+DeepSeek V4 Flash is the **constitutional primary for conversational agents**. Not Pro. This decision was forged through live empirical testing, not theoretical model ranking.
+
+| Dimension | Flash | Pro |
+|---|---|---|
+| **Conversation reliability** | ✅ 4/5 agent tasks pass | ❌ 2/5 — `content: null` on 3/5 tasks |
+| **Tool calling** | ✅ Pass | ❌ Silent failure — returns `content: null` |
+| **BM conversational** | ✅ Pass | ❌ Ghost response on BM natural tasks |
+| **Cost/M tokens** | $0.14/$0.28 | $0.44/$0.87 |
+| **Latency** | Fast | Slow — burns 69-100% tokens on internal reasoning |
+| **Deep reasoning** | Limited | ✅ Best-in-class — but only usable when explicitly requested |
+
+**Constitutional logic:** Pro returning `content: null` is a **direct threat to F1 AMANAH (Safety)** — it produces ghost responses that break the multi-agent chain (broken wire). A model that silently fails on tool calls cannot serve as a primary reasoning metabolizer in a system where F2 TRUTH and ΔS < 0 are hard constraints.
+
+**Reserve logic:** Pro stays in the chain as a **reasoning reserve** (tokenrouter, Position 1.5). It is explicitly NOT the default — it must be either:
+- Invoked by name for targeted deep reasoning (structured tasks, policy analysis, complex geology)
+- Dropped onto when Flash fails on a genuinely complex prompt (tokenrouter retry)
+
+**Pricing note:** Pro's $0.44/$0.87 is 3× Flash's $0.14/$0.28, making it an expensive default when Flash handles 80%+ of daily traffic adequately.
+
+**Live Hermes fallback chain (2026-07-29):** See `references/hermes-live-fallback-chain-2026-07-29.md`.
 
 For FLAME (tool lane): `Groq→SEA-LION→Gemini→Cerebras→OpenRouter/free→OpenCode→Ollama`
 
@@ -292,7 +420,9 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | OpenRouter Agent Guide | `/root/AAA/docs/OPENROUTER_AGENT_GUIDE.md` |
 | OpenRouter Hermes Ops | `/root/AAA/docs/OPENROUTER_HERMES_OPS.md` |
 | Doc architecture pattern | This skill's `references/openrouter-doc-architecture.md` |
+| Hermes live fallback chain (2026-07-29) | This skill's `references/hermes-live-fallback-chain-2026-07-29.md` |
 | Model benchmark methodology | This skill's `references/model-benchmark-methodology.md` |\n| Benchmark test script (runnable) | This skill's `scripts/benchmark-agentic-model-test.py` |\n| Vision diagnostic script (runnable) | This skill's `scripts/vision-auxiliary-diagnostic.py` |\n| Qwen3-VL-30B evaluation | This skill's `references/qwen3-vl-30b-agentic-eval-2026-07-29.md` |
+| Path B vision bypass source patch | This skill's `references/path-b-vision-bypass-source-patch-2026-07-29.md` |
 | Session stickiness patch | This skill's `references/session-stickiness-source-patch.md` |
 | Hermes config state snapshot | This skill's `references/hermes-openrouter-config-state-2026-07-24.md` |
 | FLAME engine | `/root/A-FORGE/flame/` |
@@ -343,20 +473,31 @@ hermes config set providers.openrouter.name "OpenRouter"
 
 ### Fallback Chain Insertion
 
-Insert as Tier 2 in `fallback_providers`:
+Insert as Position 2 in `fallback_providers`:
 
 ```yaml
 - model: openrouter/auto-beta
   provider: openrouter
-  timeout: 30
+  timeout: 60
 ```
 
-Via CLI:
-```bash
-hermes config set fallback_providers[8].model openrouter/auto-beta
-hermes config set fallback_providers[8].provider openrouter
-hermes config set fallback_providers[8].timeout 30
+**Important:** `hermes config set` does NOT handle arrays of objects reliably. Use Python YAML via `terminal()` or `execute_code()`:
+
+```python
+import yaml
+with open('/root/.hermes/config.yaml') as f:
+    cfg = yaml.safe_load(f)
+# Insert at position 2 (index 1)
+cfg['fallback_providers'].insert(1, {
+    'model': 'openrouter/auto-beta',
+    'provider': 'openrouter',
+    'timeout': 60
+})
+with open('/root/.hermes/config.yaml', 'w') as f:
+    yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)
 ```
+
+Run `hermes config check` after any config edit to verify integrity.
 
 ### CQT Per-Request Override (Hermes Agent)
 
@@ -424,6 +565,31 @@ curl -X POST 'https://openrouter.ai/api/v1/chat/completions' \
 ```
 
 **Note on kimi-k3 vision output:** Kimi K3 via OpenRouter may return `content: null` with all text inside `reasoning` when `max_tokens` is too low. For vision tasks, set `max_tokens >= 200` and let `extract_content_or_reasoning(response)` in `vision_tools.py` handle extraction from reasoning field.
+
+### Vision Auxiliary: kimi-k3 → qwen3-vl Swap (2026-07-29)
+
+**Problem:** Kimi K3's always-on thinking mode (`content: null`) was unreliable even for vision tasks. Some calls returned empty vision analysis → text-only primary (Flash) hallucinated on image content.
+
+**Fix (applied 2026-07-29):** Swapped vision auxiliary from `moonshotai/kimi-k3` to `qwen/qwen3-vl-30b-a3b-instruct`:
+
+```bash
+# Must use python3 yaml — hermes config set doesn't handle nested keys
+python3 -c "
+import yaml
+cfg = yaml.safe_load(open('/root/.hermes/config.yaml'))
+cfg['auxiliary']['vision']['model'] = 'qwen/qwen3-vl-30b-a3b-instruct'
+yaml.dump(cfg, open('/root/.hermes/config.yaml','w'), default_flow_style=False, sort_keys=False)
+"
+```
+
+**Why qwen3-vl:**
+- Native vision, free via OpenRouter ($0)
+- MoE 30B/3B active — fast inference (~770ms tool calls)
+- No censorship issues for MY governance topics (Alibaba CN origin)
+- No content=null bug — always returns clean vision descriptions
+- 262K context window
+
+**Note:** Kimi K3 remains usable for vision if explicitly invoked with proper `max_tokens >= 500`. It is no longer the default auxiliary vision model. The opencode-go 403 fix (switching provider to OpenRouter) is still valid as the transport layer — only the model changed.
 
 ## Pitfalls (expanded)
 

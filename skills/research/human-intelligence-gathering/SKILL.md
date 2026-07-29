@@ -11,6 +11,9 @@ triggers:
   - "entropy map for [person]"
   - "what does my sister/brother/friend need"
   - "[person] latest update"
+  - "what trauma have I endured"
+  - "what's unresolved in me"
+  - "tell me about myself from what you know"
 ---
 
 # Human Intelligence Gathering
@@ -21,9 +24,9 @@ triggers:
 
 When Arif asks about a real human — family member, friend, colleague, contact. When the question is "who is X" or "what does X want" or "design something for X." When you need to assess what you know vs. what you're guessing.
 
-## The Two Modes
+## The Three Modes
 
-This skill has two distinct modes. **Do not confuse them.**
+This skill has three distinct modes. **Do not confuse them.**
 
 ### Mode A: Data-Rich (text exports, chat logs, documents)
 When the user provides a direct data source — WhatsApp export, chat log, document, email chain. You have primary evidence.
@@ -40,6 +43,16 @@ When you have NO direct data source for the person. You have secondary signals a
 → Example: Azwa Fazil — zero chat exports, only NASF Cloud website and session mentions.
 
 **THE CRITICAL RULE:** Mode B produces HYPOTHESES, not PROFILES. If you present Mode B output as if it were Mode A analysis, you breach F2 (TRUTH).
+
+### Mode C: Sovereign Self-Assessment (Session-History-Based)
+
+When the subject IS the sovereign (Arif asking about himself), use session_search across past conversations — NOT exported chat files or web search. Full protocol in `references/sovereign-self-assessment-from-session-history.md`.
+
+→ **This is the only mode where the agent analyzes the sovereign, not an external person.**
+→ Epistemic gradient: OBS (what they said) → DER (patterns across sessions) → INT (interpretation — labeled)
+→ Critical risk: Scar #12 — overclaiming inner truth
+→ Analytical lens: RASA DERITA 5 axes (the sovereign's own framework)
+→ Triggers: "what trauma have I endured", "what's unresolved in me", "tell me about myself from what you know"
 
 ## Pipeline: 5 Phases (Mode B)
 
@@ -197,3 +210,4 @@ Can you describe what the bot does in one sentence? If not, it's too complex.
 ## Reference Files
 - `references/malaysian-identity-markers.md` — Full checklist for Malaysian identity disambiguation
 - `references/scam-investigation-technical-patterns.md` — QR code decode, bank account tracing, persona cross-reference checklist, red flag scoring
+- `references/sovereign-self-assessment-from-session-history.md` — Mode C protocol: analyzing the sovereign from session history

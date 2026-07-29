@@ -1,7 +1,7 @@
 ---
 name: geological-artifact-rigor
 description: "Standing instruction for all geoscience artifacts — panels, dossiers, maps, cross-sections"
-version: 1.1.0
+version: 1.2.0
 author: arif-sovereign
 tags: [geology, GEOX, rigor, standing-instruction, F2-truth]
 related: [hermes-prime-identity, explorer-dispatch-protocol, measure-before-acting, evidence-before-elegance]
@@ -40,7 +40,18 @@ Before presenting any geoscience artifact, run this test:
 > "Would a subsurface geologist with access to real well/seismic data accept this as technical content, or would they say this is dressing without depth?"
 If the honest answer is the latter, add real data, cite the actual figure/table, or explicitly scope the artifact as conceptual framing only — labeled as such up front.
 
-### 8. Distinguish Framework from Finding
+### 8. Human Geologist Language (No AI Jargon)
+Arif's standing directive: **"Full human geologist cognitive. No AI jargons."** This means:
+
+- Use natural geological language: "batupasir turbidit," "jujukan delta yang progradasi," "perangkap sesar dengan dip closure" — not "the depositional system exhibits a progradational parasequence stacking pattern"
+- Avoid corporate/AI-speak: no "leverage insights," "holistic approach," "streamline workflow," "paradigm shift" — say what the rocks do
+- Tables and numbered lists beat narrative paragraphs for data
+- Every section starts with the key takeaway in one sentence — a working geologist skims before they read
+- If Malay terminology fits, use it — especially for Sabah/Sarawak basins. "Sesar normal" is clearer than "extensional fault" for a Malaysian audience
+- The artifact should read as if written BY a geologist FOR a geologist — not as if an AI translated a geology textbook through corporate filter
+- Self-check: "Would I be embarrassed to hand this to a PETRONAS exploration manager?" If yes, the language is wrong.
+
+### 9. Epistemic Labels: Framework ≠ Finding
 Epistemic tagging (CLAIM/PLAUSIBLE/HYPOTHESIS/ESTIMATE/SCHEMATIC) is a valuable governance layer for tracking confidence over time — keep it. But it governs geological content; it does not generate geological content. Never let the elegance of the tagging system create the impression of rigor that the underlying geology doesn't have.
 
 ## Coordinate Verification (supplementary)
@@ -120,7 +131,7 @@ Each blind spot needs: geological reasoning, evidence basis, test data required,
 | Built cartoon cross-sections as "interpretation" | Started with template shapes, not data | Start with strat column; add structure on top |
 | Flat rectangular blocks used as geological layers | Used matplotlib Rectangle patches — violates Rule 2 cartoon geometry | Use wavy polygon helpers with noise (`layer_polygon` pattern); see `references/cross-section-generation.md`. Or use hand-built SVG with bezier curves (`Q`/`C` path commands) for dark-theme federation visuals — see `references/svg-cross-section-generator.md`. |
 | Cross-section reads as "infographic" not "scientific figure" | Dark background + smooth sine waves without geological detail | Add fault symbols (thrust sawteeth, normal ticks), Moho lines, depth scale, compass arrows, region labels. White background for journals; dark acceptable for public communication. |
-| Epistemic tags on empty content | Tags looked rigorous but wrapped nothing | Rule 8: framework ≠ finding |
+| Epistemic tags on empty content | Tags looked rigorous but wrapped nothing | Rule 9: framework ≠ finding |
 | Treated "L-B-P trend" as if it were a block | Conflated structural trend with contractual area | Distinguish trend names from block names explicitly |
 
 ## Reference Files
@@ -168,19 +179,19 @@ Run 3 concurrent `mcp__hound__mcp_smart_search` targeting different angles:
 
 Each batch: `max_results=10`, `freshness=year`.
 
-#### Phase 2 — Multi-Source Extraction
+#### Phase 2 — Multi-Source Extraction (parallel fetch)
 
-From results, pick 3-6 most authoritative sources, fetch parallel via `mcp__hound__mcp_smart_fetch`:
+From results, pick 3-6 most authoritative sources, fetch **all in parallel** via one `mcp__hound__mcp_smart_fetch` call with multiple URLs. Proven up to 6 simultaneous fetches (2026-07-29 Kinabalu dossier: 6 PDFs/HTML in ~3s).
 
-| Source type | Format |
-|---|---|
-| PETRONAS/official portal | HTML → markdown |
-| Conference papers | PDF (auto-extracted) |
-| Journal articles | HTML/PDF |
-| Encyclopedia | HTML → markdown |
-| Operator releases | HTML |
+| Source type | Format | Quality signal |
+|---|---|---|
+| PETRONAS/official portal | HTML → markdown | `content_ok: true` |
+| GSM Bulletin PDFs | PDF (auto-extracted) | `quality_score: 1.0` = real text; ≤0.5 = scanned |
+| Conference papers (EAGE, EarthDoc) | HTML/PDF | Check `page_type` — "list" = paywalled abstract only |
+| Journal articles | HTML/PDF | Fetch preprint from ResearchGate/SemanticScholar if paywalled |
+| Encyclopedia | HTML → markdown | Cross-check for citation validity |
 
-Check `quality_score` on PDFs — scanned/image PDFs (score ≤0.5) need OCR fallback.
+**Scanned PDF detection:** `quality_score` ≥0.9 means extractable text. ≤0.5 means image-based — use `vision_analyze` on individual pages instead.
 
 #### Phase 3 — Epistemic Tags
 
@@ -240,12 +251,13 @@ CSS warnings from weasyprint (`unknown property`, `invalid media type`, `overflo
 
 ### 11.4 Pitfalls
 
-- **GEOX MCP needs session auth** — don't rely on GEOX for open sessions. Hound (smart_search + smart_fetch) is the primary tool for published literature.
-- **Paywalled conference papers** — search for preprints on academia.edu, ResearchGate, Semantic Scholar. Fetch direct PDFs when URL ends `.pdf`.
+- **GEOX MCP session auth** — GEOX returns `SESSION_MISSING` (no session_id), `SESSION_INVALID` (format not SCT/SEAL-*), or `LANE_ENFORCEMENT` (session not governed). **Don't retry** — No amount of retrying fixes auth. Pivot immediately to Hound MCP (smart_search + smart_fetch). If arifOS (port 8088) is healthy, one could request a governed session, but this is T3/888_HOLD territory. As of mid-2026, public-facing literature is richer than GEOX output anyway.
+- **Paywalled/abstract-only pages** — EarthDoc returns `page_type: "list"` with only the abstract. Don't re-fetch the same URL. Search for preprints on academia.edu, ResearchGate, Semantic Scholar instead. Fetch direct PDFs when URL ends `.pdf`.
+- **Scanned PDFs** — check `quality_score` in smart_fetch response. Use `vision_analyze` if scan-based (quality_score ≤0.5).
 - **Scanned PDFs** — check `quality_score` in smart_fetch response. Use `vision_analyze` if scan-based (quality_score ≤0.5).
 - **Public ≠ proprietary** — carry explicit disclaimer. Don't fabricate well logs or petrophysics from internal databases.
 - **User-provided outline takes priority** — if user gives a specific structure (screenshot, photo, whiteboard), follow that, not the default template.
-- **Epistemic tags wrap real content** — Rule 8: framework ≠ finding. Don't let tagging create the impression of rigor the geology doesn't have.
+- **Epistemic tags wrap real content** — Rule 9: framework ≠ finding. Don't let tagging create the impression of rigor the geology doesn't have.
 - **BM-English for Malaysian audience** — For UTP intern reports or Malaysian geologist audience: RASA voice — think in receipts, speak in consequences.
 
 ### 11.5 Reference Files

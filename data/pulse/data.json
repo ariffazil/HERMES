@@ -1,12 +1,12 @@
 {
-  "fq": 0.3277039995892314,
-  "fq_score": 0.3277039995892314,
+  "fq": 0.3103094465200679,
+  "fq_score": 0.3103094465200679,
   "status": "STUCK",
   "verdict": "STUCK",
-  "receipt_count": 341,
-  "executed_count": 174,
-  "verify_count": 167,
-  "uptime_ms": 867188,
+  "receipt_count": 402,
+  "executed_count": 203,
+  "verify_count": 198,
+  "uptime_ms": 7314824,
   "source": "arifFlow daemon :7073 \u2014 single source of truth \u2014 /var/lib/arifflow/receipts.jsonl",
-  "timestamp": "2026-07-29T14:45:02Z"
+  "timestamp": "2026-07-29T19:15:02Z"
 }

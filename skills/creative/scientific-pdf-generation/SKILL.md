@@ -293,7 +293,7 @@ HTML(filename='manuscript.html', base_url='/tmp/figures/').write_pdf('output.pdf
 
 **Proven 2026-07-13:** PETRONAS analyst-grade report (14 pages, 8 figures, peer-comp + scenario tables, retrospective calibration block all rendered cleanly with HTML+CSS).
 
-**Proven 2026-07-21:** Walter Isaacson-style biography — Tengku Muhammad Taufik (19 pages, 94KB, two versions). HTML+weasyprint, Georgia serif, 20 chapters, cover epigraphs, TOC. Pure text, no figures. See `references/isaacson-biography-pattern.md` for full template and spine.
+**Proven 2026-07-30:** 13 Wisdoms — 13 historical figures speaking directly to Arif about derita (30 pages, 82KB, A5 pandoc→xelatex, 13 chapters + epilogue). Pure text, no figures. See `references/multi-figure-thematic-wisdom-pattern.md` for the proven structure, figure selection criteria, technical pitfalls (underscore escaping), and render command.
 
 ### Path 3: reportlab (programmatic)
 

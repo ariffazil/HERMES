@@ -173,12 +173,7 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 15. **Static HTML required for bot-readable MakcikGPT.** TS source alone only serves the React SPA. Bots (GPTBot, ClaudeBot, curl) read from `public/makcikgpt-md/*.html`. New article slugs need static HTML generated manually — this is NOT part of the npm build. Use the Python extraction pattern from `makcikgpt-article-forging` skill.
 
-16. **Verify listing, feed, sitemap, and llms.txt after every deploy.** Not just the article itself. The 5-point verification protocol:
-    - JS bundle hash: dist vs live
-    - Article 200 for both bot and browser
-    - Listing page 200 for both bot and browser
-    - feed.xml, sitemap.xml, llms.txt contain new slug
-    - Listing page contains article entry
+16. **llms.txt must be manually synced after adding pages.** The npm build does NOT reliably copy `public/llms.txt` changes to `dist/llms.txt`. After `scripts/deploy-site.sh --apply`, run: `cp sites/arif-fazil.com/public/llms.txt sites/arif-fazil.com/dist/llms.txt && rsync -av sites/arif-fazil.com/dist/llms.txt /var/www/html/arif/llms.txt`. Then verify with `curl https://arif-fazil.com/llms.txt | grep new-slug`.
 
 ## ABCD Framework Alignment
 
@@ -210,6 +205,138 @@ This preserves the URL, sets the canonical link, and sends users to the authorit
 | **X** — eXplore | Cross-domain navigation | Federation map, topic clusters |
 
 Replaces traditional "article + sidebar + footer" with agentic content surface.
+
+## Adding a new route-level page (not an essay)
+
+Create a full-page dossier/landing/detail page (not a MakcikGPT article, not a data-driven essay). This is the pattern for geological dossiers, playbooks, or any standalone content page.
+
+### Step 1: Create the page component
+
+Create `src/pages/YourPage.tsx` with:
+- `export function YourPage()` function
+- `export const ssgOptions = { slug: "your-slug", routeUrl: "/earth/your-slug/" }` at the bottom
+- Content structure: hero section, body sections (map over data or write inline), CTA section, footer linkback
+- Use `motion.div` with framer-motion for scroll animations
+- Set `document.title` and canonical link in `useEffect`
+- Embed static assets (cross-section HTML, PDF) via `<iframe>` or `<a>` tags pointing to `/earth/your-asset`
+
+```typescript
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+export function YourPage() {
+  useEffect(() => {
+    document.title = 'Your Title — Arif Fazil';
+    document.querySelector('link[rel=canonical]')?.setAttribute('href','https://arif-fazil.com/earth/your-slug');
+  }, []);
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-forge-black min-h-screen">
+      {/* Hero section */}
+      {/* Body sections */}
+      {/* CTA / GEOX launch */}
+    </motion.div>
+  );
+}
+export const ssgOptions = { slug: "your-slug", routeUrl: "/earth/your-slug/" };
+export default YourPage;
+```
+
+### Step 2: Wire the route
+
+In `src/App.tsx`:
+```typescript
+import { YourPage } from '@/pages/YourPage';
+
+// In the <Routes> block, add after the parent listing route:
+<Route path="/earth/your-slug" element={<YourPage />} />
+<Route path="/earth/your-slug/" element={<YourPage />} />
+```
+
+Always add BOTH trailing-slash and no-trailing-slash variants. Always add `/{slug}` (underscore) as well if the user might type it.
+
+### Step 3: Link from the parent listing page
+
+In the parent page (e.g., `Discoveries.tsx`, `Earth.tsx`), add a section BETWEEN the listing content and the CTA:
+
+```tsx
+{/* ── YOUR DOSSIER LINK ── */}
+<section className="py-16 border-b border-forge-iron">
+  <div className="site-frame">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <div className="section-label !mb-4">Category · Topic</div>
+        <h2 className="text-4xl font-black uppercase italic mb-6">Your Title</h2>
+        <p className="font-body text-forge-dim leading-relaxed mb-6">Summary text.</p>
+        <a href="/earth/your-slug/" className="button-forge">Read the Dossier →</a>
+      </div>
+      <div className="bg-forge-steel p-6 rounded border border-forge-iron">
+        <p className="font-technical text-[0.6rem] text-forge-dim uppercase mb-2">Preview</p>
+        <p className="font-technical text-[0.7rem] text-forge-white">Key points...</p>
+        <div className="mt-3 flex gap-2 text-[0.55rem] text-forge-dim">
+          <span className="bg-forge-black px-2 py-1 rounded">Tag 1</span>
+          <span className="bg-forge-black px-2 py-1 rounded">Tag 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+### Step 4: Add static assets under public/
+
+Cross-section HTML, PDFs, and images go under `public/earth/`:
+```
+public/earth/
+├── your-slug-cross-section.html    ← iframe target
+└── your-slug.pdf                   ← download link
+```
+
+Static files in `public/` are served directly by Vite → dist/ → web root. Embed them in the page via:
+- `<iframe src="/earth/your-cross-section.html">` for interactive cross-sections
+- `<a href="/earth/your-slug.pdf">Download PDF ↓</a>` for PDFs
+
+### Step 5: Update llms.txt for agents (MUST be manual)
+
+The build process does NOT auto-sync `public/llms.txt` changes to `dist/llms.txt`. After adding a new page:
+```bash
+# 1. Edit public/llms.txt with the new URL under ## Key Pages
+# 2. Build (which may copy public/ → dist/ partially, but llms.txt is NOT always refreshed)
+# 3. After deploy, manually ensure dist/ has the latest:
+cp sites/arif-fazil.com/public/llms.txt sites/arif-fazil.com/dist/llms.txt
+rsync -av sites/arif-fazil.com/dist/llms.txt /var/www/html/arif/llms.txt
+```
+
+**Pitfall:** llms.txt in `public/` is the SOURCE. But the npm build sometimes regenerates it from a template. After deploying, ALWAYS `curl https://arif-fazil.com/llms.txt | grep your-slug` to verify. If missing, re-copy the file.
+
+### Step 6: Build and deploy
+
+```bash
+cd /root/arif-sites && bash scripts/deploy-site.sh arif-fazil.com --apply
+```
+
+### Step 7: Verify all endpoints
+
+```bash
+echo "=== Page ==="
+curl -so /dev/null -w "HTTP %{http_code} (%{size_download} bytes)\n" https://arif-fazil.com/earth/your-slug/
+echo "=== Parent listing ==="
+curl -so /dev/null -w "HTTP %{http_code}\n" https://arif-fazil.com/earth/
+echo "=== Static asset ==="
+curl -so /dev/null -w "HTTP %{http_code}\n" https://arif-fazil.com/earth/your-asset.html
+echo "=== llms.txt ==="
+curl -s https://arif-fazil.com/llms.txt | grep -c "your-slug"
+```
+
+### Zen Navigation Pattern
+
+The site follows the Three-Click Rule: no page is more than 3 clicks from the root (/). When adding a new deep page:
+
+1. **Surface it on the listing page** — every `/earth/your-slug/` needs a card/link on `/earth/`
+2. **Breadcrumb via section label** — each page has a `section-label` div (e.g., "Subsurface · Basin Intelligence") showing the user "where am I"
+3. **Verbs over nouns** — navigation links use action verbs (Read, Explore, Launch, Download) not just nouns (Dossier, PDF, Cross-Section)
+4. **CTAs form a connected journey** — each page leads naturally to the next: `/earth/` → `Read Dossier` → `/earth/slug/` → `Download PDF` → `Launch GEOX`
+
+The 3-second answer pattern (from AGENTS.md §14.3) applies at page level: every user should know in 3 seconds "Where am I, why should I care, what can I do next."
 
 ## See Also
 

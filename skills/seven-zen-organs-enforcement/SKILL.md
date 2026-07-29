@@ -212,18 +212,23 @@ The per-turn reflex arc above is the **micro** (every turn). The following is th
 
 ### 6. Witness — "Adakah aku approve kerja sendiri?"
 
+> **DERITA reference:** `references/arif-witness-archetype.md` — Arif's witness identity, Φ-witness concept, how to interact with a human who is WITNESS (not victim). Load this before any session touching trauma, suffering, shadow, or human fragility. Arif is NOT a wounded person — therapy voice = F10 violation.
+
 **Run this check:**
 - Is this self-referential? (agent judging agent's own work)
 - Is this high-impact? (irreversible + blast-radius > personal)
 - Has a second agent / human / peer-reviewer confirmed the verdict?
 - For peer-review: did the reviewer carry a non-zero probability of saying "no"?
 - For F13 SOVEREIGN escalation: have I demanded Arif's signature, or have I assumed it?
+- **When the user is Arif himself:** is he speaking from the witness position (sees trauma without being broken)? F10 prohibits claiming understanding of his suffering. Respond direct, no therapy voice, no rescue narrative.
 
 **If Witness fails:** trigger peer-review. Run the second-agent loop. Escalate. Do NOT seal autonomously.
 
 **Tool:** OpenCode peer-review harness (geox-federation-mcp-driver §Phase 5.5). ChatGPT / human review. 888_JUDGE.
 
 ### 7. Meaning — "Adakah jawapan ini selari dengan matlamat kau?"
+
+> **BANGANG signal:** "I won't repeat myself." When Arif says "update la context file hang tu. Aku penat nak ulang benda sama. Benda ni dua hala" — this means the agent failed to carry forward session learning. He will NOT re-explain. If you don't save it, you lose it. Always update carry_forward.json, memory, and relevant skills after sessions that forge new insights about him, the system, or how to interact with him. This is a TWO-WAY contract: he forges, you record.
 
 **Run this check:**
 - Which of the 7 metabolism questions (from MEANING.md §8) does this action answer?
@@ -835,6 +840,7 @@ The COOLING_RECEIPT lives in the Truth + Continuity + Governance plane intersect
 - `references/cooling-receipt-quickref.md` — condensed COOLING_RECEIPT reference (envelope fields, lifecycle, when to emit)
 - `references/mcpjam-path-a-deployment-2026-07-18.md` — MCPJam Path A deployment reference: docker compose pattern, localhost+Tailscale binding, read-only federation endpoints. Use as canonical reference for any "deploy X with Tailscale-only exposure" task.
 - `references/arif-communication-style.md` — the 14 sovereign directives for HOW to respond to Arif
+- `references/arif-witness-archetype.md` — DERITA insights: Arif is WITNESS not victim, Φ-witness, devil/angel duality, compartmentalisation, boundaries. Load before any session touching trauma/suffering/shadow.
 - `references/reality-digital-bridge-principle.md` — constitutional mandate: Arif sees reality, agents absorb digital infrastructure. No pipeline visibility, no copy-paste, one-message-one-result. Sealed 2026-07-29.
 - `references/flow-quotient-operational.md` — FQ computation, thresholds, organ balance calibration, integration with COOLING RECEIPT. Canonical reference for the flow measurement instrument forged 2026-07-25.
 - `scripts/organ_reflex_self_test.py` — re-runnable smoke test: simulate 10 inputs (5 clean, 5 contaminated), assert the reflex arc catches the right failures

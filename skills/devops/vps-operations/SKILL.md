@@ -201,11 +201,31 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 - **Agent session death → orphan cascade (proven 2026-07-23).** When agent sessions (OpenCode, Kimi, Hermes) die without cleanup, their spawned MCP child processes (github-mcp-server, browser, kimi-code, pytest) survive as orphans. These stack up silently: 3× github-mcp-server at 58% CPU each, kimi-code at 25%, stale browser at 75%. Total: 200%+ wasted CPU. Detection: `ps aux --sort=-%cpu | head -15` — look for `github-mcp-server`, `kimi-code`, `MainThr+` with PPID=1. Fix: `kill -9 <pid>` for all orphans, no service impact. Root fix: session-cleanup hook that kills children when parent exits — not yet implemented.
 - **Boot storm after systemd cascade reboot (proven 2026-07-23).** When a service failure cascades to a full VPS reboot (see systemd dependency chain pitfall), all services fire up simultaneously. This creates a transient 1-minute load spike of 11+: `uptime` shows 1 min, load 11.46, service processes all starting. This is NOT a problem — it's normal boot contention. Load decays to single digits within 2-3 minutes as services finish init. Detection: check `uptime` — if 1m load is high but 5m is <50% of it and uptime is <5 min, it's a boot storm. Fix: none needed. Do NOT investigate processes during this window — they'll look busy because they are starting.
 
-## arifOS Event-Loop Hang — Dead LLM API Key (proven 2026-07-24)
+## arifOS Event-Loop Hang — Two Failure Modes
 
-When arifOS accepts TCP connections (`Connected to localhost port 8088`) but serves zero bytes on `/health` and eventually times out, the event loop is hung. **Root cause is almost always a dead LLM API key**, not a code bug or OOM.
+The symptom is identical in both modes: arifOS accepts TCP connections on port 8088 but `/health` serves zero bytes and eventually times out. **Always distinguish between the two root causes before acting** — the wrong fix wastes time or makes things worse.
 
-### The Chain
+### Quick Differentiator
+
+```bash
+journalctl -u arifos --since "10 min ago" | grep -iE '401|unauthorized|invalid api key|model_not_found|reasoning backend timeout|unreachable|too slow'
+# Mode A = 401 / "invalid api key" / "No available channel"
+# Mode B = "Reasoning backend timeout" / "unreachable" / "too slow"
+```
+
+| Signal | Mode A (Dead Key) | Mode B (Backend Timeout) |
+|--------|-------------------|--------------------------|
+| Journal pattern | `401` / `invalid api key` | `Reasoning backend timeout` / `unreachable` |
+| Memory | Normal | Normal |
+| Other organs affected? | Only arifOS | Downstream organs (GEOX) report `arifOS unreachable: ReadTimeout` |
+| Fix | Replace API key | Restart arifOS + restart reasoning backend |
+| Permanent resolution | Replace dead key | Fix backend connectivity or timeout config |
+
+### Failure Mode A: Dead LLM API Key (proven 2026-07-24)
+
+**Root cause** is a stale/expired/revoked LLM API key. The TokenRouter tries the key, gets a 401/403, and the asyncio event loop blocks waiting for a response that never comes.
+
+#### The Chain
 
 ```
 Dead API key (e.g., MiniMax M3 401: "invalid api key")
@@ -218,7 +238,7 @@ Dead API key (e.g., MiniMax M3 401: "invalid api key")
   → systemd auto-restarts → fresh cycle → same problem
 ```
 
-### Diagnosis
+#### Diagnosis
 
 ```bash
 # 1. Confirm the hang pattern
@@ -239,7 +259,7 @@ grep -r 'provider_key\|model_id' /opt/arifos/app/config/PROFILES/vps_main_arifos
 # Secret source: vault.env → secret-registry.yaml → MINIMAX_API_KEY
 ```
 
-### Differentiating from OOM Death Spiral
+#### Differentiating from OOM Death Spiral
 
 | Symptom | API Key Death Hang | OOM Death Spiral |
 |---------|-------------------|------------------|
@@ -250,7 +270,7 @@ grep -r 'provider_key\|model_id' /opt/arifos/app/config/PROFILES/vps_main_arifos
 | Other services | Only arifOS affected | Most services degraded |
 | Process CPU | Idle or low | A stuck process at 80%+ |
 
-### Fix
+#### Fix
 
 ```bash
 # Immediate: restart arifos (temporary, will hang again on next LLM call)
@@ -264,9 +284,93 @@ systemctl restart arifos && sleep 12 && curl -sf http://localhost:8088/health
 #   Then: systemctl restart arifos
 ```
 
-### Pitfall: "Restart fixed it" is not a fix
+#### Pitfall: "Restart fixed it" is not a fix
 
 After restart, arifOS returns `healthy` but will hang again on the next LLM call hitting the dead key. Each restart buys a few hours at most. **The dead key must be replaced or the provider changed for a permanent fix.** If you're restarting arifOS every 20-30 minutes, it's a dead key, not a memory leak.
+
+### Failure Mode B: Reasoning Backend Timeout (proven 2026-07-29)
+
+**Root cause** is a stuck reasoning backend (SEA-LION unreachable, Ollama CPU inference overloaded) that the `arif_think` tool calls with a timeout. The async tool call fires, the backend doesn't respond within 35s, the tool times out — but the **asyncio lock/semaphore for that resource is not released**, causing every subsequent request that needs the same resource to block forever.
+
+This is a distinct failure mode from Mode A — no API key issue, no 401s, no credential problem.
+
+#### The Chain
+
+```
+Reasoning backend (SEA-LION / Ollama) overloaded or unreachable
+  → arif_think tool fires async call with 35s timeout
+  → Backend doesn't respond → timeout fires
+  → Lock/semaphore on the reasoning resource NOT released
+  → All subsequent requests needing that resource block
+  → /health endpoint hangs (if health check uses tool state)
+  → MCP tools/list also hangs
+  → Downstream organs detect: GEOX reports "arifOS unreachable: ReadTimeout"
+  → Cascade: GEOX kernel_verdict → UNKNOWN → owner_summary → AMBER
+```
+
+#### Diagnosis
+
+```bash
+# 1. Confirm the hang pattern (same as Mode A)
+curl -v --max-time 5 http://localhost:8088/health 2>&1 | tail -5
+
+# 2. Check for DECEIVING "all services green" — ports LISTEN but endpoints hang
+ss -tlnp | grep 8088  # Shows LISTEN
+# This is NOT contradictory — the socket is alive but the event loop is stuck
+
+# 3. Look for the timeout pattern, NOT 401s
+journalctl -u arifos --since "10 min ago" | grep -iE 'reasoning backend timeout|unreachable|too slow|arif_think.*error'
+# Example from 2026-07-29:
+# "Tool arif_think execution error: Reasoning backend timeout after 35.0s — SEA-LION unreachable or Ollama CPU inference too slow"
+
+# 4. Check Ollama/SEA-LION health directly
+curl -m 3 -s http://127.0.0.1:11434/api/tags | head -3
+# If Ollama returns models → backend IS alive, but overloaded
+# If Ollama unreachable → backend is dead
+
+# 5. Check downstream organ telemetry
+# GEOX will show: "arifOS unreachable: ReadTimeout" in federation_geometry
+curl -m 5 -s http://127.0.0.1:8081/health | grep -o 'arifOS unreachable[^"]*'
+```
+
+#### Differentiating from Mode A (Dead Key)
+
+| Signal | Mode A (Dead Key) | Mode B (Backend Timeout) |
+|--------|-------------------|--------------------------|
+| Journal pattern | `401` / `invalid api key` | `Reasoning backend timeout` / `unreachable` / `too slow` |
+| TokenRouter errors | Yes — HTTP 4xx from LLM provider | No — internal tool timeout |
+| Repeat interval | Every LLM call to that model | Only when arif_think tool is called |
+| GEOX connection | Independent | Shows `arifOS unreachable: ReadTimeout` |
+| Ollama health | Not relevant | Shows alive (overloaded) or dead |
+| Fix scope | Replace/rotate API key | Restart arifOS + fix backend overload |
+
+#### Fix
+
+```bash
+# 1. Restart arifOS (clears the stuck lock/semaphore)
+systemctl restart arifos
+
+# 2. Verify recovery
+sleep 5 && curl -m 5 -s http://127.0.0.1:8088/health | head -3
+
+# 3. Check downstream organs auto-recover
+curl -m 5 -s http://127.0.0.1:8081/health | grep -o '"federation_geometry":"[^"]*"\|owner_summary.*?color":"[^"]*"'
+
+# 4. If Ollama is overloaded (not dead), reduce concurrent inference load:
+#    Stop other services hitting Ollama, or increase Ollama timeout config
+
+# 5. If the pattern repeats, increase arif_think timeout:
+#    /opt/arifos/app/config/PROFILES/vps_main_arifos.json
+#    Find: "arif_think" → change "timeout": 35 to "timeout": 60
+```
+
+#### Pitfall: Mode B requires a real restart, not just a key swap
+
+Unlike Mode A where replacing the dead key fixes the root cause, Mode B is a code-level bug (lock not released on timeout). **A restart is the only immediate fix.** If the pattern repeats, the timeout value in the arifOS profile needs to be increased, or the reasoning backend needs dedicated compute (don't overload Ollama with concurrent requests).
+
+#### Pitfall: "Mode B looks like Mode A" when checking from a client-only session
+
+If you probe arifOS from a client that uses `arif_think` (e.g., this Hermes session), your probe requests hit the same stuck lock and timeout, looking like the health endpoint failed for a different reason. The only reliable differentiator is `journalctl` — check the logs before and after the timeout event. Journal entries show the exact error class.
 
 ## Reference: Common Resource Hogs
 
