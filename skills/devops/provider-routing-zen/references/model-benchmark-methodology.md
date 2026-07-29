@@ -1,83 +1,136 @@
 # Agentic Model Benchmark Methodology
 
-> **Forged:** 2026-07-29 | **Probe:** DeepSeek V4 Flash vs Pro vs Kimi K3 for Hermes primary model
+> **Forged:** 2026-07-29 | **Updated:** 2026-07-29 (fresh 5-dimension test battery)
+> **Probe purpose:** Compare candidate models for Hermes primary model selection
 
 ## When to Use
 
-When Arif asks "which model should be my main" — run a LIVE agentic benchmark, not a theory comparison.
+When Arif asks "which model should be my main" — run a LIVE agentic benchmark via OpenRouter API, not a theory comparison.
 
-## Test Dimensions
+## Test Dimensions (5 mandatory)
 
-| Dimension | What to measure | How |
-|-----------|----------------|-----|
-| **Reasoning quality** | Structured output, epistemic tagging, hallucination | Same prompt, compare OBS/INT/SPEC tags, structure, coherence |
-| **Tool calling** | Correct tool selection, correct args, latency | Prompt requiring tool use, check `tool_calls` in response, measure ms |
-| **Speed** | Latency for reasoning + tool calls | `time.time()` around API call |
-| **Cost** | Tokens in/out, $/call | Parse `usage` from response |
-| **Content delivery** | Does `content` field arrive non-null? | Check `message.content` — null = dealbreaker for agents |
-| **Availability** | Which providers serve this model? | Probe direct API, OpenRouter, Bailian, TokenRouter |
+| Dimension | What to measure | Why it matters |
+|-----------|----------------|----------------|
+| **Reasoning** | Multi-step math/logic with explicit steps | Shows reasoning quality AND whether content survives reasoning burn |
+| **Coding** | Non-trivial function with complexity analysis | Core agent capability |
+| **BM natural** | Conversational BM, santai tone | Arif's primary language — must flow naturally |
+| **Tool use** | Practical bash one-liner generation | Agent must produce working commands |
+| **Structured output** | JSON with self-evaluation | Tests schema compliance and honesty |
 
-## Test Prompt Design
+## Test Script
 
-Two prompts minimum:
-
-1. **Reasoning prompt** — multi-step analysis with explicit instruction to use epistemic tags (OBS/INT/SPEC). Tests structured thinking.
-2. **Tool-call prompt** — simple file read or health check. Tests function calling correctness.
-
-Use SAME prompt across all models for fair comparison.
-
-## Probe Pattern
+The canonical benchmark script lives at `/tmp/model_test3.py` (reproducible — copy to any session). Pattern:
 
 ```python
-import json, time, requests, os
+import json, time, os, urllib.request
 
-prompt = """..."""
-tools = [...]  # for tool-call test
+API_KEY = os.environ["OPENROUTER_API_KEY"]
 
-for model, url, key_env in tests:
-    start = time.time()
-    resp = requests.post(url, headers={...}, json={
-        'model': model,
-        'messages': [{'role': 'user', 'content': prompt}],
-        'tools': tools,  # only for tool-call test
-        'max_tokens': 800,
-        'temperature': 0.3
-    }, timeout=60)
-    elapsed = time.time() - start
-    # Parse: content, tool_calls, tokens, latency, epistemic tags
+MODELS = [
+    ("deepseek/deepseek-v4-flash", "DeepSeek V4 Flash", None),
+    ("deepseek/deepseek-v4-pro", "DeepSeek V4 Pro", {"effort": "low"}),
+    ("moonshotai/kimi-k3", "Kimi K3", {"effort": "low"}),
+]
+
+TESTS = {
+    "reasoning": {
+        "prompt": "A train leaves Station A at 08:00...",
+        "max_tokens": 600,
+        "reasoning": {"effort": "medium"},  # override for reasoning test
+    },
+    "coding": {
+        "prompt": "Write a Python function for longest consecutive subsequence...",
+        "max_tokens": 600,
+    },
+    "bm_natural": {
+        "prompt": "Dalam 3-4 ayat Bahasa Melayu santai, terangkan...",
+        "max_tokens": 300,
+    },
+    "tool_use": {
+        "prompt": "Write a bash one-liner that curls 6 health endpoints...",
+        "max_tokens": 400,
+    },
+    "structured": {
+        "prompt": "Return JSON: {model_evaluation: {...}}...",
+        "max_tokens": 300,
+    },
+}
 ```
 
-## Pitfalls Discovered
+## Critical Pitfall: Reasoning Overhead
 
-### Kimi K3 content=null (2026-07-29)
+**Always check `message.content` for null.** When reasoning is enabled, models can burn ALL `max_tokens` on internal reasoning, leaving `content: null`. Detection:
 
-Kimi K3's always-on thinking mode puts ALL output in `reasoning_content`. The `content` field is `null`. Tool calls work (correct `tool_calls` in response), but after tool execution, the final response is invisible — Hermes can't deliver a message.
+```python
+content = msg.get("content") or "(NO CONTENT)"
+reasoning_tokens = usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
+completion_tokens = usage.get("completion_tokens", 0)
+if content == "(NO CONTENT)":
+    print(f"⚠️ {completion_tokens} tokens, {reasoning_tokens} ({reasoning_tokens/completion_tokens*100:.0f}%) to reasoning — ZERO content")
+```
 
-**Detection:** Check `message.content` — if null and `message.reasoning_content` is populated, the model is unusable as a primary conversational agent.
+**Severity by model (probed 2026-07-29):**
 
-**Workaround:** `include_reasoning: true` + fallback to `reasoning_content` as content. Requires runtime patching.
+| Model | Reasoning overhead | Severity |
+|-------|-------------------|----------|
+| DeepSeek V4 Flash | 34-72% (moderate) | Manageable — content usually survives |
+| DeepSeek V4 Pro | **69-100%** (severe) | **Fails 3/5 tests** — even with `effort: "low"` |
+| Kimi K3 | 2-68% (variable) | Low when `effort: "low"`, high when forced |
 
-### OpenCode Go credit exhaustion
+**Fix for Pro:** `reasoning: {effort: "low"}` AND `max_tokens >= 1000` for anything that needs visible output. Even then, Pro may burn 69%+ on reasoning. For general agent tasks, Flash is more reliable.
 
-If `OPENCODE_GO_API_KEY` returns 401 "Insufficient balance", fall back to direct API keys (DeepSeek, Kimi Moonshot) or OpenRouter.
+## 2026-07-29 Results: 5-Dimension Test Battery
 
-### TokenRouter DNS
-
-`api.tokenrouter.ai` does not resolve. Use `api.tokenrouter.com` instead.
-
-## 2026-07-29 Results: Hermes Primary Model
-
-| Dimension | DS V4 Flash | DS V4 Pro | Kimi K3 |
+| Dimension | Flash | Pro | Kimi K3 |
 |-----------|:---:|:---:|:---:|
-| Reasoning latency | 8.7s | 9.1s | 54.8s |
-| Tool-call latency | ~0.8s | 0.8s | 4.4s |
-| Cost/1M input | $0.14 | $1.74 | ~$3.00 |
-| Cost/1M output | $0.28 | $3.48 | ~$15.00 |
-| Epistemic tags | OBS/INT ✓ | OBS/INT ✓ | OBS/INT/SPEC ✓ |
-| Tool calling | Correct ✓ | Correct ✓ | Correct ✓ |
-| Content null | No | No | **Yes** ❌ |
-| Vision | No | No | Yes |
-| Censorship risk | Zero | Zero | Unknown |
-| Direct API | Yes | Yes | No (OR only) |
+| **Reasoning** | 0.5s/600tk ⚠️ | 0.9s/600tk ⚠️ | 3.3s/600tk ⚠️ |
+| **Coding** | 1.2s/600tk ✅ | 0.9s/600tk ✅ | 6.3s/524tk ✅ |
+| **BM natural** | 2.7s/216tk ✅ | 1.6s/301tk ⚠️ | 1.5s/227tk ✅ |
+| **Tool use** | 2.6s/400tk ✅ | 1.0s/400tk ⚠️ | 9.8s/294tk ✅ |
+| **Structured** | 2.4s/146tk ✅ | 0.9s/300tk ✅ | 9.5s/300tk ✅ |
+| **Passed** | **4/5** | **2/5** | **4/5** |
+| **Total cost** | $0.00039 | $0.00545 (14×) | $0.03110 (81×) |
+| **Total time** | 9.4s | 5.3s | 30.4s |
 
-**Verdict:** DeepSeek V4 Flash as primary. Pro as fallback for complex reasoning. Kimi K3 for vision tasks only.
+⚠️ = NO CONTENT (all tokens to reasoning). All models failed the reasoning test with `reasoning: {effort: "medium"}` at 600 max_tokens.
+
+### Reasoning Quality Test (Bayes Theorem, max_tokens=1000, reasoning=high)
+
+| Model | Time | Correct | Cost |
+|-------|------|:---:|------|
+| Flash | 5.3s | ✅ 50% | $0.00011 |
+| Pro | 12.6s | ✅ 50% | $0.00114 (10×) |
+| K3 | 8.8s | ✅ 50% | $0.01005 (91×) |
+
+All three models got the correct answer. Quality is equivalent — cost and speed differ dramatically.
+
+### Pricing (OpenRouter, probed 2026-07-29)
+
+| Model | Input/M tok | Output/M tok | vs Flash |
+|-------|------------|-------------|----------|
+| deepseek-v4-flash | $0.14 | $0.28 | 1× |
+| deepseek-v4-pro | $0.44 | $0.87 | 3.1× |
+| kimi-k3 | $3.00 | $15.00 | 21× / 54× |
+
+## Verdict Algorithm
+
+```
+1. Reliability: count passed/total tests (content != null)
+2. Cost: total USD for 5-test battery
+3. Speed: total wall-clock seconds
+4. BM quality: does BM natural test produce flowing, colloquial BM?
+5. Tool use: does the one-liner actually work?
+
+Winner: highest reliability, lowest cost, acceptable speed
+Tiebreaker: BM quality > tool use > structured output
+```
+
+## Historical Verdict: Flash > Pro > K3 for Hermes primary
+
+**DeepSeek V4 Flash is the recommended primary model** for Hermes agent as of 2026-07-29:
+- Most reliable (4/5 vs Pro's 2/5)
+- Cheapest (81× cheaper than K3, 14× cheaper than Pro)
+- Good BM quality
+- Working tool use
+- Pro only as targeted fallback for deep reasoning with adequate token budget
+- K3 only for vision (already configured as `auxiliary.vision`)

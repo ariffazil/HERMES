@@ -81,8 +81,9 @@ Current session burn: ~$0.50–1.00 per session. OpenRouter credit remaining (20
 
 | Model | Cost/M Input | Cost/M Output | Notes |
 |-------|-------------|--------------|-------|
-| deepseek-v4-flash | $0.14 | $0.28 | Primary — already cheap |
-| deepseek-v4-pro | $1.74 | $3.48 | Apex reasoning via OR same price |
+| deepseek-v4-flash | $0.14 | $0.28 | Primary — cheapest, most reliable |
+| deepseek-v4-pro | $0.44 | $0.87 | Apex reasoning — 3.1× Flash, severe reasoning overhead (see pitfalls) |
+| moonshotai/kimi-k3 | $3.00 | $15.00 | Vision only — 81× Flash for general tasks, content=null risk |
 | openrouter/auto-beta | $0 extra | $0 extra | Same price as selected model |
 | openrouter/free | $0 | $0 | 50 RM0 models, 20 req/min |
 | Prompt caching (Anthropic) | ~$0.014 effective | ~$0.028 effective | ~90% off on cached ~8K kernel |
@@ -174,10 +175,11 @@ Session stickiness requires a source-code change in Hermes runtime — it CANNOT
 Standard 4-tier fallback pattern:
 
 ```
-Tier 1 (PRIMARY):     DeepSeek V4 Pro / role-optimal direct provider
-Tier 2 (SMART ROUTE): openrouter/auto-beta with ZDR allowlist + per-role CQT
-Tier 3 (COST):        openrouter/free (RM0, light tasks, tool lane)
-Tier 4 (SOVEREIGN):   ollama/qwen2.5-coder:3b (local, survival)
+Tier 1 (PRIMARY):     DeepSeek V4 Flash — most reliable, cheapest, handles BM/tools/code
+Tier 2 (REASONING):   DeepSeek V4 Pro — only for deep multi-step reasoning with max_tokens ≥ 1000
+Tier 3 (SMART ROUTE): openrouter/auto-beta with ZDR allowlist + per-role CQT
+Tier 4 (COST):        openrouter/free (RM0, light tasks, tool lane)
+Tier 5 (SOVEREIGN):   ollama/qwen2.5-coder:3b (local, survival)
 HOLD:                 888_HOLD (F13 — never auto-resolve)
 ```
 
@@ -359,6 +361,7 @@ openclaw cron show <job-id> | grep -E 'model:|fallbacks|last.*status'
 - **Auto-router for MY governance.** The router selects by community spend share, which can pick a censored model (MiniMax M3 has **SHADOW-MM-001** — silent MY governance censorship on Najib, 1MDB, PETRONAS, myKad). Always route sovereign topics direct to DeepSeek. **Never route MiniMax models through auto-beta** — they must be explicitly excluded in `allowed_models` if auto-beta is used at all on these topics.
 - **Reasoning drops with tools.** Some models (GPT-5.x, certain Claude variants) silently suppress reasoning tokens when `response_format` or tool_calling is active. Kimi K2.5 is the safest for reasoning visibility with tool use. Audit your specific combo.
 - **Kimi K3 always-on thinking breaks agentic workflows (probed 2026-07-29).** Kimi K3's forced thinking mode dumps ALL output into `reasoning_content` and leaves `content` as `null`. Tool calls still work (correct `tool_calls` in response), but the final response after tool execution is invisible — Hermes sees `content: null` and can't deliver a message to the user. **This is a dealbreaker for conversational agents.** K2.5 does not have this issue. Workaround: set `include_reasoning: true` and fall back to `reasoning_content` as content, but this requires runtime patching. For now, Kimi K3 is only suitable for vision tasks (where content is an image, not text) — never as a primary conversational model.
+- **DeepSeek V4 Pro reasoning overhead (probed 2026-07-29).** Even with `reasoning: {effort: "low"}`, Pro burns 69-100% of completion tokens on internal reasoning, leaving `content: null` on 3/5 general agent tasks (BM natural, tool use, reasoning). This makes it unreliable as a primary conversational model — it will silently fail on tool calls and BM conversations. Use Pro only for targeted deep reasoning with `max_tokens >= 1000` and `reasoning: {effort: "high"}`. For general agent tasks, DeepSeek V4 Flash is more reliable (4/5 passed vs Pro's 2/5). Full 5-dimension benchmark and methodology: `references/model-benchmark-methodology.md`.
 - **Assume cascade matches SOT.** The AGENT_MODEL_MAP is the canonical cascade. This skill documents the *proposed* optimised chain. Verify with `curl -s http://localhost:8088/health | jq .cascade` before assuming.
 - **No session_id.** OpenRouter's auto-beta loses session stickiness without it — every call goes through the classifier again, losing 30% latency.
 - **No cache breakpoint.** Long system prompts (Hermes ~8K, constitutional kernel ~15K) are ~90% wasted on repeat without `cache_control`.
