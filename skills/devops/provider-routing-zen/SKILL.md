@@ -32,6 +32,44 @@ description: >-
 
 **Never cross the streams:** Tool output must never enter the governed cascade. Agent output must never route through FLAME. Separate lanes, separate concerns.
 
+## Vision Model Strategy — Dual-Lane Architecture
+
+Hermes (Telegram agent) receives images from users. Three routing options:
+
+| Approach | How it works | Pros | Cons |
+|----------|-------------|------|------|
+| **Native vision model (primary)** | Model sees images directly — no transcript pipeline | No transcript hallucination, fast, accurate | Vision models may have text-only trade-offs |
+| **Transcript pipeline** | `vision_analyze` creates [IMAGE TRANSCRIPT], text-only model reads it | Works with any text model, no vision cost | Incomplete/faulty transcript = hallucination |
+| **Separate vision + text** | Vision model transcribes, text model responds | Best-of-both specialist | Latency from two API calls, routing complexity |
+
+**The problem with text-only models (Flash/Pro):** DeepSeek V4 Flash is text-only. When Arif sends images, Hermes vision pipeline creates an [IMAGE TRANSCRIPT] via an auxiliary model. If the transcript misses key details, Flash confidently fills gaps — creating the hallucination Arif reports. This is NOT a Flash bug; it's an architecture limitation.
+
+**Recommended strategy for Hermes:** Use a **vision-native model as primary** so images are seen directly, with a text-only model as fallback for sovereign reasoning (666_JUDGE/999_SEAL).
+
+**Best vision-native candidates (free via OpenRouter, probed 2026-07-29):**
+
+| Model | Latency (reasoning) | Tool calls | Context | Cost | Censorship |
+|-------|:---:|:---:|:---:|:---:|:---:|
+| **qwen/qwen3-vl-30b-a3b-instruct** | **3.9s** | **770ms** ✅ | 262K | Free | None (CN Alibaba) |
+| qwen/qwen3-vl-32b-instruct | 17.3s | TBD | 131K | Free | None (CN Alibaba) |
+| mistralai/mistral-small-3.2-24b-instruct | 5.3s | TBD | 256K | Free | Mistral AI (EU) |
+| meta-llama/llama-4-scout | 21.8s | TBD | 1310K | Free | Meta (US) |
+
+**Qwen3-VL-30B-A3B** is the standout: MoE architecture (3B active per token = very fast), native vision, epistemic tagging, correct tool calling. See `references/model-benchmark-methodology.md` for full benchmark.
+
+**Vision model config wiring (Hermes):**
+```yaml
+# In /root/HERMES/config.yaml providers section:
+openrouter:
+    api: https://openrouter.ai/api/v1
+    key_env: OPENROUTER_API_KEY
+    models:
+      - id: qwen/qwen3-vl-30b-a3b-instruct
+        name: Qwen3-VL-30B-A3B — Vision-native primary (free, fast)
+      - id: deepseek/deepseek-v4-pro
+        name: DeepSeek V4 Pro — Sovereign reasoning fallback
+```
+
 ## Constitutional Role → Provider Mapping
 
 Every LLM call map to one of AAA's 8 roles. These are the rules:
@@ -81,11 +119,14 @@ Current session burn: ~$0.50–1.00 per session. OpenRouter credit remaining (20
 
 | Model | Cost/M Input | Cost/M Output | Notes |
 |-------|-------------|--------------|-------|
-| deepseek-v4-flash | $0.14 | $0.28 | Primary — cheapest, most reliable |
-| deepseek-v4-pro | $0.44 | $0.87 | Apex reasoning — 3.1× Flash, severe reasoning overhead (see pitfalls) |
-| moonshotai/kimi-k3 | $3.00 | $15.00 | Vision only — 81× Flash for general tasks, content=null risk |
+| **qwen/qwen3-vl-30b-a3b-instruct** | **$0.00 (FREE)** | **$0.00** | **Vision-native, 3.9s reasoning, 770ms tool calls, 262K ctx, uncensored CN** |
+| deepseek-v4-flash | $0.14 | $0.28 | Cheapest paid, fast, text-only (no vision) |
+| deepseek-v4-pro | $0.44 | $0.87 | Apex reasoning, severe reasoning overhead (see pitfalls) |
+| moonshotai/kimi-k3 | $3.00 | $15.00 | Vision, content=null risk always-on thinking (see pitfalls) |
 | openrouter/auto-beta | $0 extra | $0 extra | Same price as selected model |
 | openrouter/free | $0 | $0 | 50 RM0 models, 20 req/min |
+
+**Qwen3-VL-30B-A3B-Instruct** — probed 2026-07-29 via OpenRouter free tier. MoE (30B total, 3B active). Native vision eliminates transcript-pipeline hallucination. Tool calling at 770ms. Simple reasoning at 528ms avg. Complex reasoning at 3.9s. Zero MY censorship. **Best candidate for Hermes primary when user sends images frequently.** See `references/model-benchmark-methodology.md` for full comparison.
 | Prompt caching (Anthropic) | ~$0.014 effective | ~$0.028 effective | ~90% off on cached ~8K kernel |
 
 System prompt caching rule of thumb: Hermes loads ~8K tokens of system prompts. On Anthropic models via OR with `cache_control: {type: "ephemeral"}`, cache reads cost ~10% of normal input — ~92% saving on every cached call.
@@ -175,8 +216,9 @@ Session stickiness requires a source-code change in Hermes runtime — it CANNOT
 Standard 4-tier fallback pattern:
 
 ```
-Tier 1 (PRIMARY):     DeepSeek V4 Flash — most reliable, cheapest, handles BM/tools/code
-Tier 2 (REASONING):   DeepSeek V4 Pro — only for deep multi-step reasoning with max_tokens ≥ 1000
+Tier 1 (VISION PRIMARY): qwen/qwen3-vl-30b-a3b-instruct via OpenRouter FREE — native vision, 770ms tool calls, 3.9s reasoning
+Tier 1 alt (TEXT PRIMARY): DeepSeek V4 Flash (direct) — if user never sends images
+Tier 2 (REASONING):   DeepSeek V4 Pro (direct) — only for deep multi-step reasoning with max_tokens >= 1000
 Tier 3 (SMART ROUTE): openrouter/auto-beta with ZDR allowlist + per-role CQT
 Tier 4 (COST):        openrouter/free (RM0, light tasks, tool lane)
 Tier 5 (SOVEREIGN):   ollama/qwen2.5-coder:3b (local, survival)
@@ -250,7 +292,7 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | OpenRouter Agent Guide | `/root/AAA/docs/OPENROUTER_AGENT_GUIDE.md` |
 | OpenRouter Hermes Ops | `/root/AAA/docs/OPENROUTER_HERMES_OPS.md` |
 | Doc architecture pattern | This skill's `references/openrouter-doc-architecture.md` |
-| Model benchmark methodology | This skill's `references/model-benchmark-methodology.md` |
+| Model benchmark methodology | This skill's `references/model-benchmark-methodology.md` |\n| Benchmark test script (runnable) | This skill's `scripts/benchmark-agentic-model-test.py` |\n| Vision diagnostic script (runnable) | This skill's `scripts/vision-auxiliary-diagnostic.py` |\n| Qwen3-VL-30B evaluation | This skill's `references/qwen3-vl-30b-agentic-eval-2026-07-29.md` |
 | Session stickiness patch | This skill's `references/session-stickiness-source-patch.md` |
 | Hermes config state snapshot | This skill's `references/hermes-openrouter-config-state-2026-07-24.md` |
 | FLAME engine | `/root/A-FORGE/flame/` |
@@ -328,10 +370,11 @@ plugins=[{"id": "auto-router", "cost_quality_tradeoff": 5}]
 
 | Tier | Provider | Role | CQT |
 |------|----------|------|-----|
-| 1 | DeepSeek V4 Flash (direct) | Primary — current session | — |
-| 2 | openrouter/auto-beta | Smart failover — auto-failover, 70+ providers | 5 |
-| 3 | openrouter/free | Survival — 50 RM0 models, 20 req/min | 10 |
-| 4 | ollama/qwen2.5-coder:3b | Last resort — local | — |
+| 1 | Qwen3-VL-30B-A3B (OpenRouter free) | Vision-primary — native vision, fast, free | — |
+| 2 | DeepSeek V4 Flash (direct) | Text-primary — most reliable cheap text | — |
+| 3 | openrouter/auto-beta | Smart failover — auto-failover, 70+ providers | 5 |
+| 4 | openrouter/free | Survival — 50 RM0 models, 20 req/min | 10 |
+| 5 | ollama/qwen2.5-coder:3b | Last resort — local | — |
 
 ## OpenClaw Cron Model Configuration
 
@@ -349,7 +392,42 @@ openclaw cron edit <job-id> --model deepseek-v4-flash --clear-fallbacks
 openclaw cron show <job-id> | grep -E 'model:|fallbacks|last.*status'
 ```
 
-## Pitfalls
+## Vision Auxiliary: opencode-go Returns 403 for Images (probed 2026-07-29)
+
+**`opencode-go` as `auxiliary.vision.provider` is BROKEN for all image input.** The OpenCode Go API at `opencode.ai/zen/go/v1/chat/completions` returns **HTTP 403 Forbidden** on any request containing `image_url` data (base64 or URL). This means:
+
+- User sends an image → Hermes calls `opencode-go/kimi-k3` for vision analysis → **403** → vision returns error → main model (text-only) gets empty/null analysis → **hallucinates**
+- This is NOT a model limitation — `kimi-k3` itself has vision capability. The issue is the proxy.
+- OpenCode Go works fine for text-only requests. Only multimodal (image) payloads are blocked.
+
+**Fix (applied 2026-07-29):** Change vision auxiliary from `opencode-go` to `openrouter`:
+
+```bash
+hermes config set auxiliary.vision.provider openrouter
+hermes config set auxiliary.vision.model moonshotai/kimi-k3
+hermes config set auxiliary.vision.timeout 120
+```
+
+**Verification:**
+```python
+# Test vision via opencode-go (SHOULD FAIL: 403)
+curl -X POST 'https://opencode.ai/zen/go/v1/chat/completions' \
+  -H "Authorization: Bearer $OPENCODE_GO_API_KEY" \
+  -d '{"model":"kimi-k3","messages":[{"role":"user","content":[{"type":"text","text":"color?"},{"type":"image_url","image_url":{"url":"data:image/png;base64,..."}}]}],"max_tokens":50}'
+# → {"error":{"message":"Internal server error"}} or 403
+
+# Test vision via openrouter (SHOULD WORK)
+curl -X POST 'https://openrouter.ai/api/v1/chat/completions' \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -d '{"model":"moonshotai/kimi-k3","messages":[{"role":"user","content":[{"type":"text","text":"color?"},{"type":"image_url","image_url":{"url":"data:image/png;base64,..."}}]}],"max_tokens":200}'
+# → ✅ correct analysis, cost ~$0.0016/call
+```
+
+**Note on kimi-k3 vision output:** Kimi K3 via OpenRouter may return `content: null` with all text inside `reasoning` when `max_tokens` is too low. For vision tasks, set `max_tokens >= 200` and let `extract_content_or_reasoning(response)` in `vision_tools.py` handle extraction from reasoning field.
+
+## Pitfalls (expanded)
+
+- **DeepSeek V4 Flash is text-only — no native vision (probed 2026-07-29).** When users send images in Telegram, Hermes vision pipeline creates an [IMAGE TRANSCRIPT] via an auxiliary model. Flash reads this transcript and confidently fills in gaps — causing hallucination on image-dependent tasks. Arif reports: "Flash always hallucinate when I share any image input." This is NOT a Flash bug; it's a text-only model limitation. Fix: use a vision-native primary model (Qwen3-VL-30B-A3B) so images are seen directly.
 
 - **Three-tapisan model (forged 2026-07-24):** OpenRouter CAN serve as Hermes's intelligence layer, but 3 hard filters apply:
   1. **Identity-sensitive ops NEVER route through OR** — 000_INIT, 666_JUDGE, 999_SEAL, MY governance (Najib, 1MDB, PETRONAS, myKad), and MiniMax (SHADOW-MM-001) must go direct to DeepSeek. Auto-router has `identity_verified: false`.

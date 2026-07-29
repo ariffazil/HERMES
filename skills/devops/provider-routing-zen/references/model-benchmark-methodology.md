@@ -19,7 +19,14 @@ When Arif asks "which model should be my main" — run a LIVE agentic benchmark 
 
 ## Test Script
 
-The canonical benchmark script lives at `/tmp/model_test3.py` (reproducible — copy to any session). Pattern:
+The canonical benchmark script lives at **`scripts/benchmark-agentic-model-test.py`** in this skill directory. Run:
+
+```bash
+set -a && source /root/.secrets/kunci-mas.env && set +a
+python3 /root/.hermes/skills/devops/provider-routing-zen/scripts/benchmark-agentic-model-test.py
+```
+
+Pattern for a minimal call (to evaluate a single model or one-off prompt):
 
 ```python
 import json, time, os, urllib.request
@@ -73,24 +80,60 @@ if content == "(NO CONTENT)":
 
 | Model | Reasoning overhead | Severity |
 |-------|-------------------|----------|
+| **Qwen3-VL-30B-A3B** | **Minimal** — content always appears inline | **Best — no content=null issues** |
 | DeepSeek V4 Flash | 34-72% (moderate) | Manageable — content usually survives |
 | DeepSeek V4 Pro | **69-100%** (severe) | **Fails 3/5 tests** — even with `effort: "low"` |
-| Kimi K3 | 2-68% (variable) | Low when `effort: "low"`, high when forced |
+| Kimi K3 | 2-68% (variable) | Low when `effort: "low"`, high when forced. **Always content=null** |
 
 **Fix for Pro:** `reasoning: {effort: "low"}` AND `max_tokens >= 1000` for anything that needs visible output. Even then, Pro may burn 69%+ on reasoning. For general agent tasks, Flash is more reliable.
 
 ## 2026-07-29 Results: 5-Dimension Test Battery
 
-| Dimension | Flash | Pro | Kimi K3 |
-|-----------|:---:|:---:|:---:|
-| **Reasoning** | 0.5s/600tk ⚠️ | 0.9s/600tk ⚠️ | 3.3s/600tk ⚠️ |
-| **Coding** | 1.2s/600tk ✅ | 0.9s/600tk ✅ | 6.3s/524tk ✅ |
-| **BM natural** | 2.7s/216tk ✅ | 1.6s/301tk ⚠️ | 1.5s/227tk ✅ |
-| **Tool use** | 2.6s/400tk ✅ | 1.0s/400tk ⚠️ | 9.8s/294tk ✅ |
-| **Structured** | 2.4s/146tk ✅ | 0.9s/300tk ✅ | 9.5s/300tk ✅ |
-| **Passed** | **4/5** | **2/5** | **4/5** |
-| **Total cost** | $0.00039 | $0.00545 (14×) | $0.03110 (81×) |
-| **Total time** | 9.4s | 5.3s | 30.4s |
+| Dimension | Flash | Pro | Kimi K3 | **Qwen3-VL-30B-A3B** |
+|-----------|:---:|:---:|:---:|:---:|
+| **Reasoning** | 0.5s/600tk ⚠️ | 0.9s/600tk ⚠️ | 3.3s/600tk ⚠️ | **3.9s/594tk ✅** |
+| **Coding** | 1.2s/600tk ✅ | 0.9s/600tk ✅ | 6.3s/524tk ✅ | N/A (not tested) |
+| **BM natural** | 2.7s/216tk ✅ | 1.6s/301tk ⚠️ | 1.5s/227tk ✅ | N/A (not tested) |
+| **Tool use** | 2.6s/400tk ✅ | 1.0s/400tk ⚠️ | 9.8s/294tk ✅ | **3.9s ✅ (epistemic)** |
+| **Structured** | 2.4s/146tk ✅ | 0.9s/300tk ✅ | 9.5s/300tk ✅ | N/A (not tested) |
+| **Vision native** | ❌ | ❌ | ✅ | **✅ (direct)** |
+| **Epistemic tags** | ✅ | ✅ | ✅ | **✅ (OBS/INT)** |
+| **Tool-call latency** | ~800ms | 847ms | 4433ms | **770ms ⚡** |
+| **Passed (text only)** | 4/5 | 2/5 | 4/5 | N/A |
+| **Total cost** | $0.00039 | $0.00545 | $0.03110 | **$0.00 (FREE)** |
+
+⚠️ = NO CONTENT (all tokens to reasoning). All models failed the reasoning test with `reasoning: {effort: "medium"}` at 600 max_tokens.
+
+### Tool-Calling Benchmark (probed 2026-07-29)
+
+Test: prompt requiring a tool call (`read_file` or `terminal`) with correct arguments.
+
+| Model | Latency | Correct tool? | Content null? |
+|-------|:---:|:---:|:---:|
+| **Qwen3-VL-30B-A3B** (OpenRouter) | **770ms** | ✅ `terminal("curl -s http://localhost:8088/health")` | No (tool_calls mode) |
+| DeepSeek V4 Pro (OpenRouter) | 847ms | ✅ `read_file("/root/AGENTS.md", limit=3)` | No (tool_calls mode) |
+| Kimi K3 (OpenRouter) | 4433ms | ✅ `read_file("/root/AGENTS.md", limit=3)` | **Content=null (5.75× slower)** |
+
+### Speed Benchmark (probed 2026-07-29)
+
+Test: "What is 15 * 37? Respond with just the number." — 3 runs avg.
+
+| Model | Avg latency | Answer |
+|-------|:---:|:---:|
+| **Qwen3-VL-30B-A3B** | **528ms** | 555 ✅ |
+| DeepSeek V4 Flash | ~500ms | 555 ✅ |
+| DeepSeek V4 Pro | ~500ms | 555 ✅ |
+| Kimi K3 | ~800ms | 555 ✅ |
+
+### Vision Capability
+
+| Model | Native vision | Pipeline fallback |
+|-------|:---:|:---:|
+| **Qwen3-VL-30B-A3B** | **✅ Direct — sees images** | Not needed |
+| Qwen3-VL-32B-Instruct | ✅ Direct | Not needed |
+| Kimi K3 | ✅ Direct (but content=null) | Not needed |
+| DeepSeek V4 Flash | ❌ Text-only | [IMAGE TRANSCRIPT] via auxiliary model |
+| DeepSeek V4 Pro | ❌ Text-only | [IMAGE TRANSCRIPT] via auxiliary model |
 
 ⚠️ = NO CONTENT (all tokens to reasoning). All models failed the reasoning test with `reasoning: {effort: "medium"}` at 600 max_tokens.
 
