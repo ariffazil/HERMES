@@ -857,9 +857,9 @@ moa:
       reference_temperature: 0.5
 model:
   context_length: 1048576
-  default: k3
+  default: deepseek/deepseek-v4-flash
   max_tokens: 131072
-  provider: kimi-moonshot
+  provider: openrouter
   supports_vision: false
   timeout: 20
   request_timeout: 30
