@@ -189,7 +189,41 @@ As of 2026-07-25, every agent card in the federation MUST carry TWO mandatory co
 
 **Identity cards** (333-AGI, 555-ASI, 888-APEX) use `principal_agent.type: "architect"` with category `"Constitutional architecture (the constitution itself is the principal)"`. They do NOT have `warga_binding` — they ARE the warga lanes.
 
-**Verify all N cards have both blocks:**
+### F1-Boundary Block (High-W_scar Nodes — Established 2026-07-29)
+
+When an agent card carries an irreversible action boundary (e.g., MT5 bridge, trade execution, deploy gate), add this governance block. Pattern from ATLAS333 entropy reduction:
+
+```json
+{
+  "governance": {
+    "w_scar": "HIGH",
+    "i_sys_civ_bound": true,
+    "apex_authority": "888",
+    "contracts": ["A2A_EXECUTION_CONTRACT"]
+  },
+  "f1_safety_boundary": {
+    "auto_fire_permitted": false,
+    "sovereign_gate_required": true,
+    "irreversible_action_override": "HOLD_FOR_888"
+  }
+}
+```
+
+**When to use:** Agent has access to irreversible financial, infrastructure, or deploy actions.
+
+**PASSIVE vs ACTIVE rule:** PASSIVE nodes (analysis-only, chart gen, cron dispatch) declare `f1_boundary` in description only — NO governance block. ACTIVE nodes get the full governance + f1_safety_boundary block.
+
+**Audit: Verify no bleed between PASSIVE/ACTIVE nodes:**
+```bash
+# PASSIVE must have ZERO broker/MT5/execute_trade references beyond self-declaration
+grep -in 'mt5\\|broker\\|execute_trade\\|fire.*broker\\|auto-execute' /path/to/passive-skill/SKILL.md
+# ACTIVE must carry 888/SOVEREIGN gate references
+grep -c '888\\|SOVEREIGN\\|approval\\|approve' /path/to/active-skill/SKILL.md
+```
+
+Proven 2026-07-29: trading cluster split into PASSIVE (zero broker leaks) and ACTIVE (7 888 references).
+
+### arifOS Constitutional Extensions (append to card)
 ```bash
 cd /root/AAA/agent-cards
 for dir in harnesses organs functions identity; do

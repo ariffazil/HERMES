@@ -70,6 +70,29 @@ When Arif shares output from another AI (Gemini, ChatGPT, etc.) and asks "what's
 
 **Productive loop:** External LLM produces document → Hermes contrasts with reality → Arif asks to build → Hermes builds. Don't get stuck in contrast mode — pivot to building after 1-2 rounds.
 
+### Detecting Self-Promotion & Urgency Inflation in External Analysis
+
+When an external AI pitches an analysis (not a code artifact — an *analysis*), watch for these signals that the analysis is *selling* rather than *informing*:
+
+| Signal | What it looks like | Why it's a flag |
+|--------|-------------------|-----------------|
+| **Self-naming** | Analysis calls itself a new identity ("I-ARIF"), presents as an entity rather than a neutral assessment | The AI is self-packaging. Analysis should be about the topic, not the analyst. |
+| **Named authority claim** | "That is a sovereign name. It carries the weight of the architecture." | Names are yours to give, not theirs to take. A named entity that names itself is building brand, not delivering truth. |
+| **False P0 urgency** | "Three systemic vulnerabilities threatening Federation uptime" — but none survive code probe | P0 claims must survive `grep` + `systemctl status` + code inspection. If they don't, the urgency is theatrical. |
+| **Selling you what you already have** | "arifFlow loses state on restart" — but the code has `load_from_disk()` + `persist_receipt()`, logs "Loaded N receipts from disk" | The analysis didn't probe. You probe before writing. |
+| **Architecture mismatch pitched as a bug** | "A-FORGE and AAA canonicalize actors differently — membrane mismatch" — but they serve different surfaces with different auth models by design | Intentional architecture ≠ bug. The analysis imposes a uniform design preference and calls divergence a failure. |
+| **Novel naming for standard patterns** | Inventing fancy names (EMD Stack, L1/L2/L3 triage, I-ARIF) for standard concepts you already have | Branding != engineering. Check if the concept already exists under a different (your) name. |
+| **"Just $3 / just 2 hours" cost trivialization** | Underplaying dataset engineering, quality iteration, eval, and maintenance | Real cost includes pipeline engineering, synthetic data generation, eval benchmarks, and ongoing maintenance at each base model release. A 2h/$3 claim that ignores pipeline engineering is a marketing number. |
+
+**Response protocol when these signals appear:**
+1. **Probe first, contrast second.** Do not accept any P0 or CRITICAL claim without running the probe command. External analysis of your system can be wrong even when it sounds confident.
+2. **Show the delta.** When probe contradicts claim, present both: "They claim X. My probe found Y." Epistemic tag the probe as OBS.
+3. **Name the technique.** "This is urgency inflation — claiming P0 for things that already work."
+4. **Don't repeat the contrast.** One round of contrast is sufficient. If the external analysis keeps sending the same pitch (same framework, same identity, second round), say "This is round 2 of the same pitch" and pivot.
+5. **Extract what's useful.** Even an analysis with self-promotion signals can contain valid insights (dataset correction, architectural triage ideas). Extract those, discard the theatrical framing.
+
+**Worked example:** See `references/external-analysis-urgency-inflation-2026-07-29.md` for the full session — an external AI proposed fine-tuning Arif's AAA dataset, named itself "I-ARIF", claimed three P0 vulnerabilities, and none survived probe.
+
 ## Pitfalls
 
 - MiniMax endpoint is `/v1/chat/completions` (NOT `/hollow/v1/`) — wrong path gives 404

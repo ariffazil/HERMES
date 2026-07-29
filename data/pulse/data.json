@@ -1,12 +1,12 @@
 {
-  "fq": 0.0,
-  "fq_score": 0.0,
-  "status": "UNMEASURED",
-  "verdict": "UNMEASURED",
-  "receipt_count": 0,
-  "executed_count": 0,
-  "verify_count": 0,
-  "uptime_ms": 913506,
+  "fq": 0.3279004911622954,
+  "fq_score": 0.3279004911622954,
+  "status": "STUCK",
+  "verdict": "STUCK",
+  "receipt_count": 338,
+  "executed_count": 173,
+  "verify_count": 165,
+  "uptime_ms": 6517,
   "source": "arifFlow daemon :7073 \u2014 single source of truth \u2014 /var/lib/arifflow/receipts.jsonl",
-  "timestamp": "2026-07-28T18:45:02Z"
+  "timestamp": "2026-07-29T14:15:02Z"
 }

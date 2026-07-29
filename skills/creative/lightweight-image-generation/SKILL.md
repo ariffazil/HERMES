@@ -169,6 +169,7 @@ curl -X POST "https://gen.pollinations.ai/v1/images/generations" \
 |------|------|
 | Malay/SEA phenotype, realism | **MiniMax image-01** — see [`minimax-cli` 🧬 Phenotype](../minimax-cli/SKILL.md#-phenotype) |
 | Quick free draft | Pollinations.ai (free public tier) |
+| Compositional/overlay visuals (text, split, silhouette) | **PIL/Pillow** — local Python, no API needed |
 | Pre-generated face | Generated Photos |
 | Video | MiniMax (`mmx video`) |
 | NSFW API-first (paid) | **Venice.ai** — Pro sub ~$8-18/mo, OpenAI-compatible at `https://api.venice.ai/api/v1`, `safe_mode: false` + Lustify SDXL / Z-Image Turbo. No data retention. |
@@ -189,3 +190,4 @@ curl -X POST "https://gen.pollinations.ai/v1/images/generations" \
 6. **Face detection bias** — free face generators have poor Malay/SEA representation. Most are white/East Asian. When generating SEA/Malay faces, the model may default to East Asian features. Prompt with specific ethnic descriptors but accept the limitation.
 6. **Pollinations paid API zero balance** — `sk_` key authenticates (`GET /v1/models` works) but `POST /v1/images/generations` returns `402 PAYMENT_REQUIRED` with `"Insufficient balance"`. The key being valid doesn't mean you can generate. Check balance first, or fall back to the free public tier at `image.pollinations.ai/prompt/...` which works without auth.\n7. **Mage MCP timeout on cold start** — Mage-Flow (Modal serverless GPU) cold start can take 60-90s. Default 120s MCP timeout may be too tight. Fall back to Pollinations free tier for quick results, or retry after warm-up.
 8. **Reverse image search** — AI-generated faces from these services can sometimes be detected. For catfish detection, always recommend Google reverse image search.
+9. **PIL/Pillow as MCP fallback** — When all remote image gen tools fail (Mage 500, Pollinations timeout, MiniMax quota), PIL/Pillow is already installed and can produce compositional visuals. Use for: symbolic split-face compositions, gradient backgrounds, text overlay on dark canvases, silhouette art, grain textures, red-eye accents. The `image-text-editing` and `screenshot-editing` creative skills have PIL code patterns to reference.

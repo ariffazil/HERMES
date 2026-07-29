@@ -252,7 +252,43 @@ cat /root/AAA/state/sys_health.json     # Federation state is from file
 
 This completes the loop: OpenClaw probes → state file → Hermes translates.
 
-### 13. Prompt Extraction Pattern (F1 Versioning)
+### 13. Cross-Pulse Context Wiring — Intelligence Accumulation (Forged 2026-07-28)
+
+> **Discovery:** The federation runs 23 cron jobs with good cadence but ZERO cross-pulse intelligence accumulation. Each pulse fires, completes, reports — but doesn't feed the next pulse. Morning brief doesn't know what nightly seal did. Evening digest doesn't inherit from afternoon's work. The system maintains state but intelligence does not grow between pulses.
+
+**The architecture already has the mechanism:** The cron system's `context_from` field allows a job to inherit the most recent output of another job. It exists but is unused on all 23 active jobs.
+
+**Fix for intelligence accumulation chain:**
+
+Wire the daily metabolism into a loop:
+
+```
+morning-brief (07:00) ← context_from=nightly-seal
+    ↓ (inherits what was sealed last night)
+daily-news (08:00) ← context_from=morning-brief
+    ↓ (knows what Arif saw this morning)
+evening-digest (18:00) ← context_from=daily-news
+    ↓ (knows what was discussed today)
+nightly-seal (23:00) ← context_from=evening-digest
+    ↓ (knows today's state before sealing)
+```
+
+This creates a **completion loop**: each pulse knows the state left by the previous one. Intelligence compounds daily instead of each job starting from zero.
+
+**Weekly chain:**
+
+```
+entropy-watch (every 6h, aggregated) → federation-health (every 2h)
+    → weekly-deep-brief (Sunday) → weekly-reflection (Saturday)
+```
+
+**F1 check:** `context_from` is read-only inheritance (the consuming job reads the producing job's output). It does NOT mutate the producing job's state. Reversible — unset the field to break the chain.
+
+**F2 check:** The inherited output may be stale if the producing job failed its last run. Always verify the producing job's `last_status` before treating inherited context as fresh. Cron jobs with `last_status=error` should propagate a "stale context" warning rather than stale data.
+
+**Proven gap measurement (2026-07-28):** 23 jobs, 15 active, 0 using `context_from`. Each pulse's context window starts empty.
+
+See also: `governance-patterns` skill → `references/cross-pulse-intelligence-gap.md` for full analysis.
 
 > **Forged 2026-07-25.** Extracting prompts from jobs.json into version-controlled .md files gives F1 (Reversibility) to the most operationally impactful part of a cron job.
 
@@ -570,7 +606,11 @@ name | what was fixed
 | **5: CONTINUITY** | Postgres/Qdrant/Redis | Memory, state | sys_health.json is continuity — but has no provenance |
 | **6: TRUTH** | VAULT999 | Immutable sealed records | **MISSING** — nothing from cron/tri-agent lands here |
 
-### The 3 Constitutional Voids
+### The 3 Constitutional Voids + Measured Gap (2026-07-28)
+
+**Verified by live census (2026-07-28):** 23 cron jobs. 8 `no_agent: true` heartbeats — deterministic scripts, pure observation, safe. **15 LLM-driven jobs — every single one bypasses arif_judge + 888_HOLD.** No constitutional floor enforcement in the cron execution path. The harness runs naked when Arif isn't watching.
+
+See `governance-patterns` skill → Agent Anatomy section + `references/agent-anatomy-cron-gap.md` for the full measurement and ideal-state architecture.
 
 Each void is a **missing membrane** between planes — a governance gate that the architecture requires but does not have.
 

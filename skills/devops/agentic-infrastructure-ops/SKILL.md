@@ -16,6 +16,10 @@ triggers:
   - "headsacle"
   - "mesh network"
   - "VPS hardening"
+  - "mcp dashboard"
+  - "tool discovery"
+  - "forge_mcp_ui_start"
+  - "spatial radar"
 ---
 
 # Agentic Infrastructure Operations
@@ -172,3 +176,4 @@ Full patterns + code snippets: `references/federation-node-cli-patterns.md`
 - `references/watchdog-state-machine.md` — Complete smoketest + state machine implementation
 - `references/federation-acl-policy.md` — Tag-based ACL patterns for arifOS organs
 - `references/federation-node-cli-patterns.md` — Python CLI patterns for federation node management
+- `references/mcp-dashboard-deployment.md` — Zero-dep MCP tool catalogue dashboard (spatial radar), pure stdlib, deploy `forge_mcp_ui_start`

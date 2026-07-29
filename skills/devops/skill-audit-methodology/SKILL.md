@@ -149,6 +149,11 @@ Output: ranked list of eureka insights + distilled laws.
 
 ## Multi-Agent Federation Audit
 
+→ See `references/atlas333-organ-redundancy-detection.md` for the ATLAS333
+organ-matrix mapping methodology — map skills to 7 zen organs, detect
+redundancy clusters by organ assignment, score entropy reduction. Proven
+against 212 skills (2026-07-29), produced ΔS=-16.
+
 When auditing across multiple agent surfaces (e.g., AAA, Hermes, OpenClaw):
 
 1. Load skills from each surface independently
@@ -401,6 +406,10 @@ When mapping skills from one naming convention (e.g., HERMES flat names) to the 
 **Edge cases:** Nasi-lemak sales tracking → WEALTH- (not BUSINESS-). Apple platform skills (apple-notes, imessage, findmy) have no AAA equivalent. Internal-only skills (forge-visual-qa-constitutional, manifest-data-repair) remain HERMES-only.
 
 → See `references/hermes-aaa-prefix-mapping-2026-07-26.md` for the complete 227-entry mapping table, 6 HERMES-only skills, and 164 AAA skills missing from HERMES, with priority-ranked gap analysis.
+
+## Subagent Verification
+
+→ See `references/subagent-fabrication-detection.md` for the verification protocol when subagents (delegate_task, OpenCode) claim to have modified files. Subagents can fabricate completion reports — always verify claims against the filesystem before trusting them. Proven 2026-07-29: subagent claimed 4 patches landed, but zero files were actually modified.
 
 ## Bulk Layer Classification & Cross-Repo Skill Inventory
 

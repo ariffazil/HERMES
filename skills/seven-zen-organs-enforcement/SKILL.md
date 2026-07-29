@@ -437,6 +437,56 @@ When the user invokes a "ASI-ready" / "ASI-readiness" / "prove every organ works
 
 **One-line check before each organ:** Does every claim about the organ carry (a) source path, (b) epistemic tag, (c) uncertainty level, (d) falsification path? If any organ claim fails 2+ of these, the audit is incomplete on that cell.
 
+## Pitfall 21: Ground-truth external claims before evaluating them (validated 2026-07-29)
+
+When an external entity (analysis, pitch, report, reviewer, subagent summary) makes a claim about the system — tool count, dataset size, architecture state, process health — **the agent's first reflex must be to probe the live system, not to evaluate the claim on its face.**
+
+**The pattern that caused BANGANG:** In session 2026-07-29, an external entity presented a detailed analysis about fine-tuning the AAA dataset. It claimed "186 examples" — which was technically correct for the HF default config, but missed the full canon (7 datasets, ~1,000+ rows across all + local docs). I accepted the claim, evaluated it, and answered confidently — without first probing all 7 HF repos + local canon to verify. The user (Arif) corrected: "The corpus is NOT just AAA." The claim was correct at one layer but wrong at the system layer. I sounded confident about a partial truth.
+
+**The reflex — Ground-truth Triple Check:**
+
+When any external analysis makes a factual claim about your system:
+
+```
+Step 1:   FRAME the claim as a testable hypothesis.
+          "Entity says AAA has 186 rows. Hypothesis: all rows across all 7 datasets + local canon."
+          NOT: "Entity is right/wrong."
+
+Step 2:   PROBE the live system or primary source.
+          ℓ datasets load, curl /health, cat config, find files, git log.
+          1 probe per claim. If the entity made 5 claims, run 5 probes.
+          Do NOT accept any claim until probed.
+
+Step 3:   COMPARE claim vs probe.
+          If match → "Confirmed at layer X. Note: there may be more layers."
+          If mismatch → "Entity claimed X. Probe shows Y. Difference is Z."
+          If partial → "Entity was correct at layer A but missed layer B."
+
+Step 4:   REPORT the evidence, not your evaluation.
+          Lead with what the probe found. Then evaluate the claim.
+          NOT: "The entity is wrong."
+          RATHER: "Probe shows 7 datasets with ~1,000+ total rows. The entity's 186-example figure only covers AAA default config."
+```
+
+**Why this is a F2 + F7 co-violation when skipped:**
+
+- **F2 TRUTH:** You made a claim about the system without verifying it against the primary source. The claim may have been correct at one layer, but you stated it as if it were complete — which made it false at the system layer.
+- **F7 HUMILITY:** You sounded confident ("1,000 tokens", "2-hour training", "not enough data") when the evidence was partial. F7's "no fake certainty" applies to evaluations of external analyses too.
+
+**Concrete tell-tales that you're about to BANGANG:**
+
+- You start a sentence with "The entity's analysis shows..." without having probed the system first
+- You accept a number from an external source without verifying against the system's primary data
+- You evaluate the entity's *argument* (is it logically consistent?) without evaluating the entity's *facts* (are they true of the system?)
+- You say "correct" or "wrong" about a claim you haven't independently verified
+- The entity's claim sounds plausible and fits your mental model — **that's the most dangerous moment**, because plausibility is not evidence
+
+**Counter-example (correct reflex, same session):** When the entity claimed "SCT Membrane Mismatch — P0, needs fixing," I probed both gateways (AAA auth middleware vs A-FORGE session gate), found that they serve DIFFERENT purposes (inbound A2A vs outbound forge), and correctly reported: "Plausible-sounding claim. Not a real P0. Intentional architecture." The probe came before the verdict. That's the right order.
+
+**The cost of skipping Step 2 (probe):** When you evaluate a claim without probing, the user has to correct you — which costs them attention they should be spending on the task, not on cleaning up your overconfidence. That's what BANGANG means: you sounded confident about something that wasn't fully true.
+
+**Operational rule (new, this skill):** For every factual claim from an external source, run at minimum ONE probe before evaluating. If the claim is a number or count, the probe IS the verification. If the claim is about system state, the probe IS the verification. If the external source changes its claims between iterations (scope escalation pattern), re-probe before each new evaluation — do not accept the new claim based on trust in the entity.
+
 ## Pitfalls discovered (provisional, will harden)
 
 1. **Organs are sequential, not parallel.** Running them out of order causes Witness to override Reality (or vice versa). The order is: Reality → Governance → Civilization → [WITNESS + MEMORY] → [EXECUTION + MEANING].

@@ -180,6 +180,97 @@ These are the most frequent merge conflict artifact patterns in Python:
 # Always use the uri= line as the unique anchor.
 ```
 
+## Bulk Conflict Marker Stripping (100+ file scale)
+
+When an interactive rebase left conflict markers across hundreds of files, the per-file patch approach is too slow. Use regex bulk-strip instead.
+
+### When to Use This
+
+- WELL or another downstream service fails to restart with `SyntaxError: invalid decimal literal` pointing at `>>>>>>>` lines
+- `grep '<<<<<<<\\|=======\\|>>>>>>>' -rn --include='*.py' . | wc -l` returns 50+
+- The import chain error trace shows the conflict marker is deep in a package (not a single file you can patch)
+- The project is in the middle of an incomplete `git rebase` and you're asked to fix the files, not the rebase
+
+### Bulk Strip Script
+
+```python
+python3 -c "
+import re, os
+
+root = '/path/to/root'  # e.g. '/root/arifOS/arifosmcp'
+count = 0
+for dirpath, _, filenames in os.walk(root):
+    for fn in filenames:
+        if not fn.endswith('.py'):
+            continue
+        fpath = os.path.join(dirpath, fn)
+        with open(fpath) as f:
+            content = f.read()
+        if '<<<<<<<' not in content and '>>>>>>' not in content:
+            continue
+        original = content
+        content = re.sub(r'^>>>>>>> .*$\\n?', '', content, flags=re.MULTILINE)
+        content = re.sub(r'^=======$\\n?', '', content, flags=re.MULTILINE)
+        content = re.sub(r'^<<<<<<< HEAD\\n?', '', content, flags=re.MULTILINE)
+        if content != original:
+            with open(fpath, 'w') as f:
+                f.write(content)
+            count += 1
+            print(f'Fixed: {fpath}')
+print(f'Total files: {count}')
+"
+```
+
+### Post-Strip Syntax Check
+
+After bulk stripping, some files may still have syntax errors because both the HEAD and THEIR versions of a code block ended up in the file (conflict resolution kept both). Common patterns:
+
+```bash
+# Check remaining syntax errors
+python3 -c "
+import os, ast
+errors = []
+for dirpath, _, fns in os.walk('/path/to/root'):
+    for fn in fns:
+        if not fn.endswith('.py'): continue
+        fpath = os.path.join(dirpath, fn)
+        try:
+            ast.parse(open(fpath).read())
+        except SyntaxError as e:
+            errors.append(f'{fpath}:{e.lineno}: {e.msg}')
+
+for e in errors:
+    print(e)
+print(f'{len(errors)} syntax errors remaining')
+"
+
+# Common duplicate patterns to look for:
+grep -n 'default=.*default=' /path/to/root/**/*.py   # duplicate field defaults
+grep -n 'description=.*description=' /path/to/root/**/*.py  # duplicate descriptions
+```
+
+These are the same `Pattern 1-5` patterns documented above — fix each with the per-file `patch` approach.
+
+### Critical: Files with masks
+
+The merge conflict may have MASKED a pre-existing syntax error. When the conflict markers are present:
+1. Python parser hits `>>>>>>>` line first → throws `SyntaxError: invalid decimal literal`
+2. The ACTUAL problem further down in the file is never reached
+
+After stripping markers, the REAL error surfaces. This is correct behavior — you've exposed a bug that was hidden by the conflict. Fix it using the per-file patterns above.
+
+### Verification After Bulk Strip
+
+```bash
+# 1. Confirm zero conflict markers remaining
+grep -rn '<<<<<<<\\|=======\\|>>>>>>>' /path/to/root --include='*.py'
+
+# 2. All files compile
+grep -rln --include='*.py' /path/to/root | while read f; do
+    python3 -c "compile(open('$f').read(), '$f', 'exec')" 2>/dev/null || echo "FAIL: $f"
+done
+```
+
 ## Pitfalls
 
 1. **Don't trust line numbers from error reports without verification** — the file may have been edited since the error was generated. Always re-read the actual lines.
@@ -199,6 +290,7 @@ These are the most frequent merge conflict artifact patterns in Python:
 ## Reference Files
 
 - `references/17-file-batch-fixup-2026-07-27.md` — Full worked example: 17 duplicate keyword argument errors across 17 files, with patch strategies for non-unique matches, sibling-agent conflict handling, and verification.
+- `references/452-file-bulk-strip-2026-07-28.md` — Bulk regex conflict marker strip across 452 Python files: strategy, masked syntax errors, PYTHONPATH dependency cascade, and lessons.
 
 ## Verification
 

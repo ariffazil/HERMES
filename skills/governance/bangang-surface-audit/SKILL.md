@@ -1,7 +1,7 @@
 ---
 name: bangang-surface-audit
-description: "Systematic audit methodology to surface BANGANG (arrogant/overinflated) surfaces across the arifOS federation — places where agentic intelligence assumes it decides better than a human."
-related_skills: [federation-checkup]
+description: "Systematic audit methodology to surface BANGANG (arrogant/overinflated) — both federation-code overreach AND analytical deconstruction of human/institutional persona-shadow gaps."
+related_skills: [federation-checkup, governance-patterns, human-sexuality-shadow-framework]
 triggers:
   - "bangang"
   - "BANGANG"
@@ -19,12 +19,42 @@ triggers:
   - "T1 auto-do"
   - "autonomous execution"
   - "autonomous seal"
+  - "persona"
+  - "shadow"
+  - "Jung"
+  - "Anwar"
+  - "political deconstruction"
+  - "hypocrisy analysis"
+  - "hypocrite"
+  - "gap between word and deed"
+  - "reformasi"
+  - "victimhood"
+  - "persona shadow gap"
+  - "figure deconstruction"
+  - "kritik pemimpin"
 ---
 
 # BANGANG Surface Audit — Methodology
 
 > BANGANG = Malay "swollen/arrogant/overinflated"
-> Surfaces where agentic intelligence assumes it decides BETTER than a human.
+> Two faces: authority BANGANG (system overreach) and analytical BANGANG (persona-shadow gap in humans/institutions).
+> When a task involves deconstructing a figure's claimed identity vs actual behavior, load `references/bangang-as-analytical-lens.md`.
+
+## Cross-Reference: Three BANGANG Dimensions
+
+BANGANG has three dimensions — know which one is in play:
+
+| Dimension | Focus | Skill / Location | 
+|-----------|-------|-------|
+| **Authority BANGANG** | System acting without authorization | This skill (`bangang-surface-audit`) |
+| **Evaluation BANGANG** | Fake precision, wrong evaluation mode, metric theatre | `governance-patterns` §Evaluation Mode Doctrine |
+| **Analytical BANGANG** | Persona-shadow gap in humans/institutions | `references/bangang-as-analytical-lens.md` (this skill) |
+
+> 📖 **Analytical BANGANG reference:** `skill_view(name='bangang-surface-audit', file_path='references/bangang-as-analytical-lens.md')` — Jung Shadow framework, 3-phase biographical deconstruction, rationalisation counter, Victimhood Loop, archetype table. Load when deconstructing a figure, not a codebase.
+
+**Evaluation BANGANG** includes: generating scores like "8.5/10" with no provenance, evaluating a bedtime artifact against publication standards, and assuming reviewer authority over user purpose. Load `skill_view(name='governance-patterns')` then search for "Evaluation Mode Doctrine" when evaluating external critiques — especially if the critic generates ungrounded numerical scores.
+
+---
 
 ## 7 Search Patterns
 
@@ -98,6 +128,15 @@ Document the gap between doctrine and practice.
 System that measures itself → decides it's too autonomous → gates human's ability to decide.
 WELL `machine_human_substrate.py` is the canonical example.
 
+### Pattern E: The Persona-Shadow gap (Analytical BANGANG)
+Look for: `gap between word and deed | persona vs reality | claimed identity vs actual behavior`
+This is the **analytical** face of BANGANG — not code patterns, but human/institutional patterns.
+- Figure claims identity X → acts as Y (the gap size = BANGANG)
+- Victimhood narrative that immunises from self-reflection
+- Rationalisation: material justification (e.g. "harga ayam murah") covering emotional attachment
+- 3-phase pattern: Rise (builds persona) → Fall (hardens victim identity) → Return (shadow collides with persona)
+- Detailed framework at `references/bangang-as-analytical-lens.md`
+
 ## Output Format
 
 For each surface found, report:
@@ -117,3 +156,37 @@ Full map sealed at `/root/arifOS/BANGANG_SURFACES_MAP_COMPLETE.md`
 - 7 🟡 MEDIUM (state inference + autonomous execution)
 - 6 🔵 LOW (qualified interpretation)
 - 3 ⚪ SELF-AWARE (mesa detection + circuit breakers)
+
+---
+
+## Delivery Preferences for Arif
+
+Arif has clear preferences on how BANGANG analysis output should be formatted. Honor these:
+
+### Format: Written over audio
+- Arif prefers **PDF or text** over voice notes. Default to written deliverables.
+- Voice notes (TTS) were explicitly rejected: *"Aku malas nak dengar voice."*
+- If you already generated a voice note, also provide the text/PDF version before being asked.
+
+### Language: Makcik-grade, not academic
+- *"Bahasa manusia. Makcik2 boleh faham."* — Final deliverable must be in simple, accessible Malay.
+- Use Jung Shadow framing **as your analytical scaffolding only**. Never put Jung terminology in the deliverable itself — the reader only needs the conclusion.
+- Short sentences. No English where Malay works.
+- Test: would a makcik at a nasi lemak stall understand it in one read?
+
+### Structure: Comprehensive numbered lists
+- Arif prefers **comprehensive numbered lists** (21 > 9). When he asks for "9 benda" he may want more — offer to expand.
+- Group by chronological phases (Fasa 1: Timbalan, Fasa 2: Pembangkang, Fasa 3: PMX).
+- Each BANGANG point: `### N. [Punchy Title]` + one paragraph plain explanation + `**BANGANG:**` one-liner.
+
+### Audience register guide
+| Audience | Register | Depth | Style |
+|----------|----------|-------|-------|
+| **Abang Sado** | 100% BM, direct, emotional | Deep — identity deconstruction | Challenge but respect his investment |
+| **Makcik / group chat** | Very simple BM, short sentences | Surface but punchy | One point fits one WhatsApp message |
+| **Arif** | BM campur English | Deep — Jung, psychology, political theory | Analytical but not academic; real-talk |
+
+### Image visuals: PIL fallback
+- When MCP tools fail (Mage-Flow, Pollinations), **PIL/Pillow** is a reliable local fallback.
+- Use for: symbolic split-face compositions, light-dark contrast, text overlay, silhouette art.
+- Reference `image-text-editing` and `screenshot-editing` skills for PIL patterns.

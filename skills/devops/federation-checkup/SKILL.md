@@ -696,6 +696,48 @@ OpenCode attached to a pts/N means it's in an interactive session. **Don't inter
 | Unknowns not declared | F7 HUMILITY | Agent must explicitly state what it does not know |
 | Hallucination risk | F9 ANTI-HANTU | Check evidence grounding — should be ~0 when clean |
 
+## Entropy Watch Resolution
+
+When an entropy-watch cron delivery fires with findings, the standard resolution pattern:
+
+### 1. Probe Dirty Repos
+```bash
+for d in /root/{A-FORGE,AAA,GEOX,WEALTH,WELL}; do
+  echo "=== $d ==="
+  git -C "$d" status --short
+done
+```
+- `git diff --stat` to understand scope before committing
+- T1 auto-commit: conventional-commit + F2 evidence in body
+- Registry/ontology files are valid commits — they are data, not noise
+
+### 2. WELL Health Check
+- `curl -sf http://localhost:18083/health`
+- `degraded` + `WELL_OPERATOR_PRESENT` is **normal** — SELF-REPORT mode
+- State age < 1h = fresh. No action unless floor violations.
+
+### 3. Extract Linked Articles
+- Use `mcp__hound__mcp_smart_fetch` — web_extract can't extract URL content
+- Classify: PETRONAS/subsidy → WEALTH; geology/energy → GEOX; human → WELL
+
+### 4. Route to Domain Organs
+- **Known glitch:** WEALTH MCP bridge can fail while organ is healthy (18082 responds). Save data to forge_work and retry later.
+
+### 5. Seal or Defer
+- `arif_seal` needs F13 Ed25519 identity. Without it, save receipt to forge_work.
+- Append JSONL entry to entropy-watch audit trail.
+
+### 6. Delegate-to-OpenCode Pattern
+When Arif says "Spawn Open Code", use `delegate_task` with full context. Subagent handles: git commits, organ routing, seal attempt. Verify after: git status clean, receipt exists.
+
+### Known Blockers
+| Blocker | Cause | Workaround |
+|---------|-------|------------|
+| WEALTH MCP unreachable | MCP bridge glitch (organ healthy) | Save data to forge_work |
+| arif_seal blocked | Anonymous — no F13 Ed25519 | Save receipt to forge_work |
+
+---
+
 ## Port 3001 Auth Bypass — L10 Boundary
 
 **CRITICAL: Port 3001 returns 200 without auth token.**

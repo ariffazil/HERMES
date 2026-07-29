@@ -103,6 +103,81 @@ When state.json is overwritten with test/mock data:
    "
    ```
 
+## The Automated Keepalive Quarantine Cycle
+
+The system crontab runs `well_auto_keepalive.py` every 6 hours (`0 */6 * * *`). This script:
+
+1. Reads `/root/WELL/state.json`
+2. If `environment == "TEST"` or `truth_status` is `TEST`/`VOID`/`UNVERIFIED`:
+   - **Quarantines** the TEST state to `/root/WELL/state.test.json` (preserved as evidence)
+   - **Writes MINIMAL_PROD_SHELL** with `truth_status: INSUFFICIENT_DATA`,
+     `test_contamination: QUARANTINED`, `well_score: None`, `freshness: STALE`
+   - **Restarts** `well.service` to load the new state
+3. If PROD environment & truth not in quarantine list:
+   - Refreshes timestamps only — no vitals invented
+   - Restarts well.service
+
+### The Cycle Pattern
+
+When state.json contains TEST/MOCK data, the keepalive creates a loop:
+```
+TEST state → keepalive quarantines → MINIMAL_PROD_SHELL →
+restart WELL → timestamp refresh → TEST reappears → ...
+```
+
+Check the keepalive log at `/var/log/well-biometric-keepalive.log` for alternating `QUARANTINE` ↔ `timestamp-refresh`.
+
+The MINIMAL_PROD_SHELL has no `biometric` field → computed score ~39 (F2-honest — no valid data).
+
+**To break the cycle:** Write a PROD state with `environment: PROD`, `truth_status: OPERATOR_REPORTED`, AND a `biometric` block.
+
+### Direct Python State Write (alternative to bash inject)
+
+```python
+python3 -c "
+import json
+from datetime import datetime, timezone
+now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S+00:00')
+try:
+    with open('/root/WELL/state.json') as f: state = json.load(f)
+except: state = {}
+state.update({
+    'schema': 'AFWELL State Schema v2026.05.12',
+    'timestamp': now, 'operator_id': 'arif',
+    'environment': 'PROD',
+    'biometric': {'delta_s': 0.3, 'peace2': 0.7, 'kappa_r': 0.7, 'rasa': 'grounded', 'amanah': 0.9},
+    'metrics': {'cognitive': {'clarity': 7.0, 'decision_fatigue': 3.0}},
+    'well_score': 73.0, 'floors_violated': [],
+    'last_successful_read': now, 'last_successful_write': now,
+    'state_file_access': 'PASS', 'vault_access': 'OK',
+    'test_contamination': 'NO', 'contamination_quarantined': False,
+    'confidence': 'MEDIUM', 'freshness': 'FRESH',
+    'truth_status': 'OPERATOR_REPORTED',
+    'source_type': 'OPERATOR_REPORTED',
+    'evidence_class': 'SOVEREIGN_SELF_REPORT',
+    'telemetry_confidence': 'SELF_REPORT',
+    'reason': f'Hermes sovereign inject at {now}',
+    'honesty_banner': 'SELF-REPORT — sovereign inject, not wearable telemetry',
+    'safe_mode': 'off', 'arif_decision_required': False,
+    'w0': 'OPERATOR_VETO_INTACT / HIERARCHY_INVARIANT',
+    'identity': 'WELL', 'role': 'Body / Human Intelligence', 'authority': 'REFLECT_ONLY',
+})
+with open('/root/WELL/state.json', 'w') as f: json.dump(state, f, indent=2)
+"
+```
+Then: `systemctl restart well`
+
+### Multiple Freshness Monitoring Layers
+
+| Layer | Mechanism | Schedule | Staleness Threshold |
+|-------|-----------|----------|---------------------|
+| System crontab | `well_auto_keepalive.py` | Every 6h | auto-quarantine on TEST, refresh on PROD |
+| Hermes cron | `well_auto_feed.py` | 08:00, 20:00 MYT | 12h trigger for agent prompt |
+| OpenClaw cron | WELL freshness 12h | Every 12h | reports DEGRADED/HOLD |
+| WELL service | `/health` endpoint | On request | fresh <1h, stale 4-24h, expired >24h |
+
+An alert from one layer may show different staleness/duration — always probe `/health` for ground truth.
+
 ## Biometric Injection
 
 ### Quick (interactive)
@@ -121,12 +196,12 @@ Then confirms and restarts well.service.
 ### Full 13-signal injection
 ```bash
 /root/WELL/scripts/biometric_inject.sh --signals \
-  --signal-s05-sleep-architecture '{"hours": 7.5, "quality": 8, "debt_days": 0}' \
-  --signal-s06-metabolic-state '{"glucose_stable": true, "energy_level": 7}' \
-  --signal-s07-nutrition-hydration '{"water_ml": 1800, "meals": 2}' \
-  --signal-s08-movement-strength '{"steps": 4200, "strength_sessions": 0}' \
-  --signal-s09-pain-injury '{"level": 1, "sites": []}' \
-  --signal-s11-emotional-stress '{"subjective_load": 3, "anxiety": 2}'
+  --signal-s05-sleep-architecture '{\"hours\": 7.5, \"quality\": 8, \"debt_days\": 0}' \
+  --signal-s06-metabolic-state '{\"glucose_stable\": true, \"energy_level\": 7}' \
+  --signal-s07-nutrition-hydration '{\"water_ml\": 1800, \"meals\": 2}' \
+  --signal-s08-movement-strength '{\"steps\": 4200, \"strength_sessions\": 0}' \
+  --signal-s09-pain-injury '{\"level\": 1, \"sites\": []}' \
+  --signal-s11-emotional-stress '{\"subjective_load\": 3, \"anxiety\": 2}'
 ```
 
 ## Key Files

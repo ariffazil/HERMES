@@ -1,11 +1,12 @@
 ---
 name: shell-patterns
 category: devops
-tags: [bash, shell, scripting, patterns, pitfalls, set-euo-pipefail, grep]
+tags: [bash, shell, scripting, patterns, pitfalls, set-euo-pipefail, grep, vault, env, secrets]
 description: |
   Bash shell scripting patterns and pitfalls used across the arifOS federation.
   Covers `set -euo pipefail` gotchas, grep exit-code traps, variable quoting,
-  and other hard-won lessons from the federation's shell-script-heavy ops.
+  vault env var dedup detection, and other hard-won lessons from the federation's
+  shell-script-heavy ops.
 ---
 
 # Shell Patterns — arifOS Federation
@@ -102,6 +103,53 @@ EOF
 ```
 
 Use `printf` for config files, `&&` chains for multi-step commands. Never assume Termux paste handles heredocs — verify on the target device.
+
+### Vault env var dedup detection — multi-file sourcing trap (PROVEN 2026-07-29)
+
+> **See also:** `federation-secret-vault` skill — the KUNCI-MAS protocol
+> for unified secret vault management (Python generator, CI drift detector,
+> symlink architecture, systemd consumer mapping). This section covers
+> *detection*; that skill covers the *full lifecycle*: consolidation,
+> generation, verification, and maintenance across the federation.
+
+**Problem:** When the same `KEY=value` appears in multiple lines of a sourced `.env` file, or across multiple files that get sourced in sequence, **the last assignment wins**. Bash has no duplicate-key detection. A key added at line 49 but overwritten at line 512 silently breaks all consumers downstream.
+
+**Concrete failure pattern** (2026-07-29): `MINIMAX_API_KEY` appeared 3 times across `vault.env` (line 49, 385, 512) — one good key, two bad duplicates from an `/etc/environment` migration. Bash's `set -a && source` processed the file top-to-bottom: good key at 49, then bad key at 512 (`export MINIMAX_API_KEY=...`) overwrote it. Every API call got 401 until the duplicate was found and removed.
+
+**Detection pattern:**
+```bash
+# Find all occurrences of a key across vault files
+grep -n "^MINIMAX_API_KEY\|export MINIMAX_API_KEY" /root/.secrets/vault.env
+
+# Check what the ACTIVE value is after sourcing
+set -a && source /root/.secrets/vault.env && set +a
+echo "Active: ${MINIMAX_API_KEY:0:10}...${MINIMAX_API_KEY: -4}"
+
+# Cross-check against vault.flat.env (read by systemd)
+grep -n "^MINIMAX_API_KEY" /root/.secrets/vault.flat.env
+
+# Test the active key against the actual API endpoint
+curl -s "https://api.minimax.io/v1/chat/completions" \
+  -H "Authorization: Bearer $MINIMAX_API_KEY" \
+  -d '{"model":"MiniMax-M3","messages":[{"role":"user","content":[{"type":"text","text":"hi"}]}],"max_tokens":5}' \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅' if 'choices' in d else '❌')"
+```
+
+**Fix pattern:**
+1. Find ALL lines containing the key: `grep -n "KEY" file.env`
+2. Verify which values work: test each against the API
+3. Comment out bad duplicates: `sed -i 'NNNs/^/# /' file.env`
+4. Re-source and test again
+5. **Check ALL vault files** — the fix must propagate to `vault.env`, `vault.flat.env`, and any per-service env file (`mimo.env`, `qwen.env`, etc.)
+6. Verify no `export` statements at the bottom of the file overwrite the top definitions
+
+**Common sources of duplicates:**
+- `/etc/environment` migration (flat export dump appended to the bottom)
+- Per-service env files with overlapping keys (`mimo.env`, `a-forge.env`)
+- Backup/restore cycles that append instead of overwrite
+- Manual edits that add a new line instead of updating the existing one
+
+**Prevention:** Any `make vault-generate` target must dedup by grepping `^[A-Z_]*=` and asserting `sort | uniq -d` returns empty before writing. F11: git hook detects duplicate keys in staged changes.
 
 ### Python-on-target for complex remote file patching (shell-quoting escape valve)
 

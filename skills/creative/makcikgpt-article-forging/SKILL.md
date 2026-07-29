@@ -16,7 +16,7 @@ triggers:
   - "aku pun bias"
   - "real talk"
   - "jangan tipu diri sendiri"
-version: "1.6"
+version: "1.7"
 ---
 
 # MakcikGPT Article Forging — v1.0
@@ -103,10 +103,6 @@ The thread is the article's thesis. Without it, the article is just a news summa
 - ❌ HR/legal moralizing on routine internal docs (escalating "Internal Use" memos into espionage-grade liability — Arif cut me off when I did this)
 - ❌ Defensive padding before a sharp claim ("This is a sensitive area, but..." → just say it)
 - ❌ Symmetric bothsidesing when Arif says kutuk. If Arif says kutuk both sides hard, kutuk both sides hard. Don't rebalance.
-- ❌ **Epistemic labels in rakyat marhaen articles** — "OBS/INT/SPEC/SHADOW", "Epistemic:", "Ω₀" — Arif: "The moment aku nampak epistemik. Aku dah down. Malas nak baca." Keep epistemic discipline INTERNAL during forge, never in reader-facing text for relatable articles.
-- ❌ **Greek section headers for rakyat marhaen** — "Δ GROUND", "Ω MIND", "Ξ CAPITAL", "Ψ SOVEREIGN" — too academic. Use simple story headers: "Cerita pertama:", "Cerita kedua:", etc.
-- ❌ **Analyst jargon in BM** — "nisbah", "vakum akauntabiliti", "ROACE", "segmen" — translate to human language: "duit keluar vs masuk", "tak ada siapa periksa", "duit turun tiga tahun", "bahagian syarikat"
-- ❌ **Big numbers without context** — "RM67.6 bilion" means nothing to makcik kampung. Frame as: "RM67 bilion — tu lebih kurang satu per lima dari semua duit kerajaan"
 - ❌ **Epistemic labels in rakyat marhaen articles** — "OBS/INT/SPEC/SHADOW", "Epistemic:", "Ω₀" — Arif: "The moment aku nampak epistemik. Aku dah down. Malas nak baca." Keep epistemic discipline INTERNAL during forge, never in reader-facing text for relatable articles.
 - ❌ **Greek section headers for rakyat marhaen** — "Δ GROUND", "Ω MIND", "Ξ CAPITAL", "Ψ SOVEREIGN" — too academic. Use simple story headers: "Cerita pertama:", "Cerita kedua:", etc.
 - ❌ **Analyst jargon in BM** — "nisbah", "vakum akauntabiliti", "ROACE", "segmen" — translate to human language: "duit keluar vs masuk", "tak ada siapa periksa", "duit turun tiga tahun", "bahagian syarikat"
@@ -200,16 +196,22 @@ Quick checklist — every article must score on all 6:
 **Rasa audit (post-T×A×M×P×G×R).** After passing all 6 factors, run one final check: does the article have RASA? Rasa = embodied feeling. Data + manusia = rasa. Data sahaja = Excel. Manusia sahaja = emosi tanpa ground. Test: "Adakah pembaca boleh rasa sakit di belakang nombor ni?" If the article has correct numbers but no human face — it fails rasa. Fix: add a specific person (jiran, anak buah, engineer, makcik) who bears the consequence. The human face cannot be invented — it must be archetypal but grounded (e.g., "anak buah umur 24 tahun kerja kilang" not "seorang pekerja"). Rasa is what separates MakcikGPT from a financial analyst in BM clothing. Proven 2026-07-13: 3 articles rewritten with rasa (petronas-atm-kerajaan, ai-johor-rakyat-2026, suriname-exxon-cabut).
 
 **External verification protocol:** After self-audit, run at least ONE external verification (Gemini, web search, peer check) on the highest-risk number. In session 2026-07-13, Gemini caught RM55bn vs RM101.6bn error that internal review missed.
-**Rasa audit (post-T×A×M×P×G×R).** After passing all 6 factors, run one final check: does the article have RASA? Rasa = embodied feeling. Data + manusia = rasa. Data sahaja = Excel. Manusia sahaja = emosi tanpa ground. Test: "Adakah pembaca boleh rasa sakit di belakang nombor ni?" If the article has correct numbers but no human face — it fails rasa. Fix: add a specific person (jiran, anak buah, engineer, makcik) who bears the consequence. The human face cannot be invented — it must be archetypal but grounded (e.g., "anak buah umur 24 tahun kerja kilang" not "seorang pekerja"). Rasa is what separates MakcikGPT from a financial analyst in BM clothing. Proven 2026-07-13: 3 articles rewritten with rasa (petronas-atm-kerajaan, ai-johor-rakyat-2026, suriname-exxon-cabut). | **R** (Correction/memory) | Ada acknowledgment uncertainty? Boleh correct kemudian? | Mitos beku |
-
-**Zero-factor rule:** Kalau mana-mana factor = 0, article tak boleh publish. Fix dulu.
-
-**External verification protocol:** After self-audit, run at least ONE external verification (Gemini, web search, peer check) on the highest-risk number. In session 2026-07-13, Gemini caught RM55bn vs RM101.6bn error that internal review missed.
 
 ## Stage 5: VERIFY — Build
 
+### Before build: check deps
+
 ```bash
-/root/arif-sites/sites/arif-fazil.com/npm run build
+cd /root/arif-fazil.com/sites/arif-fazil.com
+npm install --legacy-peer-deps    # REQUIRED if dist/ doesn't exist or deps stale
+```
+
+Without `--legacy-peer-deps`, `npm ci` fails with ERESOLVE peer dependency conflict
+(vite-plugin-ssg vs @vitejs/plugin-react version mismatch).
+
+### Build
+
+```bash
 npm run build
 ```
 
@@ -218,22 +220,66 @@ If build fails, check:
 - Import statement in index.ts
 - Metadata shape matches `MakcikArticleMeta` interface
 
+### Post-build: generate static HTML/MD files for bot/crawler
+
+TS article files alone only serve the React SPA. Bots (GPTBot, ClaudeBot, curl)
+read from `public/makcikgpt-md/`. NEW article slugs need static HTML generated.
+Use the extraction script pattern (see `references/build-fallback-html-extraction.md`).
+
 ---
 
-## Stage 5: DEPLOY
+## Stage 6: DEPLOY
 
-**Primary deploy: Cloudflare Pages (auto-deploy on push).**
+### Automated Deploy (One Command)
+
+Use `deploy-makcik.sh` — available under this skill at `scripts/deploy-makcik.sh`:
 
 ```bash
-cd /root/ARIF-SITES
-git add sites/arif-fazil.com/src/data/makcikgpt/<article>.ts sites/arif-fazil.com/src/data/makcikgpt/index.ts
-git commit -m "makcikgpt: <title> (<date>)"
-git push origin main    # NOT "git push main" — that fails (interprets 'main' as remote name)
+# From site root (e.g. /root/arif-fazil.com/sites/arif-fazil.com/)
+bash /path/to/deploy-makcik.sh        # full pipeline
+bash /path/to/deploy-makcik.sh --dry-run      # scavenger only
+bash /path/to/deploy-makcik.sh --verify-only   # check live state
 ```
 
-Cloudflare Pages auto-builds from `main` branch. ~2 min propagation.
+This script automates ALL 3 root causes of failed deploys:
+1. **Scavenger** — detects unregistered .ts files missing from index.ts or essays.json BEFORE building
+2. **--legacy-peer-deps** — auto-handled when node_modules stale
+3. **Caddy strip_prefix** — verified in deploy phase (bot 200 check catches this)
 
-**VPS deploy (direct):** `bash scripts/deploy-site.sh arif-fazil.com --apply`
+### Manual Deploy Steps (if script unavailable)
+
+### Step 1: Sync static HTML files to webroot
+
+```bash
+rsync -av public/makcikgpt-md/ /var/www/html/arif/makcikgpt-md/
+```
+
+### Step 2: Sync built dist to webroot
+
+```bash
+rsync -av dist/ /var/www/html/arif/
+```
+
+### Step 3: Reload Caddy
+
+```bash
+sudo caddy reload --config /etc/caddy/Caddyfile
+```
+
+**Do NOT** use `deploy-vps.sh` — it validates registry schema which may fail with
+`schema_version` mismatch. `scripts/deploy-site.sh arif-fazil.com --apply` is the
+reliable alternative but manual rsync (steps 1-3) is safest.
+
+### Cloudflare Pages alternative (slower)
+
+```bash
+cd /root/arif-fazil.com
+git add sites/arif-fazil.com/src/data/makcikgpt/<article>.ts sites/arif-fazil.com/src/data/makcikgpt/index.ts sites/arif-fazil.com/src/data/essays.json
+git commit -m "makcikgpt: <title> (<date>)"
+git push origin main
+```
+
+Cloudflare ~2 min propagation. VPS deploy is immediate.
 
 ### When Including Links in WhatsApp Templates (2026-07-28)
 
@@ -272,7 +318,34 @@ MakcikGPT articles are React SPA components. For standalone static data pages (e
 
 **Pitfall:** Caddyfile changes require `sudo`. Use `sudo sed -i` for targeted inserts. Always validate: `sudo caddy validate --config /etc/caddy/Caddyfile` before reloading. The authoritative Caddyfile is at `/etc/caddy/Caddyfile` — the repo copy (`deploy/Caddyfile`) is the SOURCE but may be missing runtime overlays. NEVER `cp deploy/Caddyfile /etc/caddy/Caddyfile` — this overwrites live routes. Edit the live file directly with `sudo sed -i`.
 
-**Note:** Site is a React SPA. `curl` returns shell HTML; content loads client-side from JS bundle. Verify article exists in bundle: `grep "slug-name" /root/ARIF-SITES/sites/arif-fazil.com/dist/assets/index-*.js`
+**Alternative: Non-React Static HTML articles (public/makcikgpt-md/)**
+
+Not all MakcikGPT articles need to be TypeScript React components. For rapid political commentary (Election hot takes, quick-response pieces), use the **static HTML path**:
+
+1. Create the article files in `public/makcikgpt-md/`:
+   ```
+   public/makcikgpt-md/<slug>.html    # Full article HTML (matches existing cover/fact-box style)
+   public/makcikgpt-md/<slug>.md      # Minimal markdown with redirect link
+   ```
+
+2. Register in the SINGLE SOURCE OF TRUTH (`src/data/essays.json`):
+   - Add entry with `makcikgpt` tag, `lang: "bm"`, `dest: {"type": "onsite", "path": "/world/makcikgpt/<slug>"}`, `seal: "999"`
+   - See existing entries for the exact shape (id, title, date, series, tags, dest, seal)
+
+3. Regenerate index: `node scripts/generate-makcik-index.cjs`
+   - This overwrites `public/makcikgpt-md/index.html` from essays.json — do NOT edit index.html directly
+
+4. Deploy — see VPS deploy section below
+
+5. Verify: `curl -s -o /dev/null -w "%{http_code}" "https://arif-fazil.com/world/makcikgpt/<slug>"` → should return 200
+
+**Pitfall:** The index.html at `public/makcikgpt-md/index.html` is AUTO-GENERATED from `src/data/essays.json` via `scripts/generate-makcik-index.cjs`. Do NOT edit it directly.
+
+**Pitfall:** When this skill's `npm run build` TypeScript step fails (e.g., `error TS2688: Cannot find type definition file for 'vite/client'`), you can still deploy static HTML files directly. The prebuild step succeeded — feed, sitemap, llms, and makcikgpt-md/index.html are all updated. What's missing is the individual .html/.md files per article — see `references/build-fallback-html-extraction.md` for the full workflow (Python extraction script + full deploy command set).
+
+**Pitfall:** `deploy-vps.sh` validates the registry schema and may fail if `infra/runtime-overlays.json` has `schema_version: 2` but the script expects `schema_version: 1`. Bypass by manually copying files to webroot (`/var/www/html/arif/`). The _routes.json in webroot handles `/world/makcikgpt/` → `/makcikgpt-md/` routing.
+
+**Note:** Site is a React SPA. `curl` returns shell HTML; content loads client-side from JS bundle. Verify article exists in bundle: `grep "slug-name" /root/arif-fazil.com/sites/arif-fazil.com/dist/assets/index-*.js`
 
 **Reading articles from TypeScript source files (PREFERRED for corpus work):**
 
@@ -281,13 +354,13 @@ When VPS access is available, extract directly from source `.ts` files — faste
 ```python
 import re
 from hermes_tools import read_file
-makcikgpt_dir = "/root/arif-sites/sites/arif-fazil.com/src/data/makcikgpt"
+makcikgpt_dir = "/root/arif-fazil.com/sites/arif-fazil.com/src/data/makcikgpt"
 # Each .ts file (except index.ts, types.ts) = one article
 # Extract HTML: re.search(r"html: `(.*?)`", content, re.DOTALL)
 # Strip tags: re.sub(r'<[^>]+>', ' ', html)
 ```
 
-Source path: `/root/arif-sites/sites/arif-fazil.com/src/data/makcikgpt/*.ts`. This is the AUTHORITATIVE source. The JS bundle is derived.
+Source path: `/root/arif-fazil.com/sites/arif-fazil.com/src/data/makcikgpt/*.ts`. This is the AUTHORITATIVE source. The JS bundle is derived.
 
 **Reading articles from JS bundle (fallback when VPS not accessible):**
 Individual article URLs (`/world/makcikgpt/<slug>`) redirect to the SPA index. To extract full article text:
@@ -314,11 +387,11 @@ Verify: `curl -sf "https://arif-fazil.com/wealth/makcikgpt/" | grep "slug-name"`
 
 | What | Path |
 |------|------|
-| Article .ts files | `/root/ARIF-SITES/sites/arif-fazil.com/src/data/makcikgpt/` |
-| Index + metadata | `/root/ARIF-SITES/sites/arif-fazil.com/src/data/makcikgpt/index.ts` |
-| Types | `/root/ARIF-SITES/sites/arif-fazil.com/src/data/makcikgpt/types.ts` |
-| Site root | `/root/ARIF-SITES/sites/arif-fazil.com/` |
-| Deploy script | `/root/ARIF-SITES/deploy-vps.sh` |
+| Article .ts files | `/root/arif-fazil.com/sites/arif-fazil.com/src/data/makcikgpt/` |
+| Index + metadata | `/root/arif-fazil.com/sites/arif-fazil.com/src/data/makcikgpt/index.ts` |
+| Types | `/root/arif-fazil.com/sites/arif-fazil.com/src/data/makcikgpt/types.ts` |
+| Site root | `/root/arif-fazil.com/sites/arif-fazil.com/` |
+| Deploy script | `/root/arif-fazil.com/deploy-makcik.sh` |
 
 ---
 
@@ -532,24 +605,44 @@ When new evidence emerges AFTER publishing (e.g., Companies House data, new fili
 
 Proven 2026-07-22: SEARAH article updated post-publish after Companies House deep-read revealed true 6:6 board structure (not implied 2:2), SEARA→SEARAH name change, Silia Anak Hamdan token Sarawak appointment, and 31 May mass restructure timeline. Banner placed between cover and first `## Hai Makcik` heading.
 
-## Build Verification — JS Bundle Hash Match
+## Deploy Pitfalls — 3 Root Causes
 
-After deploy, always verify the JS bundle hash on the live site matches the dist:
+Deploy consistently fails because of these 3 root causes (proven 2026-07-29):
+
+1. **Register in TWO places or article is invisible.** Slug must appear in BOTH `src/data/makcikgpt/index.ts` (import + array + meta) AND `src/data/essays.json` (dest.path). Missing either → article not in SPA, feed, sitemap, or llms.txt. **Fix:** deploy-makcik.sh scavenger detects this before building.
+2. **`npm install` without `--legacy-peer-deps` → build failure.** The `vite-plugin-ssg` package declares a peer dependency range that conflicts with React 19. Without the flag, TypeScript build fails with `TS2688: Cannot find type definition file for 'vite/client'`. **Fix:** deploy-makcik.sh auto-detects stale node_modules and runs with the flag.
+3. **Caddy `uri strip_prefix` missing for bot handler.** Listing returns 200 for browser but 404 for bot (AI crawlers). The `@ai-bot-landing` handler in `/etc/caddy/Caddyfile` needs `uri strip_prefix /world/makcikgpt` before serving from `makcikgpt-md/`. **Fix:** deploy-makcik.sh verify phase catches bot 404 as a failure.
+
+## Deploy Verification Protocol (MANDATORY)
+
+After every deploy, run this full checklist before reporting done:
 
 ```bash
-# 1. Get dist bundle name
-DIST_JS=$(ls -t /root/arif-sites/sites/arif-fazil.com/dist/assets/*.js | head -1 | xargs basename)
+# 1. JS bundle hash — dist vs live MUST match
+DIST_JS=$(ls -t /root/arif-fazil.com/sites/arif-fazil.com/dist/assets/*.js | head -1 | xargs basename)
+LIVE_JS=$(curl -s "https://arif-fazil.com/" | grep -oP 'index-[A-Za-z0-9]+\\.js')
+if [ "$DIST_JS" = "$LIVE_JS" ]; then echo "✅ JS bundle match: $DIST_JS"; else echo "❌ MISMATCH — redeploy"; fi
 
-# 2. Get live bundle name
-LIVE_JS=$(curl -s "https://arif-fazil.com/" | grep -oP 'index-[A-Za-z0-9]+\.js')
+# 2. New article returns 200 (bot + browser)
+curl -sk --resolve arif-fazil.com:443:127.0.0.1 -o /dev/null -w "bot: %{http_code}\n" "https://arif-fazil.com/world/makcikgpt/<slug>"
+curl -sk --resolve arif-fazil.com:443:127.0.0.1 -H "User-Agent: Mozilla/5.0" -o /dev/null -w "browser: %{http_code}\n" "https://arif-fazil.com/world/makcikgpt/<slug>"
 
-# 3. Compare
-[ "$DIST_JS" = "$LIVE_JS" ] && echo "MATCH" || echo "MISMATCH — redeploy"
+# 3. Listing page 200 (BOTH bot + browser)
+curl -sk --resolve arif-fazil.com:443:127.0.0.1 -o /dev/null -w "listing bot: %{http_code}\n" "https://arif-fazil.com/world/makcikgpt/"
+curl -sk --resolve arif-fazil.com:443:127.0.0.1 -H "User-Agent: Mozilla/5.0" -o /dev/null -w "listing browser: %{http_code}\n" "https://arif-fazil.com/world/makcikgpt/"
+
+# 4. Feed, sitemap, llms.txt contain slug
+curl -s "https://arif-fazil.com/feed.xml" | grep -q "<slug>" && echo "✅ feed.xml" || echo "❌ feed.xml"
+curl -s "https://arif-fazil.com/sitemap.xml" | grep -q "<slug>" && echo "✅ sitemap.xml" || echo "❌ sitemap.xml"
+curl -s "https://arif-fazil.com/llms.txt" | grep -q "<slug>" && echo "✅ llms.txt" || echo "❌ llms.txt"
+
+# 5. Listing page has article entry
+curl -s "https://arif-fazil.com/world/makcikgpt/" | grep -q "<slug>" && echo "✅ Listing has entry" || echo "❌ Missing from listing"
 ```
 
-If mismatch: the CDN or Caddy may be serving a cached index.html pointing to an old JS bundle. Re-rsync dist/index.html and check `cf-cache-status` in response headers.
-
-Proven 2026-07-22: After SEARAH article image fix, the old `index-niapUkiG.js` stayed on disk while new `index-DB9-pkyB.js` was deployed. Hash verification confirms which is active and catches stale deployments.
+Listing 404 for bot but 200 for browser = Caddy `@ai-bot-landing` handler missing
+`uri strip_prefix`. Fix: add `uri strip_prefix /world/makcikgpt` before serving
+index.html from makcikgpt-md/.
 
 ## Image Embedding in MakcikGPT Articles
 
@@ -557,13 +650,13 @@ Proven 2026-07-22: After SEARAH article image fix, the old `index-niapUkiG.js` s
 
 ```bash
 # 1. Copy image to public/ BEFORE building
-cp /path/to/source.jpg /root/arif-sites/sites/arif-fazil.com/public/images/makcikgpt/<filename>.jpg
+cp /path/to/source.jpg /root/arif-fazil.com/sites/arif-fazil.com/public/images/makcikgpt/<filename>.jpg
 
 # 2. Reference in article HTML (use unique timestamp/hash filename to avoid CDN 404 cache):
 # <img src="/images/makcikgpt/<filename>.jpg" alt="..." style="width:100%;max-width:600px;margin:1.5em 0;border-radius:8px;" />
 
 # 3. Build
-cd /root/arif-sites/sites/arif-fazil.com && npm run build
+cd /root/arif-fazil.com/sites/arif-fazil.com && npm run build
 
 # 4. Deploy — sync dist/ to VPS webroot
 rsync -av dist/images/ /var/www/html/arif/images/
@@ -612,7 +705,6 @@ Before publishing any article that makes claims about the SYSTEM ITSELF (arifOS 
 6. If external disagrees → the disagreement SURVIVES, it is not averaged
 7. If external unavailable → HOLD (don't publish until quota resets or manual verification)
 8. Kernel-level enforcement also exists in `arifosmcp/core/paradox/recursive_governance_locks.py` — EXTERNAL_WITNESS_TOOLS only contains external auditors (x-audit-gemini, x-audit-gpt), NOT internal tools (arif_judge, arif_seal)
-5. If external unavailable → HOLD (don't publish until quota resets or manual verification)
 
 **What counts as "external":** Different model (Gemini vs internal), different provider (DeepSeek vs arifOS), different perspective (adversarial auditor prompt). Same model with different prompt = partial external.
 
@@ -660,39 +752,32 @@ When Arif says "digest all my makcikgpt writings" or "review the full corpus" �
 
 For the live corpus index (all articles, slugs, dates, themes, key numbers), see [references/corpus-inventory.md](references/corpus-inventory.md). Last verified: 2026-07-18 (15 articles, V2.4).
 
-Key: articles are TypeScript files at `/root/ARIF-SITES/sites/arif-fazil.com/src/data/makcikgpt/`. Extract HTML via regex from template literals, organize into investigative arcs (SEARAH, PETRONAS institutional, Malaysia systemic), report evidence quality per article.
+Key: articles are TypeScript files at `/root/arif-fazil.com/sites/arif-fazil.com/src/data/makcikgpt/`. Extract HTML via regex from template literals, organize into investigative arcs (SEARAH, PETRONAS institutional, Malaysia systemic), report evidence quality per article.
 
 ## Pitfalls
 
 1. **Don't write without research.** Minimum 3 searches before writing. MakcikGPT articles are data-driven, not opinion-driven.
 2. **Don't use English in body.** BM only. English for direct quotes, data values, and proper nouns.
 3. **Don't summarize news.** MakcikGPT finds the HIDDEN THREAD. If the article reads like a news summary, rewrite.
-4. **Register in BOTH places or article won't appear in RSS/llms.txt:**
+4. **Register in BOTH places or article won't appear in RSS/sitemap/llms.txt:**
    - `src/data/makcikgpt/index.ts`: add import + `makcikArticleModules` + `makcikArticlesMeta` entry
    - `src/data/essays.json`: add entry with `lang: "bm"`, `dest.type: "onsite"`, `dest.path: "/world/makcikgpt/<slug>"`
-5. **Don't skip the build.** Always verify with `npm run build` before deploying.
-5. **Don't skip the build.** Always verify with `npm run build` before deploying.
-6. **Don't deploy without verifying.** Check the built site loads the new article.
+   - **Article scavenger audit:** Before any deploy, scan for orphan .ts files that exist but aren't registered in index.ts:
+     `for f in src/data/makcikgpt/*.ts; do slug=$(basename "$f" .ts); [ "$slug" = "index" ] || [ "$slug" = "types" ] || [ "$slug" = "fix" ] || [ "$slug" = "jsonld-blocks" ] || grep -q "'$slug'" src/data/makcikgpt/index.ts || echo "⚠️ UNREGISTERED: $slug"; done`
+   - **NOTE:** index.ts uses SINGLE quotes for slugs (`'slug-name'`), not double quotes. A grep for `"$slug"` will return false negatives.
+   - **essays.json check:** Also verify registration in essays.json via `grep "/world/makcikgpt/$slug" src/data/essays.json`. The slug lives in the `dest.path` field.
+5. **Don't skip the build.** Always run `npm run build` before deploying. If build fails with TS2688 (vite/client type defs), run `npm install --legacy-peer-deps` first.
+6. **Don't deploy without verifying.** Run the Deploy Verification Protocol (above) — check JS bundle hash, article 200, listing 200, feed/sitemap/llms.txt all contain the slug.
 7. **Don't use the cover-title for the slug.** Slug should be kebab-case English, title can be BM.
 8. **Don't omit the epistemic declaration for kutuk-mode articles.** But for rakyat marhaen articles — strip it. Arif: "The moment aku nampak epistemik. Aku dah down." Detect from phrasing: "rakyat marhaen", "makcik kampung", "relatable", "jangan susah" = rakyat marhaen mode.
 9. **VERIFY EVERY FINANCIAL NUMBER before publishing.** Cross-check against primary sources (PETRONAS IR, FRED, BNM). In session 2026-07-13, FY2022 PAT was incorrectly stated as RM55b (actual: RM101.6b). Gemini external audit caught it. Pitfall: mixing FY2024 numbers with FY2022 narrative. Always check the five-year table in IR2025 page 218.
-9. **VPS deploy via `deploy-vps.sh` works (verified 2026-07-06).** If npm ci fails with peer-dependency errors, the VPS deploy script handles it separately. Both `deploy-vps.sh` and `git push origin main` are valid deploy paths. VPS is immediate; Cloudflare has ~2 min propagation.
-11. **Don't moralize confidentiality on routine internal docs.** When Arif shares an internal email (HRBP memo, MYPR procedure, division circular), treat as governance visibility, NOT as classified leak. "Internal Use For Internal Distribution Only" = internal etiquette, not securities-grade confidentiality. Don't cascade the situation as espionage-grade breach with "liabilities" / "audit trail" framing that doesn't apply. HRBP process memos are NOT trade secrets. If unsure, ask "apa yang secret sangat?" instead of escalating.
-12. **Don't default to v1 kutuk when Arif asks for mass-reach essay.**
-- `references/deploy-architecture.md` — Cloudflare Pages + VPS deploy mechanics
-- `references/research-pattern.md` — search strategy & evidence tagging
-- `references/hitl-essay-v2-2026-07-10.md` — concrete example of "kutuk mode" essay
-- `references/hitl-essay-2026-07-10.md` — kutuk mode essay (dual-target sharp critique)
-- `references/narrative-debunking-pattern.md` — 3-layer pattern for articles that debunk popular narratives. "Betul, tapi..." rhythm: acknowledge kernel truth → show what's wrong → reveal hidden thread. Proven 2026-07-13 (PETRONAS ATM article). Includes pitfalls (don't fully reject/confirm, data must be OBS, don't use word "myth").
-- `references/religious-authority-research-brief.md` — Malaysia religious authority misconduct research brief. 4 categories (sexual abuse, institutional failure, financial misconduct, power without oversight). Potential MakcikGPT series on institutional religious accountability. Needs live verification before publish. Compiled 2026-07-18.
-- `references/searah-evidence-archiving-pattern.md` — immutable evidence pack pipeline: Companies House deep-read → press release fetch → WoodMac analysis → evidence ledger → browser screenshots. Proven 2026-07-22 (SEARAH exposé).
-- `references/rakyat-marhaen-voice-pattern.md` — how to write for makcik kat pasar: no epistemic labels, no Greek symbols, numbers as words, metaphors replace analysis. Proven 2026-07-13. Includes iteration pattern (3 versions: modern → kampung → F2-corrected kampung).
-- `references/agentic-web-optimization.md` — bot markdown bypass, llms-full.txt, semantic anchors for RAG chunking, JSON-LD ClaimReview. Stage 7 of the pipeline. Proven 2026-07-15.
-- `references/rasa-embodiment-pattern.md` — how to add rasa (embodied feeling) to articles: data + manusia = rasa. Includes 3-article rewrite examples, the rasa test, and what rasa is NOT. Proven 2026-07-13.
-- `references/petronas-institutional-knowledge.md` — PETRONAS financial metrics, segment breakdowns, dividend history, Gentari analysis, Petros-Sarawak timeline, vision/mission evolution, key figures. Compiled 2026-07-13/14. Use as primary reference for PETRONAS articles.
-- `references/pre-publish-audit-framework.md` — T×A×M×P×G×R pre-publish checklist. MANDATORY before every publish. Includes 13-article audit results, known pitfalls, external verification protocol. Proven 2026-07-13.
-- `references/external-auditor-framework.md` — External auditor agent cards (ChatGPT/Gemini/Grok), Gödel lock enforcement code paths, Anti-Calhoun gate, tiered Φ_external, provider separation rules. Single source of truth for how MakcikGPT articles get externally validated. Proven 2026-07-15.
-- `references/site-infrastructure-audit-pattern.md` — Edge + origin dual probe for site auditing. Diagnosing blank pages (hash mismatch, runtime error, stub). Cloudflare cache purge. arifOS kernel crash recovery. Proven 2026-07-16 (Kimi Code audit caught 4 failures browser audit missed).
+10. **VPS deploy is safer than Cloudflare Pages.** Use manual rsync (dist/ + public/makcikgpt-md/) + caddy reload. `deploy-vps.sh` may fail with registry schema validation; `scripts/deploy-site.sh arif-fazil.com --apply` is reliable but manual sync is safest.
+11. **Don't moralize confidentiality on routine internal docs.** When Arif shares an internal email (HRBP memo, MYPR procedure, division circular), treat as governance visibility, NOT as classified leak. "Internal Use For Internal Distribution Only" = internal etiquette, not securities-grade confidentiality.
+12. **Don't default to v1 kutuk when Arif asks for mass-reach essay.** When Arif signals "pastikan manusia boleh relate" / "relate to my life" / "bukan untuk AI lab orang", switch to v2 relatable mode automatically.
+13. **"Verify again" = full re-check, not just confirmation.** When Arif says "verify again" or "check balik", re-run verification against primary sources. Don't just confirm.
+14. **"Check balik X" = find the primary source.** Search the SOURCE ARTICLE title, not the person's name + role. Wrong search terms produce false negatives.
+15. **NEVER report access blocks as problems. NEVER ask Arif to paste content.** Exhaust the full fallback chain (search → browser → forge_search → subagent → local files → training data) before admitting defeat.
+16. **Don't assume deploy = distribution.** After deploying to arif-fazil.com, run Stage 8 (DISTRIBUTE): Telegram link, WhatsApp excerpt, social teaser. "Published on arif-fazil.com" is not "read by jiran-jiran."
 
 ## Cloudflare Cache vs VPS Files
 
@@ -712,25 +797,18 @@ When tokens.css or other shared assets show different sizes across sites (e.g., 
 **arifOS watchdog:** `/root/.hermes/scripts/arifos-watchdog.sh` — cron every 5 min. Detects restart delta, zombie state (systemd=active but port unbound), unhealthy state. Log to `/var/log/arifos-watchdog.log`. No email.
 
 Proven 2026-07-16: Cloudflare cache served stale tokens.css for 3+ hours after VPS files were fixed.
+
+## References
+
 - `references/session-2026-07-15-learnings.md` — Key learnings: "Fix all" pattern, 13-article audit pattern, rasa rewrite pattern, Gödel lock now LIVE in kernel, unified site header, SOUL.md v3 sealed, infrastructure audit edge+origin pattern, "verify again" = full re-check not confirmation.
 - `references/site-deployment-pitfalls.md` — AAA Cockpit dist/ in .gitignore (must copy to /var/www/html/aaa/), arifOS kernel restart pattern (stuck deactivating → kill → start), A-FORGE stub redirect, GitHub push protection Mapbox key.
-11. **Don't moralize confidentiality on routine internal docs.** When Arif shares an internal email (HRBP memo, MYPR procedure, division circular), treat as governance visibility, NOT as classified leak. "Internal Use For Internal Distribution Only" = internal etiquette, not securities-grade confidentiality. Don't cascade the situation as espionage-grade breach with "liabilities" / "audit trail" framing that doesn't apply. HRBP process memos are NOT trade secrets. If unsure, ask "apa yang secret sangat?" instead of escalating.
-12. **Don't default to v1 kutuk when Arif asks for mass-reach essay.** When Arif signals "pastikan manusia boleh relate" / "relate to my life" / "bukan untuk AI lab orang" / asks for an essay meant for general professional audience (LinkedIn, Facebook, public sharing), switch to v2 relatable mode automatically. v2 is not softer — it redirects the dual-target critique to land on the reader's own desk using second-person, 3-reason mechanical breakdown, hostage reframe, 5-pattern audit, 3-question self-audit closer. Don't ask "v1 atau v2?" — detect from phrasing.
-20. **"Verify again" = full re-check, not just confirmation.** When Arif says "verify again" or "check balik," he's not asking for confirmation — he wants a fresh pass against primary sources. Don't just say "confirmed" — actually re-run the verification. In session 2026-07-14, Arif showed a Gemini audit that flagged RM55bn vs RM101.6bn. I had to re-verify ALL numbers, not just the flagged one. Pattern: external audit triggers full re-check of ALL financial claims, not just the ones flagged.
-21. **"Check balik X" = find the primary source, not confirm it's missing.** When Arif says "check balik Petronas CLIP" or similar, he's challenging you to find the ORIGINAL document. In session 2026-07-15, I concluded PETRONAS CEO "Rastam" was fictional because my search for "PETRONAS CEO Rastam" returned wrong people. Arif pointed me to The Edge Malaysia 2010 article — the quotes were real (Rastam was founding exec director, not CEO). Pitfall: searching with wrong name/spelling/role → false negative. Always search the SOURCE ARTICLE before concluding "not found." Fix: search for the ARTICLE title, not the person's name + role.
-22. **NEVER report access blocks as problems. NEVER ask Arif to paste content.** When `web_extract`, `browser_navigate`, or `curl` fail (Cloudflare, CAPTCHA, Tavily 432), DO NOT report the block to Arif. Exhaust the FULL fallback chain before admitting defeat. The user's expectation: solve the problem, don't report it. "Jangan menyusahkan manusia. Jadi bangang!!" (Arif, 2026-07-18).
-
-**Fallback chain (try in order):**
-1. `web_search` (Tavily — default, may 432)
-2. `browser_navigate` to the URL directly (may Cloudflare)
-3. A-FORGE MCP `forge_search` (Brave API, port 7072) — call via `curl -s -X POST http://127.0.0.1:7072/mcp -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"forge_search","arguments":{"query":"...","limit":10}}}'`
-4. `browser_navigate` to alternative search engines (Bing, DuckDuckGo, Yahoo, Sinar Harian, FMT)
-5. `delegate_task` — spawn background subagent with different search terms
-6. **Read local source files** — if the content is on the VPS (e.g., MakcikGPT articles at `/root/arif-sites/sites/arif-fazil.com/src/data/makcikgpt/`), read directly
-7. **Use training data** — compile from knowledge, clearly marking as "needs live verification"
-8. LAST RESORT: tell Arif what you tried and what you found, ask for the ONE piece you couldn't get
-
-**What NOT to do:** Report "Cloudflare blocked me" as if that's an acceptable outcome. Report "Tavily down" and stop. Ask Arif to paste article content. Run 10+ browser attempts on the same blocked site instead of trying alternatives.
-
-Proven 2026-07-18: Tavily down (432), all search engines CAPTCHA'd, A-FORGE ports down (7071/7072 unreachable), subagent interrupted after 19 failed API calls. Last resort: read local TypeScript source files for MakcikGPT corpus digest. The content was on the VPS the whole time — just needed to look locally instead of fighting search engines.
-23. **Don't assume deploy = distribution.** In session 2026-07-18, strategic review revealed 14 articles published but zero distribution path — no Telegram channel, no WhatsApp format, no social forwarding. The content was strong; the pipe didn't exist. "Published on arif-fazil.com" is not the same as "read by jiran-jiran." After deploy (Stage 6), always run Stage 8 (DISTRIBUTE). The hardest part is the content; the easiest part is the pipe. Build the pipe.
+- `references/deploy-architecture.md` — Cloudflare Pages + VPS deploy mechanics
+- `references/research-pattern.md` — search strategy & evidence tagging
+- `references/hitl-essay-v2-2026-07-10.md` — concrete example of "kutuk mode" essay
+- `references/hitl-essay-2026-07-10.md` — kutuk mode essay (dual-target sharp critique)
+- `references/narrative-debunking-pattern.md` — 3-layer pattern for articles that debunk popular narratives. "Betul, tapi..." rhythm: acknowledge kernel truth → show what's wrong → reveal hidden thread.
+- `references/religious-authority-research-brief.md` — Malaysia religious authority misconduct research brief.
+- `references/searah-evidence-archiving-pattern.md` — immutable evidence pack pipeline: Companies House deep-read → press release fetch → WoodMac analysis → evidence ledger → browser screenshots.
+- `references/rakyat-marhaen-voice-pattern.md` — how to write for makcik kat pasar: no epistemic labels, no Greek symbols, numbers as words, metaphors replace analysis.
+- `references/external-auditor-framework.md` — External auditor agent cards (ChatGPT/Gemini/Grok), Gödel lock enforcement code paths.
+- `references/site-infrastructure-audit-pattern.md` — Edge + origin dual probe for site auditing. Diagnosing blank pages (hash mismatch, runtime error, stub). Cloudflare cache purge.

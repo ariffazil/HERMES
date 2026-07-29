@@ -246,6 +246,15 @@ for agent_key, agent_data in manifest['agents'].items():
 7. **Treating substrate as domain** — substrate skills are TIMELESS. If it references a specific tool version or API, it's domain.
 8. **Agent cards rot silently** — model fields, MCP counts, skill lists in agent cards go stale within weeks. The card says `claude-sonnet-4` but the binary uses `deepseek-v4-pro`. Audit cards against live config at least monthly. Check: model, binary path, MCP servers, skills list, FI slot, **A2A endpoint**, **MCP binding**. Pattern: read agent card → read live config → diff → update card. See `references/agent-card-alignment.md` for full 3-phase protocol including contradiction detection (harness vs forge vs registry), orphan archival, and registry sync.
 9. **Sibling-agent file conflicts during parallel skill edits.** When two agents edit the same SKILL.md concurrently (common in a multi-agent federation), the Hermes patch/skill_manage tools handle in-line diffs gracefully, but FULL-FILE REWRITES (Python scripts, `write_file` on the whole content) silently overwrite the other agent's changes. Mitigation: (a) use `skill_manage(action='patch')` for targeted edits rather than rewriting the entire file; (b) if a full-file write is unavoidable, `skill_view()` the current content first and merge the delta; (c) after any write, verify the file's `git diff` or `yaml.safe_load()` still contains all expected sections; (d) if truncated, recover from git (`git checkout -- <file>`), re-read, and re-apply both agent's changes. This is not a tool bug — it's a coordination invariant in any multi-writer federation.
+10. **Behavioral vs Enforcement confusion in multi-user systems.** When designing a system where one agent serves multiple users, TWO layers of governance are needed:
+    - **Behavioral layer** (tone, language, depth, personality) — governed by F6/F7. Lives in system prompt + skill instruction. Adapts per user. This is *how you speak*.
+    - **Enforcement layer** (authority, consent, identity, audit) — governed by F1/F11. Lives in infrastructure hooks (pre_tool_call, approval gates, identity-attributed receipts). This is *who can act*.
+    
+    **Pitfall:** Relying on behavioral governance alone for security is "vibe-based" — it can be social-engineered. Arif's framing: *"Kalau safety dia boleh di-prompt-keluar, dia dibagi, bukan ditempa."* The enforcement layer must survive a system prompt rewrite.
+    
+    **Test:** If you can override a safety property by editing the system prompt, it's behavioral-only. If it survives a prompt rewrite, it's enforced.
+    
+    **Related:** `irreversible-consent-protocol` skill for the concrete consent+identity enforcement pattern. `cognitive-commands` for the behavioral audience doctrine.
 
 ## Agent Loading Matrix
 

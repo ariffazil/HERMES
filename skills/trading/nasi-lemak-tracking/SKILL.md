@@ -152,17 +152,108 @@ When user says "Baki X" without specifying location — check context from last 
 
 When user asks "purata per kedai" — divide location total by sub-kedai count.
 
-## Supplier Cost vs Revenue
+## Supplier Cost vs Revenue — Dual-Layer Pricing
 
 **User's revenue** = what he collects from customers (sold × his retail price).
 **Supplier cost** = what he pays to nasi lemak supplier (sold × supplier price).
-Supplier prices SAME as user's standard prices (Mata RM1.50, Rebus/Dadar RM1.20).
+
+### Quick Reference: Both Price Layers
+
+| Variant | Supplier (buy) | Customer (sell) |
+|---|---|---|
+| Telur Mata 🍳 | RM 1.50 | RM 3.00 |
+| Telur Rebus 🥚 | RM 1.20 | RM 2.50 |
+| Telur Dadar | RM 1.20 | RM 2.50 |
+| Berlauk 🥩 | RM 1.50 | Cash term — exclude unless specified |
+| Lelong | — | RM 2.50 flat |
+
+**Always ask which layer** if not explicitly stated by user.
+
+### Revenue Calculation
 
 Unsold items: user still pays supplier unless negotiated return. Calculate both scenarios:
 - With return: profit = revenue − (sold × supplier price)
 - Without return: profit = revenue − (all ordered × supplier price)
 
-## Supplier Negotiation
+### Multi-Day Sales Comparison
+
+When asked for trends across days:
+```
+| Day | Total Order | Sold | Revenue | Sold Rate |
+|---|---|---|---|---|
+| 19/7 | 198 | 145 | RM 190.80 | 73% |
+| 20/7 | 84 | 35 | RM 39.30 | 42% |
+```
+Highlight best-performing location and variant with 🔥 indicator.
+
+## HTML Template (Vendor Claim)
+
+When generating a vendor claim HTML file, use this structure. Save to `/root/forge_work/YYYY-MM-DD/claim_vendor_v005.html`.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8">
+<style>
+ body { font-family: Helvetica, Arial, sans-serif; margin: 40px; color: #1a1a1a; }
+ h1 { color: #003366; font-size: 20pt; text-align: center; margin-bottom: 5px; }
+ .date { text-align: center; color: #6B7280; font-size: 10pt; margin-bottom: 30px; }
+ table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+ th { background: #003366; color: white; padding: 8px 10px; font-size: 10pt; text-align: left; }
+ td { padding: 7px 10px; font-size: 9pt; border-bottom: 1px solid #e5e7eb; }
+ tr:nth-child(even) { background: #f9fafb; }
+ .total { font-weight: bold; background: #f0a500; color: white; }
+ .total td { font-weight: bold; font-size: 10pt; }
+ .footer { text-align: center; color: #6B7280; font-size: 8pt; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 15px; }
+</style></head>
+<body>
+<h1>CLAIM VENDOR — V005</h1>
+<p class="date">[DATE]</p>
+<table>
+<tr><th>Vendor</th><th>Item</th><th>Hantar</th><th>Baki</th><th>Sold</th><th>Harga (RM)</th><th>Jualan (RM)</th></tr>
+<!-- DATA ROWS -->
+<tr class="total"><td colspan="6">TOTAL</td><td>[TOTAL]</td></tr>
+</table>
+<p class="footer">Dijana oleh Hermes Agent — [DATE]</p>
+</body></html>
+```
+
+**HTML-first, PDF-only-on-demand.** Default deliverable is HTML. Only generate PDF via weasyprint when user explicitly says "PDF". Command: `weasyprint file.html file.pdf`
+
+## Order Summary HTML (Location Breakdown)
+
+```html
+<h1>ORDER SUMMARY — V005</h1>
+<p class="date">DD JULAI 2026 (HARI)</p>
+<table>
+<tr><th>Lokasi</th><th>Rebus 🥚</th><th>Mata 🍳</th><th>Dadar</th><th>Total</th></tr>
+<!-- Rows -->
+</table>
+```
+
+### "Nuar Asing" Pricing Query Pattern
+
+When user asks "Nuar asing2 Teluk Mata bape? Telur rebus+telur dadar, Nasi berlauk":
+- Telur mata sambal asing = RM 1.50
+- Telur rebus + telur dadar sambal asing = RM 1.20
+- Nasi berlauk = RM 1.50 (cash term)
+- "Sambal asing" = sambal in separate container, same price as "sambal campur"
+
+### Receipt Decoding (Handwritten)
+
+Common abbreviations on receipts:
+- "NS LMK" / "NS LEMOK" = Nasi Lemak
+- "TECUR" = Telur
+- "REBUS" = Boiled, "MATA/MATI/MOTO" = Sunny side up, "DADAR" = Omelette
+- "S/DSING" or "SIASING" = sambal asing (separate sambal)
+- "DARAH" or "DENDENG" = jerky/meat variant
+- Location headers: "M/S V005 <CODE>" where code = LRT station/shop code
+
+When ambiguous, present best reading but ask user to confirm. Verbal clarification overrides receipt interpretation.
+
+### Multi-Date Claim Table
+
+When user provides vendor data spanning multiple dates, add a `Tarikh` column. Group by vendor, not by date. When user says "Tukar X sahaja", filter to only that date.
 
 When user asks "ok ke nak bayar supplier":
 - Unsold rate on weekdays ~24%, weekends lower

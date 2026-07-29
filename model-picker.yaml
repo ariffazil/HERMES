@@ -1,15 +1,22 @@
 # model-picker.yaml — canonical model routing for Hermes Agent
-# PROBED: 2026-07-23 ~18:30 UTC | 57 Zen + 23 Go models tested
+# PROBED: 2026-07-29 ~13:20 UTC (audit session) | Quick-probed 4 tiers + fallbacks
+# FULL PROBE: 2026-07-23 ~18:30 UTC | 57 Zen + 23 Go models tested
 # RULE: no model string hardcoded anywhere else. This file is the picker.
 # DEAD MODELS: all GPT, Claude, Gemini on Zen (401 — key lacks premium billing)
 
-probed_at: "2026-07-23T18:30:00Z"
+probed_at: "2026-07-29T13:20:00Z"
 probe_summary:
   zen_total: 57
   zen_alive: 19
   go_total: 23
   go_alive: 20
   total_alive: 39
+  quick_probe_20260729:
+    opencode-go/deepseek-v4-flash: 200
+    opencode-go/deepseek-v4-pro: 200
+    opencode-zen/deepseek-v4-flash: 200
+    opencode-zen/deepseek-v4-pro: 200
+    opencode-zen/grok-4.5: 200
 
 tiers:
   bulk:

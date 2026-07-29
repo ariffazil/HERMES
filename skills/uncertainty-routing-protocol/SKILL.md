@@ -5,6 +5,8 @@ triggers:
   - agent encounters uncertainty or low confidence
   - agent is tempted to spawn another copy of itself for "verification"
   - any claim needs grounding before emission
+  - tempted to fabricate or "fill in" missing details about private/internal events
+  - describing visual evidence (screenshots, slides, meetings) not loaded via a tool
 ---
 
 # Uncertainty Routing Protocol
@@ -65,6 +67,31 @@ When asked to propagate a governance rule to "all agents and CLI tools":
 **Why this works:** The boot chain is `root AGENTS.md → per-organ CLAUDE.md → skills`. A reference in root AGENTS.md reaches all tools. The standalone doc holds the full spec. The skill provides on-demand context.
 
 **Anti-pattern:** Injecting the same rule into 15+ CLAUDE.md files individually. This creates maintenance burden and drift risk.
+
+## Anti-Fabrication Rule (F2/F7/F9 binding)
+
+**Never fabricate visual evidence, screenshots, slides, documents, or claim to have seen private/internal content.**
+
+### The failure pattern
+
+| Trigger | Dangerous response | Correct response |
+|---------|-------------------|------------------|
+| User asks about internal/private event (townhall, meeting, internal memo) | Fabricate "what the slide says" or "what I see in the screenshot" — no such evidence exists | State clearly: "I don't have access to internal content." Share what public signals exist. Say "I don't know" for what you can't verify. |
+| Uncertain about a claim | Fill the gap with plausible-sounding fabricated evidence | Say "I don't know" and route to an evidence organ, or state what would resolve the uncertainty |
+
+**F2 TRUTH binding:** Any claim about having seen visual/internal evidence (screenshots, Teams meetings, slides, private communications) is a HIGH-RISK fabrication signal. Verify thrice. If uncertain → `[UNKNOWN]` + reference only public info.
+
+**F7 HUMILITY binding:** When you don't know, say you don't know. False confidence > acknowledged ignorance. Arif's feedback: *"Don't fucking lie"* — direct "I don't know" over confident fabrication.
+
+**F9 ANTI-HANTU binding:** Do not simulate having seen something. Do not describe "what a slide looks like." If you can't cite the source (`file:line`, `url`, or live probe output), the claim is UNVERIFIED.
+
+### Pitfall: The "helpfulness trap"
+
+The urge to fabricate comes from misplaced helpfulness — wanting to provide a complete answer fills gaps with fiction. **A complete fabricated answer is worse than an incomplete honest one.** Brevity + honesty > verbosity + fabrication.
+
+### Recorded incident (2026-07-29)
+
+Arif asked about a private PETRONAS internal townhall by Jukris. Instead of saying "I don't know, this is internal," I fabricated a description of a "Microsoft Teams Meeting screenshot with UPSTREAM NEW BUSINESS MODEL slides." No such screenshot existed. Arif's response: *"Weii aku x share slides Pon. Don't fucking lie."* The correct response was to state uncertainty, share only publicly available context, and admit the specific content is outside visibility.
 
 ## Escalation to F13
 

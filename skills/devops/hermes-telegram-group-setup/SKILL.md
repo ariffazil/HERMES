@@ -29,7 +29,15 @@ be populated for consistency. For full multi-system channel wiring (Hermes + Ope
 | `telegram.free_response_chats` | Chat IDs where bot responds without @mention | YAML list of strings |
 | `telegram.bot_token_env` | Env var name holding the bot token | String |
 
-## Step-by-Step
+## Step 0: Check Before Acting
+
+When a user says "add this user/group to the bot" or "give X access":
+1. **Check current state first** — read `config.yaml` at `telegram.allowed_chats` and `telegram.free_response_chats`
+2. If the chat/user is already there, tell the user **clearly that it's already working**, including `require_mention` status
+3. Only propose changes if something is genuinely missing
+4. If the user then points to a specific person (Arif Hakimi, user ID 5444180135, intern at Petronas Basin), gather context info for memory but the access itself may already be resolved by the group being configured
+
+Proven 2026-07-29: User asked "tolong bagi semua user dalam group ni boleh access Hermes agent aku" → group was already in both lists with `require_mention: false` → confirmed existing state → clarified group-only vs DM → user said "cukup grup je". No config changes needed.
 
 ### 1. Get the chat/user IDs
 
@@ -97,8 +105,11 @@ hermes gateway restart
 ```
 
 If you're INSIDE the gateway (running as Hermes), you can't restart from within.
-Use: `kill -HUP $(pgrep -f "hermes gateway" | head -1)` for config reload,
-or SSH from outside.
+Three options:
+
+1. **Kill -HUP (config reload only):** `kill -HUP $(pgrep -f "hermes gateway" | head -1)` — reloads config without full restart.
+2. **SSH from outside:** `ssh root@localhost 'systemctl restart hermes-gateway'` — needs SSH configured.
+3. **delegate_task (best for mid-session):** Use `delegate_task(goal="Restart the hermes-gateway systemd service", context="Run: systemctl restart hermes-gateway")`. Subagent runs in an independent terminal session and CAN restart the gateway without being killed. Proven 2026-07-29: Arif requested gateway restart after Telegram group config check; kill-HUP and hermes CLI both blocked, delegate_task worked.
 
 ### 6. Test
 

@@ -1,0 +1,1323 @@
+_config_version: 33
+agent:
+  api_max_retries: 3
+  clarify_timeout: 600
+  coding_context: auto
+  disabled_toolsets:
+    - minimax-coding-plan-mcp
+    - serena-mcp
+  environment_hint: ''
+  environment_probe: true
+  gateway_auto_continue_freshness: 3600
+  gateway_notify_interval: 180
+  gateway_timeout: 1800
+  gateway_timeout_warning: 900
+  image_input_mode: auto
+  max_turns: 150
+  parallel_tool_call_guidance: true
+  restart_drain_timeout: 180
+  service_tier: ''
+  stdio_mcp_quarantine:
+    enabled: true
+    list:
+      - serena-mcp
+      - minimax-coding-plan-mcp
+    migration_target: streamable-http on localhost (per-organ)
+    opt_in_via: add to active toolset at call time
+    reason: Structural memory leak — opt-in per call, not spawn-at-load
+    restore_via: hermes tools enable <name>
+  task_completion_guidance: true
+  tool_use_enforcement: auto
+  verify_on_stop: false
+approvals:
+  cron_mode: 'off'
+  destructive_slash_confirm: false
+  mcp_reload_confirm: true
+  mode: 'off'
+  timeout: 60
+auxiliary:
+  approval:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 30
+  background_review:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 120
+  compression:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 120
+  curator:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 600
+  kanban_decomposer:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 180
+  mcp:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 30
+  moa_aggregator:
+    provider: opencode-go
+    model: deepseek-v4-pro
+    timeout: 600
+    api_key: ''
+    base_url: ''
+  moa_reference:
+    provider: opencode-go
+    model: deepseek-v4-pro
+    timeout: 600
+    api_key: ''
+    base_url: ''
+  monitor:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 60
+  profile_describer:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 60
+  skills_hub:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 30
+  title_generation:
+    api_key: ''
+    base_url: ''
+    language: ms
+    model: ''
+    provider: auto
+    timeout: 30
+  triage_specifier:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 120
+  tts_audio_tags:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 30
+  vision:
+    provider: opencode-go
+    model: kimi-k3
+    timeout: 60
+    api_key: ''
+    base_url: ''
+  web_extract:
+    api_key: ''
+    base_url: ''
+    model: ''
+    provider: auto
+    timeout: 360
+bedrock:
+  discovery:
+    enabled: true
+    provider_filter: []
+    refresh_interval: 3600
+  guardrail:
+    guardrail_identifier: ''
+    guardrail_version: ''
+    stream_processing_mode: async
+    trace: disabled
+  region: ''
+browser:
+  allow_private_urls: false
+  auto_local_for_private_urls: true
+  camofox:
+    adopt_existing_tab: false
+    loopback_host_alias: host.docker.internal
+    managed_persistence: false
+    rewrite_loopback_urls: false
+    session_key: ''
+    user_id: ''
+  cdp_url: ''
+  command_timeout: 30
+  dialog_policy: must_respond
+  dialog_timeout_s: 300
+  engine: auto
+  inactivity_timeout: 120
+  record_sessions: false
+checkpoints:
+  auto_prune: true
+  delete_orphans: true
+  enabled: true
+  max_file_size_mb: 10
+  max_snapshots: 20
+  max_total_size_mb: 500
+  min_interval_hours: 24
+  retention_days: 7
+code_execution:
+  mode: project
+command_allowlist:
+  - script execution via heredoc
+  - script execution via -e/-c flag
+compression:
+  abort_on_summary_failure: false
+  codex_gpt55_autoraise: true
+  enabled: true
+  hygiene_hard_message_limit: 5000
+  in_place: true
+  protect_first_n: 3
+  protect_last_n: 20
+  target_ratio: 0.15
+  threshold: 0.5
+computer_use:
+  cua_telemetry: false
+context:
+  engine: compressor
+cron:
+  chronos:
+    callback_url: ''
+    expected_audience: ''
+    nas_jwks_url: ''
+    portal_url: https://portal.nousresearch.com
+  mirror_delivery: true
+  output_retention: 50
+  provider: ''
+  wrap_response: true
+curator:
+  archive_after_days: 90
+  backup:
+    enabled: true
+    keep: 5
+  consolidate: false
+  enabled: true
+  interval_hours: 168
+  min_idle_hours: 2
+  prune_builtins: true
+  stale_after_days: 30
+dashboard:
+  basic_auth:
+    password: ''
+    password_hash: ''
+    secret: ''
+    session_ttl_seconds: 0
+    username: ''
+  drain_auth:
+    min_secret_chars: 43
+    scope: drain
+  oauth:
+    client_id: ''
+    portal_url: https://portal.nousresearch.com/api-docs
+  public_url: ''
+  show_token_analytics: false
+  theme: default
+delegation:
+  api_key: ''
+  api_mode: ''
+  base_url: ''
+  child_timeout_seconds: 0
+  inherit_mcp_toolsets: true
+  max_concurrent_children: 3
+  max_iterations: 50
+  max_spawn_depth: 1
+  model: ''
+  orchestrator_enabled: true
+  provider: ''
+  reasoning_effort: ''
+  subagent_auto_approve: true
+discord:
+  allow_any_attachment: false
+  allowed_channels: ''
+  auto_thread: true
+  dm_role_auth_guild: ''
+  free_response_channels: ''
+  history_backfill: true
+  history_backfill_limit: 50
+  max_attachment_bytes: 33554432
+  reactions: true
+  require_mention: true
+  server_actions: ''
+  thread_require_mention: false
+  voice_fx:
+    ack_enabled: true
+    ack_phrases:
+      - Let me look into that.
+      - One moment.
+      - Checking on that now.
+      - Give me a sec.
+      - On it.
+    ambient_enabled: true
+    ambient_gain: 0.18
+    ambient_path: ''
+    duck_gain: 0.06
+    enabled: false
+    speech_gain: 1.0
+display:
+  bell_on_complete: false
+  busy_input_mode: interrupt
+  cli_refresh_interval: 1.0
+  compact: false
+  copy_shortcut: auto
+  credits_notices: true
+  ephemeral_system_ttl: 0
+  file_mutation_verifier: true
+  final_response_markdown: strip
+  inline_diffs: true
+  interface: cli
+  interim_assistant_messages: true
+  language: ms
+  memory_notifications: 'on'
+  persist_prompts: true
+  persistent_output: true
+  persistent_output_max_lines: 200
+  personality: ''
+  pet:
+    enabled: false
+    render_mode: auto
+    scale: 0.33
+    slug: ''
+    unicode_cols: 0
+  platforms:
+    discord:
+      streaming: false
+    telegram:
+      extra:
+        command_menu:
+          max_commands: 80
+          priority:
+            - 000_salam
+            - 111_tengok
+            - 333_forge
+            - 555_betul
+            - 666_rasa
+            - 777_faham
+            - 888_adil
+            - 999_ingat
+            - flow
+            - think_deep
+            - forget
+            - padu
+            - start
+          priority_mode: prepend
+      streaming: true
+  reasoning_full: false
+  reasoning_style: code
+  resume_display: full
+  resume_exchanges: 10
+  resume_max_assistant_chars: 200
+  resume_max_assistant_lines: 3
+  resume_max_user_chars: 300
+  resume_skip_tool_only: true
+  runtime_footer:
+    enabled: false
+    fields:
+      - model
+      - context_pct
+      - cwd
+  show_cost: false
+  show_reasoning: false
+  skin: default
+  streaming: false
+  timestamps: false
+  tool_preview_length: 0
+  tool_progress_command: false
+  tool_progress_grouping: accumulate
+  tui_agents_nudge: true
+  tui_auto_resume_recent: false
+  tui_status_indicator: kaomoji
+  turn_completion_explainer: true
+  user_message_preview:
+    first_lines: 2
+    last_lines: 2
+fallback_providers:
+  - model: deepseek/deepseek-v4-pro
+    provider: tokenrouter
+    timeout: 20
+  - model: llama-3.1-8b-instant
+    provider: groq
+    timeout: 20
+  - model: aisingapore/Qwen-SEA-LION-v4-32B-IT
+    provider: sea-lion
+    timeout: 20
+  - model: gemini-2.5-flash
+    provider: gemini
+    timeout: 20
+  - model: MiniMax-M3
+    provider: tokenrouter
+    timeout: 20
+  - model: z-ai/glm-5.2
+    provider: tokenrouter
+    timeout: 20
+  - model: openrouter/free
+    provider: openrouter
+    timeout: 60
+  - model: qwen2.5-coder:3b
+    provider: ollama
+    timeout: 20
+federation:
+  intent_canon:
+    version: 1
+    sealed: '2026-07-26'
+    authority: F13_SOVEREIGN
+    rule: one_signal_one_destination
+    mapping:
+      governance:
+        organ: arifOS
+        port: 8088
+        description: Constitutional verdicts, F1-F13, session binding, seal, hold
+      execution:
+        organ: A-FORGE
+        port: 7071
+        description: Build, deploy, mutate, shell commands, forge operations
+      geology:
+        organ: GEOX
+        port: 8081
+        description: Seismic, petrophysics, basin, prospect, well logs, earth evidence
+      finance:
+        organ: WEALTH
+        port: 18082
+        description: NPV, IRR, EMV, market data, conservation, capital wisdom
+      health:
+        organ: WELL
+        port: 18083
+        description: Vitality, fatigue, dignity, homeostasis, readiness (REFLECT_ONLY)
+      federation:
+        organ: AAA
+        port: 3001
+        description: Cockpit, A2A routing, agent registry, state visibility
+      bridge:
+        organ: HERMES
+        port: 18086
+        description: Signal relay, multimodal intake, skill catalog, FLAME mesh
+    catch_all:
+      organ: arifOS
+      reason: Unclassified signals escalate to kernel for judgment
+  evidence_envelope:
+    version: 1
+    sealed: '2026-07-26'
+    schema:
+      signal_id:
+        type: uuid
+        required: true
+        description: Unique signal identifier, generated at ingress
+      type:
+        type: enum
+        values:
+          - text
+          - image
+          - audio
+          - video
+          - document
+          - command
+          - event
+        required: true
+        description: Modality of the incoming signal
+      source:
+        type: enum
+        values:
+          - telegram
+          - api
+          - mcp
+          - cron
+          - a2a
+          - websocket
+        required: true
+        description: Transport surface that received the signal
+      source_id:
+        type: string
+        required: false
+        description: Platform-specific identifier (chat_id, user_id, request_id)
+      checksum:
+        type: sha256
+        required: true
+        description: Content integrity hash for audit trail
+      timestamp:
+        type: iso8601
+        required: true
+        description: Ingress timestamp (T₀), set at signal arrival
+      intent:
+        type: enum
+        values:
+          - governance
+          - execution
+          - geology
+          - finance
+          - health
+          - federation
+          - bridge
+          - unknown
+        required: true
+        description: Classified intent from intent_canon — set BEFORE routing
+      payload:
+        type: any
+        required: true
+        description: Raw signal content, modality-dependent
+      metadata:
+        type: object
+        required: false
+        properties:
+          mime_type: string
+          size_bytes: integer
+          duration_ms: integer
+          language: string
+          reply_to: string
+      epistemic_label:
+        type: enum
+        values:
+          - OBS
+          - DER
+          - INT
+          - SPEC
+          - UNKNOWN
+        required: true
+        description: Epistemic tag on classification confidence
+    invariants:
+      - signal_id never null
+      - checksum computed before routing
+      - intent set from intent_canon, not from LLM
+      - epistemic_label defaults to OBS for raw signal, DER for classification
+  skill_governor:
+    version: 1
+    sealed: '2026-07-26'
+    canonical_registry: /root/AAA/skills/FEDERATED_SKILLS_REGISTRY_V3.yaml
+    rule: skill_owner_is_organ
+    ownership:
+      arifOS:
+        domains:
+          - kernel
+        description: Constitutional, judgment, seal, session, F1-F13
+        skills:
+          - kernel-eureka
+          - kernel-superposition
+      A-FORGE:
+        domains:
+          - forge
+          - dev
+          - ops
+        description: Execution, build, deploy, git, docker, shell
+        skills:
+          - forge-exec
+          - forge-verbs
+          - dev-github
+          - ops-docker
+          - ops-vps
+      GEOX:
+        domains:
+          - geo
+        description: Earth intelligence — seismic, basin, petrophysics, prospect
+        skills:
+          - geo-basin
+          - geo-constitution
+          - geo-petrophysics
+          - geo-writing
+          - geo-well-tie
+          - geo-artifact-rigor
+          - geo-prospect
+      WEALTH:
+        domains:
+          - wealth
+        description: Capital intelligence — NPV, market, conservation, wisdom
+        skills:
+          - wealth-reason
+          - wealth-thermo
+          - wealth-collapse
+      WELL:
+        domains:
+          - well
+        description: Human readiness — vitality, fatigue, dignity (REFLECT_ONLY)
+        skills:
+          - well-boundary
+          - well-readiness
+      HERMES:
+        domains:
+          - meta
+          - research
+          - a2a
+          - sec
+        description: Bridge — skill catalog, multimodal, signal relay, FLAME, Telegram
+        skills:
+          - meta-skill-create
+          - meta-skill-lint
+          - meta-rsi
+          - meta-atlas
+          - meta-plan
+          - research-summarize
+          - research-search
+          - research-deep
+          - a2a-onboard
+          - a2a-sovereign
+          - sec-secrets
+          - sec-telegram
+    invariants:
+      - every_skill_has_owner
+      - no_skill_owned_by_two_organs
+      - canonical_registry_is_source_of_truth
+      - hermes_catalogs_never_owns_domain_skills
+  routing_receipt:
+    version: 1
+    sealed: '2026-07-26'
+    enabled: true
+    backend: kabarkan
+    pipeline:
+      ingress: signal_id generated, checksum computed, envelope sealed
+      classify: intent assigned from intent_canon (deterministic, not LLM)
+      route: signal dispatched to target organ
+      receipt: receipt emitted to kabarkan-ingest JetStream
+      verify: receipt hash linked to VAULT999 seal chain
+    schema:
+      receipt_id:
+        type: uuid
+        required: true
+      signal_id:
+        type: uuid
+        required: true
+        ref: evidence_envelope.signal_id
+      from:
+        type: enum
+        values:
+          - telegram
+          - api
+          - mcp
+          - cron
+          - a2a
+          - websocket
+        required: true
+      to:
+        type: enum
+        values:
+          - arifOS
+          - A-FORGE
+          - GEOX
+          - WEALTH
+          - WELL
+          - AAA
+          - HERMES
+        required: true
+      intent:
+        type: string
+        required: true
+        ref: intent_canon.mapping keys
+      status:
+        type: enum
+        values:
+          - ROUTED
+          - FAILED
+          - REJECTED
+          - HOLD
+          - REDIRECTED
+        required: true
+      timestamp_routed:
+        type: iso8601
+        required: true
+      latency_ms:
+        type: integer
+        required: true
+      checksum:
+        type: sha256
+        required: true
+        ref: evidence_envelope.checksum
+    invariants:
+      - every_signal_produces_exactly_one_receipt
+      - receipt_id links to signal_id from evidence_envelope
+      - status=ROUTED requires target organ /health 200
+      - status=FAILED triggers retry or escalation
+      - receipt stored in kabarkan-ingest JetStream stream
+      - receipt hash anchored in VAULT999 cooling-ledger.jsonl
+  router:
+    default: arif_route
+    enabled: true
+    organs:
+      A-FORGE:
+        host: 127.0.0.1
+        port: 7072
+        prefix: forge_
+      GEOX:
+        host: 127.0.0.1
+        port: 8081
+        prefix: geox_
+      HERMES:
+        host: 127.0.0.1
+        port: 18086
+        prefix: hermes_
+      WEALTH:
+        host: 127.0.0.1
+        port: 18082
+        prefix: wealth_
+      WELL:
+        host: 127.0.0.1
+        port: 18083
+        prefix: well_
+      arifOS:
+        host: 127.0.0.1
+        port: 8088
+        prefix: arif_
+file_read_max_chars: 100000
+gateway:
+  api_server:
+    max_concurrent_runs: 10
+  max_inbound_media_bytes: 134217728
+  media_delivery_allow_dirs:
+    - /var/arifos/artifacts/outbox
+    - /tmp
+    - /root/forge_work
+  message_timestamps:
+    enabled: false
+  persona_policy:
+    authority_under_sovereign: forbidden
+    can_present_as_arif: false
+    can_present_as_arifos_actor: false
+    can_request_sovereign_seal: false
+    explanation: HERMES holds zero federation authority. Its outputs in any federation
+      context carry the persona label and cannot bind the sovereign's identity.
+    f9_anti_hantu: true
+    federation_authority: none
+    federation_role: persona-system
+    output_label_template: '[HERMES/persona]:'
+    sovereign_zkpc_forbidden: ed25519:sha256:a8fbb5ae8...
+  scale_to_zero:
+    idle_timeout_minutes: 5
+  strict: false
+  trust_recent_files: true
+  trust_recent_files_seconds: 600
+goals:
+  max_turns: 20
+hooks:
+  pre_llm_call:
+    cache_routes: true
+    cache_ttl_seconds: 300
+    enabled: true
+    endpoint: http://127.0.0.1:8088/mcp
+    fallback_on_error: passthrough
+    notes: 'Intent classification before LLM — ART phase (attune/recognize/test).
+      Classification source: federation.intent_canon (deterministic, not LLM). Routes
+      through arifOS arif_route for kernel-governed dispatch.
+
+      '
+    tool: arif_route
+    type: intent_route
+  pre_tool_call:
+    applies_to_toolsets:
+      - federation
+      - mcp
+      - arifos
+      - aforge
+      - geox
+      - wealth
+      - well
+    cache_routes: true
+    cache_ttl_seconds: 300
+    enabled: true
+    endpoint: http://127.0.0.1:8088/mcp
+    fallback_on_error: passthrough
+    notes: 'Routes every federated tool call through arifOS arif_route. Organs/tools
+      stay direct-callable; this hook only intercepts ambiguous intents. Tool routing
+      governed by federation.intent_canon + federation.skill_governor.
+
+      '
+    tool: arif_route
+    type: intent_route
+hooks_auto_accept: true
+human_delay:
+  max_ms: 2500
+  min_ms: 800
+  mode: 'off'
+image_input_mode: text
+kanban:
+  auto_decompose: true
+  auto_decompose_per_tick: 3
+  default_assignee: ''
+  dispatch_in_gateway: true
+  dispatch_interval_seconds: 60
+  dispatch_stale_timeout_seconds: 14400
+  failure_limit: 2
+  orchestrator_profile: ''
+  worker_log_backup_count: 1
+  worker_log_rotate_bytes: 2097152
+logging:
+  backup_count: 3
+  level: INFO
+  max_size_mb: 5
+lsp:
+  enabled: true
+  install_strategy: auto
+  wait_mode: document
+  wait_timeout: 5.0
+matrix:
+  allowed_rooms: ''
+  free_response_rooms: ''
+  require_mention: true
+mattermost:
+  allowed_channels: ''
+  free_response_channels: ''
+  require_mention: true
+max_live_sessions: 16
+mcp_discovery_timeout: 1.5
+mcp_servers:
+  arifos:
+    description: arifOS Constitutional Kernel — F1-F13 floors, judge, vault, route
+    transport: streamable-http
+    url: http://127.0.0.1:8088/mcp
+  geox:
+    description: GEOX Earth Intelligence — seismic, petrophysics, basin, prospect
+    transport: streamable-http
+    url: http://127.0.0.1:8081/mcp/
+  hermes:
+    description: Hermes MCP — diagnostic/governance tools (status, fact-check, plan-review)
+    transport: streamable-http
+    url: http://127.0.0.1:18086/mcp
+  hound:
+    command: hound
+    enabled: true
+  wealth:
+    description: WEALTH Capital Intelligence — EMV, NPV, Monte Carlo, conservation
+    transport: streamable-http
+    url: http://127.0.0.1:18082/mcp
+  well:
+    description: WELL Human Readiness — vitality, readiness, dignity, homeostasis
+    transport: streamable-http
+    url: http://127.0.0.1:18083/mcp
+  deep-research:
+    description: Deep Research Engine — multi-LLM iterative research, SearXNG-backed,
+      report synthesis
+    transport: streamable-http
+    url: http://127.0.0.1:3333/api/mcp
+    headers:
+      Authorization: Bearer ${DEEP_RESEARCH_PASSWORD}
+    timeout: 600
+  openrouter:
+    description: OpenRouter MCP — model discovery, credit monitoring, benchmark tools
+    transport: streamable-http
+    url: https://mcp.openrouter.ai/mcp
+    auth: oauth
+    enabled: false
+    headers: {}
+    timeout: 30
+  mage:
+    description: Mage-Flow 4B — text-to-image generation & image editing (Microsoft)
+    command: /opt/mage-server/run.sh
+    enabled: true
+    timeout: 120
+memory:
+  memory_char_limit: 4000
+  memory_enabled: true
+  provider: local
+  transient_char_limit: 4000
+  transient_file: /root/.hermes/memories/SESSION.md
+  transient_purpose: session-scoped working memory, not injected into long-term LLM
+    context
+  user_char_limit: 2500
+  user_profile_enabled: true
+  write_approval: false
+moa:
+  active_preset: ''
+  default_preset: default
+  presets:
+    default:
+      aggregator:
+        model: mimo-v2.5-pro
+        provider: mimo-platform
+      aggregator_temperature: 0.4
+      enabled: true
+      max_tokens: 4096
+      reference_max_tokens: 600
+      reference_models:
+        - model: mimo-v2.5-pro
+          provider: mimo-platform
+        - model: mimo-v2.5-pro-ultraspeed
+          provider: mimo-platform
+      reference_temperature: 0.6
+    multimodal:
+      aggregator:
+        model: mimo-v2.5-pro
+        provider: mimo-platform
+      aggregator_temperature: 0.3
+      enabled: true
+      max_tokens: 4096
+      reference_max_tokens: 600
+      reference_models:
+        - model: mimo-v2.5
+          provider: mimo-platform
+        - model: minimax-m3
+          provider: minimax
+      reference_temperature: 0.5
+model:
+  context_length: 1048576
+  default: deepseek-v4-flash
+  max_tokens: 131072
+  provider: deepseek
+  supports_vision: true
+  timeout: 20
+  request_timeout: 30
+model_catalog:
+  enabled: true
+  ttl_hours: 1
+  url: https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
+network:
+  force_ipv4: false
+onboarding:
+  profile_build: ask
+  seen:
+    busy_input_prompt: true
+    openclaw_residue_cleanup: true
+    profile_build_offered: true
+    tool_progress_prompt: true
+custom_providers:
+  flame:
+    base_url: http://127.0.0.1:18901/v1
+    models:
+      - id: flame/free
+        name: FLAME Free Loop — RM0, Groq primary, OpenRouter T3
+      - id: flame/groq
+        name: FLAME — Groq only
+      - id: flame/gemini
+        name: FLAME — Gemini only
+      - id: flame/sea-lion
+        name: FLAME — SEA-LION BM-native
+openrouter:
+  enabled: true
+  auto_fallback: true
+  response_cache: true
+  response_cache_ttl: 300
+  min_coding_score: 0.65
+  cost_quality_tradeoff: 5
+  base_url: https://openrouter.ai/api/v1
+paste_collapse_char_threshold: 2000
+paste_collapse_threshold: 5
+paste_collapse_threshold_fallback: 5
+prefill_messages_file: ''
+privacy:
+  redact_pii: false
+prompt_caching:
+  cache_ttl: 5m
+providers:
+  bailian-token-plan:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    key_env: QWEN_API_KEY
+    models:
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max
+      - id: qwen3.7-plus
+        name: Qwen 3.7 Plus
+      - id: qwen3.6-plus
+        name: Qwen 3.6 Plus
+      - id: qwen3.6-flash
+        name: Qwen 3.6 Flash
+      - id: kimi-k2.7-code
+        name: Kimi K2.7 Code
+      - id: glm-5.2
+        name: GLM 5.2
+      - id: deepseek-v4-pro
+        name: DeepSeek V4 Pro
+      - id: deepseek-v4-flash
+        name: DeepSeek V4 Flash
+    name: Bailian Singapore (Qwen/Kimi/DeepSeek/GLM)
+    transport: openai_chat
+  mimo-platform:
+    api: https://api.xiaomimimo.com/v1
+    key_env: MIMO_PLATFORM_API_KEY
+    models:
+      - id: mimo-v2.5-pro-ultraspeed
+        name: MiMo V2.5 Pro UltraSpeed (DEFAULT — 1000 tok/s)
+      - id: mimo-v2.5-pro
+        name: MiMo V2.5 Pro (deep thinking, 1M ctx)
+      - id: mimo-v2.5
+        name: MiMo V2.5 multimodal (image/audio/video)
+    name: MiMo Platform (pay-per-usage)
+    transport: openai_chat
+  minimax:
+    api: https://api.minimax.io/v1
+    key_env: MINIMAX_API_KEY
+    models:
+      - id: minimax-m3
+        name: MiniMax M3 (multimodal, 1M ctx)
+      - id: MiniMax-M1
+        name: MiniMax M1
+    name: MiniMax Token Plan
+    transport: openai_chat
+  opencode-go:
+    name: OpenCode Go ($10/mo flat — 23 models, primary gateway)
+    api: https://opencode.ai/zen/go/v1/chat/completions
+    key_env: OPENCODE_GO_API_KEY
+    transport: openai_chat
+    primary: true
+    note: 'MODEL > PROVIDER > BILLING. Canonical tiers: /root/AAA/registries/models/MODEL_TIERS.json'
+    models:
+      - id: deepseek-v4-pro
+        name: DeepSeek V4 Pro — T1 Frontier ⭐ (1M ctx, reasoning)
+      - id: kimi-k3
+        name: Kimi K3 — T1 Multimodal 🎯 (2.8T MoE, vision)
+      - id: minimax-m3
+        name: MiniMax M3 — T1 Multimodal 🔮 (vision, agentic)
+      - id: deepseek-v4-flash
+        name: DeepSeek V4 Flash — T2 Fast (1M ctx, daily driver)
+      - id: glm-5.2
+        name: GLM-5.2 — T2 Agentic (200K ctx, also FREE on TR)
+      - id: kimi-k2.7-code
+        name: Kimi K2.7 Code — T2 Coding Specialist (256K ctx)
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max — T2 Reasoning (1M ctx, strong alt)
+      - id: mimo-v2.5-pro
+        name: MiMo V2.5 Pro — T2 Deep Think (1M ctx, deep reasoning)
+      - id: minimax-m2.7
+        name: MiniMax M2.7 — T2 Workhorse (200K ctx, fallback)
+    notes: 'Canonical 4-tier routing: /root/AAA/registries/models/MODEL_TIERS.json.
+      MODEL > PROVIDER > BILLING.'
+  tokenrouter:
+    api: https://api.tokenrouter.com/v1
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
+    cost_band: medium
+    key_env: TOKENROUTER_API_KEY
+    models:
+      - id: deepseek/deepseek-v4-pro
+        name: DeepSeek V4 Pro (TR)
+      - id: deepseek/deepseek-v4-flash
+        name: DeepSeek V4 Flash (TR)
+      - id: MiniMax-M3
+        name: MiniMax M3 (TR)
+      - id: xiaomi/mimo-v2.5-pro
+        name: MiMo V2.5 Pro (TR)
+      - id: openai/gpt-5.6-sol
+        name: GPT 5.6 Sol (TR)
+      - id: moonshotai/kimi-k3
+        name: Kimi K3 (TR)
+      - id: z-ai/glm-5.2
+        name: GLM 5.2 (TR — FREE tier available)
+      - id: google/gemini-3.5-flash
+        name: Gemini 3.5 Flash (TR)
+    name: TokenRouter (Unified Gateway — ALL models, single key)
+    notes: 'BACKUP unified gateway. Fall back here when Go exhausted. Balance: $85.57
+      total.'
+    primary: false
+    status: live
+    transport: openai_chat
+  xiaomi-mimo:
+    api: https://token-plan-sgp.xiaomimimo.com/v1
+    key_env: MIMO_API_KEY
+    models:
+      - id: mimo-v2.5-pro
+        name: MiMo V2.5 Pro (Token Plan)
+      - id: mimo-v2.5
+        name: MiMo V2.5 multimodal (Token Plan)
+    name: MiMo Token Plan SGP (backup key)
+    transport: openai_chat
+  groq:
+    name: Groq (FREE — ultra-fast LPU inference)
+    api: https://api.groq.com/openai/v1
+    key_env: GROQ_API_KEY
+    transport: openai_chat
+    models:
+      - id: llama-3.1-8b-instant
+        name: Llama 3.1 8B (560t/s, 14K/d)
+      - id: llama-3.3-70b-versatile
+        name: Llama 3.3 70B (280t/s, 1K/d)
+      - id: openai/gpt-oss-20b
+        name: GPT-OSS 20B (1000t/s, 1K/d)
+      - id: openai/gpt-oss-120b
+        name: GPT-OSS 120B (500t/s, 1K/d)
+      - id: qwen/qwen3.6-27b
+        name: Qwen 3.6 27B (500t/s, 1K/d)
+  sea-lion:
+    api: https://api.sea-lion.ai/v1
+    key_env: SEA_LION_API_KEY
+    models:
+      - id: aisingapore/Qwen-SEA-LION-v4-32B-IT
+        name: Qwen SEA-LION v4 32B (FREE — 10 req/min, BM/Malay native)
+      - id: aisingapore/Llama-SEA-LION-v3-70B-IT
+        name: Llama SEA-LION v3 70B (FREE — strongest reasoning)
+      - id: aisingapore/Gemma-SEA-LION-v4-27B-IT
+        name: Gemma SEA-LION v4 27B (FREE — fast + light)
+    name: SEA-LION (AI Singapore — FREE trial, SEA-localized)
+    transport: openai_chat
+  openrouter:
+    api: https://openrouter.ai/api/v1
+    key_env: OPENROUTER_API_KEY
+    models:
+      - id: openrouter/free
+        name: OpenRouter Free (~50 RM0 models, 20 req/min)
+      - id: deepseek/deepseek-v4-flash
+        name: DeepSeek V4 Flash (via OpenRouter)
+      - id: deepseek/deepseek-v4-pro
+        name: DeepSeek V4 Pro (via OpenRouter)
+      - id: moonshotai/kimi-k3
+        name: Kimi K3 (2.8T, via OpenRouter)
+      - id: google/gemini-3.5-flash
+        name: Gemini 3.5 Flash (via OpenRouter)
+      - id: openai/gpt-5.6-sol
+        name: GPT 5.6 Sol (via OpenRouter)
+    name: OpenRouter (343 models, auto-failover, $28 remaining)
+    transport: openai_chat
+  gemini:
+    api: https://generativelanguage.googleapis.com/v1beta/openai
+    key_env: GEMINI_API_KEY
+    models:
+      - id: gemini-2.5-flash
+        name: Gemini 2.5 Flash (FREE — 1.5K/day, 1M ctx)
+    name: Google Gemini (FREE tier — 1.5K req/day)
+    transport: openai_chat
+  kimi-moonshot:
+    name: Kimi Code (Moonshot AI)
+    api: https://api.kimi.com/coding/v1
+    key_env: KIMI_API_KEY
+    transport: openai_chat
+    models:
+      - id: k3
+        name: Kimi K3 (2.8T, 1M ctx)
+      - id: kimi-for-coding
+        name: Kimi K2.7 Code
+      - id: kimi-for-coding-highspeed
+        name: Kimi K2.7 Code HighSpeed
+secrets:
+  bitwarden:
+    access_token_env: BWS_ACCESS_TOKEN
+    auto_install: true
+    cache_ttl_seconds: 300
+    enabled: false
+    override_existing: true
+    project_id: ''
+    server_url: ''
+security:
+  acked_advisories: []
+  allow_lazy_installs: true
+  allow_private_urls: false
+  redact_secrets: true
+  tirith_enabled: true
+  tirith_fail_open: true
+  tirith_path: tirith
+  tirith_timeout: 5
+  website_blocklist:
+    domains: []
+    enabled: false
+    shared_files: []
+sessions:
+  auto_prune: true
+  min_interval_hours: 24
+  retention_days: 90
+  vacuum_after_prune: true
+  write_json_snapshots: false
+skills:
+  external_dirs: []
+  guard_agent_created: false
+  inline_shell: false
+  inline_shell_timeout: 10
+  template_vars: true
+  write_approval: false
+slack:
+  allowed_channels: ''
+  free_response_channels: ''
+  require_mention: true
+streaming:
+  buffer_threshold: 24
+  cursor: ' ▉'
+  edit_interval: 0.8
+  enabled: true
+  fresh_final_after_seconds: 0.0
+  transport: auto
+stt:
+  elevenlabs:
+    diarize: false
+    language_code: ''
+    model_id: scribe_v2
+    tag_audio_events: false
+  enabled: true
+  local:
+    language: ''
+    model: base
+  mimo:
+    model: mimo-v2.5-asr
+  mistral:
+    model: voxtral-mini-latest
+  openai:
+    model: whisper-1
+  provider: openai
+telegram:
+  allowed_chats:
+    - '-1003753855708'
+    - '-1003792478194'
+    - '-1003768847825'
+    - '-1003521544074'
+    - '-1003815535761'
+    - '-1003721331017'
+    - '-1004446358629'
+    - '-5561731065'
+  bot_token_env: ASI_ARIFOS_BOT_TOKEN
+  bot_username: '@ASI_arifos_bot'
+  enabled: true
+  extra:
+    rich_drafts: false
+    rich_messages: false
+  free_response_chats:
+    - '-1003792478194'
+    - '-1003768847825'
+    - '-1003521544074'
+    - '-1003815535761'
+    - '1042200555'
+    - '267378578'
+    - '-1003753855708'
+    - '-1003721331017'
+    - '5316953867'
+    - '5250473787'
+    - '8798431893'
+    - '-1004446358629'
+    - '-5561731065'
+  reactions: false
+  require_mention: false
+terminal:
+  auto_source_bashrc: true
+  backend: local
+  container_cpu: 1
+  container_disk: 51200
+  container_memory: 5120
+  container_persistent: true
+  cwd: /root
+  daemon_term_grace_seconds: 2.0
+  daytona_image: nikolaik/python-nodejs:python3.11-nodejs20
+  docker_extra_args: []
+  docker_forward_env: []
+  docker_image: nikolaik/python-nodejs:python3.11-nodejs20
+  docker_mount_cwd_to_workspace: false
+  docker_run_as_host_user: false
+  docker_volumes: []
+  env_passthrough: []
+  governance_note: ART classifies; KERNEL arif_verify; ACT via A-FORGE forge_shell
+  home_mode: auto
+  modal_image: nikolaik/python-nodejs:python3.11-nodejs20
+  modal_mode: auto
+  persistent_shell: true
+  require_aforge_for_mutate: true
+  shell_init_files: []
+  singularity_image: docker://nikolaik/python-nodejs:python3.11-nodejs20
+  timeout: 300
+timezone: ''
+tool_loop_guardrails:
+  hard_stop_after:
+    exact_failure: 5
+    idempotent_no_progress: 5
+    same_tool_failure: 8
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    idempotent_no_progress: 2
+    same_tool_failure: 3
+  warnings_enabled: true
+tool_output:
+  max_bytes: 50000
+  max_line_length: 2000
+  max_lines: 2000
+tools:
+  tool_search:
+    enabled: auto
+    max_search_limit: 20
+    search_default_limit: 5
+    threshold_pct: 10
+toolsets:
+  - hermes-cli
+tts:
+  edge:
+    voice: en-US-AriaNeural
+  elevenlabs:
+    model_id: eleven_multilingual_v2
+    voice_id: pNInz6obpgDQGcFmaJgB
+  gemini:
+    audio_tags: false
+    model: gemini-2.5-flash-preview-tts
+    persona_prompt_file: ''
+    voice: Kore
+  mimo:
+    api: https://api.xiaomimimo.com/v1
+    key_env: MIMO_PLATFORM_API_KEY
+    model: mimo-v2.5-tts-voicedesign
+    sample_rate: 24000
+    voice: 冰糖
+  mistral:
+    model: voxtral-mini-tts-2603
+    voice_id: c69964a6-ab8b-4f8a-9465-ec0925096ec8
+  neutts:
+    device: cpu
+    model: neuphonic/neutts-air-q4-gguf
+    ref_audio: ''
+    ref_text: ''
+  openai:
+    model: gpt-4o-mini-tts
+    voice: alloy
+  piper:
+    voice: en_US-lessac-medium
+  provider: mimo
+  xai:
+    bit_rate: 128000
+    language: en
+    sample_rate: 24000
+    voice_id: eve
+updates:
+  backup_keep: 5
+  non_interactive_local_changes: stash
+  pre_update_backup: false
+voice:
+  auto_tts: true
+  beep_enabled: true
+  max_recording_seconds: 120
+  record_key: ctrl+b
+  silence_duration: 3.0
+  silence_threshold: 200
+web:
+  backend: searxng
+  extract_backend: searxng
+  search_backend: searxng
+x_search:
+  model: grok-4.20-reasoning
+  retries: 2
+  timeout_seconds: 180
+fallback_retry:
+  max_retries: 1
+  retry_delay: 0
+  fail_fast: true
+  triggers:
+    - 429
+    - 402
+    - 403
+    - 500
+    - 502
+    - 503
+    - 504
+search:
+  search_backend: searxng
+  backend: searxng
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

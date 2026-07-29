@@ -153,12 +153,25 @@ See `references/mcp-contract-drift-audit-fix.md` for the full 6-phase pipeline w
 
 ## Pitfalls
 
-1. **Never trust the report's numbers.** Always count from source.
-2. **SPA 200 ≠ content exists.** React SPAs serve 200 for everything. Check the data layer.
-3. **Client-side redirects ≠ server-side redirects.** Both "work" but only server-side is visible to crawlers.
-4. **Multiple data stores.** A project may have `writings.ts` (69 entries), `essays/` (70 files), `generated/` (50 files), and `articles.json` (66 entries). Don't conflate them — find which one the report is actually counting.
-5. **Legacy vs current data.** Old data files may still exist alongside new ones. Verify which is actually served by the live routes.
-6. **"Every surface has feature X" claims need surface-by-surface probe, not a single global count.** (PROVEN 2026-07-19) When a deployment report claims "every site surface across the federation now features feature X", do not trust the global assertion. Probe each surface individually:
+1. **Self-claims need live probing too — never assert system state from memory.** (PROVEN 2026-07-29) When writing a status report, session summary, or deployment update that includes quantitative system state (FQ, organ health, dirty file counts, receipt counts), always live-probe the relevant endpoint (`curl :port/health`, `git status -s`, `ls`) at the moment of writing. Never rely on a value you saw 15+ minutes ago — T₀ and T₁ can disagree within minutes. The Dynamic-State Principle from AGENTS.md applies: "State observed at T₀ is evidence only for T₀."
+
+    **Concrete failure pattern** (2026-07-29): A session report claimed "FQ 1.50 BALANCED" based on a value seen at 20:00Z. At 20:15Z the actual FQ was 9.88 OVERHEAT (since self-corrected). The claim was technically true for an earlier T₀ but false at report time. The fix: re-probe `flow_state.json` immediately before writing the claim, and cite the timestamp.
+
+    **Checklist before writing any system-state assertion:**
+    - `curl -s :port/health | jq .fq` (or relevant field)
+    - `git -C /root/REPO status -s | wc -l` for dirty file counts
+    - `cat /root/.local/share/arifos/carry_forward.json | jq '.open_loops | length'` for loop counts
+    - Note the probe timestamp in the report so the reader (including yourself next session) knows when the measurement was taken.
+    - If the value changed between T₀ (when you last worked) and T₁ (report time), name the delta. Don't silently use the stale value.
+
+    **This applies even when the report seems uncontroversial.** The 15-minute-old value that "couldn't have changed" may have changed via a cron job, AED cycle, or parallel agent.
+
+2. **Never trust the report's numbers.** Always count from source.
+3. **SPA 200 ≠ content exists.** React SPAs serve 200 for everything. Check the data layer.
+4. **Client-side redirects ≠ server-side redirects.** Both "work" but only server-side is visible to crawlers.
+5. **Multiple data stores.** A project may have `writings.ts` (69 entries), `essays/` (70 files), `generated/` (50 files), and `articles.json` (66 entries). Don't conflate them — find which one the report is actually counting.
+6. **Legacy vs current data.** Old data files may still exist alongside new ones. Verify which is actually served by the live routes.
+7. **"Every surface has feature X" claims need surface-by-surface probe, not a single global count.** (PROVEN 2026-07-19) When a deployment report claims "every site surface across the federation now features feature X", do not trust the global assertion. Probe each surface individually:
    ```bash
    for p in / /app1/ /app2/ /app3/ /app4/ /app5/; do
      count=$(curl -s "https://domain$p" | grep -c "<expected_token>")
@@ -166,14 +179,14 @@ See `references/mcp-contract-drift-audit-fix.md` for the full 6-phase pipeline w
    done
    ```
    The token can be any unique marker of the feature — a CSS class, a meta tag, a script src. **Probe all claimed surfaces**, not just a sample. If even one is missing, the "every" claim is FALSE. Classify the count: X/Y surfaces, then report "Y/X = X% coverage" instead of the unqualified "100%".
-7. **"100% pass rate" claims must specify what was tested.** (PROVEN 2026-07-19) When a report says "X/X URLs returned 200", verify:
+8. **"100% pass rate" claims must specify what was tested.** (PROVEN 2026-07-19) When a report says "X/X URLs returned 200", verify:
    - Did the test include the right URLs? (asset files vs HTML surface routes vs .well-known discovery files)
    - Does X represent all claims or a subset?
    - Are there categories of failures the X/X framing hid?
    Best practice: split verification by category (HTML routes / assets / discovery / redirects) and report per-category pass rates. "100% of routes" + "0% of discovery files" = two separate findings, not "100% site health".
-8. **HTML edits to `/var/www/html/` are deploy artifacts, not source.** (PROVEN 2026-07-19) Editing deployed copies (`/var/www/html/<surface>/index.html`) directly makes the change live but is untracked. Future deployments or rebuilds will overwrite without warning. After making such edits, leave a deployment receipt at `/root/forge_work/<date>/<task>-RECEIPT.md` documenting exactly which files were changed and why, AND track the source-of-truth regeneration step as a separate "TODO before next deploy" item. Don't commit untracked HTML to a "fixed" report without flagging the source gap.
-9. **Static surface files (JSON/README/llms.txt) drift from live registry. Never trust them over the health endpoint.** (PROVEN 2026-07-19) server-card.json says 30 tools, health says 24, CANONICAL_PUBLIC_SURFACE.json says 36, registry says 24 — the static files are ALL stale. Always probe the health endpoint or tools/list first. Generate all static surface files from the live registry programmatically, never hand-edit them. Add startup verification that fails-closed (SystemExit) when static files disagree with registry.
-10. **Concurrent subagent edits can corrupt your patches.** (PROVEN 2026-07-19) When the patch tool warns about sibling subagent modifications, re-read the file before patching. The other agent may have changed constants you depend on (e.g., GEOX_VERSION from "v2026.07.17" to "df314348"). Diff-check the file before committing.
+9. **HTML edits to `/var/www/html/` are deploy artifacts, not source.** (PROVEN 2026-07-19) Editing deployed copies (`/var/www/html/<surface>/index.html`) directly makes the change live but is untracked. Future deployments or rebuilds will overwrite without warning. After making such edits, leave a deployment receipt at `/root/forge_work/<date>/<task>-RECEIPT.md` documenting exactly which files were changed and why, AND track the source-of-truth regeneration step as a separate "TODO before next deploy" item. Don't commit untracked HTML to a "fixed" report without flagging the source gap.
+10. **Static surface files (JSON/README/llms.txt) drift from live registry. Never trust them over the health endpoint.** (PROVEN 2026-07-19) server-card.json says 30 tools, health says 24, CANONICAL_PUBLIC_SURFACE.json says 36, registry says 24 — the static files are ALL stale. Always probe the health endpoint or tools/list first. Generate all static surface files from the live registry programmatically, never hand-edit them. Add startup verification that fails-closed (SystemExit) when static files disagree with registry.
+11. **Concurrent subagent edits can corrupt your patches.** (PROVEN 2026-07-19) When the patch tool warns about sibling subagent modifications, re-read the file before patching. The other agent may have changed constants you depend on (e.g., GEOX_VERSION from "v2026.07.17" to "df314348"). Diff-check the file before committing.
 
 ## References
 

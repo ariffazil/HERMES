@@ -14,6 +14,8 @@ triggers:
   - "actor_id mismatch between init and tool call"
   - "strict-organ doctrine enforcement"
   - "anonymous organ read rejection"
+  - "WEALTH tools fail with L11 AUTH: session_id required"
+  - "WEALTH MCP server unreachable (port 18083)"
   - "arif_seal mode authority downgrade"
   - "arifOS health check times out (TCP accept, no HTTP response)"
   - "arif_think returns empty reasoning"
@@ -200,6 +202,80 @@ return (capability.authority_required, capability.irreversible,
 **Test impact:** `tests/test_item2_invert_verify_gate.py` — the `TestAnonymousReadModesAdmitted` class was renamed to `TestAnonymousReadModesRejected` and all parametrized expectations changed from LOW/MEDIUM to SOVEREIGN. The `TestModeCaseInsensitivity` class now asserts SOVEREIGN for all modes.
 
 **Conformance impact:** `arifosmcp/runtime/conformance_live.py` gained `_check_anonymous_organ_read_rejection()` as P0 check #15 (total checks 18→19). Tests in `tests/runtime/test_conformance_live.py` updated to expect 19 checks.
+
+## Pitfall: WEALTH tools require real session_id (not light-init "unknown")
+
+**Discovered:** 2026-07-29 — Hermes FI-001 attempting to route PETRONAS article to WEALTH analysis.
+
+All WEALTH tools (capital_market, capital_entropy, wealth_institutional_stress_index, etc.) enforce L11 AUTH:
+
+```
+L11 AUTH: session_id required for all WEALTH tools
+(FORGE 2026-07-18: anonymous reads blocked)
+```
+
+### The trap
+
+`arif_init(mode='light')` — the quick session bootstrap — returns `session_id='unknown'`. This is accepted by most kernel tools but **rejected by all WEALTH tools**. Even passing `session_id='unknown'` explicitly in the tool call returns the same L11 AUTH error.
+
+### Root cause
+
+The WEALTH MCP server (port 18083) has its own session gate independent of the arifOS kernel. The session gate at `wealth-session-gate` checks `session_id` for a non-'unknown', non-empty value before permitting any domain computation. This is by design — WEALTH organ operations are domain-sensitive actions that require a bound session identity, even for observation-only modes like `commodity` or `fx`.
+
+### Resolution paths (in order of preference)
+
+1. **Ed25519 sovereign sign-in** — Use `arif-bind` or `sovereign-lease` to establish a verified SOVEREIGN session, producing a real session_id. Then call WEALTH tools with `session_id=<bound_id>`, `trace_id=<from_init>`, `actor_id=Hermes-Agent-FI-001`. This is the correct production path.
+
+2. **arif_route bridge attempt** — `arif_route(organ='WEALTH', organ_tool='capital_market', arguments=..., session_token=...)` theoretically bridges with a session_token, but testing reveals:
+   - `mode='bridge'` is validated but rejected by Pydantic (unexpected keyword argument)
+   - Only `mode='route'` (default) works, which returns a routing decision only — no bridge execution
+   - If/when the bridge path is fixed downstream, the session_token will be needed for WEALTH to accept the routed call
+
+3. **REST API bypass** — Call the arifOS kernel directly on port 8088 with DPoP proof and a valid session_id. This bypasses the MCP middleware but still requires a real session_id.
+
+4. **Deferred analysis** — When WEALTH is unreachable and no sovereign session is available, fetch data via external tools (web search, smart_fetch), prepare structured analysis inputs locally, and submit to WEALTH when access is restored.
+
+### The arif_route dead-end in detail
+
+The `arif_route` tool schema exposes `organ_tool` and `arguments` parameters designed for bridge calls. When called with:
+```python
+arif_route(intent='...', organ='WEALTH', organ_tool='capital_market',
+           arguments={...}, session_token='<sct_v1...>')
+```
+The tool validates the schema (no error) but returns a routing decision only — `organ=WEALTH` is confirmed, but no bridge execution occurs. The `arguments` and `organ_tool` are parsed but not forwarded to the target organ. This is a schema-reality gap: the parameters exist for future MCP bridge capability but the current kernel dispatcher doesn't execute them.
+
+### Detection pattern
+
+```
+Tool: capital_market / capital_entropy / wealth_institutional_stress_index
+Error: L11 AUTH: session_id required for all WEALTH tools (FORGE 2026-07-18: anonymous reads blocked)
+Authority: OBSERVER (tool blocked before execution)
+Session: 'unknown'
+```
+
+The error originates from `wealth-session-gate` before any domain computation begins. The gate traces back to the FORGE 2026-07-18 strict-organ doctrine update that blocked anonymous organ reads across all federation organs.
+
+### Commit pipeline: A-FORGE SURFACE-GATE and AAA WAJIB Secret Gate
+
+When committing to federation repos, two automated pre-commit gates enforce governance:
+
+**A-FORGE SURFACE-GATE:**
+- Runs `surface-map drift check` before every commit
+- Probes live MCP surface (8 tools: arif_init, arif_observe, arif_think, arif_route, arif_memory, arif_judge, arif_forge, arif_seal)
+- Compares live tools against surface-map declarations in the repo
+- When SURFACE_GATE_STRICT=1: rejects commit on any drift
+- Output: `✅ SURFACE PINNED — Live tools match surface-map declarations.`
+
+**AAA WAJIB Secret Gate:**
+- Two-stage scan before every commit:
+  1. Pattern scan for Telegram/GitHub/API key patterns
+  2. `detect-secrets` baseline comparison against `.secrets.baseline`
+- Excludes `_archive/` and `memory/` from pre-commit (but GitHub Actions scans them)
+- Output: `✅ WAJIB gate PASSED — no new secrets detected`
+
+These are not bugs to fix — they are working enforcement mechanisms. If either gate blocks a commit, the blocker is intentional:
+- SURFACE-GATE failure → repo surface-map is stale; update before commit
+- WAJIB failure → secrets leaked; clean with `git filter-branch` or BFG
 
 ## Diagnostic: arifOS Health-Check Timeout (TCP Accept, No HTTP Response)
 
@@ -540,3 +616,4 @@ journalctl -u arifos --since "5 min ago" | grep KERNEL_AUTHORITY
 - arifOS constitutional primitives: `/root/AAA/docs/CONSTITUTIONAL_PRIMITIVES.md`
 - Capability registry: `/opt/arifos/app/arifosmcp/kernel/capability_registry.py`
 - Federation repair audit: `/root/A-FORGE/forge_work/2026-07-14/FEDERATION-REALITY-MAP.md`
+- WEALTH session auth gate (2026-07-29): [`references/wealth-session-auth-gate-2026-07-29.md`](references/wealth-session-auth-gate-2026-07-29.md)

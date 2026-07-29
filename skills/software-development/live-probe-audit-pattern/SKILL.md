@@ -40,6 +40,10 @@ triggers:
   - "dual agent"
   - "convergence"
   - "audit claims against live"
+  - "autonomous deployment"
+  - "completion report"
+  - "autonomous AGI"
+  - "all gaps closed"
 ---
 # Live Probe Audit Pattern
 
@@ -170,6 +174,84 @@ Reality:
 [OBS] The quote registry Layer A math computes G per resolve
 ```
 
+## Autonomous Deployment Verification — FQ, Carry-Forward & Goal Probes
+
+**Signal:** Another agent (OpenCode, 333-AGI, or any autonomous lane) returns a session completion report with banners like *"All Gaps Closed"*, *"FQ BALANCED"*, *"Autonomous AGI Execution — All Gaps Closed"*, or specific counts (*"7/7 organs, 14 receipts, 6 cycles"*).
+
+**Do NOT trust the banner without probing these autonomous-specific surfaces:**
+
+```bash
+# 1. FQ — probe arifFLOW directly, not the report
+curl -s http://127.0.0.1:7073/health | python3 -c "
+import json,sys
+d = json.load(sys.stdin)
+fq = d.get('fq', {})
+print(f'FQ: {fq.get(\"quotient\",\"?\")} ({fq.get(\"verdict\",\"?\")})')
+print(f'Execute:Verify = {fq.get(\"execute_count\",0)}:{fq.get(\"verify_count\",0)}')
+print(f'Trend: {fq.get(\"trend\",{}).get(\"direction\",\"?\")} @ {fq.get(\"trend\",{}).get(\"rate_per_min\",\"?\")}/min')
+print(f'Worst actor: {fq.get(\"worst_actor\",\"?\")}')
+"
+
+# 2. carry_forward.json — check actual open loops
+python3 -c "
+import json
+try:
+    d = json.load(open('/root/.local/share/arifos/carry_forward.json'))
+    loops = d if isinstance(d, list) else d.get('open_loops', d.get('goals', []))
+    pending = [l for l in loops if l.get('status') not in ('completed','resolved','sealed')]
+    print(f'Total loops: {len(loops)}, Pending: {len(pending)}')
+    for p in pending[:5]:
+        print(f'  🔴 {p.get(\"id\",\"?\")}: {p.get(\"title\",\"?\")[:80]}')
+except Exception as e: print(f'carry_forward.json: {e}')
+"
+
+# 3. goal_registry.json — check completion vs pending
+python3 -c "
+import json
+try:
+    d = json.load(open('/root/AAA/state/goal_registry.json'))
+    goals = d.get('goals', [])
+    pending = [g for g in goals if g.get('status') != 'completed']
+    print(f'Goals: {len(goals)-len(pending)} completed, {len(pending)} pending')
+    for p in pending:
+        print(f'  ⏳ {p.get(\"id\",\"?\")}: {p.get(\"title\",\"?\")[:60]} ({p.get(\"progress_pct\",0)}%)')
+except Exception as e: print(f'goal_registry.json: {e}')
+"
+```
+
+**Common autonomous deployment overclaim patterns (proven 2026-07-29):**
+
+| Claim | What to Probe | Expectation |
+|-------|---------------|-------------|
+| "FQ 1.50 BALANCED" | `curl :7073/health \| jq .fq` | May be stale — FQ moves every AED cycle. Actual could be 9.88 OVERHEAT. |
+| "All gaps closed" | carry_forward + goal_registry | Usually 3-4 pending. Report counts "infrastructure laid" as "gap closed." |
+| "Autonomous AGI" | Check git for 888_HOLD records | Usually bounded autopilot. No T3 ratification exists. |
+| "X cycles completed" | `journalctl -u aed.service \| grep -c 'SUCCESS'` | Low-risk claim, usually correct. |
+| "7/7 organs" | `for p in 8088 7071 3001 8081 18082 18083 7073; do ...` | Usually correct — thyroid-level metric. |
+
+**FQ Overheat Diagnostic (proven 2026-07-29):**
+
+AED fires every 5 min. Each cycle runs SENSE→EXECUTE→VERIFY→SEAL. EXECUTE + SEAL both push the execute counter. If VERIFY doesn't keep pace (SEAL counts as execute), ratio climbs → FQ spikes.
+
+```bash
+curl -s :7073/health | jq '.fq.by_actor | to_entries[] | select(.value.fq >= 8) | {actor: .key, fq: .value.fq}'
+```
+
+When AED itself is the dominant consumer, the system is heating itself — thermodynamic irony. Fixes:
+- Separate AED metabolism from FQ pipeline (AED = infrastructure cost, not execution debt)
+- Add verify step per cycle to balance execute:verify
+- NOP: FQ may self-correct as verify events accumulate
+
+**Template for autonomous deployment report audit:**
+
+```
+| Claim in report | Probe | Status | Epistemic |
+|---|---|---|---|
+| {banner claim} | {curl/python probe} | ✅/❌/⚠️ | OBS/INT |
+```
+
+Report the converged truth. Do NOT endorse "all gaps closed" when carry_forward shows pending items.
+
 ## Cross-Witness Audit Protocol (proven 2026-07-28)
 
 **Signal:** An agent (OpenCode, Claude, any subagent, or a peer) produces a deployment report, internal audit, or status assessment full of specific numbers, status flags, and severity ratings.
@@ -216,6 +298,153 @@ Convergence:       Both agents agree → seal the converged truth
 ### Convergence Sealing
 
 When two independent agents converge on the same finding, the evidence is stronger than either alone (F3 WITNESS). Seal immediately recording both agents and the converged finding.
+
+### Temporal FQ Self-Correction (proven 2026-07-29)
+
+FQ readings are temporal snapshots. A report claiming "FQ 1.50 BALANCED" at T₀ may show FQ 9.88 OVERHEAT at T₁ (+15 min), or self-correct back to BALANCED at T₂ (+30 min). Mechanism: AED cycles push execute counters with every SENSE→EXECUTE→VERIFY→SEAL pass — both EXECUTE and SEAL increment the execute side of the ratio. If verify events haven't accumulated yet, the ratio skews high temporarily. As later verify events fill in, the ratio rebalances.
+
+**Probe pattern:**
+```bash
+# T₁ probe — do this immediately upon receiving a report
+curl -s :7073/health | jq '.fq | {quotient, verdict, execute_count, verify_count, trend}'
+
+# Check the trend direction
+curl -s :7073/health | jq '.fq.trend | {direction, rate_per_min, samples}'
+```
+
+**Rule:** Always compare report-time FQ against probe-time FQ. If they differ, name the delta in your audit. Don't trust either reading as single truth — report the converged window.
+
+## Agent-Card Federation Alignment Audit
+
+**Signal:** An agent-card.json (A2A standard or arifOS v2.2.0) needs verification against live federation reality. The card declares skills, MCP surfaces, identity attributes, and topology bindings — each must be probed against the actual running system.
+
+**The tell:** Agent cards drift systematically because they are forked from templates and updated episodically. MCP endpoints add/remove tools, organs get added to the federation, canonical skill sets get consolidated — but the agent card stays frozen at fork time.
+
+### Probe order (mandatory)
+
+```bash
+# 0. Source the agent card
+AGENT_ID="openclaw"  # or whatever agent
+CARD="/root/AAA/agents/${AGENT_ID}/agent-card.json"
+
+# 1. Extract all skill IDs — both objects and bare strings
+python3 -c "
+import json
+with open('$CARD') as f:
+    card = json.load(f)
+skills = card.get('skills', [])
+named = set()
+for s in skills:
+    if isinstance(s, dict): named.add(s['id'])
+    elif isinstance(s, str): named.add(s)
+print('\\n'.join(sorted(named)))
+"
+
+# 2. Probe all MCP endpoints for health + tool count (parallel)
+for port in 8088 7071 7072 3001 8081 18082 18083 7073; do
+  echo "=== :${port} ==="
+  curl -sf "http://127.0.0.1:${port}/health" 2>/dev/null \
+    | python3 -c "
+import json,sys
+d = json.load(sys.stdin)
+t = d.get('tools_loaded') or d.get('public_tools') or d.get('tool_count') or d.get('stateless_tools') or '?'
+print(f'health=ok tools={t}')
+" 2>/dev/null || echo "UNREACHABLE"
+done
+
+# 3. Get actual tool names from arifOS kernel
+curl -sf http://127.0.0.1:8088/tools | python3 -c "
+import json,sys
+d = json.load(sys.stdin)
+for t in d.get('tools',[]): print(t['name'])
+" 2>/dev/null > /tmp/live_tools_8088.txt
+
+# 4. Cross-reference declared skills against canonical skill set
+ls /root/.hermes/skills/*/SKILL.md 2>/dev/null | while read f; do
+  basename "$(dirname "$f")"
+done > /tmp/canonical_skills.txt
+echo "Canonical count: $(wc -l < /tmp/canonical_skills.txt)"
+
+# 5. Check for bare-string skills that duplicate objects
+python3 -c "
+import json
+with open('$CARD') as f:
+    card = json.load(f)
+skills = card.get('skills', [])
+objects = {s['id'] for s in skills if isinstance(s, dict)}
+strings = {s for s in skills if isinstance(s, str)}
+dupes = objects & strings
+orphans = strings - objects
+if dupes: print(f'DUPLICATE bare strings: {dupes}')
+if orphans: print(f'ORPHAN bare strings (no object): {orphans}')
+if not dupes and not orphans: print('No bare-string issues')
+"
+
+# 6. Check federation topology for organ coverage
+python3 -c "
+import json
+with open('$CARD') as f:
+    card = json.load(f)
+endpoints = {e.get('url','') for e in card.get('mcp_surface',{}).get('endpoints',[])}
+expected_ports = ['8088','7071','7072','3001','8081','18082','18083','7073']
+for port in expected_ports:
+    found = any(port in ep for ep in endpoints)
+    if not found: print(f'MISSING organ on port :{port}')
+"
+```
+
+### What to check (7 dimensions)
+
+| # | Dimension | What to probe | Failure signal |
+|---|-----------|---------------|----------------|
+| 1 | **Skill references** | All skill IDs in the card vs canonical `.hermes/skills/` | Orphan IDs, deprecated names (e.g. KERNEL-quantum-runtime, KERNEL-qubit-substrate) |
+| 2 | **MCP tool lists** | Each declared endpoint's tool list via `curl :port/tools` | Tool count mismatch, non-existent tools listed, missing real tools |
+| 3 | **Organ coverage** | Card's `mcp_surface.endpoints` vs `/root/AGENTS.md` §1 (7 organs) | Missing organs (e.g. arifFLOW :7073), extra phantom ports |
+| 4 | **Intelligence tier** | Card's `warga_binding.intelligence_tier` vs agent's own AGENTS.md | Contradiction (card says ASI but own docs say AGI) |
+| 5 | **A2A contract bindings** | `a2a_transport.endpoint` and `mcp_binding` vs live `curl` | Dead endpoint, wrong protocol, stale auth |
+| 6 | **Floor bindings** | `floor_scope` on skills vs current F1-F13 from `/root/AGENTS.md` §6 | Wrong floor numbers, references to deprecated floors |
+| 7 | **Schema compliance** | Duplicate fields, empty keys, version mismatches | `"": "value"`, duplicate `securitySchemes`/`security_schemes` |
+
+### Findings report structure
+
+Each finding MUST carry:
+
+- **Severity** — 🔴 CRITICAL (orphan/deprecated/contradiction) / 🟠 HIGH (stale data) / 🟡 MEDIUM (cosmetic/gap) / 🔵 LOW (schema)
+- **File:line** — exact location in agent-card.json
+- **Card claim** — what the card says
+- **Live reality** — what the probe found with [OBS] tag
+- **Recommended action** — specific edit for the sovereign to approve
+
+Report template:
+
+```
+## N. 🔴 CRITICAL: [Category]
+
+**File:** agent-card.json, line L
+
+| Card claim | Live reality |
+|------------|-------------|
+| {what card says} | {what probe found} [OBS] |
+
+**Action:** {specific edit}
+```
+
+### Known pitfalls
+
+- **Bare-string skills lack metadata.** When a consumer iterates the `skills` array, an object (with `id`/`name`/`description`/`floor_scope`) and a bare string appear as different entries. The bare string carries no metadata and is useless for A2A contract evaluation. Flag every bare string.
+- **Topological roles are APEX residuals.** A card with `topological_role: "Metabolizer"` is carrying over APEX-theory taxonomy. Update to current organ name.
+- **Tool counts inflate over time.** A card written when GEOX had 35 tools will claim 35 forever. Always probe the live count.
+- **`kernel_skills` array is often stale.** Skills canonical at fork time get consolidated or renamed. Check every entry against disk.
+- **Agent cards are NOT `.hermes/skills/` files.** An agent-card skill entry is an A2A capability declaration; a SKILL.md is a procedural recipe. Don't flag a card for missing a SKILL.md — only flag orphan string references that don't match any declared object.
+- **Intelligence tier and warga lane must be consistent.** If the agent's own AGENTS.md says "AGI-level operator" but the card says `intelligence_tier: "ASI"`, that's a contradiction the card needs to resolve.
+
+### Worked example
+
+The canonical OpenClaw audit (2026-07-29) is at `references/agent-card-federation-alignment-2026-07-29.md`:
+- 12 findings across 5 categories
+- 3 CRITICAL (orphan skills, deprecated kernel refs, duplicate bare strings)
+- 4 HIGH (all 5 MCP tool lists wrong, intelligence tier contradiction, missing arifFLOW organ)
+- Each finding maps to a diff-ready edit on the agent-card.json
 
 ## Pitfalls
 
@@ -354,6 +583,7 @@ grep -n 'verbosity.*=.*\"minimal\"' /opt/arifos/app/arifosmcp/runtime/tools.py
 - `references/live-apex-scalars-from-kernel.md` — Wiring live G-fold apex scalars from arifOS kernel /health into an organ's health endpoint; reuse existing HTTP call, UNMEASURED fallback, scalar-by-scalar overlay (2026-07-26)
 - `references/code-audit-line-number-verification.md` — Verifying external code audit findings against live code; audit line numbers can be stale, always probe live source before acting (scar 2026-07-18)
 - `references/kernel-contrast-assessment.md` — Structured 7-axis before/after comparison for kernel version upgrades, release audits, and deployment state changes
+- `references/cross-agent-commit-handoff.md` — Committing files from another agent's session with F2/F11/F3 compliance (2026-07-29)
 - `references/mcp-resource-zen-2026-07-28.md` — Cross-witness audit: OpenCode scan → Hermes verify → convergence seal. MCP resource collapse 327→34. Single-agent accuracy ~60% lesson.
 
 ## Constitutional Compliance

@@ -4,7 +4,6 @@ agent:
   clarify_timeout: 600
   coding_context: auto
   disabled_toolsets:
-    - minimax-coding-plan-mcp
     - serena-mcp
   environment_hint: ''
   environment_probe: true
@@ -21,7 +20,6 @@ agent:
     enabled: true
     list:
       - serena-mcp
-      - minimax-coding-plan-mcp
     migration_target: streamable-http on localhost (per-organ)
     opt_in_via: add to active toolset at call time
     reason: Structural memory leak — opt-in per call, not spawn-at-load
@@ -780,6 +778,7 @@ mcp_servers:
     description: Hermes MCP — diagnostic/governance tools (status, fact-check, plan-review)
     transport: streamable-http
     url: http://127.0.0.1:18086/mcp
+    enabled: false
   hound:
     command: hound
     enabled: true
@@ -796,6 +795,7 @@ mcp_servers:
       report synthesis
     transport: streamable-http
     url: http://127.0.0.1:3333/api/mcp
+    enabled: false
     headers:
       Authorization: Bearer ${DEEP_RESEARCH_PASSWORD}
     timeout: 600
@@ -857,10 +857,10 @@ moa:
       reference_temperature: 0.5
 model:
   context_length: 1048576
-  default: deepseek-v4-flash
+  default: k3
   max_tokens: 131072
-  provider: deepseek
-  supports_vision: true
+  provider: kimi-moonshot
+  supports_vision: false
   timeout: 20
   request_timeout: 30
 model_catalog:
@@ -1157,26 +1157,14 @@ telegram:
     - '-1003721331017'
     - '-1004446358629'
     - '-5561731065'
+    - '-5443591163'
   bot_token_env: ASI_ARIFOS_BOT_TOKEN
   bot_username: '@ASI_arifos_bot'
   enabled: true
   extra:
     rich_drafts: false
     rich_messages: false
-  free_response_chats:
-    - '-1003792478194'
-    - '-1003768847825'
-    - '-1003521544074'
-    - '-1003815535761'
-    - '1042200555'
-    - '267378578'
-    - '-1003753855708'
-    - '-1003721331017'
-    - '5316953867'
-    - '5250473787'
-    - '8798431893'
-    - '-1004446358629'
-    - '-5561731065'
+  free_response_chats: '[''-1003792478194'',''-1003768847825'',''-1003521544074'',''-1003815535761'',''1042200555'',''267378578'',''-1003753855708'',''-1003721331017'',''5316953867'',''5250473787'',''8798431893'',''-1004446358629'',''-5561731065'',''-5443591163'',''5444180135'']'
   reactions: false
   require_mention: false
 terminal:
@@ -1277,9 +1265,9 @@ voice:
   silence_duration: 3.0
   silence_threshold: 200
 web:
-  backend: searxng
-  extract_backend: searxng
-  search_backend: searxng
+  backend: brave
+  extract_backend: tavily
+  search_backend: brave
 x_search:
   model: grok-4.20-reasoning
   retries: 2
@@ -1297,8 +1285,8 @@ fallback_retry:
     - 503
     - 504
 search:
-  search_backend: searxng
-  backend: searxng
+  search_backend: brave
+  backend: brave
 
 # ── Fallback Model ────────────────────────────────────────────────────
 # Automatic provider failover when primary is unavailable.

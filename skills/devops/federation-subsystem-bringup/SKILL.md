@@ -265,6 +265,7 @@ entropy:
 
 - `references/dream-engine-activation.md` — Full session trace of activating the Dream Engine: finding dormant code, env var fixes, systemd wiring, APEX governance.
 - `references/l4-audit-readiness-checklist.md` — Gate template for enabling L4 audit in any subsystem. G1-G5 gates, cutover sequence, rollback.
+- `references/hardened-localhost-deployment.md` — Deploying Python stdlib localhost-only servers as hardened systemd services with endpoint testing. Security directives explained. Forward-reference bug fix pattern.
 
 ## Verification Checklist
 

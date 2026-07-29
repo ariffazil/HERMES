@@ -122,6 +122,7 @@ No credential access and no network dependency exist in AAA.
 
 - **NEVER attempt Direct MX.** It's 2026. Every major provider requires authenticated relay. You will burn hours and get nowhere.
 - **Brevo IP whitelisting blocks ALL paths by default.** Both SMTP (`525 5.7.1 Unauthorized IP address`) and REST API (`401 unauthorized: unrecognized IP address`) will reject connections from new IPs. Arif must authorize `72.62.71.199` at https://app.brevo.com/security/authorised_ips. Without this step, NOTHING works.
+- **Curl vs Python urllib divergence (observed 2026-07-29):** A single IP may pass Brevo's whitelist when accessed via `python3 -c "import urllib.request..."` but fail the same endpoint via `curl`. Probable cause: Brevo's IP fingerprinting sees Cloudflare/VPS egress differently per user-agent or TLS fingerprint. If curl returns `unauthorized: unrecognised IP address`, retry with Python urllib before assuming the IP isn't whitelisted. The Python path succeeded where curl failed for the same API key + VPS IP.
 - **Brevo has TWO key types — do not mix them:**
   - `xkeysib-...` = API key for REST calls (`api.brevo.com`). Used by transport module.
   - `xsmtpsib-...` = SMTP key for raw SMTP (`smtp-relay.brevo.com`). Requires separate SMTP login (Brevo-generated, e.g., `b2c4ad001@smtp-brevo.com`, NOT your email).

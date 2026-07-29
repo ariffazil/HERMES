@@ -459,6 +459,75 @@ bash /root/scripts/post-deploy-pulse.sh
 # so a simple post-deploy restore script resurrects it
 ```
 
+### Common Pitfall: `uri strip_prefix` + Root Path `/` After Strip Leaves `try_files` With a Directory Match (PROVEN 2026-07-29)
+
+When a Caddy config uses `uri strip_prefix` on a directory path (e.g., `/world/makcikgpt/`) that reduces to `/`, the `try_files {path} {path}.html /index.html` with `{path}=/` may **fail to resolve `index.html`** because Caddy treats `/` as a directory hit and `file_server` doesn't automatically serve the directory index.
+
+**Symptom:** Individual article pages under a prefix work fine (`/world/makcikgpt/slug` → 200), but the root landing page (`/world/makcikgpt/` → 404). The `file_server` serves 0 bytes with `content-length: 0`.
+
+**Root cause:** After `uri strip_prefix /world/makcikgpt`, the internal path becomes just `/`. The `try_files {path}` matches against `/var/www/html/arif/makcikgpt-md/` — a directory — which Caddy considers "found" by `try_files`. The subsequent `file_server` then tries to serve the directory, but the index resolution (`index.html`) within a `handle` block that already executed `try_files` against a directory doesn't cascade to serve an index file as expected.
+
+Note: this is a Caddy v2 edge case specific to the **stripped root path** scenario. Regular `handle /path/*` blocks without `uri strip_prefix` do not exhibit this — see the ["Static Sub-Pages" pitfall](#common-pitfall-static-sub-pages-under-spa-route-need-spa_routes--pathindexhtml-proven-2026-07-26) above for the non-strip counterpart.
+
+**Fix — add a dedicated `handle /path/` block (with trailing slash) BEFORE the `@ai-bot` block:**
+
+```caddyfile
+# Landing page root handler — serves index.html when uri strip_prefix reduces path to /
+handle /world/makcikgpt/ {
+    root * /var/www/html/arif/makcikgpt-md
+    try_files /index.html =404
+    file_server
+}
+
+# Bot-readable individual articles
+@ai-bot-world {
+    header_regexp User-Agent (?i)GPTBot|ClaudeBot|...|curl|Python-urllib|python-requests|...
+    path /world/makcikgpt/*
+}
+handle @ai-bot-world {
+    uri strip_prefix /world/makcikgpt
+    root * /var/www/html/arif/makcikgpt-md
+    try_files {path} {path}.html /index.html
+    file_server
+}
+```
+
+Note: the `Python-urllib` entry in the bot UA regex is **optional** — it's only needed if probes use Python's `urllib.request.urlopen()` which sends `Python-urllib/3.x`. The regex already covers `python-requests` and `curl`.
+
+**Why this works:** The `handle /world/makcikgpt/` block matches the exact directory path BEFORE the broader `@ai-bot-world` matcher. It uses `try_files /index.html =404` which resolves the file explicitly (not relying on `{path}` directory matching). The `file_server` then serves it directly.
+
+**Verification:**
+
+```bash
+# Landing page returns 200 with actual content
+curl -svo /dev/null --resolve "arif-fazil.com:443:127.0.0.1" \
+  "https://arif-fazil.com/world/makcikgpt/" 2>&1 | grep -i "< http\\|200\\|404"
+
+# Individual articles still work
+curl -svo /dev/null --resolve "arif-fazil.com:443:127.0.0.1" \
+  "https://arif-fazil.com/world/makcikgpt/ilmu-bbb" 2>&1 | grep -i "< http\\|200\\|404"
+
+# Content is served (not 0 bytes)
+curl -s --resolve "arif-fazil.com:443:127.0.0.1" \
+  "https://arif-fazil.com/world/makcikgpt/" | wc -c
+# Should be > 0 — 404 returns 0 bytes on this infra
+```
+
+**Detection:** When the external witness probe (P17) repeatedly reports `HTTP 404` for `/world/makcikgpt/` but individual article paths resolve fine, this is the root cause.
+
+### Common Pitfall: Probe User-Agent Not in Caddy Bot Regex (PROVEN 2026-07-29)
+
+When a Caddy config uses `@ai-bot-world` with `header_regexp User-Agent` to match bots and serve raw/markdown content, the probe's HTTP library User-Agent string may not be in the regex. Python's `urllib.request.urlopen()` sends `Python-urllib/3.x` — the regex may include `python-requests` but NOT `Python-urllib`.
+
+**Symptom:** The external witness probe returns 404 for paths that curl works fine on. `curl` sends `curl/8.x` which matches the regex; the Python probe sends an unmatched UA.
+
+**Fix (probe side):** Override the User-Agent in the probe's HTTP calls — OR — Add `Python-urllib` to the Caddy bot regex:
+```caddyfile
+header_regexp User-Agent (?i)GPTBot|ClaudeBot|...|Python-urllib|python-requests|...
+```
+
+**Detection:** Compare probe results with `curl -A "Python-urllib/3.13"`. If curl with the Python UA also returns 404, the bot route is UA-gated and the probe's UA isn't matched.
+
 ## Existing arif-fazil.com Route Map
 
 Reference — routes already configured in the main site block (as of 2026-07-22):

@@ -18,6 +18,95 @@ Pattern for evaluating, installing, and wiring a third-party MCP server into the
 
 ## Workflow
 
+### 0. Quarantine — Sandbox Evaluation (Required Pre-Step)
+
+**Before any install, the tool must pass mcp_sandbox_eval.py.** This is the arifOS sandbox doctrine: we quarantine the *tool* at intake, not the *agent* at runtime. See `skill_view(name='governance-patterns', file_path='SKILL.md')` section "Sandbox Doctrine" for the architectural rationale.
+
+The sandbox eval runs four stages:
+
+| Stage | Verifies | Why |
+|-------|----------|-----|
+| 1. Containment | Binary runs in isolated container without production access | Prevents data leak / system mutation during testing |
+| 2. Handshake | JSON-RPC 2.0 transport, auth, connection stability | Ensures tool doesn't crash-loop on init |
+| 3. Floor Scan | Tool definitions against F1/F2 invariants: path isolation, network gating, schema correctness | F2 TRUTH — claims match source code |
+| 4. Stress Test | Error handling, token load, oversized output, edge-case inputs. **Proven case study:** SylphxAI/pdf-reader-mcp passed Stage 1-3 (schema declared `url XOR path`) but failed Test 4.10 — Rust runtime (`ureq`) initiated outbound HTTPS when `url:` was passed. Zod `.refine()` ≠ runtime sandbox. | F4 CLARITY — no entropy introduction |\n\n**⚠️ Critical lesson (proven 2026-07-28):** Stage 4 is non-negotiable. Never trust marketing copy or Zod schema definitions. Verify execution at the socket. See `references/sylphx-intake-case-study.md`.
+
+**PASS** → proceed to Evaluate + Install
+**FAIL** → reject or isolate further; do not register
+
+**F1 Safety hard blocks** for any MCP server that:
+- Accepts `url:` parameter (must be path-only unless explicitly approved by 888)
+- Lacks schema validation on outputs
+- Exposes write/delete capability without explicit `ack_irreversible`
+
+**For first-time integrations:** Register with OBSERVE/SUGGEST scope only (read-only extraction, advisory output). Expand scope only after 30-day observation window and explicit 888 approval.
+
+### 0b. Evidence Pinning & Rejection Receipt (Required on FAIL)
+
+When a tool **FAILS** quarantine (especially on F1 CRITICAL), seal the evidence as a permanent artifact. This prevents "did we test X?" questions later and proves the intake caught what it claims.
+
+**SHA-256 evidence chain pinning:**
+
+The eval report generated during Stage 4 is the primary evidence. But the report itself may have `lock_metadata` appended after the initial generation (disposition, doctrine violations, SHA-256 pin). This changes the current file hash from the original — both must be recorded:
+
+```bash
+# Capture original hash at time of eval (before any metadata appended)
+original_hash=$(sha256sum <eval_report.json> | cut -d' ' -f1)
+# Store it in the report's lock_metadata.original_sha256_pre_lock field
+
+# Later, when verifying:
+current_hash=$(sha256sum <eval_report.json> | cut -d' ' -f1)
+echo "Original (pre-lock): $original_hash"
+echo "Current:             $current_hash"
+```
+
+**F1_REJECTION_RECEIPT — structured rejection artifact:**
+
+After a FAIL verdict, create a structured JSON receipt alongside the eval report. Template:
+
+```json
+{
+  "receipt_type": "F1_REJECTION_RECEIPT",
+  "dossier_id": "DOSSIER-YYYYMMDD-<TOOL>-CLOSEOUT",
+  "authority": "888_SOVEREIGN",
+  "target": "<org>/<repo>@<version>",
+  "disposition": "OPTION_A_PERMANENT_HOLD",
+  "status": "PERMANENT_QUARANTINE",
+  "federation_mutation": "ZERO",
+  "evidence": {
+    "stage_4_report": "<eval_report_path>",
+    "original_sha256_pre_lock": "<sha256>",
+    "current_sha256": "<sha256>",
+    "sha256_note": "Current hash differs from original because lock_metadata block was appended after initial generation"
+  },
+  "failure_detail": {
+    "test": "<test_id> — <test_name>",
+    "severity": "F1_CRITICAL",
+    "latency_ms": <N>,
+    "what_happened": "<plain-text description of what the tool actually did>",
+    "doctrine_violated": ["F1_AMANAH", "LOCALHOST_IS_PASSWORD"],
+    "verdict": "<one-line ultimate verdict>"
+  },
+  "rollback_actions": [
+    "uninstall ... (confirmed)",
+    "sandbox purged (confirmed)",
+    "Zero entries in mcp.json",
+    "Zero federation mutation"
+  ],
+  "doctrine_vindication": "<how the intake proved its own value>",
+  "seal_chain": {
+    "eval_report": "<path>",
+    "rejection_receipt": "<path>"
+  }
+}
+```
+
+**SEAL_RECEIPT — assembly verification artifact:**
+
+After all intake components are assembled (evidence, receipts, doctrine), create a SEAL_RECEIPT.md as the permanent assembly checklist. Include artifact map diagram, full checklist with verification evidence, and rollback procedure.
+
+**Proven case study:** SylphxAI/pdf-reader-mcp v4.1.2 intake, 2026-07-28. Test 4.10 `url_xor_schema_rejection` caught at Stage 4 — Sylphx accepted `url:` and made outbound HTTPS (33ms to example.com). Zod `.refine()` only caught BOTH-or-NEITHER, not `url:`-only. Full evidence chain: original SHA-256 (`33a2b3f2...`) → lock metadata → current SHA-256 (`a1266117...`). F1_REJECTION_RECEIPT.json + SEAL_RECEIPT.md + EUREKA doctrine (GENESIS #057) forged as permanent artifacts.
+
 ### 1. Evaluate
 
 Before installing, read the README and pyproject.toml/package.json:
@@ -539,6 +628,7 @@ Furi is a CLI + HTTP API for managing MCP servers — GitHub install, PM2 proces
 - **Docker MCP servers need Bearer auth in headers**: Containerized MCP servers behind `ACCESS_PASSWORD` won't auth automatically — `hermes config set mcp_servers.<name>.headers.Authorization 'Bearer <password>'` is required. Without it, MCP responds 401 and tools never load.
 - **Timeout must be ≥300s for research MCP servers**: Default 60s kills deep research pipelines that do iterative search + LLM calls. Set `timeout: 600` in the mcp_servers entry.
 - **Token Plan vs Platform API**: Separate endpoints, separate keys.
+- **Session-based MCP servers need `Accept: application/json` header.** GEOX (:8081), WEALTH (:18082), and WELL (:18083) reject `tools/list` calls that omit this header. Proven 2026-07-28 during Sylphx integration work. Always include in curl probes and MCP dashboard queries.
 - **searxng/.env is a symlink to vault.env**. `/root/searxng/.env → /root/.secrets/vault.env`. Modifying vault.env automatically updates searxng/.env — no separate file to patch. Symlinks always have permission `777` (kernel behavior). The actual target file's permissions are what matters (`/root/.secrets/vault.env` is `600 root:root`). Do NOT attempt chmod on symlinks — it only affects the symlink itself, not the target.
 
 ## References

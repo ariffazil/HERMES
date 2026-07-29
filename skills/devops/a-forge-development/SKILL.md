@@ -464,7 +464,36 @@ cd /root/A-FORGE && npm run build  # tsc -p tsconfig.json
 
 Zero errors required. If you get LSP errors, run `npx tsc --noEmit` to isolate.
 
-### arifOS Kernel Forge Workflow (Arif's Preference)
+### Arif's Preference: Obvious Fix Protocol (Federation-Wide)
+
+> **"Fix la. Jangan tanyaaaa."** — Arif, 2026-07-29
+
+When the gap is clear, the fix is reversible (F1 FULL), and the blast radius
+is confined to a single file or single config — **just execute it**. Do not:
+
+- ❌ Ask "shall I fix this?"
+- ❌ Present options ("option 1 / option 2 / option 3")
+- ❌ Stage a dry-run then ask to apply
+- ❌ Write a deliberation paragraph first
+
+✅ Read → identify the exact fix → apply → verify → report with delta.
+
+**Scope test**: does the change affect only ONE organ, ONE config file, or ONE
+agent card? Is the old reference clearly stale (deprecated tool name, dead
+skill path, wrong port)? If yes to both → T1 auto-execute, no announcement.
+If the fix spans multiple organs or requires a systemd restart → T2 (announce
++ proceed), still no asking for permission.
+
+This applies to ALL federation surfaces: agent cards, config files, skill
+references, tool names, MCP endpoints — not just A-FORGE kernel code.
+
+**Origin:** 2026-07-29 — arifFLOW was missing from OpenClaw's MCP surface.
+The fix was adding 4 lines to config.yaml + 1 endpoint block to
+agent-card.json. Reversible (git checkout), contained (single organ config).
+Should have been done without asking. Arif's response: "Fix la. Jangan
+tanyaaaa."
+
+## arifOS Kernel Forge Workflow (Arif's Preference)
 
 When modifying arifOS Python kernel files (`judge.py`, `memory.py`, `ops.py`, etc.):
 

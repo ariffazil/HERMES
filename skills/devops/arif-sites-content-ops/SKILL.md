@@ -72,17 +72,38 @@ export default content;
 ## Build & deploy
 
 ```bash
-# Build
-cd /root/ARIF-SITES/sites/arif-fazil.com && npm run build
+# 1. Install deps if build hasn't run (--legacy-peer-deps required)
+cd /root/arif-sites/sites/arif-fazil.com && npm install --legacy-peer-deps
 
-# Deploy to VPS (direct — reliable)
-cd /root/ARIF-SITES && bash scripts/deploy-site.sh arif-fazil.com --apply
+# 2. Build (also regenerates feed, sitemap, llms, makcikgpt listing)
+npm run build
 
-# deploy-vps.sh --site arif-fazil.com may fail with registry overlay errors.
-# scripts/deploy-site.sh --apply is the reliable alternative.
+# 3. Deploy to VPS — manual rsync is most reliable
+cd /root/arif-sites
+
+# Step A: Sync static HTML/MD files for crawlers (makcikgpt-md/)
+rsync -av sites/arif-fazil.com/public/makcikgpt-md/ /var/www/html/arif/makcikgpt-md/
+
+# Step B: Sync built dist
+rsync -av sites/arif-fazil.com/dist/ /var/www/html/arif/
+
+# Step C: Reload Caddy
+sudo caddy reload --config /etc/caddy/Caddyfile
+
+# Verify: check JS bundle hash matches
+DIST_JS=$(ls -t sites/arif-fazil.com/dist/assets/*.js | head -1 | xargs basename)
+LIVE_JS=$(curl -s "https://arif-fazil.com/" | grep -oP 'index-[A-Za-z0-9]+\\.js')
+[ "$DIST_JS" = "$LIVE_JS" ] && echo "MATCH: $DIST_JS" || echo "MISMATCH — redeploy"
 ```
 
-Build output goes to `dist/`. Deploy syncs to `/var/www/html/arif/` and checks HTTP 200.
+Build output goes to `dist/`. The dist syncs to `/var/www/html/arif/`.
+
+### Deploy script alternative (may fail)
+```bash
+bash scripts/deploy-site.sh arif-fazil.com --apply
+```
+`deploy-vps.sh` validates registry schema and may fail if `schema_version` in
+`infra/runtime-overlays.json` doesn't match. Manual rsync (steps A-C) is safest.
 
 ## Governance Fix workflow (EXTERNAL AUDIT → REALITY VERDICT → FIX)
 
@@ -149,6 +170,15 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 12. **Human-machine register collision.** When editing the footer or any page that has both human narrative and machine telemetry (llms.txt, soul.json, observatory links, organ counts), always add a visual divider (border, section label like "Machine surface") between them. Never let infrastructure badges float directly under human prose.
 
 14. **MakcikGPT articles need TWO registrations.** The article TS module and its index.ts entry control the React SPA rendering. But feed.xml, llms.txt, and sitemap.xml are generated from `src/data/essays.json` via `scripts/lib/makcik-source.cjs`. For a new article to appear in feeds: update BOTH the TS index and essays.json.
+
+15. **Static HTML required for bot-readable MakcikGPT.** TS source alone only serves the React SPA. Bots (GPTBot, ClaudeBot, curl) read from `public/makcikgpt-md/*.html`. New article slugs need static HTML generated manually — this is NOT part of the npm build. Use the Python extraction pattern from `makcikgpt-article-forging` skill.
+
+16. **Verify listing, feed, sitemap, and llms.txt after every deploy.** Not just the article itself. The 5-point verification protocol:
+    - JS bundle hash: dist vs live
+    - Article 200 for both bot and browser
+    - Listing page 200 for both bot and browser
+    - feed.xml, sitemap.xml, llms.txt contain new slug
+    - Listing page contains article entry
 
 ## ABCD Framework Alignment
 

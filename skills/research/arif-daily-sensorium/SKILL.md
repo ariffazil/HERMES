@@ -101,6 +101,8 @@ jq .version /root/AAA/docs/deprecation-registry.json 2>/dev/null || echo "No dep
 - arifOS repo with 1000+ dirty files → likely merge mess (proven pattern)
 - carry_forward.json missing or stale (last entry > 48h old) → session continuity risk
 - flow_state.json missing → federation pulse gap (arifFLOW may be down)
+- flow_state.json present but status/verdict is `STUCK` → arifFLOW daemon is alive but stuck in its processing loop. Stronger signal than missing — the daemon is running but not advancing receipts/executions. (Verified 2026-07-29)
+- Any single repo with 40+ dirty files → warrants a triage note before new forge work. (Verified 2026-07-29: AAA at 49 dirty files)
 - MCP tool unreachable but port health green → MCP transport issue, not organ failure
 - T3 open items list growing → accumulated governance debt
 
