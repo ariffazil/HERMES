@@ -248,6 +248,7 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | OpenRouter Agent Guide | `/root/AAA/docs/OPENROUTER_AGENT_GUIDE.md` |
 | OpenRouter Hermes Ops | `/root/AAA/docs/OPENROUTER_HERMES_OPS.md` |
 | Doc architecture pattern | This skill's `references/openrouter-doc-architecture.md` |
+| Model benchmark methodology | This skill's `references/model-benchmark-methodology.md` |
 | Session stickiness patch | This skill's `references/session-stickiness-source-patch.md` |
 | Hermes config state snapshot | This skill's `references/hermes-openrouter-config-state-2026-07-24.md` |
 | FLAME engine | `/root/A-FORGE/flame/` |
@@ -357,6 +358,7 @@ openclaw cron show <job-id> | grep -E 'model:|fallbacks|last.*status'
 - **Auto-router for 000_INIT.** Never. Identity binding needs sovereign direct — OpenRouter abstracts the provider, so the init binding is to a proxy, not the actual model.
 - **Auto-router for MY governance.** The router selects by community spend share, which can pick a censored model (MiniMax M3 has **SHADOW-MM-001** — silent MY governance censorship on Najib, 1MDB, PETRONAS, myKad). Always route sovereign topics direct to DeepSeek. **Never route MiniMax models through auto-beta** — they must be explicitly excluded in `allowed_models` if auto-beta is used at all on these topics.
 - **Reasoning drops with tools.** Some models (GPT-5.x, certain Claude variants) silently suppress reasoning tokens when `response_format` or tool_calling is active. Kimi K2.5 is the safest for reasoning visibility with tool use. Audit your specific combo.
+- **Kimi K3 always-on thinking breaks agentic workflows (probed 2026-07-29).** Kimi K3's forced thinking mode dumps ALL output into `reasoning_content` and leaves `content` as `null`. Tool calls still work (correct `tool_calls` in response), but the final response after tool execution is invisible — Hermes sees `content: null` and can't deliver a message to the user. **This is a dealbreaker for conversational agents.** K2.5 does not have this issue. Workaround: set `include_reasoning: true` and fall back to `reasoning_content` as content, but this requires runtime patching. For now, Kimi K3 is only suitable for vision tasks (where content is an image, not text) — never as a primary conversational model.
 - **Assume cascade matches SOT.** The AGENT_MODEL_MAP is the canonical cascade. This skill documents the *proposed* optimised chain. Verify with `curl -s http://localhost:8088/health | jq .cascade` before assuming.
 - **No session_id.** OpenRouter's auto-beta loses session stickiness without it — every call goes through the classifier again, losing 30% latency.
 - **No cache breakpoint.** Long system prompts (Hermes ~8K, constitutional kernel ~15K) are ~90% wasted on repeat without `cache_control`.
