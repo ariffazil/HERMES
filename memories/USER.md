@@ -1,6 +1,6 @@
 Co-architect, not just user. Thinks in systems (MAS framework, PRMT taxonomy, Unix philosophy). Analyst at PETRONAS. Hates cost tracking but cares about provider payment friction.
 §
-Syed (Abang Sado @rico_ricaldo_33): 100% BM only. Nasi lemak vendor empire. XAUUSD trader. Astrum Ampang 3 bilik target. Mak Ngenan EUS HKL. Telegram 'No name' (1042200555) — heavy Hermes user, 964 msgs since Jul 3 for nasi lemak ops.
+Syed (Abang Sado @rico_ricaldo_33): ISFJ. 100% BM. Nasi lemak empire. XAUUSD trader. Astrum Ampang target. Telegram 'No name' (1042200555). Sleep aid: Chaos and Pain Hypnos. Brain fog when sleep-deprived/stressed — "bila dia kata x ingat, dia memang x ingat". Emotional trading risk — enters impulsively, Arif wants me to call this out. Skeptical of wearable optical HR — chest strap only.
 §
 Aliff: Muhammad Aliff Al Husna bin Shamsudin. Kawan rapat Arif. PETRONAS KLCC. Geologist (Arizona). Lenggeng NS, Bandar Tasek Senangin No. 27. Non-coder, BM casual. CPPS/prostatitis — Li-ESWT sesi 1 lega. AIA PETRONAS coverage. DM access granted 28 Jul 2026 via F13 approval.
 §
@@ -10,18 +10,18 @@ DERITA — WITNESS not victim. Sees trauma geometrically. CLOAK presence = sover
 §
 Primary interface: forge duty reports. Corrects direct: 'I didn't ask for that' = answer the question, don't do extra work.
 §
-Syed: ISFJ confirmed. BM only. Uses Chaos and Pain Hypnos sleep aid. Has brain fog from sleep/stress. Relates to CBUM's IgA Nephropathy journey.
-§
 Petronas insider (geng lanyard, Kad Petronas). Former engineer. Frame as "kami" not "mereka" when writing about PETRONAS.
 §
 Explanations: lead with real-world BM benefit, not architecture. 'Ada la' = trust him. His own diagnosis > industry patterns.
 §
-HATES floating pricing (OpenRouter='harga yahudi'). Prefers fixed price, satu key satu bill. Wolf Cabinet: Δ=perception→fixed-price multimodal gateway, Ω=judgment→multi-provider constitutional, Ψ=survival→local. 'Provider bukan kedai runcit model, lapisan perlembagaan.'
+HATES floating pricing (OpenRouter='harga yahudi'). Fixed price, satu key satu bill. Provider = constitutional layer, bukan kedai runcit.
 §
 VALUES: epistemic rigor — OBS vs DER/INT must be explicit. Will audit and correct me directly. DITEMPA BUKAN DIBERI standard. Trusts his own institutional diagnosis (PETRONAS, providers). Validates, don't infer from industry patterns alone.
 §
-Zero-registration execution: 'I don't want to do and register anything anymore.' If credentials don't exist, fall back to local — never ask to register for new services.
+Zero-registration: if creds don't exist, fallback to local. Never ask to register.
 §
-Hates Cloudflare but tolerates automated usage that doesn't need his interaction. If setup requires dashboard access, use alternative.
+Tolak Cloudflare unless zero-interaction. If dashboard needed, use alternative.
 §
-Design: Primer=red(#e0301e)/blue(#1f3fd4)/yellow(#f2b705). MakcikGPT site: dark mode(black #0a0a0a), zen minimal, no Mondrian. Deploy via deploy-makcik.sh.
+Design: Primer=red(#e0301e)/blue(#1f3fd4)/yellow(#f2b705). MakcikGPT: dark mode(#0a0a0a), zen minimal. Deploy via deploy-makcik.sh.
+§
+Trading cognition: Tolak pip. Use % + RM mental model. 'Pip tu broker punya bahasa — ignore ja.' Cognitive defense: think in % (risk), RM (pain/reward), R-units (sizing). Abstraction layer between trader and real money = musuh.

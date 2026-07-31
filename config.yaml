@@ -1,11 +1,11 @@
 model:
-  provider: mulerouter
+  provider: deepseek
   supports_vision: false
   request_timeout: 45
   context_length: 1048576
   max_tokens: 131072
   timeout: 30
-  default: qwen3.7-plus
+  default: deepseek-v4-pro
 providers:
   mulerouter:
     api: https://api.mulerouter.ai/vendors/openai/v1
