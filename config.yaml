@@ -78,6 +78,10 @@ providers:
     api: https://opencode.ai/zen/go/v1/chat/completions
     key_env: OPENCODE_GO_API_KEY
     transport: openai_chat
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
     primary: true
     note: 'MODEL > PROVIDER > BILLING. Canonical tiers: /root/AAA/registries/models/MODEL_TIERS.json'
     models:
