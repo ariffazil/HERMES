@@ -24,6 +24,7 @@ Audit a codebase across multiple dimensions simultaneously, cross-referencing do
 - User suspects structural drift (parallel dirs, stale docs, tool count mismatch)
 - User asks about governance framework, vault integrity, or epistemic labeling
 - User wants a baseline before making changes
+- User asks "find the weird stuff", "what's spooky/strange", "show me the hidden artifacts", "curiosity hunt" — anomaly hunting across the full ecosystem (see `references/anomaly-hunting-patterns.md`)
 
 ## Core Pattern: Parallel Independent Investigations
 
@@ -140,6 +141,7 @@ Write findings to `<repo>/_SOT_INVENTORY.md` with:
 
 - `references/geox-sot-inventory-2026-07-13.md` — Full worked example: GEOX organ inventory with command chain, discrepancy table, and epistemic framework map. Consult this for concrete patterns when auditing a new codebase.
 - `references/credential-redaction-verification.md` — Checklist for verifying credential redaction across multi-repo audits, including stale-finding detection, gitignore propagation, and federation-wide pattern coverage.
+- `references/anomaly-hunting-patterns.md` — Curiosity-driven codebase exploration: finding unusual/occult/spooky artifacts across the full ecosystem — processes, cron, git, filenames, governance rules, and private directories.
 
 ## Pitfalls
 

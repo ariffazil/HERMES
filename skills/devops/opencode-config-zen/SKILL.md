@@ -408,6 +408,95 @@ Catches typos like `openrouter/auto-betax` before they go live.
 The `--completeness` mode flags agents with zero fallbacks (expected: claude-code,
 copilot, grok — single-model agents) and prints total agent/provider/model counts.
 
+## Custom Agents & Providers (Outside SOT)
+
+Not every agent or provider lives in the SOT. Some are purpose-built for specific roles and wired directly. These are preserved across renders — never overwritten by `--write` unless explicitly added to the renderer.
+
+### Dual-Lane Agent Pattern (Text vs. Vision)
+
+When a single role needs two different models depending on modality, split into two agents:
+
+| Agent | Model | When to Use |
+|-------|-------|-------------|
+| `555-ASI` (text lane) | `deepseek/deepseek-v4-flash` | Memory, drift, telemetry, research — text-only |
+| `555-ASI-VISION` (vision lane) | `mulerouter/qwen3-omni-flash` | Image/chart/audio — multimodal constitutional gating |
+
+**Routing logic** (handled by orchestrator):
+```
+if input contains image/audio → dispatch to 555-ASI-VISION
+else → dispatch to 555-ASI (text lane)
+```
+
+**Benefits:**
+- Vision lane uses a fast, cheap multimodal model only when needed
+- Text lane stays on a cheaper text-only model — ~80% of calls hit this lane
+- Each lane gets its own permission scope and system prompt
+- Async pipeline: vision lane can process while text lane continues on other work
+
+### Custom OpenAI-Compatible Provider with Env API Key
+
+To add a provider not in the SOT (e.g., MuleRouter, a self-hosted proxy, or a new API endpoint):
+
+```json
+"mulerouter": {
+  "npm": "@ai-sdk/openai-compatible",
+  "name": "MuleRouter — Fixed-Price Multimodal Gateway",
+  "options": {
+    "baseURL": "https://api.mulerouter.ai/vendors/openai/v1",
+    "apiKey": "{env:MULEROUTER_API_KEY}"
+  },
+  "models": {
+    "qwen3-omni-flash": {
+      "name": "Qwen 3 Omni Flash — multimodal (vision+text+audio)",
+      "attachment": true,
+      "tool_call": true,
+      "reasoning": false,
+      "limit": {
+        "context": 131072,
+        "output": 16384
+      },
+      "modalities": {
+        "input": ["text", "image", "audio"],
+        "output": ["text"]
+      }
+    }
+  }
+}
+```
+
+**Key fields:**
+- `"npm": "@ai-sdk/openai-compatible"` — any OpenAI-compatible API
+- `"apiKey": "{env:VAR_NAME}"` — reads from env, never hardcoded
+- `"attachment": true` — required for multimodal models (image/audio input)
+- `"modalities"` — declares input/output types for the model
+- `"tool_call": true` — allows structured output / tool calling
+- `"reasoning": false` — set false for fast inference; true only for reasoning models
+
+### Adding the Provider to enabled_providers
+
+After adding the provider section, add it to `enabled_providers`:
+
+```json
+"enabled_providers": [
+  ...
+  "mulerouter",
+  ...
+]
+```
+
+### Setting the Route to Direct
+
+When a custom provider doesn't need routing through TokenRouter or OpenRouter, set `"_route": "direct"` on the agent:
+
+```json
+"_route": "direct",
+"_trinity_role": "Φ Sense — gatekeeper of sensory evidence. Tags, floors, and forwards structured input."
+```
+
+### Reference: 555-ASI Sensory Cascade
+
+For a complete worked example, see `references/555-asi-sensory-cascade.md` — the full forge record including the constitutional charter at `/root/.config/opencode/agents/555-ASI.md`.
+
 ## Special Agents in Renderer
 
 The renderer preserves `image-prompt-architect` as a special agent not sourced from SOT:
@@ -443,4 +532,5 @@ If you add another special agent to the renderer, follow this pattern — keep t
 ## Files
 
 - `references/sot-provider-mapping.md` — full SOT provider_id → OpenCode provider key mapping table
+- `references/555-asi-sensory-cascade.md` — dual-lane sensory gatekeeper forge (MuleRouter + constitutional charter)
 - `scripts/federation-model-sync.sh` — at `/root/AAA/registries/federation-model-sync.sh` (not in skill dir, registered separately)

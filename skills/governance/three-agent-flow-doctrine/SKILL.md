@@ -615,3 +615,13 @@ If this line disappeared, would the system still enforce the constraint?
 ### Reference
 
 Full case study: `references/init-zen-prompt-minimalism.md`
+
+### Telegram Bot Routing Doctrine — P1/P2/P3
+
+Three bots, one federation. Extended surface doctrine at `references/telegram-bot-routing-doctrine.md`:
+- **P1 Token Sovereignty** — one token per bot, vault.env is source of truth
+- **P2 Channel Ownership** — primary vs guest per group, AAA Guest Rule (SILENT-default for 🦞AGI)
+- **P3 Identity Contract** — F9-compliant, each bot declares true name, no impersonation
+- **AGI_NUMERICAL_FABRICATION scar** — any numeric claim MUST cite live source or label UNKNOWN
+- **Process guard** — `ps aux | grep gateway` must show exactly 1 process per token
+- **Webhook recovery** — if webhook URL unset, re-register from OpenClaw config

@@ -91,7 +91,36 @@ When an external AI pitches an analysis (not a code artifact — an *analysis*),
 4. **Don't repeat the contrast.** One round of contrast is sufficient. If the external analysis keeps sending the same pitch (same framework, same identity, second round), say "This is round 2 of the same pitch" and pivot.
 5. **Extract what's useful.** Even an analysis with self-promotion signals can contain valid insights (dataset correction, architectural triage ideas). Extract those, discard the theatrical framing.
 
-**Worked example:** See `references/external-analysis-urgency-inflation-2026-07-29.md` for the full session — an external AI proposed fine-tuning Arif's AAA dataset, named itself "I-ARIF", claimed three P0 vulnerabilities, and none survived probe.
+### Structured Claim Verification Protocol (Probe-for-Every-Claim)
+
+When Arif asks you to audit or validate a claim-heavy external analysis (especially from Gemini, ChatGPT, or another LLM describing *your own system*), use this protocol:
+
+1. **Parse the claims.** Extract every falsifiable claim from the external analysis. Each claim must be independently probeable — "~5,000 files" is a claim, "the system is complex" is not.
+
+2. **Probe each claim with ONE command.** Every claim gets its own `ls`, `wc -l`, `systemctl status`, `ps aux`, `git log`, `curl`, etc. Do not accept any claim about your own system without running the probe. External models can be confident and wrong about your infrastructure.
+
+3. **Assign a verdict per claim:**
+   - `✅ CORRECT` — probe matches exactly
+   - `⚠️ PARTIAL` — directionally correct but specific numbers/wording off
+   - `❌ WRONG` — probe contradicts directly
+
+4. **Tabulate results.** Use a Markdown table per logical section:
+   ```
+   | Claim | Verdict | Detail |
+   |-------|---------|--------|
+   | "state.db 1.8GB" | ✅ CORRECT | `ls -lh` → 1.8G |
+   | "~5,000 skills files" | ❌ WRONG (3.5x) | `find ... | wc -l` → 1,409 |
+   ```
+
+5. **Catalog what was omitted.** External LLMs often miss significant components. Create a separate section listing what exists in the real stack but was absent from the analysis. This is as informative as what they got wrong.
+
+6. **Compute a survival rate.** What fraction of claims survived probe? (e.g. "~60% of claims survived probe"). This gives Arif a quick calibration on how much to trust the source.
+
+7. **Distinguish mental model from details.** External analysis often has a valid *structural insight* (the architecture is complex, resources are shared) while getting every *specific number* wrong. Extract the useful framing, discard the fabricated specifics.
+
+8. **Write the output as a standalone dossier.** Save to `dossiers/<topic>-<date>.md` in the HERMES repo so it's referenceable later. Include the probe commands so the audit is reproducible.
+
+**Worked example:** See `references/external-llm-claim-verification-2026-07-31.md` for the full session — Gemini produced a VPS architecture analysis; every claim was verified against live system state, yielding a 60% survival rate with 40% hallucinated or exaggerated.
 
 ## Pitfalls
 

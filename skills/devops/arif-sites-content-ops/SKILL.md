@@ -1,7 +1,7 @@
 ---
 name: arif-sites-content-ops
 description: "Edit, build, and deploy content on arif-fazil.com (React 19 + Vite). Covers essay location, content structure, build pipeline, and the"
-version: 1.0.0
+version: 1.2.0
 author: Hermes
 license: MIT
 metadata:
@@ -29,7 +29,7 @@ Edit, build, and deploy content on arif-fazil.com. The site is React 19 + Vite, 
 ## Site architecture
 
 ```
-/root/ARIF-SITES/
+/root/arif-fazil.com/
 ├── sites/arif-fazil.com/     ← React 19 + Vite (the only site that needs build)
 │   ├── src/
 │   │   ├── pages/            ← Route-level pages (Home.tsx, Essays.tsx, Canon.tsx, etc.)
@@ -73,13 +73,13 @@ export default content;
 
 ```bash
 # 1. Install deps if build hasn't run (--legacy-peer-deps required)
-cd /root/arif-sites/sites/arif-fazil.com && npm install --legacy-peer-deps
+cd /root/arif-fazil.com/sites/arif-fazil.com && npm install --legacy-peer-deps
 
 # 2. Build (also regenerates feed, sitemap, llms, makcikgpt listing)
 npm run build
 
 # 3. Deploy to VPS — manual rsync is most reliable
-cd /root/arif-sites
+cd /root/arif-fazil.com
 
 # Step A: Sync static HTML/MD files for crawlers (makcikgpt-md/)
 rsync -av sites/arif-fazil.com/public/makcikgpt-md/ /var/www/html/arif/makcikgpt-md/
@@ -113,7 +113,7 @@ When Arif drops an external AI's audit/review (e.g., ChatGPT "fable5" session) a
 2. **Probe live state first.** Test every testable claim against the actual system. Kernel state via `arif_init`/`arif_judge`, live site via `curl`, source files via `search_files`.
 3. **Give a reality verdict.** Structured table: what's correct, what's partially correct, what's wrong. Then offer to fix — "Nak aku patch apa-apa ke?" — don't assume, let Arif confirm.
 4. **Apply only validated fixes.** Ignore wrong/outdated audit claims. Fix what's real.
-5. **Build, deploy, verify.** Follow the build→deploy flow below. React SPAs cannot be verified via `curl` — `grep` the built JS bundle instead.
+5. **Build, deploy, verify.** Follow the build→deploy flow below. React SPAs cannot be verified via `curl` — `grep` the built JS bundle instead. `grep -c "expected_string" /root/arif-fazil.com/sites/arif-fazil.com/dist/assets/*.js`. The deploy script's HTTP 200 check only confirms the shell loaded.
 
 The "fable5" reference = external AI session identifier. Treat as second opinion, never authority.
 
@@ -123,7 +123,7 @@ The "fable5" reference = external AI session identifier. Treat as second opinion
 2. **Extract the specific edits** — the audit usually names: (a) a claim to correct, (b) an argument to add/restructure, (c) a gap to fill. Map each to a specific location in the `html` string
 3. **Apply via patch** — use `patch` tool with `mode=replace` to find-and-replace within the `html` template literal. For adding new sections, replace the adjacent section boundary
 4. **Build** — `npm run build` to verify no syntax errors
-5. **Deploy** — `cd /root/ARIF-SITES && bash scripts/deploy-site.sh arif-fazil.com --apply`
+5. **Deploy** — `cd /root/arif-fazil.com && bash scripts/deploy-site.sh arif-fazil.com --apply`
 6. **Verify** — confirm HTTP 200 in deploy output
 
 ## Reading content from the site
@@ -174,6 +174,10 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 15. **Static HTML required for bot-readable MakcikGPT.** TS source alone only serves the React SPA. Bots (GPTBot, ClaudeBot, curl) read from `public/makcikgpt-md/*.html`. New article slugs need static HTML generated manually — this is NOT part of the npm build. Use the Python extraction pattern from `makcikgpt-article-forging` skill.
 
 16. **llms.txt must be manually synced after adding pages.** The npm build does NOT reliably copy `public/llms.txt` changes to `dist/llms.txt`. After `scripts/deploy-site.sh --apply`, run: `cp sites/arif-fazil.com/public/llms.txt sites/arif-fazil.com/dist/llms.txt && rsync -av sites/arif-fazil.com/dist/llms.txt /var/www/html/arif/llms.txt`. Then verify with `curl https://arif-fazil.com/llms.txt | grep new-slug`.
+
+17. **Caddy serves `/makcikgpt/` from `/var/www/html/arif/makcikgpt-md/`, NOT from the source `makcikgpt/index.html`.** The deploy script syncs `public/makcikgpt-md/` to this webroot directory. If you modify the source `index.html` (the React SPA shell) and run deploy, the build will regenerate the landing page from TypeScript source, wiping manual changes. To directly replace the landing page, put the file at `/var/www/html/arif/makcikgpt-md/index.html` directly — this is what Caddy serves for the `/makcikgpt/` route. See "Deploying the MakcikGPT landing page" section above for the correct workflow.
+
+18. **React SPA client-side routing overrides standalone HTML when navigating from the homepage.** If you replace the MakcikGPT landing page with a standalone HTML file (bypassing the React build), the new design ONLY appears when users access `/makcikgpt/` directly (type URL, new tab, hard refresh). When users navigate FROM the homepage via a link (e.g., clicking "Read MakcikGPT" on the main site), the React SPA intercepts the navigation client-side and renders its built-in MakcikGPT component — which uses the old design compiled into the JS bundle. This is NOT a cache issue. **Diagnosis:** open the page in a new tab to see the static HTML; if it looks different from in-app navigation, the React component is overriding. **Fix permanently:** update the React component in `src/pages/` or `src/data/makcikgpt/` and rebuild the app via `npm run build`. This applies to any route where the React app has a client-side component AND a standalone HTML file exists at the same path.
 
 ## ABCD Framework Alignment
 
@@ -337,6 +341,76 @@ The site follows the Three-Click Rule: no page is more than 3 clicks from the ro
 4. **CTAs form a connected journey** — each page leads naturally to the next: `/earth/` → `Read Dossier` → `/earth/slug/` → `Download PDF` → `Launch GEOX`
 
 The 3-second answer pattern (from AGENTS.md §14.3) applies at page level: every user should know in 3 seconds "Where am I, why should I care, what can I do next."
+
+## Arif's Design Preferences for MakcikGPT / Civic Surfaces
+
+These are **established preferences** for the MakcikGPT site and any civic-journalism surface on arif-fazil.com. Embed them in future designs without asking.
+
+### Palette: Primer (red, blue, yellow)
+
+"Primer colour" = **red, blue, yellow** — the primary colours. NOT GitHub's Primer design system.
+
+| Role | Hex | Usage |
+|------|-----|-------|
+| Red | `#e0301e` | Accent, energy, call-to-action, M1 series |
+| Blue | `#1f3fd4` | Secondary accent, governance, M2 series |
+| Yellow | `#f2b705` | Highlight, quote accent, M3 series |
+| Dark bg | `#0a0a0a` | Page background |
+| Card bg | `#1a1a1a` | Card/surface backgrounds |
+| Text | `#f0f0f0` | Primary text |
+| Muted | `#9a9a9a` / `#666666` | Secondary/subtle text |
+
+### Theme: Dark-only, Zen minimal
+
+- **Black background** (`#0a0a0a`), not dark gray
+- No Mondrian blocks, Sierpinski triangles, or fractal trees
+- No heavy paper/texture background
+- Clean cards with rounded corners (10px), subtle borders (`#2a2a2a`)
+- JetBrains Mono for code/mono, Inter for body
+- Subtle particle animations (not heavy canvas) — use the three Primer colours
+- Search bar with dark input, muted placeholder
+- Series cards: 5-column grid, each with its series colour
+- Chip labels use Primer colours with 15% alpha backgrounds
+
+### Zen rule
+
+The MakcikGPT site is a **Decide/Learn surface** — content-first layout: hero → stats → quote → latest → series → full index with search. No decorative elements that don't serve the reading journey.
+
+### Deploying the MakcikGPT landing page (standalone HTML)
+
+⚠️ **CRITICAL ARCHITECTURE — DO NOT replace the source file and run deploy.** The source `sites/arif-fazil.com/makcikgpt/index.html` is the **React SPA shell** (Vite entry point), NOT a standalone landing page. The deploy script's Phase 3 regenerates `public/makcikgpt-md/index.html` from `src/data/essays.json` via `scripts/generate-makcik-index.cjs`. If you replace the source file and run deploy, the build will OVERWRITE your changes.
+
+**The Caddyfile routes `/makcikgpt/` to `/var/www/html/arif/makcikgpt-md/index.html`** — this is the actual file being served for the landing page, NOT the source file.
+
+#### To directly replace the landing page with a standalone HTML file (bypass React build):
+
+```bash
+# 1. Backup the current live file
+cp /var/www/html/arif/makcikgpt-md/index.html /var/www/html/arif/makcikgpt-md/index.html.bak
+
+# 2. Replace the live file directly (Caddy serves from here for /makcikgpt/)
+cp /path/to/standalone.html /var/www/html/arif/makcikgpt-md/index.html
+
+# 3. Verify
+curl -s -o /dev/null -w "HTTP %{http_code} - %{size_download} bytes\n" https://arif-fazil.com/makcikgpt/
+```
+
+**⚠️ CRITICAL LIMITATION — React SPA overrides navigation from the homepage.** The standalone HTML file is only served on DIRECT page loads (new tab, URL bar, hard refresh). When a user navigates FROM the main homepage (`arif-fazil.com/`) by clicking a link to `/makcikgpt/`, the React SPA intercepts the navigation client-side and renders its built-in MakcikGPT component — which uses whatever design was compiled into the JS bundle. This means: **users who click through from the homepage will see the old design, not your standalone HTML.** Only direct access shows the new file. This is NOT a cache issue. The permanent fix is to update the React component and rebuild the app. See Pitfall #18.
+
+#### To restore the auto-generated landing page (undo the standalone replacement):
+
+```bash
+# Re-run deploy which regenerates makcikgpt-md/index.html from TS source
+cd /root/arif-fazil.com && bash scripts/deploy-site.sh arif-fazil.com --apply
+```
+
+#### To modify the auto-generated landing page STYLING (not content):
+
+The landing page template is generated by `scripts/generate-makcik-index.cjs`. Edit the template string in that script, then rebuild. Do NOT edit `public/makcikgpt-md/index.html` directly — it's overwritten on every build.
+
+#### Backup note
+
+The deploy script auto-creates a backup before replacing the source file. But the LIVE file at `/var/www/html/arif/makcikgpt-md/index.html` is the one that matters — always back it up separately before making changes.
 
 ## See Also
 

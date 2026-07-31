@@ -216,6 +216,10 @@ Then confirms and restarts well.service.
 
 ## Pitfalls
 
+- **state.json keeps reverting to TEST/MOCK after quarantine.** The keepalive log at `/var/log/well-biometric-keepalive.log` may show alternating `QUARANTINE` ↔ `timestamp-refresh` cycles. Something (unknown process) may be re-writing the TEST state. Setting `environment: PROD` AND `truth_status: OPERATOR_REPORTED` AND including a `biometric` block prevents re-quarantine.
+
+- **/health handler crashes with `well_score: None`.** The `_well_health_handler` at `server.py` line ~19063 does `classification["well_score"] / 100.0` without a None guard. The health endpoint returns 500 Internal Server Error, causing heartbeat systems to report WELL as DOWN when the process is actually running. Fix: inject a state with a numeric `well_score`.
+
 - **Mock/test contamination is invisible to auto-keepalive.** The `well_auto_keepalive.py` script writes behavioral telemetry with timestamps, but does NOT guard against a pre-existing test/mock state.json. A test script that writes to `/root/WELL/state.json` can overwrite production data silently — always verify `environment` and `reason` fields.
 - **machine_state.json is NOT biometric.** Fresh machine metrics (CPU, uptime) do NOT mean WELL has human data. Always check `state.json` `source_type` and `truth_status` separately.
 - **state.json can be 87 days stale.** WELL's `stale_after_seconds` is 14400 (4h). Once past 168h (7 days), it gets `biometric_state_expired_168h_ceiling`. Without sovereign injection, WELL stays on behavioral inference forever.

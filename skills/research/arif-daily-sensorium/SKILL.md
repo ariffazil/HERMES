@@ -102,6 +102,7 @@ jq .version /root/AAA/docs/deprecation-registry.json 2>/dev/null || echo "No dep
 - carry_forward.json missing or stale (last entry > 48h old) → session continuity risk
 - flow_state.json missing → federation pulse gap (arifFLOW may be down)
 - flow_state.json present but status/verdict is `STUCK` → arifFLOW daemon is alive but stuck in its processing loop. Stronger signal than missing — the daemon is running but not advancing receipts/executions. (Verified 2026-07-29)
+- flow_state.json present but status/verdict is `OVERHEAT` → arifFLOW daemon is processing but overwhelmed (receipt build-up exceeding execution rate). Different from STUCK — receipts ARE advancing but at insufficient velocity. Flag as "receipt pressure" in Perhatian section. (Verified 2026-07-30: 66 receipts, 32 executed = 51% execution rate at time of OVERHEAT verdict.)
 - Any single repo with 40+ dirty files → warrants a triage note before new forge work. (Verified 2026-07-29: AAA at 49 dirty files)
 - MCP tool unreachable but port health green → MCP transport issue, not organ failure
 - T3 open items list growing → accumulated governance debt
@@ -171,6 +172,7 @@ Apply domain lenses: translate events through physical, capital, institutional, 
   - `curl -sf localhost:3456/api/gold/macro` — DXY, VIX, US10Y, silver, USDMYR, gold-silver ratio
   - `curl -sf localhost:3456/api/gold/calendar` — this week's economic events (FOMC, CPI, NFP, consumer confidence) with dates, times, impacts, forecasts
   - WEALTH direct port 18082 — `curl -sf localhost:18082/health` for identity hash + tool count
+  When ALL local sources fail (WEALTH SESSION_REQUIRED + gold-api port unreachable + Tavily down), see `references/browser-fallback-extraction.md` for the complete browser-based fallback chain proven at runtime. (Verified 2026-07-30.)
   These are always available, sub-second response, no API key needed, no browser overhead.
 
 **User-provided market data:** When Arif gives raw market figures himself (Bloomberg M+),
@@ -257,6 +259,8 @@ food logistics, electricity pass-through, and ringgit behaviour are.
 - **MCP unreachable ≠ organ down.** When an MCP tool fails (e.g. WEALTH capital_market) but curl to the port shows `{"status":"healthy"}`, the MCP transport layer is the problem — not the organ. Check port/health directly before escalating. Verified Jul 2026.
 - **WEALTH MCP SESSION_REQUIRED (proven 2026-07-27).** Since FORGE 2026-07-18, all WEALTH tools (capital_market, capital_health, etc.) require a session_id from an arifOS session. Calling them without one returns {"error_code":"SESSION_REQUIRED"}. Fix: call arif_init with mode='init', actor_id='hermes-asi', requested_authority='OBSERVE_ONLY', extract session_id from response, and pass it to every WEALTH MCP tool call. If the transport then flaps, fall back to gold-api port 3456 for market data.
 - **CONTEXT.md is DEPRECATED (since 2026-07-27). Do NOT rely on it.** Read `/root/.local/share/arifos/carry_forward.json` (session state) and `/root/AAA/state/flow_state.json` (federation pulse) instead. The file itself says "Reality > files." Flagging CONTEXT.md staleness as a drift signal is no longer relevant — it is permanently stale by design. Verified Jul 2026.
+- **CNBC individual article URLs consistently 404.** CNBC story pages (e.g. `/2026/07/30/iran-says...`) return "Not Found" when navigated to directly via browser_navigate. The URL slugs in the CNBC homepage are dynamically routed. Only CNBC quotes pages work (`/quotes/XAU=`, `/%40LCO.1`, `/%40CL.1`) plus the world page (`/world/?region=world`) and its QUICK LINKS aggregation. Article body text extraction is unavailable — rely on homepage headline text, Quick Links topic sections, and the LATEST NEWS sidebar timestamps. (Verified 2026-07-30.)
+- **Gold API port 3456 may return connection refused (exit code 7).** The local gold-api service at port 3456 (`curl -sf localhost:3456/api/gold/ticker`) may be unavailable when the organ is down or hasn't started. When it fails, fall back to browser-based extraction: CNBC quotes page for XAU/USD, XE.com for USD/MYR. Do NOT retry — move immediately to browser fallback path. (Verified 2026-07-30.)
 - **Arif may provide his own market data (M+ Bloomberg).** When he does, DON'T re-search for prices. Take his numbers as OBS, cross-reference trend context from web, and focus on INTERPRETATION (why the move, what it means for Malaysia, what to watch). He doesn't want restated prices — he wants synthesis. Verified Jul 2026 (Brent -5.54% briefing).
 
 ## Trigger Examples

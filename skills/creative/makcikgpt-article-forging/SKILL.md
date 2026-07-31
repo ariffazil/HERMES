@@ -13,10 +13,19 @@ triggers:
   - "bukan untuk AI lab orang"
   - "kutuk essay"
   - "aku undi sado"
+  - "menggatai"
+  - "BANGANG"
+  - "dedah BANGANG"
+  - "geng lanyard"
+  - "buat pdf"
+  - "nak baca dalam kereta"
+  - "aku nak menggatai"
   - "aku pun bias"
-  - "real talk"
   - "jangan tipu diri sendiri"
-version: "1.7"
+  - "geng lanyard"
+  - "nak baca dalam kereta"
+  - "buat pdf"
+version: "1.9"
 ---
 
 # MakcikGPT Article Forging — v1.0
@@ -576,6 +585,65 @@ When the article critiques a **person** (not just an institution), the reader fe
 
 **Proven:** 2026-07-28 — Anwar Ibrahim MakcikGPT article. V1 (academic closing) rejected as "too complicated." V2 (Makcik voice, still preachy) improved. V3 (Real Talk added) = accepted. Full worked example in `references/anwar-real-talk-worked-example-2026-07-28.md`.
 
+### "Redo" Signal — Strip Personal Names, Reframe for Audience
+
+When Arif says **"redo"**, **"jangan mention nama aku"**, **"jangan mention nama X"**, or **"geng lanyard"** on a BANGANG article:
+
+1. **Immediately strip ALL personal names** — Arif's name, Abang Sado, anyone known to Arif. Replace with generics: `"Ada orang pernah cakap"` not `"Arif cakap"`, `"geng lanyard"` not `"kawan aku"`.
+2. **Reframe for the broader affected audience** — Human cost from worker perspective: `"Pemandu lori, kerani, technician — depa yang rasa."`
+3. **Shift the article's subject from PERSON to LENS.** The BANGANG target is no longer the article's subject — it becomes a LENS through which readers see their own experience. After stripping names, the article works BETTER because readers fill in their own stories.
+4. **Write in "kami" voice for insider audiences** — First-person plural when addressing Petronas staff ("geng lanyard"): "Kami engineer — satu linear dari engineer sampai VP HR — tahu rasa tu." Not outsider analysis, but insider testimony.
+5. **Keep the data** — Only the named personal relationships are dropped.
+6. **Test:** "Boleh pekerja biasa rasa diri depa dalam artikel ni? Boleh depa kata 'eh yelah aku pun macam tu'?"
+
+**Proven 2026-07-30:** `bangang-ruslan-hr` — original named Arif + Syed + academic psychological framing. Arif said "Jangan mention nama aku. Buat relatable to all Petronas staff. Geng lanyard." After stripping names AND reframing from "personality analysis of VP HR" to "reflection of every Petronas engineer who sees themselves in a boss who lost touch" — the article was STRONGER because readers supplied their own stories. The BANGANG target (Ruslan) became a mirror, not the subject.
+
+### Ethical Guardrail — Psychological Profiles Are Not Weapons
+
+When Arif asks for a deep psychological profile (MBTI, Jung shadow) of someone he knows — the result reveals their soft spot. **This insight is for understanding, not for weaponization.**
+
+Arif: "Hang jangan guna ni nak menggatai lebih plak dengan dia. Hang dah tau soft spot dia."
+
+Rule: Profile belongs in memory as relationship context, not in a debate playbook.
+
+## Voice Pattern: "BANGANG Profiling" (Persona-vs-Shadow for Individuals)
+
+When Arif asks to expose someone's BANGANG (arrogant/hypocritical behavior) — the gap between who they CLAIM to be and who they ACTUALLY are. This pattern targets a SPECIFIC PERSON (not an institution), using their career path, language, and decisions as evidence.
+
+**Trigger phrases:** "BANGANG X", "menggatai dengan X", "dedah BANGANG", "X tak ada jiwa", "cari sat info pasal X"
+
+**Research method for BANGANG profiling targets:**
+1. Career history → identify the gap between education/background and current role
+2. Public statements → extract corporate/government speak (the persona language)
+3. Worker/constituent testimony → find people affected by their decisions (union statements, social media complaints, forum posts)
+4. Psychological profile → identify the personality type or shadow pattern (INTJ, Jung shadow, etc.)
+5. The mirror moment → connect to a universal human truth (everyone has a shadow; Arif sees his own in them)
+
+**Article structure:**
+
+| Element | What | Example from `bangang-ruslan-hr` |
+|---------|------|----------------------------------|
+| 1. The career gap | What they studied vs what they do | "Engineer Imperial College → jadi VP HR — tak pernah belajar psychology, tak pernah handle pekerja menangis" |
+| 2. The persona quote | Their public speech | "Just transition on three fronts" — corporate speak |
+| 3. The shadow action | The reality contradicting the quote | "5,000 orang kena buang. Dia cakap 'just transition.' Pekerja baca surat buang, bukan framework." |
+| 4. The human cost | Documented complaints | Union statements (Kapenas Sarawak), Reddit posts, TikTok comments |
+| 5. The psychological frame | Shadow/INTJ connection | "Dia tengok manusia sebagai system. System kena optimize = layoff. Tak ada step untuk 'rasa.'" |
+| 6. The mirror | Arif's self-awareness | "Aku nampak diri aku dalam dia. Tapi beza — aku nampak shadow aku. Dia tak nampak." |
+| 7. The universal closing | Return to human truth | "Jadi VP HR bukan pasal sijil Imperial College. Tapi pasal jiwa makcik penyayang." |
+
+**Anti-patterns:**
+- ❌ Character assassination without evidence (must have career facts, quotes, worker testimony)
+- ❌ Neutral biographic profile (that's the `person-intelligence-dossier` skill — save for shareable artefacts)
+- ❌ Criticising without the mirror (must include Arif's self-awareness or a universal "kau pun ada bayang" moment)
+- ❌ **Naming the author or their friends in the article body** — Arif: "Jangan mention nama aku. Riuh satu kampung nanti." Never write "Arif cakap," "kawan aku," "Abang Sado" — replace with archetypes: "pemandu lori," "kerani office," "technician platform." The article must not be traceable to specific individuals who could face social blowback. Use "ada orang pernah cakap" or "geng lanyard" instead.
+- ❌ **BANGANG article for an audience that doesn't know the target** — if writing for Petronas staff ("geng lanyard"), frame the HUMAN COST of leadership decisions — not the psychological theory. Let them read their own experience into the article. Test: "Boleh pekerja Petronas rasa diri depa dalam artikel ni?" If not, rewrite from their perspective.
+
+**Proven examples in corpus:**
+- `anwar-jung-shadow` (2026-07-28) — Anwar Ibrahim: reformasi persona vs political shadow
+- `bangang-ruslan-hr` (2026-07-30) — Ruslan Islahudin: engineer CHRO vs human cost of layoffs
+
+See [references/bangang-profiling-worked-examples.md](references/bangang-profiling-worked-examples.md) for full worked breakdown of both articles.
+
 ## Article Update Protocol — KEMASKINI / Transparency Banner
 
 When new evidence emerges AFTER publishing (e.g., Companies House data, new filings, whistleblower documents), do NOT silently edit the article. Add a **gold-bordered KEMASKINI banner** at the top of the article body (after the cover, before the first section heading). This establishes epistemic dominance over any PR counter-narrative.
@@ -725,6 +793,25 @@ Key phrases for structural opacity:
 - "Berbilion modal disuntik, tapi angka bersih yang rakyat boleh semak? Entah."
 - "Kewangan dikunci dari pandangan awam."
 - "Maklumat untung rugi dia dikunci rapat, ditelan masuk dalam segmen pukal."
+
+### Delivery Variant: PDF for offline reading
+
+When the user asks for a BANGANG or long-form article, OFFER a PDF version alongside the web article. Trigger phrase: "nak baca dalam kereta." Generate PDF via fpdf2 with DejaVuSans Unicode fonts:
+
+```bash
+python3 << 'PYEOF' | tail -2
+from fpdf import FPDF
+pdf = FPDF()
+pdf.add_font("DJS", "", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+pdf.add_font("DJS", "B", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
+pdf.add_font("DJS", "I", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf")
+
+# Set auto page break, write content, output
+pdf.output("/tmp/<slug>.pdf")
+PYEOF
+```
+
+Key: Helvetica core fonts don't support Unicode (—” is latin-1). Always use DejaVuSans TTF for BM articles with em-dashes, special quotes, or Arabic-derived words.
 
 ## Stage 8: DISTRIBUTE — Get Eyes On It
 

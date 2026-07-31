@@ -27,6 +27,28 @@ Trigger phrases
 - Chat/text behavior extraction: use `text-forensics`
 - Witness/companion briefing about a non-person or archetype: use `witness-companion-briefing`
 
+## Two output modes
+
+### Mode A: Full Dossier (default)
+Complete 10-12 page PDF with epistemic labeling. Use when user says "deep profile research task," "full dossier," "complete research on [person]."
+
+### Mode B: Quick Profile (light)
+Use for Telegram/WhatsApp-speed requests: "cari info pasal," "siapa [nama]," "tell me about [name]."
+- Format: DM summary (structured bullets, not PDF)
+- Key info: Name, age, title, education, career path (table), notable moves, BANGANG/insight angle
+- Skip epistemic labels on every claim (keep discipline internally)
+- Delivery: inline message unless user asks for PDF
+- Searches: 2-3 searches in parallel (not 4-6)
+- Skip publications, open questions, refused topics section unless asked for
+
+### When to choose
+| Signal | Mode |
+|---|---|
+| "Deep profile research task" | FULL |
+| "Cari info pasal [nama]" / "Apa cerita pasal" | QUICK |
+| "Tell me about [person]" | QUICK |
+| "Deep research about a person" | FULL |
+
 ## The pattern (5 steps)
 
 ### 1. Refuse-to-fabricate boundary (state it first)

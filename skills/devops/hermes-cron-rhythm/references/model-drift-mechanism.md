@@ -10,7 +10,9 @@ Reverse-engineered 2026-07-17 from live system behavior + source inspection.
 - `hermes cron edit` has NO `--model` or `--provider` flags
 - The `cron:` section in `config.yaml` has NO per-job sub-objects — only a top-level `provider: ''` field (for global fallback)
 - ALL jobs inherit model/provider from the global `model:` section in `config.yaml`
-- The only way to pin a job's model/provider is by editing `~/.hermes/cron/jobs.json` directly
+- The sanctioned way to pin/change a job's model/provider is the **`update_job()` library function** in `cron/jobs.py` (L1286) — the `cronjob(action='update')` MCP tool wraps it. Callable directly with the hermes venv python when the MCP tool isn't exposed (see Fix Patterns). Direct `~/.hermes/cron/jobs.json` editing works but races with the scheduler's post-run writes and is only a fallback.
+
+**Correction (2026-07-31):** The earlier claim "the only way to pin is direct jobs.json editing" was wrong — `update_job()` has always been the canonical path; the CLI simply doesn't expose it.
 
 **Consequence:** The Model Drift Watchdog's "zero drift" finding is the expected steady state. Any drift can only be introduced by direct `jobs.json` edits (which the watchdog then detects and fixes). The CLI cannot create or maintain drift — only remediate it.
 
@@ -55,6 +57,22 @@ run_job()
 3. **Unpinned (null)** → snapshots captured at creation → compared at every fire
 4. **Partial pin** (e.g., only `model` pinned, `provider` null) → only the unpinned axis checked
 
+## Sync Pin vs Immunity Pin — Discrimination Procedure (2026-07-31)
+
+**Do NOT treat every explicit pin as an intentional immunity marker.** Pins are usually auto-stamped from the global config at job creation (all 8 jobs created Jul 5–26 carried `deepseek/deepseek-v4-flash`, matching the global of that era). When global moves, those pins are STALE and the operator's watchdog prompt explicitly instructs updating them ("if the pinned model/provider DIFFERS from current, update it to match current").
+
+**Evidence-based procedure:**
+
+1. **Read the watchdog's own run history** — `/root/.hermes/cron/output/5a29d4fd77b8/*.md` (one file per run, `## Response` section):
+   - Past runs saying "in sync with global config" or actively fixing a pin to match global (e.g. 2026-07-30: nightly-seal `deepseek/deepseek-v4-flash` → `deepseek-v4-flash`, "in sync with global config") prove the pins are **watchdog-maintained sync points** → update them.
+   - A prior run's "intentional immunity pins" claim is a self-report, not evidence — check whether it cited any operator intent.
+2. **Cross-check pins against creation-time global**: `created_at` in jobs.json vs `~/.hermes` git history of config.yaml `model:` section. Pin == creation-time global ⇒ auto-stamp.
+3. **Positive evidence of intent** (only this justifies leaving a pin): explicit operator note, stable divergence across multiple global switches, or prompt text naming the provider as deliberate.
+
+**Provider-resolution check:** a pinned provider absent from config.yaml `providers:` keys is NOT proof of breakage — providers can still resolve via `auth.json` `credential_pool` (e.g. `deepseek` was absent from `providers:` but present in the pool; all pinned jobs ran `last_status: ok`). Check both files before declaring a pin dead.
+
+**Proven 2026-07-31:** 8 pinned jobs (`deepseek/deepseek-v4-flash`) updated to `mulerouter/deepseek-v4-flash` after the history check proved they tracked global. The 2026-07-28 "7 immunity pins" case is hereby demoted: it only demonstrated the watchdog skipping pins, never operator intent.
+
 ## Field Schema
 
 Model/provider are stored as **simple string fields** directly on each job dict in `jobs.json`:
@@ -95,9 +113,28 @@ Model/provider are stored as **simple string fields** directly on each job dict 
 
 ### CLI Limitation
 
-**`hermes cron edit` has NO `--model` or `--provider` flags.** You cannot fix model drift via the Hermes CLI. Direct `jobs.json` editing is the only reliable method.
+**`hermes cron edit` has NO `--model` or `--provider` flags.** You cannot fix model drift via the Hermes CLI. Use the `update_job()` library function (canonical — the cronjob MCP tool wraps it) or direct `jobs.json` editing as fallback.
 
-### Fix One Job (pin to current — direct JSON edit)
+### Fix One Job (canonical — `update_job()` library, PREFERRED)
+
+```bash
+# Backup first (bak-drift-<timestamp> convention)
+cp ~/.hermes/cron/jobs.json ~/.hermes/cron/jobs.json.bak-drift-$(date +%Y%m%d%H%M%S)
+
+# Run with the HERMES VENV python so cron.jobs imports resolve
+/usr/local/lib/hermes-agent/venv/bin/python3 - <<'PY'
+from cron.jobs import update_job, load_jobs
+jid = "<JOB_ID>"
+before = next(j for j in load_jobs() if j["id"] == jid)
+res = update_job(jid, {"provider": "mulerouter", "model": "deepseek-v4-flash"})
+print(f"{before['name']}: {before.get('provider')}/{before.get('model')} -> "
+      f"{res.get('provider')}/{res.get('model')}")
+PY
+```
+
+`update_job` re-runs `_compute_provider_model_snapshots()` when inference fields change: pinned axes → snapshots recomputed to `null`; unpinned axes → fresh snapshot captured from current global. Takes the jobs lock and saves atomically — safe against the scheduler's concurrent writes (jobs.json is rewritten after every job run, so raw file edits can race). Bulk version: `scripts/sync-pinned-jobs.py` in the skill.
+
+### Fix One Job (fallback — direct JSON edit)
 ```bash
 cp ~/.hermes/cron/jobs.json ~/.hermes/cron/jobs.json.bak-$(date +%Y%m%d%H%M%S)
 python3 -c "
@@ -258,3 +295,4 @@ for j in data['jobs']:
 | Date | Trigger | Jobs Affected | Fix |
 |------|---------|---------------|-----|
 | 2026-07-17 | mimo-v2.5-pro -> deepseek-v4-pro | Trading Position Monitor | Pinned to deepseek, then watchdog built |
+| 2026-07-31 | deepseek -> mulerouter (global) | 8 pinned jobs (evening-digest, weekly-deep-brief, daily-news-briefing, weekly-reflection, ASI World Sensorium, Model Drift Watchdog, SyedOS Ringkasan Harian, nightly-seal) | Stale sync pins updated to mulerouter/deepseek-v4-flash via `update_job()`; history check proved pins tracked global |

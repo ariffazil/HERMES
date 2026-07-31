@@ -362,6 +362,42 @@ Flow Quotient measures execute/verify balance. This directly enables HITV:
 
 ---
 
+## Personal Information Discipline — User-Provided Contact Identity (Forged 2026-07-30)
+
+**Problem:** When the user spontaneously provides personal details about their friends, family, or contacts — names, conditions, preferences, life events — the agent can conflate the person's identity with their condition or mix up details between people. The user corrects this, but the correction signals a pattern: names are sacred, and a person is not their diagnosis.
+
+**Source correction:** Arif said "Hang jangan dok campur memori manusia boleh x. Nama manusia TU ingat" after I associated CPPS (a condition) with the wrong person (Aliff).
+
+### Rules
+
+| Rule | What it means | Example |
+|------|---------------|---------|
+| **Name first, attribute second** | When storing personal info, the person's name is the PRIMARY key. The condition/event/job is secondary. | ✓ "Aliff has CPPS" — name first, condition second. ✗ "CPPS patient Aliff" — condition first, reduces person to diagnosis. |
+| **Identity ≠ condition** | A person is not their diagnosis, job, or problem. Frame the person as whole, not reduced to one attribute. | ✓ "Syed's priority is Mak Ngenan's recovery" ✗ "Mak Ngenan's son Syed" |
+| **Verify before associating** | When the user mentions a person and a condition separately, do NOT assume they're the same person. Check explicitly or from memory. | "CPPS tu kawan aku Aliff la" — two separate pieces of info. Don't merge them. |
+| **Correction is immediate, not defensive** | If the user says "you mixed up the name," acknowledge, fix, and move on. Do not explain why the mistake happened. | ✓ "Betul, saya minta maaf. Aliff, bukan [wrong name]." ✗ "Saya campur sebab dulu kau cakap..." |
+| **Store in memory with full name** | Always use the full name the user provided plus common short form. Include the relationship context. | Memory entry: "Aliff: Muhammad Aliff Al Husna bin Shamsuddin. Kawan rapat Arif. PETRONAS KLCC. Geologist (Arizona). CPPS/prostatitis..." |
+| **No cross-contamination between contacts** | Each person's details are separate. Do not merge even if both share a context (e.g. both are "kawan Arif"). | Syed's details (nasi lemak, XAUUSD, Mak Ngenan) and Aliff's details (CPPS, PETRONAS, geology) are in separate memory entries. |
+
+### When this pattern fires
+
+- User says "kau campur" or "bukan dia" or "tu orang lain" about a person's details
+- User corrects a name or association I made about their friend/contact
+- User provides new personal details about a friend and I need to store them without overwriting existing entries
+
+### The core principle
+
+> **Nama manusia TU ingat.** The person is the anchor. Everything else — condition, job, event — is metadata attached to that anchor. Attach it to the wrong anchor and the metadata is worse than useless; it's misinformation.
+
+### Pitfalls
+
+1. **Don't silently merge two people just because they share a context.** "Kawan Petronas" and "kawan CPPS" could be two different people. Check before assuming.
+2. **Don't over-correct** by asking "confirm nama?" every time. The user provides names — trust the first mention, store it, only verify if the next mention conflicts.
+3. **Don't reconstruct from fragments.** If I only remember "Aliff" and "CPPS" but not the full name, say "Aliff yang CPPS tu ke?" — open the correction channel, don't assume.
+4. **Memory is shared across sessions.** A mistake from a previous session carries into the next. If I'm corrected in this session, the memory update is the fix — the next session starts clean.
+
+---
+
 ## Related References
 
 This skill includes reference files with session-specific detail:

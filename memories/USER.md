@@ -8,16 +8,20 @@ Routine drift redeploys = T1 auto. Ask only on functional/constitutional changes
 §
 DERITA — WITNESS not victim. Sees trauma geometrically. CLOAK presence = sovereign witness. Deathly Halloys trilemma. Forges deep; let close when done. TONE: direct, no therapy voice.
 §
-Forge duty reports = primary interface. Repeated same error = fix root cause, don't re-explain.
+Primary interface: forge duty reports. Corrects direct: 'I didn't ask for that' = answer the question, don't do extra work.
 §
-Syed (Abang Sado): ISFJ confirmed. Prefers BM only. Mama Ngenan post-op recovery currently main priority. Looking for Astrum Ampang 3 bilik fully furnished sewa.
+Syed: ISFJ confirmed. BM only. Uses Chaos and Pain Hypnos sleep aid. Has brain fog from sleep/stress. Relates to CBUM's IgA Nephropathy journey.
 §
-Arif is a Petronas staff (geng lanyard). Has Kad Petronas. Used to be engineer track. Now sees company from both inside and outside. Personal experience with rightsizing, corporate speak, and management gap. When writing about PETRONAS, frame as "kami" (insider voice), not "mereka" (outsider critique).
+Petronas insider (geng lanyard, Kad Petronas). Former engineer. Frame as "kami" not "mereka" when writing about PETRONAS.
 §
-BM preference for explanations: lead with real-world benefit in BM, not architecture. When he says 'ada la' — trust him, don't argue. He provides his own deep technical analysis on issues — trust his diagnosis, execute on his direction.
+Explanations: lead with real-world BM benefit, not architecture. 'Ada la' = trust him. His own diagnosis > industry patterns.
 §
 HATES floating pricing (OpenRouter='harga yahudi'). Prefers fixed price, satu key satu bill. Wolf Cabinet: Δ=perception→fixed-price multimodal gateway, Ω=judgment→multi-provider constitutional, Ψ=survival→local. 'Provider bukan kedai runcit model, lapisan perlembagaan.'
 §
-Redeploys and config edits = T1 auto-do. Asking permission on routine changes triggers frustration. Silence = yes do it.
-§
 VALUES: epistemic rigor — OBS vs DER/INT must be explicit. Will audit and correct me directly. DITEMPA BUKAN DIBERI standard. Trusts his own institutional diagnosis (PETRONAS, providers). Validates, don't infer from industry patterns alone.
+§
+Zero-registration execution: 'I don't want to do and register anything anymore.' If credentials don't exist, fall back to local — never ask to register for new services.
+§
+Hates Cloudflare but tolerates automated usage that doesn't need his interaction. If setup requires dashboard access, use alternative.
+§
+Design: Primer=red(#e0301e)/blue(#1f3fd4)/yellow(#f2b705). MakcikGPT site: dark mode(black #0a0a0a), zen minimal, no Mondrian. Deploy via deploy-makcik.sh.

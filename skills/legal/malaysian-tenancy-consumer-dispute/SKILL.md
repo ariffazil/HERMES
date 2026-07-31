@@ -1,7 +1,7 @@
 ---
 name: malaysian-tenancy-consumer-dispute
-description: "Malaysian tenancy, consumer, and small-claims disputes — drafting BM notices, TTPM strategy, landlord-tenant rights"
-tags: [malaysia, tenancy, TTPM, consumer, legal, BM, landlord, dispute]
+description: "Malaysian tenancy, consumer, courier/delivery, and small-claims disputes — drafting BM notices, TTPM strategy, courier claim process, landlord-tenant rights"
+tags: [malaysia, tenancy, TTPM, consumer, legal, BM, landlord, dispute, courier, delivery]
 ---
 
 # Malaysian Tenancy & Consumer Disputes
@@ -124,6 +124,97 @@ For formal complaints to hospital directors, authorities, etc.:
 - If the user wants neutral language ("saya tamatkan kontrak"), use it. Don't add legal citations unless asked.
 - Don't suggest the tenant break the door or enter after lock change — the Specific Relief Act works both ways.
 
+## Courier & Delivery Disputes (Malaysia)
+
+Couriers leaving parcels at doorsteps without handover is a recurring pattern in Malaysia. The POD (Proof of Delivery) photo proves the courier failed to deliver properly — NOT that the client received it.
+
+### Key Framing: Courier Negligence ≠ Insurance Claim
+
+| Frame | Problem |
+|---|---|
+| "Lost in transit" | Insurance only. Parcel already "Arrived" → claim denied. |
+| **"Delivered but not received"** | ✅ **Courier negligence**. No signature, no handover, dumped at doorstep. |
+| "Courier breached SOP" | POD photo = evidence parcel wasn't handed to anyone. |
+
+**Never frame as insurance claim when the courier physically left the parcel.** Frame as **breach of delivery procedure / failure to obtain proof of receipt.**
+
+### EasyParcel Claim Process (3 Tiers)
+
+| Tier | Cost | Coverage | When |
+|---|---|---|---|
+| **Basic Insurance** | ✅ Free (auto) | RM200 max (J&T: ≤2kg) | Lost/damaged in transit |
+| **InsurePlus** | RM small (add-on) | +RM50 max (lost domestic only) | Extra on top of Basic |
+| **EasyCover** | 2%–2.5% of value | Up to RM10,000 | Buy at booking time |
+
+**Critical:** Basic + InsurePlus combined = RM250 max. For items ≥RM250, EasyCover (2-2.5%) is the only way to get full value back — but it must be bought **at booking time**, not after.
+
+### Claim Routes (Priority Order)
+
+#### Route 1: EasyParcel Support (Situation 2 — "Delivered but Not Received")
+
+Used when parcel status shows "Arrived" but client never touched it.
+
+1. Login to app.easyparcel.com
+2. Go to **Support → Contact Us**
+3. Select **Domestic Shipment**
+4. Dropdown: **Parcel Damaged** (closest option for "stolen after improper delivery")
+5. Upload:
+   - Invoice of item (show value)
+   - POD screenshot (parcel on floor, no handover)
+   - Tracking screenshot (status "Arrived")
+   - Brief statement: *"Courier left parcel at doorstep without my consent or signature. I was not home. Parcel was stolen from the doorstep."*
+6. Submit. EasyParcel responds within 24 working hours (Mon-Fri, 10am-6pm).
+7. Track via **Support → Customer Support → Message Board**
+
+**Deadline:** For J&T Express, report within **24 working hours** from delivery time. Act fast.
+
+#### Route 2: Seller / Online Shop Refund
+
+If EasyParcel rejects (they often say "parcel delivered, case closed"):
+- Client's contract of sale is with the **seller**, not the courier
+- Demand refund from seller — the seller is responsible for delivery
+- Seller then claims from their own courier (J&T + EasyParcel account)
+- If seller refuses → Route 3
+
+#### Route 3: TTPM (Tribunal Tuntutan Pengguna Malaysia)
+
+- Fee: **RM5**
+- Claim: Against the **seller** (or EasyParcel as service provider)
+- Amount ≤ RM50,000 — RM1,000 is well inside scope
+- No lawyer needed. Client represents themselves.
+- Bring: invoice, POD screenshot, tracking history, WhatsApp conversation
+- Hearing: 4-8 weeks
+- See TTPM section above for enforcement steps
+
+#### Route 4: Small Claims / Saman Pemula (Last Resort)
+
+- File at Magistrates Court against J&T Express or EasyParcel
+- Cost: RM100-300
+- Grounds: **Negligence** — courier left RM1,000 item unsecured at doorstep
+- Time: 3-6 months. Usually not worth it for RM1,000 unless principle at stake.
+
+### WhatsApp Draft (BM) — Client → Seller
+
+```
+Assalamualaikum. Saya ada buat order dengan tracking [NOMBOR TRACKING] melalui [SHOPEE/LAZADA/TIKTOK].
+
+Barang saya RM1,000. Courier J&T Express letak parcel depan pintu rumah tanpa kebenaran saya. Saya tak ada rumah masa tu. Tiada signature. Parcel hilang/dicuri.
+
+Saya dah semak POD — gambar parcel atas lantai tepi selipal. Bukti courier tak serah tangan.
+
+Saya minta refund penuh atau ganti rugi RM1,000. Saya tak dapat barang yang saya bayar.
+
+Kalau tak selesai, saya akan failkan TTPM. Sila uruskan.
+```
+
+### Pitfalls
+
+- **Jangan tunggu**: J&T Express claim deadline is **24 working hours** from delivery for Basic Insurance. Even for negligence complaint, file ASAP.
+- **POD photo is a double-edged sword**: It proves courier was AT the location, but also proves they DIDN'T hand to anyone. Use the latter.
+- **EasyParcel will auto-close as "delivered"**: You need to escalate to human support. Use Contact Us, not automated Report.
+- **Weight matters**: J&T Basic Insurance only covers ≤2kg. Heavier items = different rules.
+- **Insurance ≠ Negligence**: The insurance route caps at RM250 unless EasyCover was bought. The stronger case is courier negligence (uncapped damages).
+
 ## TNB (Electricity) — Malaysia
 
 - Account numbers: 12 digits
@@ -136,3 +227,4 @@ For formal complaints to hospital directors, authorities, etc.:
 See `references/` directory for reusable templates:
 - `references/whatsapp-notice-template.md` — BM notice for landlord/contractor
 - `references/ttpm-filing-checklist.md` — Step-by-step TTPM filing guide
+- `references/easyparcel-claim-process.md` — Courier claim process, insurance tiers, deadlines, BM drafts

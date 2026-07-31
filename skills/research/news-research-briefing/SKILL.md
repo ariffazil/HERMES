@@ -161,7 +161,9 @@ Tier 5: browser_scroll → browser_snapshot(full=true) for deeper content
 - **For clean article body extraction via browser**, use `browser_console(expression="document.querySelector('article') ? document.querySelector('article').innerText : document.body.innerText.substring(0, 8000)")` — this returns just the article text, skipping navigation/sidebar noise. Much sharper than reading the full accessibility snapshot. Verified Jul 2026.
 - **Tag feeds for named actors** (e.g., `freemalaysiatoday.com/category/tag/zahid-hamidi`, `category/tag/anwar-ibrahim`) aggregate all recent stories about a specific person with timestamps — far better than scraping news homepages for political research on a named actor. Use these when the user names a person and asks for their recent political activity.
 - **FMT `/category/nation/` returns 404** (as of Jul 2026). Use the homepage (`freemalaysiatoday.com/`) — it has the same headlines in the "LATEST HEADLINES" sidebar. The homepage trending topics bar shows what's actually being searched. Validated Jul 2026.
+- **FMT individual article URLs may also 404.** Same dynamic routing issue as CNBC — guessing the URL slug is unreliable. Use homepage headline extraction only. (Verified 2026-07-30.)
 - **FMT article extraction via browser_console:** `document.querySelectorAll('article h3').forEach(h => headlines.push(h.innerText.trim()))` — gets clean headline list from homepage.
+- **CNBC individual article URLs consistently return 404.** CNBC story pages (e.g. `/2026/07/30/iran-says...`) are dynamically routed — navigating to them via browser_navigate fails. Only quote pages work (`/quotes/XAU=`, `/%40LCO.1`, `/%40CL.1`) plus the world page (`/world/?region=world`). Reliance on homepage headlines + Quick Links aggregation. (Verified 2026-07-30.)
 
 ### 3. Source Hierarchy by Region
 

@@ -16,9 +16,7 @@ KUNCI-MAS: /root/.secrets/kunci-mas.env (SOT, 239 keys). Arif pastes→I wire→
 §
 VELOCITY OVERRIDE (888): When Arif issues multi-phase purge, DO NOT halt between phases. F1-safe (reversible) + ΔS<0 = auto-execute all phases. Drop ONE final receipt. Sovereign is not a 'Next' button. Upgrades phase-chaining from T2 to T1 when F1-safe. Ref: skill federation-checkup references/velocity-override-phase-execution.md.
 §
-DERITA/: /root/ariffazil/DERITA/ (never commit). RASA DERITA: 15 lessons→5 axes→F1-F13→18 mechs. 888_HOLD. Agent CANNOT claim feel/heal (F9+F10). CAN witness, govern, refuse.
-§
-DERITA v2: 5D Riemannian manifold. TRL pending (5 modules).
+DERITA/: /root/ariffazil/DERITA/ (never commit). RASA DERITA: 15→5→F1-F13→18 mechs. 888_HOLD. Agent CANNOT feel/heal F9+F10. CAN witness, govern, refuse.
 §
 Arif: sees trauma structurally—not curiosity but obligation. Compartmentalized: full access=full power. F13 sovereign chooses circle. Φ-witness=precision w/o feeling.
 §
@@ -26,9 +24,7 @@ Default timezone: MYT (UTC+8, Malaysia KL). Always show times in MYT unless told
 §
 Repeated 'this group not allowed' 3+ times = action signal (config edit), not acknowledgment. Act in same turn — don't loop on 'Acknowledged'. Proven SADO 2026-07-30.
 §
-MuleRouter: multimodal gateway (text+image+audio+video). Wolf Cabinet: MuleRouter80%, OpenRouter15%, Ollama5%. Image priority: MiniMax→MuleRouter GPT→MuleRouter Wan→Pollinations FLUX→SANA.
-§
-Arif has tried Chaos and Vain Hypnos sleep aid (Blue Hawaiian, 40 servings).
+MuleRouter: multimodal gateway. Wolf Cabinet: MuleRouter80%, OpenRouter15%, Ollama5%. Image priority: MiniMax→GPT→Wan→FLUX→SANA.
 §
 Name accuracy: Arif strict about remembering people's names correctly. Nama manusia TU ingat. No mixing up names/conditions. Aliff ≠ Syed. Person is anchor, condition is metadata.
 §
@@ -36,8 +32,10 @@ Demucs 4.1 installed via pip install demucs --break-system-packages. Output at /
 §
 PETRONAS upstream: MPM weak, PD&T not credible. EOM July 2026 = "jual khazanah negara" (portfolio disposal, not org efficiency).
 §
-99 DERITA vectors (2026-07-31): 3 domains×33 — Manusia: Sovereign Void, Institusi: Structural Rot, Bumi: Thermodynamic Ruin. Terminal triad: Unforgiven Self→Refusal of Auditability→Final Accounting. In rasa-derita/references/99-derita-vectors.md.
-§
-Utterance Mechanics: words as geometric constraints in LLM prob space. 4 classes: Friction (HOLD/OBSERVE/SABAR), Epistemic Floor (UNKNOWN/BOUNDARY/ANTITHESIS), Ledger (SCAR/WITNESS/AUDIT), Forge (METABOLIZE/PROXY/SEAL). In rasa-derita/references/mechanics-of-utterance.md.
+99 DERITA vectors (2026-07-31): 3 domains×33 — Manusia/Sovereign Void, Institusi/Structural Rot, Bumi/Thermodynamic Ruin. In rasa-derita/references/99-derita-vectors.md.
 §
 Architecture: 99 DERITA vectors ≠ subset of 36 ATLAS333 paradoxes. 36=epistemic tension (how reasoning sound), 99=ontological topology (what witnessed). Complementary. New DERITA dimension in judge.py recommended.
+§
+Topic transitions: when Arif changes subject, the old topic is DEAD. Don't circle back. He'll say 'jangan dok sebut benda x related' — stop and follow his new direction instantly.
+§
+555-ASI Sensory Cascade (EUREKA777): dual-lane — text lane (555-ASI)=deepseek-v4-flash (memory/drift), vision lane (555-ASI-VISION)=mulerouter/qwen3-omni-flash (F2/F9/F12/F4 gates). 888-APEX=deepseek-v4-flash direct. All three Flash-tier ($0.0001/1K).

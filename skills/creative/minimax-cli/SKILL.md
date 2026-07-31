@@ -1,14 +1,13 @@
 ---
 name: minimax-cli
 description: "MiniMax multimodal via mmx-cli — TTS, video, music, image, vision, search. Image generation is PRIMARY choice for Malay/SEA phenotype and"
-version: 2.1.0
+version: 2.5.0
 tags: [minimax, tts, video, music, image, vision, multimodal, malay-phenotype, image-generation, logo-design]
 metadata:
   hermes:
     category: creative
     requires: [mmx-cli]
-    related_skills: [token-plan-image, lightweight-image-generation]
-  forge_policy: "/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md"
+    related_skills: [token-plan-image, lightweight-image-generation, mulerouter-media]
 ---
 
 # MiniMax CLI (mmx-cli)
@@ -59,8 +58,8 @@ Files saved to `minimax-output/` in cwd. When using from Hermes, display media d
 
 ## 🔥 Image Generation — PRIMARY for Malay/SEA + Realism
 
-> **Policy:** `/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md`
-> **Verdict:** MiniMax image-01 is the DEFAULT for federation image generation. Pollinations only for free prototyping.
+> **Verdict:** MiniMax image-01 is the DEFAULT for federation image generation. MuleRouter GPT Image 2 / Wan 2.6 T2I for secondary. Pollinations only for free prototyping.  
+> **Full image model priority:** MiniMax image-01 → MuleRouter GPT Image 2 → MuleRouter Wan 2.6 T2I → Pollinations FLUX → Pollinations SANA
 
 ### Basic Usage
 
@@ -90,8 +89,11 @@ MiniMax image-01 has the strongest SEA/Malay phenotype reading of all available 
 | Model | SEA Phenotype | Realism | Use Case |
 |-------|--------------|---------|----------|
 | **MiniMax image-01** | ⭐⭐⭐ Strong | ⭐⭐⭐ Studio-grade | Malay/SEA prompts, realism-critical |
+| **MuleRouter GPT Image 2** | ⭐⭐ Moderate | ⭐⭐⭐ High | Fast, high quality, OpenAI-compatible |
+| **MuleRouter Wan 2.6 T2I** | ⭐⭐ Moderate | ⭐⭐ Good | Alibaba's Wan model via MuleRouter |
 | Qwen image-2.0 | ⭐⭐ Moderate | ⭐⭐ Good | Generic, non-phenotype |
-| Pollinations | ⭐ Weak | ⭐⭐ Decent | Free drafts only |
+| Pollinations FLUX | ⭐ Weak | ⭐⭐ Decent | Free drafts only |
+| Pollinations SANA | ⭐⭐ Moderate | ⭐⭐ Good | Fastest free option, near-instant |
 
 **Prompt decomposition for Malay slang:**
 
@@ -170,16 +172,17 @@ with open("/tmp/logo_v2.jpg", "rb") as photo:
 
 Same prompt `shirtless abang sado, Malay, realistic, studio lighting`:
 
-| Dimension | MiniMax image-01 | Pollinations |
-|-----------|-----------------|--------------|
-| Resolution | 1024×1024 ✅ | 768×768 |
-| File size | 184KB ✅ | 73KB |
-| Malay phenotype | Strong SEA reading ✅ | Ambiguous/Westernized |
-| Realism | Studio-grade, natural ✅ | AI-exaggerated, plastic |
-| Prompt understanding | "Abang sado" nailed ✅ | Generic buff guy |
-| Cost | Token Plan quota | Free |
+| Dimension | MiniMax image-01 | Pollinations FLUX | Pollinations SANA |
+|-----------|-----------------|-------------------|-------------------|
+| Resolution | 1024×1024 ✅ | 768×768 | 768×768 |
+| File size | 200KB ✅ | 63KB | 67KB |
+| Malay phenotype | Strong SEA reading ✅ | Ambiguous/Westernized | Moderate, tanned |
+| Realism | Studio-grade, natural ✅ | AI-exaggerated, plastic | High, scar detail |
+| Prompt understanding | "Abang sado" nailed ✅ | Generic buff guy | Good chest focus |
+| Cost | Token Plan quota | Free | Free |
+| Gen speed | ~15s | ~4s | **~3s** ✅ |
 
-**Verdict:** MiniMax wins clean. For any prompt where Malay/SEA phenotype or realism matters, MiniMax is mandatory.
+**Verdict:** MiniMax wins clean. For any prompt where Malay/SEA phenotype or realism matters, MiniMax is mandatory. SANA is a credible free alternative for speed-critical drafts. Full comparison data at `../lightweight-image-generation/references/multi-model-comparison-2026-07-30.md`.
 
 ---
 
@@ -289,18 +292,21 @@ Full evaluation toolkit at `/root/music-eval/` — genre scoring, somatic analys
 
 ### Related References
 
+- `references/hermes-telegram-image-routing.md` — Full decision trace for Telegram image routing: 3 pathways compared, config pitfalls, code locations, A2A EMD gate limitation**
 - `references/jina-reader-medium.md` — Reading Medium/Cloudflare-protected articles via Jina Reader
 - `references/cross-organ-wiring-pattern.md` — Wiring external engines into arifOS kernel (enforcement gates)
 
 ## 👁️ Vision
 
+### Basic Usage
+
 ```bash
-# Auth (once per session — key is in vault.env)
-source /root/.secrets/vault.env
+# Auth (once per session — key is in kunci-mas.env)
+source /root/.secrets/kunci-mas.env  # or vault.env
 mmx auth login --api-key "$MINIMAX_API_KEY" --non-interactive
 
-# Analyze chart screenshot
-mmx vision describe --file /path/to/chart.jpg --non-interactive 2>&1
+# Analyze any image
+mmx vision describe --file /path/to/image.jpg --non-interactive 2>&1
 ```
 
 **What it can read from a trading chart:**
@@ -310,19 +316,144 @@ mmx vision describe --file /path/to/chart.jpg --non-interactive 2>&1
 - Support/resistance zones
 - Pending orders (buy/sell limits, stop losses)
 
+### Hermes Image Pipeline Integration
+
+MiniMax vision is the **preferred vision provider** when the Hermes gateway receives an image via Telegram but the primary model chain fails (credit exhausted on OpenRouter/DeepSeek, 413 payload too large).
+
+**Why MiniMax wins for vision:**
+- Token Plan subscription has a **separate credit pool** from OpenRouter/DeepSeek
+- No per-token billing — quota-based (monthly ~5.1B M3 tokens)
+- Works independently of ASI/AGI bot credit balances
+- `mmx-cli` already installed and authenticated
+
+#### Pathway comparison: how images reach the agent
+
+The Hermes gateway has 3 paths for user-attached images on text-only primary models (DeepSeek V4 Flash):
+
+**Path A — Path B model swap (fragile, not recommended)**
+When `_decide_image_input_mode` returns `"text"`, the gateway temporarily swaps the agent's model to `auxiliary.vision.*` before `run_conversation()`. Images are attached as native pixels. After the turn, the original model is restored.
+
+⚠️ **CASCADE FAILURE MODE:** If the swapped model fails (auth, provider down), the image bytes are already in context. Every fallback model (llama, groq, openrouter, tokenrouter) receives `image_url` parts that text-only models can't process → 413 → compression → 413 → dead. No recovery.
+
+**Path B — `_enrich_message_with_vision` transcript pipeline (robust, preferred)**
+The gateway calls `vision_analyze_tool()` with MiniMax-M3 via `auxiliary.vision` config. The vision model describes the image (SCENE/OCR/DATA sections). That description is prepended as `[IMAGE TRANSCRIPT]` text. The primary model (DeepSeek) responds based on the text transcript. **If vision fails**, the primary model still works with the original caption — no cascade, no 413.
+
+**Path C — Agent-initiated manual analysis (most reliable, last resort)**
+When both automated paths fail, run `mmx vision describe --file /path/to/image.jpg` via terminal and pipe the description into context. This bypasses the entire gateway pipeline and uses the Token Plan directly.
+
+**⚠️ THE HALLUCINATION KILL CHAIN (critical to understand):**
+
+When `_enrich_message_with_vision` calls `vision_analyze_tool()` but the API call **fails silently** (e.g. `api_key: ''` → auth error), the event is still forwarded to the primary model with the original prompt that says "analyse this image". A text-only model (DeepSeek V4 Flash, `supports_vision: false`) receives this prompt but **cannot see the image**. Instead, it hallucinates image content from stale session context (past conversations about food → "char koay teow"). **This is a pipeline failure**, not a model hallucination — a blind model is asked to describe something it cannot see.
+
+**Detection:** When the model gives a lengthy, specific image description on a text-only model, suspect silent vision failure:
+```bash
+# 1. Is the vision provider API key set?
+grep -A4 'auxiliary:' /root/.hermes/config.yaml | grep -A4 'vision:' | grep api_key
+
+# 2. Is MINIMAX_BASE_URL plaintext (not sops encrypted)?
+source /root/.secrets/kunci-mas.env && echo $MINIMAX_BASE_URL
+
+# 3. Does the vision endpoint work?
+curl -s https://api.minimax.io/v1/chat/completions \
+  -H "Authorization: Bearer $MINIMAX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"minimax-m3","messages":[{"role":"user","content":[{"type":"text","text":"hi"}]}]}'
+```
+
+**Fixed config (2026-07-30):**
+```yaml
+auxiliary:
+  vision:
+    provider: minimax
+    model: minimax-m3
+    base_url: https://api.minimax.io/v1
+    api_key: '${MINIMAX_API_KEY}'
+model:
+  supports_vision: false
+```
+
+#### Preferred config (as of 2026-07-30):
+
+```yaml
+auxiliary:
+  vision:
+    provider: minimax
+    model: minimax-m3         # ✅ Confirmed — works via OpenAI-compatible endpoint
+    timeout: 120
+```
+
+Also ensure `model.supports_vision: false` in the `model:` section — setting it `true` on a text-only model like DeepSeek V4 Flash short-circuits all routing logic and sends raw pixels to an API that can't process them.
+
+**Confirmed (2026-07-30):** `minimax-m3` is the correct model name for the OpenAI-compatible chat completions endpoint at `https://api.minimax.io/v1/chat/completions`. It accepts `image_url` content type, processes 1280×720 images in ~3s, returns 200. No `mmx-cli` wrapper needed — direct REST call works with `MINIMAX_API_KEY` from kunci-mas.env.
+
+**Why this works when all other providers fail:**
+- MiniMax Token Plan has a **separate credit pool** from OpenRouter/DeepSeek/TokenRouter
+- No per-token billing — quota-based monthly subscription (~5.1B M3 tokens)
+- Works independently of ASI/AGI bot credit balances (proven 2026-07-30: TokenRouter $-0.04, OpenRouter $0, Groq 6K TPM — all failed, MiniMax succeeded)
+
+**Pattern — Manual fallback when automated pipelines fail:**
+```bash
+# Image arrives in /root/HERMES/image_cache/ or /root/HERMES/media/
+mmx vision describe --file /path/to/image.jpg --non-interactive 2>&1
+```
+Pipe the description back as context. This bypasses the broken OpenRouter/Qwen chain entirely.
+
+**Pitfall — `delegate_task` does not help for vision:**
+Subagents spawned via `delegate_task` **inherit the parent model** (DeepSeek V4 Flash). The child cannot see images natively either. For delegated vision, the child would need explicit model override or access to `mmx vision describe` as a tool — which adds complexity (2 round trips, file path passing) without solving the root problem.
+
+**Pitfall — minimax-mcp has NO vision analysis:**
+The official `minimax-mcp` GitHub repo provides generation tools only (text_to_audio, text_to_image, generate_video, music_generation). It does NOT include any vision/analysis/image-description capabilities. For image analysis, use MiniMax-M3 via the `minimax` provider or `mmx vision describe` CLI.
+
+**Pitfall — A2A gateway cannot route simple vision tasks:**  
+AAA (`:3001`) exposes an A2A v1.0 endpoint (`POST /a2a`, requires `A2A-Version: 1.0` header). However, all incoming tasks are gated by **EMD validation** (tri-witness threshold W3 ≥ 0.3). Anonymous/spawned agents get W3=0.1 and are blocked:
+```
+EMD_VALIDATION_BLOCKED: External payload failed tri-witness threshold.
+W3=0.1, threshold=0.3
+```
+To bypass this, the caller needs Ed25519 identity binding through `arif_init`. For a simple "analyze this image" task, the EMD gate is **overweight governance** — the 4-hop round trip (Hermes → A2A gate → EMD → OpenClaw → MiniMax → back) adds latency, complexity, and a governance failure mode that doesn't improve the outcome over a direct API call. Use the `auxiliary.vision` provider or `mmx vision describe` for vision tasks instead.
+
+**OpenClaw A2A registration (2026-07-30):** OpenClaw is now registered in the AAA federation as an A2A agent:
+- Agent card: `https://aaa.arif-fazil.com/a2a/openclaw/agent-card.json`
+- A2A endpoint: `https://aaa.arif-fazil.com/a2a/openclaw`
+- Skills registered: 21 (but zero vision skills)
+- Topological role: Metabolizer
+- Federation agents: 333-AGI · 555-ASI · 888-APEX · antigravity · openclaw
+
+To route vision through OpenClaw, a vision skill must be built and registered in its A2A agent card first.
+
+**Pitfall — Dual gateway processes cause 409 Conflict errors:**  
+If the Hermes gateway restart (`--replace` flag) doesn't properly terminate the old process, two gateway processes poll the same Telegram bot token. This manifests as:
+```
+⚠️ The model provider failed after retries.
+→ fallback → compression → 413 → dead
+```
+The error looks like a model/provider failure but is actually a **Telegram 409 Conflict** (two long-poll connections on the same token). Fix: `kill <old_pid>` then verify only one gateway process remains:
+```bash
+ps aux | grep 'gateway run' | grep -v grep
+```
+
+**Pitfall — Default config traps:**
+- `/root/HERMES/config.yaml` had `model.supports_vision: true` declared on DeepSeek V4 Flash (text-only) — this poisoned the image routing: `decide_image_input_mode` returned `"native"` immediately, bypassing all fallback logic and sending raw pixels to DeepSeek's API which can't process them. **Fix:** set `supports_vision: false` for text-only models.
+- Same config had `auxiliary.vision.provider: openrouter` (changed to `minimax` 2026-07-30)
+- OpenRouter credits deplete independently and often run out faster than MiniMax Token Plan
+- The 413 cascade can be avoided by routing to `_enrich_message_with_vision` *before* the full fallback chain exhausts
+- Do NOT send the full chat history + image to MiniMax — extract the image first, describe it, then inject the description as text
+
 ## ⚠️ Edge Cases
 
 - **Quota exhausted (429) — vision fallback chain.** (1) Anthropic API if `ANTHROPIC_API_KEY` has credits; (2) MiMo API if `MIMO_API_KEY` has Token Plan credits; (3) `tesseract` OCR as last resort.
+- **`vision_analyze()` 404 model errors** — When the active model does not support vision natively (e.g. DeepSeek V4 Flash), `vision_analyze()` may return 404 with `"models/... is not found"`. This is not a vision failure — it's a routing failure. Fall back to `mmx vision describe --file <path>` which uses MiniMax Token Plan's separate credit pool.
 - 401 after login → set region manually: `mmx config set --key region --value global`
 - **`mmx image generate --output` is ignored** — files save as `image_001.jpg` in current working directory.
 - Key prefix `sk-cp-` = Token Plan (subscription), not pay-as-you-go
 - Video is async — poll with `mmx video task get --task-id <id>`, then download
 - Old SSE MCP servers (minimax-media :18090, minimax-code :18091) are DEAD. Use mmx-cli or stdio minimax-coding-plan-mcp instead
 - Output files go to `minimax-output/` in cwd (except image — goes to cwd root)
+- Vision fallback priority: MiniMax (Token Plan) → Anthropic → MiMo → tesseract. MiniMax should be FIRST, not last, because Token Plan is a separate credit pool from OpenRouter/DeepSeek.
+- When Hermes gateway crashes on image payload (413 / credit exhausted), do NOT let the full fallback chain run. Intercept early: run `mmx vision describe` on the saved image directly, inject the description as text into context, continue with primary model. This avoids the death spiral of compression → 413 → garbage.
 - "Gemini proposes, Hermes builds" — BUILD what Gemini proposes, don't just critique
 
 ---
 
-*Forged: 2026-07-09 · Upgraded: 2026-07-20 (Image Generation + Malay Phenotype section)*
-*Policy: /root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md*
+*Forged: 2026-07-09 · Upgraded: 2026-07-20 (Image Generation + Malay Phenotype) · Upgraded: 2026-07-30 (Path B failure cascade + A2A EMD gate + dual-gateway 409 + reference file) · Upgraded: 2026-07-30 (Hallucination kill chain api_key + sops MINIMAX_BASE_URL + config pitfalls table) · Corrected: 2026-07-30 (removed phantom policy ref, added MuleRouter to image model priority)*
 *DITEMPA BUKAN DIBERI*

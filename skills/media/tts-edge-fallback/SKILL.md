@@ -34,26 +34,70 @@ pip install edge-tts --break-system-packages
 | `ms-MY-OsmanNeural` | Male | Good |
 | `ms-MY-YasminNeural` | Female | Good |
 
-## TTS provider decision tree (2026-07-08)
+## TTS provider decision tree (2026-07-30)
 
 Hermes TTS now supports multiple providers. Pick by language and quality needs:
 
 | Provider | Free? | Malay quality | Penang dialect | Singing | Voice cloning | Best for |
 |----------|-------|---------------|----------------|---------|---------------|----------|
+| **`mulerouter` (MiniMax 2.8 HD)** | ❌ billed | ✅✅ HD, emotion control | ❌ | ❌ | ❌ | **Primary — highest quality, one key, one bill** |
 | `edge` (ms-MY-Osman) | ✅ | Standard BM, not Penang | ❌ Standard BM only | ❌ | ❌ | Quick free fallback, standard Malay |
 | `openai` (gpt-4o-mini-tts) | ❌ quota-billed | OK | ❌ | ❌ | ❌ | Production quality English |
 | `mimo` (Xiaomi V2.5) | ✅ (limited time) | Good — voice design supports Penang description | ⚠️ achievable via description, not guaranteed | ✅ (built-in voices only) | ✅ (voiceclone model) | Custom voice, Penang-style |
 | `elevenlabs` | ❌ quota-billed | OK multilingual | ⚠️ via voice cloning | ❌ | ✅ | Highest quality, paid |
-| `minimax`, `mistral`, `neutts`, `piper` | varies | varies | varies | ❌ | ❌ | Niche use cases |
 
-**Default chain:** `mimo` (if configured) → `openai` (if quota) → `edge-tts` (always free).
+**Default chain:** `mulerouter` (MiniMax 2.8 HD via MuleRouter) → `edge-tts` (free fallback).
+
+### MuleRouter MiniMax Speech 2.8 HD
+
+Use `mulerouter-tts.py` for high-quality TTS via MuleRouter:
+
+```bash
+source /root/.secrets/kunci-mas.env && /root/HERMES/scripts/mulerouter-tts.py \
+  --text "Assalamualaikum" --voice man --malay --output /tmp/voice.mp3
+```
+
+**Confirmed voices (MiniMax Speech 2.8 HD via MuleRouter):**
+| Voice | Style | Best for |
+|-------|-------|----------|
+| `Wise_Woman` | Warm, wise female | General/conversational BM |
+| `woman` | Standard female | Natural, clear |
+| `man` | Calm male | Analysis, news, trading briefings |
+
+**Malay mode** (`--malay`): auto-selects `man` voice + 0.95x speed for BM clarity.
+
+**Integration:** When user requests voice, try `mulerouter-tts.py` first (not via `text_to_speech` tool which routes through mimo). Same API key as chat — no separate billing.
 
 **Quality override for Malay:** When user explicitly asks for "elok sikit" / "better quality" / "yang bagus" voice in Malay, **prefer `edge-tts` over the default mimo provider**. Session evidence (2026-07-11): user rejected mimo TTS output as low quality, then accepted Edge TTS `ms-MY-OsmanNeural` with `--rate "+5%"`. The default `text_to_speech` tool routes through mimo which can produce robotic output for long BM text. Edge TTS with rate adjustment sounds more natural. Command:
 ```bash
 edge-tts --voice "ms-MY-OsmanNeural" --rate "+5%" --pitch "+0Hz" --text "..." --write-media /tmp/output.mp3
 ```
 
-**For Penang-style Malay specifically:** the only path that can hit a Penang accent is `mimo-v2.5-tts-voicedesign` with a description like *"A 35-year-old Malaysian Chinese male from Penang, conversational casual tone, mixes English and Bahasa Melayu naturally, warm and direct, slight northern Malaysian intonation."* Edge TTS `ms-MY-*` voices are Standard BM (DBP-style, not Penang). ElevenLabs can clone a real Penang voice with a sample — slower + paid.
+## Voice Profiles by Content Type
+
+Different content types need different rate/pitch tuning:
+
+| Content type | Profile | Effect |
+|---|---|---|
+| Casual chat | `--rate +5% --pitch +0Hz` | Natural, conversational |
+| Deep analysis | `--rate -10% --pitch -5Hz` | Authoritative, contemplative |
+| Trading briefing | `--rate +5% --pitch +0Hz` | Energetic, clear for numbers |
+
+Rule: Dense/analytical content (psychology, shadow patterns) needs slower rate + lower pitch. Casual/update needs faster. Don't default to same settings for all.
+
+## Native OGG Output
+
+edge-tts outputs based on file extension. Use `.ogg` for Telegram voice bubble delivery:
+
+```bash
+edge-tts --voice ms-MY-OsmanNeural --rate -10% --pitch -5Hz --file /tmp/content.txt --write-media /tmp/voice.ogg
+```
+
+Confirmed: `--write-media /tmp/file.ogg` produces Opus-in-OGG that Telegram renders as voice bubble. No ffmpeg step needed.
+
+## Penang Voice Limitations
+
+`ms-MY-*` voices are Standard BM (DBP-style), not Penang. The only path to Penang accent is `mimo-v2.5-tts-voicedesign` with a description like "A 35-year-old Malaysian Chinese male from Penang, conversational casual tone, mixes English and Bahasa Melayu naturally, warm and direct, slight northern Malaysian intonation." ElevenLabs can clone a real Penang voice with a sample — slower + paid.
 
 ## MiMo TTS quick reference
 

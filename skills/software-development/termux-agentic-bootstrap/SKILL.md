@@ -30,7 +30,29 @@ tags:
 
 # Termux Agentic Bootstrap
 
-**Zero-round-trip delivery rule (Arif):** When setting up SSH/Termux for Arif, deliver EXACTLY ONE command that does everything. The golden pattern: `printf '%s\\n' 'line1' 'line2' > ~/.ssh/config && ssh-keygen && cat ~/.ssh/id_ed25519.pub`. Zero back-and-forth. If he has to reply more than once with a fix, the approach is structurally wrong — delegate to OpenCode/A-FORGE immediately. **Use `printf`, NOT heredoc** — Termux one-shot paste breaks heredoc delimiters. See `references/arifos-honor600-bootstrap.md` for the verified holy-paste command.
+## Arif Delivery Rules (F13 SOVEREIGN, confirmed 2026-07-30)
+
+### Rule 1: Code fence FIRST, zero text before
+
+The code fence is **the first thing in the response**. Period. Not a "here's what you need" preamble. Not context before the command. Not an introduction. No words before the triple backticks. Arif pastes first, reads later. If the command is buried in prose, he will tell you to fix it — and you must not make him ask twice.
+
+### Rule 2: One box, one paste — WAJIB
+
+Every command Arif needs must fit in exactly **one copy-paste block**. Never split into multiple commands that need multiple paste actions. Even if the command is long (chained with `&&`), it goes in one code fence. `&&` chains, `printf` multi-line writes, and `<<` heredocs all work in a single paste block (`printf` works better than heredoc — see below). He will say "aku benci copy paste" if he has to paste more than once.
+
+### Rule 3: Use `printf`, NOT heredoc
+
+Termux one-shot paste **breaks heredoc delimiters** (`cat > f << 'EOF' ... EOF`). Always use `printf '%s\\n' 'line1' 'line2' > file` for config files. `printf` handles newlines in single-shot paste because the whole chain is one logical line with `&&`.
+
+### Rule 4: One round-trip max
+
+Deliver EXACTLY ONE command that does everything. If Arif has to reply with a fix once, the approach is structurally wrong — delegate to A-FORGE/OpenCode immediately. Frustration signals ("Fuck I hate this", "bangang", "Hang??", repeated identical errors) mean the pattern is wrong for Termux paste, not fixable by more tweaking.
+
+### Technical pattern
+
+```bash
+printf '%s\\n' 'Host vps' '    HostName 72.62.71.199' '    Port 22888' '    User root' '    IdentityFile ~/.ssh/id_rsa' '    ServerAliveInterval 30' > ~/.ssh/config && ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "device-agentic" 2>/dev/null && cat ~/.ssh/id_rsa.pub
+```
 
 Set up Android as a thin-client terminal portal to an agentic VPS.
 
@@ -92,9 +114,11 @@ pkg install rsync                # file sync
 
 ## 3. SSH Key Setup
 
+**⚠️ CRITICAL — Termux aarch64 CANNOT read Ed25519 private keys.** The bundled libcrypto returns `error in libcrypto: unsupported` on Ed25519 keys. This is a Termux platform limitation that `pkg upgrade openssh` does NOT fix. **Always use RSA 4096 on Termux.**
+
 ```bash
-ssh-keygen -t ed25519 -C "device-name-agentic"
-cat ~/.ssh/id_ed25519.pub
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N "" -C "device-name-agentic"
+cat ~/.ssh/id_rsa.pub
 # → Copy output — kau akan register dekat VPS
 ```
 
@@ -107,14 +131,14 @@ cat ~/.ssh/id_ed25519.pub
 | `PasswordAuthentication yes` | `ssh-copy-id -p PORT root@IP` (dari phone) | Auto, mintak password VPS sekali lepas tu terus masuk |
 | `PasswordAuthentication no` 🔒 | Server-side manual | **`ssh-copy-id` akan gagal** — kena paste key ke VPS punya `~/.ssh/authorized_keys` dari admin/side |
 
-**Scenario 1 — password auth:**
+Scenario 1 — password auth:
 ```bash
 ssh-copy-id -p 22 root@IP
 ```
 
 **Scenario 2 — key-only (macam af-forge):**
 - Kau generate key dekat phone
-- Paste output `cat ~/.ssh/id_ed25519.pub` kat sini
+- Paste output `cat ~/.ssh/id_rsa.pub` kat sini
 - Aku register key dari server side terus
 - Lepas register, kau boleh terus login
 
@@ -127,7 +151,7 @@ Host vps
     HostName 72.62.71.199      # ← IP SEBENAR, bukan alias
     User root
     Port 22
-    IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/id_rsa
     IdentitiesOnly yes
     StrictHostKeyChecking accept-new
 ```
@@ -206,6 +230,41 @@ and a third row: TAB · CTRL · ALT · ← · ↓ · → · PGDN
 
 ---
 
+## 5.1 Copy-Paste dalam Termux (tanpa drag)
+
+**Arif prefers zero-drag copy. This is a primary friction point — solve it early in every Termux setup.**
+
+Giving the user one `| copy` alias as part of the bootstrap command chain eliminates the "aku benci nak drag" complaint entirely.
+
+### Method A: `| copy` alias (recommended — install in bootstrap)
+
+Add this to the ONE-SHOT bootstrap command. Then any output pipes to clipboard:
+
+```bash
+cat ~/.ssh/id_rsa.pub | copy
+ssh vps "tailscale status" | copy
+echo "Ada apa-apa?" | copy
+```
+
+**One-shot install:**
+```bash
+printf '\nalias copy="termux-clipboard-set"\n' >> ~/.bashrc && . ~/.bashrc
+```
+
+### Method B: `| termux-clipboard-set` (no alias)
+
+If alias wasn't set up, pipe to the full command:
+```bash
+cat ~/.ssh/id_rsa.pub | termux-clipboard-set
+ssh vps "fed health" | termux-clipboard-set
+```
+
+### Method C: Tap-to-select (fallback)
+
+Tekan lama skrin Termux → enter selection mode → tap perkataan satu-satu (no drag) → Copy button appears.
+
+---
+
 ## 6. Thin-Client Pattern (Recommended)
 
 **When you have a VPS with agent stack already installed** (arifOS federation pattern):
@@ -236,7 +295,7 @@ Host forge
     HostName 100.64.0.2
     Port 22888
     User root
-    IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/id_rsa
     IdentitiesOnly yes
     StrictHostKeyChecking accept-new
 
@@ -244,7 +303,7 @@ Host forge-public
     HostName 72.62.71.199
     Port 22888
     User root
-    IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/id_rsa
     IdentitiesOnly yes
     StrictHostKeyChecking accept-new
 
@@ -573,6 +632,9 @@ chmod +x test_display.sh
 
 ## 16. Pitfalls
 
+- **CRITICAL: code fence delivery order for Arif** — When delivering a command to Arif, the code fence MUST be the first thing in the response with zero text before it. Not a preamble, not "here's what you need". No text before the triple backticks. Explanation follows after the command. Violating this = Arif will tell you to fix it. (Confirmed 2026-07-30: "Please give in one copy paste box. Aku penat tau copy paste edit")
+- **Avoid em-dashes (—) in shell-pasteable text** — Em-dashes (U+2014 `—`) that appear in text the user might copy-paste into a shell will cause `bash: line 1: —: command not found`. Termux paste treats each line as shell input, and bare em-dashes are not valid commands. Acceptable IN bash comments (after `#`) — dangerous anywhere else. Use regular hyphens (`-`) or double-hyphens (`--`) in help text, alias descriptions, or any content that could end up in a terminal paste. To be safe, avoid em-dashes entirely in Termux-related instruction text.
+- **Copy-paste friction: install `| copy` alias in bootstrap** — When setting up Termux for Arif, include `printf '\nalias copy="termux-clipboard-set"\n' >> ~/.bashrc` in the bootstrap command chain. Then when you need output, tell him `<command> | copy` — one pipe, zero drag. This single detail eliminates the "aku benci copy paste" complaint.
 - **Arif's zero-round-trip delivery rule** — When setting up anything for Arif (especially SSH/Termux), deliver EXACTLY ONE command that does everything. The pattern: `printf` (NOT heredoc) → SSH config write → keygen → print public key → `ssh vps "echo OK"`. Zero back-and-forth. **After 1 failed correction round-trip, delegate to A-FORGE/OpenCode immediately** — Arif's frustration signal ("Fuck I hate this", "bangang", "Hang??", repeated identical errors) means the approach is structurally wrong for the tool (Termux paste), not fixable by more back-and-forth tweaking. **`printf` over heredoc**: Termux one-shot paste breaks heredoc delimiters (`cat > f << 'EOF' ... EOF`). Always use `printf '%s\n' 'line1' 'line2' > file` for config files in one-shot delivery. `printf` handles newlines in single-shot paste because the whole chain is one logical line with `&&`.
 - **`sed` on SSH config removes `Port` lines** — running `sed -i 's/Port XX//' ~/.ssh/config` removes ALL occurrences of that Port line from every Host block. Next SSH attempt uses default port 22 instead of the correct port, causing hang/timeout. **Fix:** overwrite the whole config with `cat > ~/.ssh/config`. Never use `sed` on SSH config unless you're 100% sure of the pattern scope.
 - **Duplicate authorized_keys entries** — duplicate keys with the same comment break `environment="IDENTITY=arif"` injection and confuse connection tracking. Always `grep -n 'phone-key-comment' /root/.ssh/authorized_keys` before adding a new key. Remove extras with `sed -i 'Nd'`. Then verify with `wc -l`.

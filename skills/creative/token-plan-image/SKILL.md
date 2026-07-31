@@ -6,8 +6,7 @@ tags: [qwen, token-plan, image-generation, text-to-image, image-editing]
 metadata:
   hermes:
     category: creative
-    related_skills: [minimax-cli, lightweight-image-generation]
-  forge_policy: "/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md"
+    related_skills: [minimax-cli, lightweight-image-generation, mulerouter-media]
 ---
 
 Call the Qwen Token Plan multimodal-generation API to generate (or edit) an image based on a description.
@@ -101,10 +100,10 @@ Print to the user:
 
 ## 🧭 Route
 
-> **Canonical model-selection lives in [`minimax-cli`](../minimax-cli/SKILL.md#-image-generation--primary-for-malaysea--realism).**
-> **Policy:** `/root/A-FORGE/forge_work/2026-07-20/model-selection-policy.md`
+> **Canonical model-selection lives in [`minimax-cli`](../minimax-cli/SKILL.md#-image-generation--primary-for-malaysea--realism).**  
+> **Image model priority:** MiniMax image-01 → MuleRouter GPT Image 2 / Wan 2.6 T2I → Pollinations FLUX → Pollinations SANA
 
-**When to use Qwen over MiniMax:** Text+image editing (`wan2.7-image-pro` — only model supporting image input). Generic prompts where phenotype doesn't matter. When MiniMax quota is exhausted.
+**When to use Qwen over MiniMax:**
 
 **Prompt decomposition for Malay slang:** See [`minimax-cli` 🧬 Phenotype](../minimax-cli/SKILL.md#-phenotype). Add explicit "Southeast Asian Malay" tokens. Never rely on slang alone.
 

@@ -585,6 +585,7 @@ grep -n 'verbosity.*=.*\"minimal\"' /opt/arifos/app/arifosmcp/runtime/tools.py
 - `references/kernel-contrast-assessment.md` — Structured 7-axis before/after comparison for kernel version upgrades, release audits, and deployment state changes
 - `references/cross-agent-commit-handoff.md` — Committing files from another agent's session with F2/F11/F3 compliance (2026-07-29)
 - `references/mcp-resource-zen-2026-07-28.md` — Cross-witness audit: OpenCode scan → Hermes verify → convergence seal. MCP resource collapse 327→34. Single-agent accuracy ~60% lesson.
+- `references/external-witness-probe-maintenance.md` — Multi-location regex hazard, JS-rendered landing page extraction, and verification workflow for the external witness probe (2026-07-31)
 
 ## Constitutional Compliance
 

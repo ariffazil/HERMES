@@ -439,7 +439,29 @@ From `cron/scheduler.py` and `cron/jobs.py`:
 
 ### Fixing Drift
 
-**CLI limitation: `hermes cron edit` has NO `--model` or `--provider` flags.** Despite the `cronjob(action='update', ...)` tool accepting model/provider as params, the shell-level `hermes cron edit` command does not expose them. You cannot fix model drift via CLI — direct `jobs.json` editing is required.
+**CLI limitation: `hermes cron edit` has NO `--model` or `--provider` flags.** Despite the `cronjob(action='update', ...)` tool accepting model/provider as params, the shell-level `hermes cron edit` command does not expose them. You cannot fix model drift via CLI — use the `update_job()` library function below (or direct `jobs.json` editing as fallback).
+
+**Canonical fix — `update_job()` library function (PREFERRED, proven 2026-07-31).** The `cronjob(action='update')` MCP tool wraps `update_job()` in `cron/jobs.py` (L1286). When the MCP tool isn't exposed in a session (common in cron-run contexts), call the library directly with the hermes venv python. It takes the jobs lock, applies only the given fields, recomputes snapshots (pinned axes → snapshots become `null`; unpinned axes → fresh snapshot from current global), and saves atomically:
+
+```bash
+# 1. Backup (prior-run convention: jobs.json.bak-drift-<timestamp>)
+cp ~/.hermes/cron/jobs.json ~/.hermes/cron/jobs.json.bak-drift-$(date +%Y%m%d%H%M%S)
+
+# 2. Sync pins to global (edit the TARGETS list and values as needed)
+/usr/local/lib/hermes-agent/venv/bin/python3 - <<'PY'
+from cron.jobs import update_job, load_jobs
+TARGETS = ["<JOB_ID>", ...]          # job ids with stale pins
+for jid in TARGETS:
+    before = next(j for j in load_jobs() if j["id"] == jid)
+    res = update_job(jid, {"provider": "mulerouter", "model": "deepseek-v4-flash"})
+    print(f"{before['name']}: {before.get('provider')}/{before.get('model')} -> "
+          f"{res.get('provider')}/{res.get('model')}")
+PY
+
+# 3. Verify: reload jobs.json and confirm provider/model + that schedule/deliver/next_run_at are untouched
+```
+
+**Do NOT hand-edit jobs.json for pin changes when the venv is available.** The scheduler rewrites jobs.json after every job run (some jobs fire every 5 minutes), so a raw file edit can race with a concurrent write and get clobbered or corrupt the file. `update_job()` is the same code path the cronjob MCP tool uses. Direct JSON editing remains the fallback only when the venv/imports are unavailable. (Note: the earlier "structural impossibility" reading — "the only way to pin is direct JSON edit" — was wrong; `update_job()` has always been the canonical path.)
 
 **Per-job fix (direct JSON edit):**
 ```bash
@@ -506,21 +528,27 @@ if fixed:
 **Bulk fix — Model Drift Watchdog:**
 A self-healing cron job that runs hourly, detects drift across all jobs, and auto-updates them. Pinned explicitly (`deepseek/deepseek-chat`) so it's immune to its own drift. Silent when clean, reports to AAA group when it fixes things.
 
-### Watchdog Pitfall — Its Own Prompt Contradicts the Architecture
+### Watchdog Pitfall — Pins Are NOT Automatically Immunity Markers
 
-The Model Drift Watchdog's prompt (stored in `jobs.json`) contains instructions to update ALL pinned jobs where model differs from global. This is WRONG for explicitly-pinned jobs. Explicit pins are intentional immunity markers — those jobs were deliberately pinned to a specific model. The watchdog should NOT update them; doing so would break the immunity the pin was designed to provide.
+The Model Drift Watchdog's prompt (written by Arif, stored in `jobs.json`) instructs: *"For each job that has a pinned model/provider: if the pinned model/provider DIFFERS from current, update it to match current."* **The prompt's literal instruction is the operator's written intent and governs.** Treating every explicit pin as an "intentional immunity marker" is a prior-run invention with no positive evidence — it caused runs to skip genuinely stale pins (proven wrong 2026-07-31, below).
+
+**Discriminate a STALE SYNC PIN from an INTENTIONAL IMMUNITY PIN before deciding** (this is the core judgment, not "pinned = immune"):
+
+1. **Check the watchdog's own output history** at `/root/.hermes/cron/output/5a29d4fd77b8/*.md`. If past runs reported pins "in sync with global config" (2026-07-29: "every job's model/provider... matches the current global config: deepseek/deepseek-v4-flash") or actively FIXED a pin to match global (2026-07-30: nightly-seal model fixed, "in sync with global config") → the pins are **watchdog-maintained sync points** → they follow global → **update them when global moves**.
+2. **Compare pins to the global config at job creation time** (`created_at` in jobs.json; config.yaml git history in `~/.hermes`). Pins equal to creation-time global are auto-stamps from creation, not deliberate choices.
+3. **Look for positive evidence of intent** before leaving a pin: an operator note ("keep this job on provider X"), a pin staying divergent across multiple global switches while sibling pins follow, or a job prompt naming the provider as deliberate. Absent that, the pin is stale.
+4. **A provider absent from config.yaml `providers:` keys is NOT proof of breakage** — `deepseek` resolved via `auth.json` credential_pool (which has its own key list) and the pinned jobs ran `last_status: ok`. Verify resolution via credential_pool before assuming a pin is dead.
+
+**Proven 2026-07-31 (reverses the 2026-07-28 reading):** 8 pins (`deepseek/deepseek-v4-flash`) on jobs created Jul 5–26 while global was `deepseek`; global moved to `mulerouter` (MuleRouter fixed-price surface). Watchdog history proved the pins tracked global → all 8 updated to `mulerouter/deepseek-v4-flash` via `update_job()`. The 2026-07-28 "7 immunity pins" case only showed the watchdog skipped pins — it never proved Arif's intent, and those pins also matched creation-time global.
 
 **Correct watchdog decision logic:**
 1. `no_agent: true` → skip (immune)
-2. Explicit `model` + `provider` (both non-null) → **LEAVE ALONE** — intentional immunity pin
+2. Explicit `model` + `provider` → run the discrimination procedure above; pins that track global get **UPDATED to match current**. Leave alone ONLY with positive evidence of deliberate divergence.
 3. `model: null, provider: null` + snapshots exist → snapshot drift detected? → update snapshots to match current global (or pin explicitly)
 4. `model: null, provider: null` + no snapshots → job was just created, no drift possible
 
-The watchdog prompt was written before the explicit-pin immunity pattern was fully understood. When updating the watchdog's prompt, replace "update if differs" with "leave explicitly-pinned jobs alone; only fix snapshot-drifted unpinned jobs."
-
-**Proven 2026-07-28:** Watchdog found 7 jobs pinned to `deepseek-v4-flash/deepseek` vs global `kimi-moonshot/k3`. Correctly chose to do nothing — these are intentional immunity pins set before the global switch.
-
-→ `references/model-drift-mechanism.md` — full mechanism breakdown, drift guard source locations, snapshot lifecycle.
+→ `references/model-drift-mechanism.md` — full mechanism breakdown, drift guard source locations, snapshot lifecycle, sync-pin-vs-immunity discrimination procedure.
+→ `scripts/sync-pinned-jobs.py` — re-runnable bulk sync: backs up jobs.json, then updates every drifted pinned job to current global via `update_job()` (hermes venv python, `--dry-run` supported).
 
 ### Immunity Table
 
@@ -652,6 +680,7 @@ When Arif asks about:
 
 ## Pitfalls
 
+- **`/root/.hermes/cron_jobs.db` is an empty SQLite file (0 bytes, no tables) — do not query it.** The file exists but contains no data. The canonical source for all cron job definitions is `~/.hermes/cron/jobs.json`. Any attempt to read cron jobs from `cron_jobs.db` returns zero results and wastes time. Always use `hermes cron list` for the overview or read `~/.hermes/cron/jobs.json` directly for full detail. **Proven 2026-07-31:** Model Drift Watchdog queried the DB and found nothing; verified by checking file size (0 bytes) and schema (empty `sqlite_master`).
 - **Script path resolution: `script` field resolves relative to `~/.hermes/scripts/`.** For `no_agent: true` jobs, Hermes resolves the `script` field relative to `~/.hermes/scripts/`. A script existing at `/root/paper_trading/morning_scan.sh` does NOT mean `script: "paper_trading/morning_scan.sh"` works — Hermes looks at `~/.hermes/scripts/paper_trading/morning_scan.sh`. Fix: copy the script into the Hermes scripts directory tree (preserving subdirectory structure if needed), or use an absolute path. **Proven 2026-07-25:** `🧠 Paper Trading Morning Analysis` errored with `Script not found: /root/HERMES/scripts/paper_trading/morning_scan.sh`. Fixed by `mkdir -p ~/.hermes/scripts/paper_trading && cp /root/paper_trading/morning_scan.sh $_`.
 - **Don't put shell commands in the `script` field.** For `no_agent: true` jobs, `script` is treated as a FILE PATH relative to `~/.hermes/scripts/`, NOT a shell command. Setting `script: "cd /root/trading && python3 scripts/price_alert.py --check"` fails with "Script not found" because the cron system looks for a file with that literal name. Fix: create a wrapper `.sh` script in `~/.hermes/scripts/` that contains the actual commands, then reference just the filename (e.g. `script: "price-alert.sh"`). Verified 2026-07-15.
 - **Don't report state without action.** "199 dirty files" alone is noise. "199 dirty files — want me to review and commit?" is useful.
@@ -676,7 +705,7 @@ When Arif asks about:
 - **Don't manually fix every drifted cron job when you change models.** When Arif switches the global model (e.g. deepseek → minimax), ALL unpinned cron jobs freeze simultaneously with drift errors. Fixing each one manually is N steps. Instead: the Model Drift Watchdog (`5a29d4fd77b8`) runs hourly, detects drift, and auto-updates all affected jobs. If the watchdog itself ever breaks (e.g. DeepSeek key removed), ping the agent to repin it — 10 seconds. **Proven 2026-07-17:** Trading Position Monitor blocked by drift after mimo→deepseek switch. Fixed manually, then watchdog built to prevent recurrence.
 - **To make a cron job immune to model drift, pin its model AND provider explicitly.** Jobs with `model: null, provider: null` capture snapshots at creation time and will be blocked when global config changes. Jobs with explicit pins (e.g. `model: 'deepseek-chat', provider: 'deepseek'`) have null snapshots and never trigger the drift guard.
 - **The drift guard compares at fire time, not continuously.** Even if a job was created months ago with a now-retired model, it won't be blocked until its next scheduled tick. A job that ran last successfully yesterday may fail today because the global model changed overnight.
-- **The model drift watchdog must NOT update explicitly-pinned jobs.** Its own prompt says to update ALL pinned jobs where model differs from global. This is wrong. Explicit pins are intentional immunity markers. Only snapshot-based jobs (null model/provider with drifted snapshots) need fixing. See the "Watchdog Pitfall" section under Model Drift Guard.
+- **Explicit pins are NOT automatically immunity markers — check the watchdog's output history before deciding.** Pins that track the global config (past watchdog runs reported "in sync with global config" or actively synced a pin) are stale sync pins and MUST be updated when global moves. The operator's prompt instruction governs: "update pinned jobs that differ from current global." Only leave a pin alone with positive evidence of deliberate divergence. **Proven 2026-07-31:** 8 pins stale at `deepseek/deepseek-v4-flash` while global moved to `mulerouter` — updated all 8; the 2026-07-28 "immunity" reading had wrongly skipped them. See "Watchdog Pitfall" under Model Drift Guard.
 - **VAULT999 HOLD verdicts need date-awareness in cron prompts.** Old HOLD verdicts from federation handshake events (INV-1_KERNEL_VERIFIED) are protocol-normal, NOT actual blocks. A cron job that reads VAULT999 without checking timestamps will misdiagnose these as "system held." Instruct the LLM in cron prompts: check DATE/TIMESTAMP of HOLD verdicts, skip handshake events, only flag unresolved HOLDs from the last 24h. **Proven 2026-07-21:** Evening digest read old federation handshake HOLDs and falsely reported OpenClaw as blocked when it was live and healthy.
 - **Cron prompts should embed hard facts, not ask the LLM to discover them.** When a cron job needs to probe a service, embed the CORRECT port, health endpoint, and config path in the prompt. Don't rely on the LLM to guess or discover ports — it will pick wrong ones (e.g., 18001 instead of 18789 for OpenClaw). For services without systemd units, note that explicitly so the LLM probes directly instead of running `systemctl status`. **Proven 2026-07-21:** Evening digest probed wrong port and used `systemctl status` on a non-systemd service, producing a completely wrong diagnosis.
 - **API auth errors (401) may be transient — verify with a live probe before diagnosing key rotation.** A cron job that shows `last_error: HTTP 401: Invalid token` may have hit a transient DeepSeek/OpenAI outage, not a rotated key. Always verify with a live curl test against the actual inference endpoint (`POST /v1/chat/completions` with 1 token). The models list endpoint can return 200 while inference is down, or return 401 while inference works. Best practice: include a chat-completions liveness test in STEEL/shield probes to confirm the full pipeline is healthy before Hermes attempts generation. **Proven 2026-07-25:** Evening-digest showed 401 on the models endpoint but the API key was valid — chat completions returned HTTP 200. A STEEL liveness test would have confirmed this in seconds vs. manual investigation.\n- **Bot-to-bot delivery spam (\"Forbidden: the bot can't send messages to the bot\").** When a cron job has `deliver: origin` and the origin session was the bot itself (e.g., a job created from bot-facing context, or a job whose origin chat resolved to the bot's own Telegram ID), it tries to deliver back to the bot. Telegram forbids bots from messaging themselves. The error appears every tick in gateway.log at the job's schedule interval. **Diagnosis:** check `~/.hermes/cron/jobs.json` for `last_delivery_error` containing the bot's own ID. **Fix:** pause the job (set `enabled: false` in jobs.json) or change its `deliver` target to a valid channel. **Proven 2026-07-24:** `arifs24-telemetry` (job `49d171deeb6d`) ran every 10 minutes, had empty prompt, delivered to `origin` which resolved to bot ID `8410138119`. Paused via direct `jobs.json` edit.
@@ -779,6 +808,7 @@ Key: OpenClaw workspace is ~37KB. Smaller-context models overflow. Use `--light-
 - **Updated:** 2026-07-26 — Fixed `hermes cron update` → `hermes cron edit` in Routing Audit Protocol fix command and pitfalls section (CLI uses `edit`, not `update`). Added `base_url`, `context_from`, `skills`, `skill`, `no_agent` field docs to Field Schema in `references/model-drift-mechanism.md`.
 - **Updated:** 2026-07-27 — Added "Full inventory sweep" diagnostic command to `references/model-drift-mechanism.md` — a one-shot Python script that categorizes ALL cron jobs by drift type (no_agent, pinned+matching, pinned+drifted, inherited+snapshot-drifted) with summary counts. No jobs were drifted in this sweep; technique captured for future audits.
 - **Updated:** 2026-07-28 — Added "Watchdog Pitfall" subsection under Model Drift Guard: the watchdog's own prompt says to update ALL pinned jobs, but explicitly-pinned jobs are intentional immunity markers and must be left alone. Added pitfall entry "The model drift watchdog must NOT update explicitly-pinned jobs." Proven: 7 intentionally-pinned deepseek jobs correctly left untouched on kimi-moonshot/k3 global.
+- **Updated:** 2026-07-31 — REVERSED the 2026-07-28 immunity-pin doctrine. Evidence: the watchdog's own output history (`output/5a29d4fd77b8/*.md`) showed it syncing pins to global (2026-07-29 audit, 2026-07-30 nightly-seal fix "in sync with global config") — the 8 `deepseek/deepseek-v4-flash` pins were stale sync points, and the operator's prompt explicitly instructs updating pinned jobs that differ from global. All 8 synced to `mulerouter/deepseek-v4-flash` via the newly-canonical `update_job()` library path (cron.jobs L1286 — wraps the cronjob MCP tool; takes lock, recomputes snapshots, atomic save; replaces raw jobs.json editing as the preferred fix, which races the scheduler's post-run writes). Added `scripts/sync-pinned-jobs.py` (re-runnable bulk sync), discrimination procedure in `references/model-drift-mechanism.md`, provider-resolution check (config.yaml `providers:` vs auth.json `credential_pool`).
 - **Architecture:** 4-tier model (human/alert/cognitive/constitutional).
 - **Key insight:** "If the system thinks at 23:00 but you never see the output, the care is happening without the human it is meant to protect."
 - **Related skills:** `weekly-federation-deep-brief` (Sunday deep brief), `daily-federation-briefing` (archived, predecessor), `daily-trading-signal-briefing` (XAUUSD signals), `syedos` (Syed operating mode).

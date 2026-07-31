@@ -308,7 +308,40 @@ export OPENROUTER_API_KEY="sk-or-…"
 **Prevention:** When adding keys to vault, always use bare `KEY="value"` format.
 No inline comments. No nested quotes. No trailing text.
 
-### `set -u` + vault.env = silent crash
+### SOPs-encrypted values in URL/connection-string env vars
+
+**Pattern**: An env var like `MINIMAX_BASE_URL`, `REDIS_URL`, `POSTGRES_HOST`, or any URL-typed value
+contains `ENC[AES256_GCM,data:...]` ciphertext instead of a real URL.
+
+**Impact**: When `urlparse()` reads the encrypted string, it raises `ValueError: Invalid IPv6 URL`.
+This crashes ALL provider routing code that reads the base_url env var — `resolve_provider_client`
+→ `base_url_host_matches` → `base_url_hostname` → `urlparse`.
+
+**Proven 2026-07-30:** `MINIMAX_BASE_URL=ENC[AES256_GCM,data:qeRnWa+E0...]` caused every
+`vision_analyze_tool` call to fail with `"Invalid IPv6 URL"`. Appeared to be a vision provider
+routing bug, but the actual root cause was the encrypted env var.
+
+**Propagation chain:**
+```python
+MINIMAX_BASE_URL=ENC[AES256_GCM,...]
+  → resolve_api_key_provider_credentials("minimax")
+  → creds["base_url"] = ciphertext string
+  → raw_base_url in resolve_provider_client()  # line 4936
+  → _wrap_if_needed(client, model, raw_base_url, key)  # line 5007
+  → _needs_codex_wrap(client_obj, raw_base_url, model)  # line 4547
+  → base_url_hostname(raw_base_url)  # line 4527
+  → urlparse("//ENC[AES256_GCM,...]")  # utils.py:486
+  → ValueError: Invalid IPv6 URL  🚨
+```
+
+The fix was replacing the sops-encrypted value with the real URL in both `kunci-mas.env` and
+`kunci-mas.flat.env`.
+
+**Prevention**: URL-type env vars must NEVER contain sops-encrypted ciphertext. Always store
+the actual URL in the SOT. If a value needs encryption, use a non-URL type (like API keys
+where the ciphertext isn't passed to urlparse). Add a vault-verify check: scan for
+`ENC[AES256_GCM,` in any env var whose key ends in `_BASE_URL`, `_HOST`, `_ENDPOINT`, or
+`_API`.
 
 If a launcher script has `set -euo pipefail` and vault.env contains unescaped
 `$` characters (Apache `$apr1$`, bcrypt `$2a$`, SHA `$5$`), sourcing vault.env

@@ -106,6 +106,8 @@ Always include a callout box (yellow-bordered, light fill) for things the agent 
 
 7. **No human-layer speculation.** Don't guess at family, hobbies, personality, mood. Agent can read web — it cannot read people. Honest gap declaration protects dignity (F6 MARUAH).
 
+   **This includes MBTI / psychological typing from photographs or visual cues.** Visual cues (tattoos, expression, physique) are not reliable indicators of personality type. If the user explicitly asks for MBTI, research from behavioral sources (interviews, known self-assessments, personality databases), label the source (OBS if self-reported, DER if crowd-sourced, INT if inferred), and cite a specific source. Never guess from an image alone — that is speculation dressed as analysis.
+
 8. **PETRONAS succession intelligence is always SPEC.** When asked "siapa pengganti X," analyse the org chart and conference circuit but label all predictions SPEC. PETRONAS succession is political — Tengku Taufik's preference, Sarawak politics, rightsizing timing, and internal factions all matter. The org chart tells you who's positioned, not who's chosen. Present candidates with evidence for each, rank by likelihood, but never claim confirmation.
 
 9. **Conference timeline ≠ LinkedIn.** For PETRONAS executives who don't have public LinkedIn profiles, the conference speaker bio timeline (WGC 2018 → ADIPEC 2023 → IPTC 2025 → OTC Asia 2026) is the best substitute for a career spine. Each bio carries the title AT THAT DATE. Reconstruct the progression.

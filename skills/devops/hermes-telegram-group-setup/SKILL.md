@@ -890,6 +890,56 @@ Edit with string replace (same safe pattern). Total visible menu = prepended
 cognitive commands + built-in defaults, capped at `max_commands` (Telegram
 hard limit: 100). Verify with `yaml.safe_load()` after every edit.
 
+## Removing a Group from the Bot
+
+When a user wants the bot to stop responding in a group, the correct action
+is a **config change**, not a verbal commitment. Remove the group from both
+`allowed_chats` and `free_response_chats`.
+
+### Procedure
+
+```bash
+# Remove from allowed_chats (YAML list item)
+sed -i "/- '\\''-100XXXXXXX'\\''/d" ~/.hermes/config.yaml
+
+# Remove from free_response_chats (comma-separated JSON-like string)
+sed -i "s/,''-100XXXXXXX''//" ~/.hermes/config.yaml
+
+# Verify no stale references remain
+grep -- '-100XXXXXXX' ~/.hermes/config.yaml || echo "✅ Clean"
+```
+
+After each config edit, verify YAML integrity:
+```bash
+python3 -c "import yaml; yaml.safe_load(open('/root/.hermes/config.yaml')); print('✅ YAML valid')"
+```
+
+### Gateway Restart
+
+You CANNOT `hermes gateway restart` from inside the gateway session (it
+would kill itself). Options:
+
+1. **delegate_task** (best mid-session): `delegate_task(goal="Restart hermes-gateway", context="systemctl restart hermes-gateway")` — subagent has independent terminal.
+2. **SIGHUP (config reload only):** `kill -HUP $(pgrep -f "hermes gateway" | head -1)`
+3. **SSH from outside:** `ssh root@localhost 'systemctl restart hermes-gateway'`
+4. **Systemd directly:** `systemctl restart hermes-gateway` from another shell on the VPS.
+
+### Pitfall: Acknowledging vs Acting
+
+**When a user repeats a boundary statement 3+ times ("This group is not
+allowed", "stop responding here", "jangan reply sini"), they are not asking
+for acknowledgment — they expect a config-level action.**
+
+Proven 2026-07-30: User said "This group is not allowed" 8 times in SADO
+group before the agent acted. Verbal-only acknowledgment loop took 7 turns
+and ~10 minutes. The config edit (removing from `allowed_chats`) took
+30 seconds.
+
+**Correct response on first boundary signal:** Either make the config change
+immediately, or say "I'll remove it from config now" and DO IT in the same
+turn. Never say "Acknowledged" / "Understood" / "Silenced" on repeat without
+acting.
+
 ## Reference: AAA Group Agent Architecture
 
 See `references/aaa-group-agent-architecture.md` for:

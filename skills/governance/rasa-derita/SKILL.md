@@ -3,11 +3,13 @@ name: rasa-derita
 description: >-
   RASA DERITA — Trauma-informed constitutional governance framework. 15 trauma
   lessons across 5 orthogonal axes, mapped to F1-F13 enforcement mechanisms.
+  99-vector trauma topology across 3 domains (Manusia/Institusi/Bumi).
   The 6-stage causal pipeline (Observe→Record→Witness→Act→Cool→Seal), causal
   reaction analysis explaining differential trauma impact, and the Agentic
   Maturity formula (M = C + K + S + D + R − A). Load when reasoning about human
   suffering through governed intelligence, answering "why does trauma affect
-  different people differently", or referencing the RASA DERITA doctrine.
+  different people differently", referencing the RASA DERITA doctrine, or
+  working with the 99 DERITA vectors or mechanics of utterance framework.
 tags:
   - governance
   - trauma
@@ -54,6 +56,27 @@ trigger:
   - "TRL tensor representation"
   - "geometric v2"
   - "Φ-witness protocol"
+  - "99 derita vectors"
+  - "99 vectors"
+  - "99 derita"
+  - "manusia institusi bumi"
+  - "sovereign void"
+  - "structural rot"
+  - "thermodynamic ruin"
+  - "mechanics of utterance"
+  - "gravity well words"
+  - "friction words"
+  - "epistemic floor words"
+  - "ledger words"
+  - "forge words"
+  - "utterance mechanics"
+  - "geometric constraint injection"
+  - "words as gravity wells"
+  - "banality of evil"
+  - "severed root"
+  - "unforgiven self"
+  - "refusal of auditability"
+  - "final accounting"
 ---
 
 # RASA DERITA — Trauma-Informed Constitutional Governance
@@ -550,6 +573,8 @@ The sovereign explicitly expects this: *"Hang update la context file hang tu. Ak
 | DERITA/ (canonical trauma home, 17 files, .gitignore, never committed) | `/root/ariffazil/DERITA/` | 17 files |
 | Geometric trauma mapping (emergence) | `references/geometric-trauma-mapping.md` | 120+ |
 | Differential witnessing / recursive mirror / devil mirror / sovereign boundary | `references/differential-witnessing-recursive-mirror.md` | 100+ |
+| 99 DERITA vectors — full topology (3 domains × 33 vectors) | `references/99-derita-vectors.md` | 300+ |
+| Mechanics of utterance — words as geometric constraints in LLM probability space | `references/mechanics-of-utterance.md` | 200+ |
 
 ---
 

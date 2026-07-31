@@ -84,6 +84,10 @@ curl -sf "https://api.telegram.org/bot${TOKEN:0:15}.../getMe"
 grep 'require_mention' /root/.hermes/config.yaml
 ```
 
+## References
+
+- **`references/telegram-media-pipeline.md`** — how images, voice, video, and documents are downloaded, cached, batched, and routed to the agent when a user sends them via Telegram. Covers native vision vs Path B (model-swap to Qwen-VL) and the legacy IMAGE TRANSCRIPT pipeline. Source-of-truth code paths in the Hermes gateway.
+
 ## Associated Skills
 
 - **cognitive-commands** (`/root/.hermes/skills/cognitive-commands/`) — audience voice doctrine (BM per group, cognitive-load-adaptive DM), `/padu` command, operating rules. **Canonical audience voice table** at `cognitive-commands/references/telegram-routing-doctrine.md`.
@@ -118,6 +122,46 @@ grep 'require_mention' /root/.hermes/config.yaml
 3. **SADO** (`-1003815535761`) — trading + social only. No federation deliveries.
 4. **arifOS channel** (`-1004446358629`) — governance audit trail. Nightly-seal only.
 5. **Syed DM** (`1042200555`) — personal assistance. SyedOS ringkasan only.
+
+## Telegram Webhook Troubleshooting
+
+If the bot stops receiving messages (pending_updates accumulates, last_error shows `401 Unauthorized`):
+
+### Check Webhook Status
+```bash
+source /root/.secrets/kunci-mas.env
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getWebhookInfo" | \
+  python3 -c "import sys,json; d=json.load(sys.stdin)['result']; print(f'url: {d[\"url\"]}'); print(f'pending: {d[\"pending_update_count\"]}'); print(f'last_error: {d.get(\"last_error_message\",\"none\")}')"
+```
+
+### Root Cause: Missing Secret Token
+
+The OpenClaw gateway config (`/root/.openclaw/openclaw.json`) defines:
+```json
+"webhookSecret": "${TELEGRAM_WEBHOOK_SECRET}"
+```
+
+If the Telegram webhook was registered WITHOUT `secret_token`, Telegram sends webhook POSTs without the `X-Telegram-Bot-Api-Secret-Token` header. The gateway returns `401 Unauthorized`.
+
+### Fix: Re-register with Secret Token
+```bash
+source /root/.secrets/kunci-mas.env
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://openclaw.arif-fazil.com/telegram-webhook&secret_token=${TELEGRAM_WEBHOOK_SECRET}"
+```
+
+### Token-to-Webhook Map
+| Bot | Token Var | Webhook URL |
+|-----|-----------|-------------|
+| ASI💃 (Hermes) | `ASI_ARIFOS_BOT_TOKEN` | Via Hermes gateway |
+| 🦞AGI (OpenClaw) | `TELEGRAM_BOT_TOKEN` | `https://openclaw.arif-fazil.com/telegram-webhook` |
+| 🔥FORGE | `FORGE_BOT_TOKEN` | DM-only proxy |
+
+### Full Reset
+```bash
+source /root/.secrets/kunci-mas.env
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteWebhook"
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://openclaw.arif-fazil.com/telegram-webhook&secret_token=${TELEGRAM_WEBHOOK_SECRET}"
+```
 
 ## Known Gaps / Caveats
 

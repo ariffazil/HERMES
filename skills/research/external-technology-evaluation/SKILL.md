@@ -19,6 +19,8 @@ triggers:
   - "is this worth it"
   - "map all [X] capabilities"
   - "check out [paper/model/tool]"
+  - "explain [X] dan contrast dengan architecture kita"  # Mode 3 — architecture comparison
+  - "contrast dengan database architecture kita"  # Mode 3
 ---
 
 # External Technology Evaluation
@@ -29,7 +31,20 @@ triggers:
 - He asks whether it's worth integrating into the federation
 - He asks you to "map all" capabilities of a system/tool
 - **Arif asks for a conceptual/doctrinal contrast** — e.g. "how does X compare to our Y", "what's the difference between loop engineering and reality engineering"
+- **Arif asks for an architecture comparison** — e.g. "explain X dan contrast dengan architecture kita", "contrast dengan database architecture kita" (Mode 3)
 - The goal is a **decision** (integrate? track? ignore?) + **execution** if approved, OR a **positioning** (how does this relate to arifOS doctrine)
+
+## Modes (three distinct patterns)
+
+This skill covers THREE distinct modes. Identify which one applies before starting:
+
+| Mode | Question | When | Output |
+|------|----------|------|--------|
+| **1. Integration Evaluation** | "Should we integrate this?" | Arif shares a tool/model/paper and asks if it's worth deploying | FORGE/SABAR/HOLD verdict + execution |
+| **2. Doctrinal Contrast** | "How does this concept compare to arifOS reality engineering?" | Comparing a general industry concept (loop eng, harness eng, etc.) against arifOS doctrine | Live-probe-backed table, "So what?" for Arif |
+| **3. Architecture Comparison** | "How does this external technology work and how is it different from our stack?" | Arif wants an explainer + contrast against our internal architecture, NO integration decision needed | Tech explainer + multi-dimension contrast table + conclusion |
+
+**Mode 3 — Architecture Comparison** is different from Mode 2: the comparison is against our concrete technical architecture (databases, services, protocols, deployment model), not against abstract doctrine/floors. Use this when Arif says "explain X dan contrast dengan architecture kita." Do NOT run live probes (curl :8088/health) for Mode 3 — instead read the relevant architecture docs (AGENTS.md, LOCALHOST_IS_PASSWORD.md, etc.) for the comparison side.
 
 ## Related Skills
 
@@ -156,6 +171,34 @@ When the task is to compare an external concept (loop engineering, harness engin
 
 **Tone rule:** When Arif pushes back with "So what??", "Hang ada benchmark ka?", or similar — **immediately pivot to live probes.** Stop explaining. Start curling endpoints. The proof is in the kernel, not in the explanation.
 
+### Architecture Comparison Presentation (alt format for Phase 4)
+
+When Mode 3 applies (Arif asks "explain X dan contrast dengan architecture kita") — use this format instead of EUREKA Zen or Doctrinal Contrast:
+
+1. **Explainer** — what the external technology actually is, in plain terms. Core concept (e.g. "LLVM of databases"), key features, architecture diagram in words.
+
+2. **Source Architecture Reference** — read the relevant architecture docs for our side:
+   - `/root/AGENTS.md` — federation layout, organs, memory landscape
+   - `/root/docs/LOCALHOST_IS_PASSWORD.md` — zero-auth doctrine
+   - `/root/docs/AGENTS-wire-3layer.md` — constitutional enforcement
+   - Relevant organ READMEs or CLAUDE.md files
+   
+3. **Multi-Dimension Contrast Table** — use these dimensions (adapt as relevant):
+
+   | Dimension | External Tech | arifOS / Our Stack |
+   |-----------|--------------|-------------------|
+   | **Core philosophy** | One engine, multiple frontends | Polyglot persistence — right tool for each job |
+   | **Engine / data model** | Single VDBE bytecode VM (relational) | 6 engines: Postgres + Redis + Qdrant + FalkorDB + VAULT999 + NATS |
+   | **Consistency model** | Single-engine consistency | Multi-engine (ACID for Postgres, eventual for L1/L2, immutable append for L6) |
+   | **Security model** | Traditional auth (API keys, managed) | LOCALHOST_IS_PASSWORD — zero passwords, 127.0.0.1 bind, UFW + Cloudflare Tunnel |
+   | **Deployment** | Cloud-native, edge/WASM, async | Bare-metal systemd organs, Docker for supporting services, single VPS |
+   | **Extension model** | WASM containers inside DB engine | MCP tools across organs via NATS + F1-F13 governance gates |
+   | **License** | MIT / open-source | AGPL-3.0 / BSL-1.1 per organ |
+
+4. **Key Axes of Difference** — pick the 2-3 most fundamental differences and explain why they matter. Not all differences are equal; prioritise architectural philosophy differences over implementation details.
+
+5. **Conclusion** — one paragraph: "This is a different solution to a different problem. Turso solves X; we solve Y. Both valid, not competitors."
+
 ### Phase 5: Execute on Approval (the "Yes setup" path)
 
 When Arif says any approval signal ("Yes setup", "Ok hang buat", "Go ahead"):
@@ -212,10 +255,13 @@ When Arif says any approval signal ("Yes setup", "Ok hang buat", "Go ahead"):
 - **Don't deploy scaffolding without approval**: Build the Modal scaffold but do NOT run `modal deploy`. Arif calls `modal deploy` when he's ready. The scaffold is the execution-ready plan, not the execution itself.
 - **"Apa yang ada guna ja"**: If the current stack already covers the capability, the bar for integration is higher. State the gap explicitly.
 - **Don't lead with theory for conceptual contrasts**: When Arif asks "what's the difference between X and our Y" — do NOT start with philosophical framing. Start with `curl :8088/health` and live data. He will push back with "So what??" if you lead with abstractions. The proof is in the kernel, not in paragraphs.
+- **For architecture comparisons, read the source docs, don't curl live probes**: Mode 3 compares against technical architecture (AGENTS.md, LOCALHOST_IS_PASSWORD.md) not live floor values. Read the relevant docs instead of curling health endpoints.
 - **Don't present a comparison without "So what?"**: After the contrast table, ALWAYS answer what this means for Arif specifically. Use "kau" format. E.g. "Plain loop: agent kata confident tapi selalu salah. arifOS: F7 caps confidence at 0.05."
+- **Architecture comparisons need a conclusion, not a verdict**: Mode 3 doesn't produce FORGE/SABAR/HOLD. The conclusion is "different tool for different problem" — state it clearly.
 - **References directory stores condensed knowledge**: After a conceptual evaluation, save a reference file so future sessions don't need to re-derive the same analysis.
 
 ## References
 
 - `references/mage-evaluation-2026-07-25.md` — Mage-Flow image generation evaluation
 - `references/furi-mcp-manager-evaluation-2026-07-26.md` — Furi MCP server manager evaluation (pattern for MCP tool/infra assessments)
+- `references/turso-libsql-architecture-2026-07-30.md` — Turso/libSQL "LLVM of databases" architecture (pattern for Mode 3 — Architecture Comparison)

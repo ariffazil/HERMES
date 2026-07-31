@@ -1,59 +1,63 @@
 # model-picker.yaml — canonical model routing for Hermes Agent
-# PROBED: 2026-07-29 ~13:20 UTC (audit session) | Quick-probed 4 tiers + fallbacks
-# FULL PROBE: 2026-07-23 ~18:30 UTC | 57 Zen + 23 Go models tested
+# PROBED: 2026-07-31 ~06:30 UTC | Qwen Token Plan Pro activated (9 models, flat monthly)
 # RULE: no model string hardcoded anywhere else. This file is the picker.
-# DEAD MODELS: all GPT, Claude, Gemini on Zen (401 — key lacks premium billing)
+# STRATEGY: Qwen Token Plan Pro = flat monthly = ZERO marginal cost. Route everything through it.
+# FALLBACK: Direct DeepSeek ($12.63 prepaid) → Bailian (20 models) → MiMo → Kimi → Groq → Gemini
+# THROTTLE: When qwen_throttle exists (>80% credit window), route to qwen3.6-flash or fallback.
+#   Check: python3 /root/AAA/scripts/qwen_throttle_check.py (exit 1 = throttle)
 
-probed_at: "2026-07-29T13:20:00Z"
+probed_at: "2026-07-31T06:30:00Z"
 probe_summary:
-  zen_total: 57
-  zen_alive: 19
-  go_total: 23
-  go_alive: 20
-  total_alive: 39
-  quick_probe_20260729:
-    opencode-go/deepseek-v4-flash: 200
-    opencode-go/deepseek-v4-pro: 200
-    opencode-zen/deepseek-v4-flash: 200
-    opencode-zen/deepseek-v4-pro: 200
-    opencode-zen/grok-4.5: 200
+  qwen_token_plan_pro: 9
+  qwen_token_plan_alive: 9
+  bailian_fallback: 20
+  total_token_plan: 29
+  note: "Qwen Token Plan Pro (Individual, 31d, $208.54 Jul). Flat monthly — all 9 models ZERO marginal cost."
 
 tiers:
   bulk:
     use: "cron jobs, background scans, high-volume summaries"
-    provider: opencode-go
-    model: deepseek-v4-flash
+    provider: qwen-token-plan
+    model: qwen3.6-flash
     endpoint: chat_completions
-    cost: "flat $10/mo subscription"
-    note: "Go subscription already paid. Flash is free marginal cost within $60/mo cap."
+    cost: "RM0 — Pro plan (flat monthly)"
+    fallback: deepseek-v4-flash
+    fallback_provider: bailian
+    fallback_cost: "RM0 — Bailian token plan"
+    note: "Qwen3.6 Flash is fast, 1M ctx, zero marginal cost. Bailian deepseek-v4-flash fallback."
 
   default:
     use: "Telegram chat, daily work, casual code"
-    provider: opencode-zen
-    model: deepseek-v4-flash
+    provider: qwen-token-plan
+    model: qwen3.7-plus
     endpoint: chat_completions
-    cost: "$0.14/M input, $0.28/M output"
-    note: "Anti-mahal: flash not pro for casual chat."
+    cost: "RM0 — Pro plan (flat monthly)"
+    fallback: deepseek-v4-pro
+    fallback_provider: qwen-token-plan
+    fallback_cost: "RM0 — Pro plan"
+    note: "Qwen3.7 Plus is fast, has vision for Telegram photos, zero marginal cost. DS V4 Pro fallback for hard questions."
 
   heavy:
     use: "code generation, audits, long-context reasoning"
-    provider: opencode-zen
+    provider: qwen-token-plan
     model: deepseek-v4-pro
     endpoint: chat_completions
-    cost: "$1.74/M input, $3.48/M output"
-    fallback: minimax-m3
-    fallback_cost: "$0.30/M input, $1.20/M output"
-    note: "Pro for heavy work. Fallback to MiniMax M3 if pro is slow/429."
+    cost: "RM0 — Pro plan (flat monthly)"
+    fallback: qwen3.7-max
+    fallback_provider: qwen-token-plan
+    fallback_cost: "RM0 — Pro plan"
+    note: "DS V4 Pro — 1M ctx, best reasoning, zero marginal cost on Pro plan. Qwen3.7 Max fallback."
 
   apex:
     use: "rare governed judgments, constitutional reasoning"
-    provider: opencode-zen
-    model: grok-4.5
+    provider: qwen-token-plan
+    model: glm-5.2
     endpoint: chat_completions
-    cost: "$2.00/M input, $6.00/M output"
-    fallback: glm-5.2
-    fallback_cost: "$1.40/M input, $4.40/M output"
-    note: "Claude unavailable on this Zen key (401 — needs billing). Grok-4.5 is best available for apex reasoning."
+    cost: "RM0 — Pro plan (flat monthly)"
+    fallback: deepseek-v4-pro
+    fallback_provider: qwen-token-plan
+    fallback_cost: "RM0 — Pro plan"
+    note: "GLM-5.2 — constitutional tier, 753B MoE, MIT license. Zero marginal cost. DS V4 Pro fallback for zero-censorship guarantee."
 
 # ── Live Models (probed alive) ──
 
