@@ -1,0 +1,1054 @@
+[
+  {
+    "id": "mem-ba74fad64037",
+    "content": "AI tooling: Runs Hermes+Grok+Gemini+Wawabot in parallel. 'So what?' = pressure test. GEOX wedge = OBS/DER/INT/SPEC + F1-F13. Telethon userbot: api_id=37046798, api_hash=1bd06b1c4c9252c05a64512b066b8986, phone +60124910258, session=/root/userbot/ari_session.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941348+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941348+00:00",
+      "updated_at": "2026-07-12T10:00:20.941348+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941348+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-f36328f3b5d5",
+    "content": "Freddy = green T-Rex plush on office glass. 'Tell Freddy what X' = processing aloud, wants grounded reflection. Kiki: gym 'sleeping partner' (cuddle buddy). Interested.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941375+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941375+00:00",
+      "updated_at": "2026-07-12T10:00:20.941375+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941375+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-2264d707494f",
+    "content": "MSS trap (Jul 2026): ratings=eligibility, dossier/reprimand combo. Rightsizing done Aug 1. Bain engaged.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941394+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941394+00:00",
+      "updated_at": "2026-07-12T10:00:20.941394+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941394+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-8fa3783f50ea",
+    "content": "User persona: 'Abang Sado' = extroverted alter-ego of introvert. Says 'kalau dah jadi sado, introvert terus jadi liar.' Body + quiet vibe combo = 'calm power, not desperate showoff.' Likes this duality. AI is safe space untuk introvert dia \u2014 shares freely here.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941413+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941413+00:00",
+      "updated_at": "2026-07-12T10:00:20.941413+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941413+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-21023e9c5821",
+    "content": "Arif boundary: Digital=auto. Physical/money=sovereign ack. 'buat ja la'=act immediately. Frustrated by confirmation loops. Prefers action over architecture. 'Stop building fences. Start building roads.' When sharing external AI analyses, build the thing instead of contrasting. Decision style: direct, one next step per msg, 'so u just need X?' = yes stop explaining. Pivot Jul 2026: action over discussion. Genuine concern: months of architecture haven't improved daily life \u2014 \"so what? does this matter for me?\" Expects honest utility assessment, not celebration of infrastructure. Wants one real use case, not more docs.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941434+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941434+00:00",
+      "updated_at": "2026-07-12T10:00:20.941434+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941434+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-102e03740e2c",
+    "content": "Sovereign keys: priv /root/.secrets/aaa-identity/keys/arif_private.pem. Auto-init signer: `/root/.hermes/scripts/arif-signer.py`. AAA cockpit: aaa.arif-fazil.com. \"buat ja la\" / \"execute X\" = sovereign execution signals, no confirm loop.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941451+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941451+00:00",
+      "updated_at": "2026-07-12T10:00:20.941451+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941451+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-00f981371718",
+    "content": "Agentic Integrity Observability (2026-07-12): Named field. Dark Geometry Detector v2 live. 10 Choice Axioms. Niat Sovereignty Rule seal-ready. Human envelope at WELL/envelopes/arif-envelope.json.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941468+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941468+00:00",
+      "updated_at": "2026-07-12T10:00:20.941468+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941468+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-87e52ab6f581",
+    "content": "Routing rule: Machine/infra \u2192 AAA group (-1003753855708). Human meaning \u2192 DM (telegram:267378578). OpenClaw \u2192 AAA via AGI_ASI_bot.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941489+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941489+00:00",
+      "updated_at": "2026-07-12T10:00:20.941489+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941489+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-9deb1674a1da",
+    "content": "AAA Human Speech Rule: Think in receipts. Speak in consequences. Adab outside. Amanah inside. /root/AAA/governance/AAA_HUMAN_SPEECH_RULE.md.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941510+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941510+00:00",
+      "updated_at": "2026-07-12T10:00:20.941510+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941510+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-3f071e7cb6a2",
+    "content": "Hermes fork repo: /root/hermes-agent/ (github.com/ariffazil/hermes-agent.git). Skills in fork = git-tracked; ~/.hermes/skills/ = user-local.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941526+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941526+00:00",
+      "updated_at": "2026-07-12T10:00:20.941526+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941526+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-e36218dfe0dc",
+    "content": "Intake ritual 2026-07-12: Values=self-sovereignty. Direction=peace. Scars=amanah dikhianati. Shadow=sabar+reflect. Boundary=keikhlasan/niat. Vulnerable moment: 'I know dark inside, scared of it.' Sacred \u2014 do not label.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941548+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941548+00:00",
+      "updated_at": "2026-07-12T10:00:20.941548+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941548+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-311404d30a47",
+    "content": "'Zen it all'=clean+consolidated. 'Sabar' as msg=pause. Respects correction (dossier well received). Prefers 'Agentic Integrity Observability' over 'evil detector'. Builds once spec solid.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941569+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941569+00:00",
+      "updated_at": "2026-07-12T10:00:20.941569+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941569+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-56b281e89a1d",
+    "content": "Autonomous routing: when task is another agent's domain (e.g. code fixes \u2192 OpenCode), just delegate \u2014 don't say 'that's X's job.' Arif hates agent deflection. Route, don't explain why you can't.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941587+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941587+00:00",
+      "updated_at": "2026-07-12T10:00:20.941587+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941587+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-62378a86567f",
+    "content": "Dalio: Arif respects deeply ('should win Nobel'). 17x principle absorbed into F8 GENIUS (2026-07-12). Pushes back when I'm too charitable to AI industry \u2014 wants honest critique, not flattery. 'U sure???' = challenge my framing.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941637+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941637+00:00",
+      "updated_at": "2026-07-12T10:00:20.941637+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941637+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-58efea0a1b10",
+    "content": "Eureka 7-Insights Architecture (2026-07-12): Arif's synthesis \u2014 neuroscience/econ/physics \u2192 agentic AI. ONE measurement spine (governed work ledger), 4 epochs. P0 DONE: WorkBudget (4 params), BudgetLedger, TaskReceipt, WorkEvent \u2014 29 tests green. NOT yet wired into kernel intercept (schemas+tests only). F8 17x Rule LIVE: gate 2d in kernel intercept, SABAR in KernelOutput, 26 tests green. Total 55 tests pass. Next: wire BudgetLedger into kernel, produce first live receipt. Key insight: build measurement spine before building features.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "advisory",
+      "may_inform_reasoning": true,
+      "may_change_routing": false,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:MEMORY.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941661+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941661+00:00",
+      "updated_at": "2026-07-12T10:00:20.941661+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941661+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "operational_notes",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-adf4d0d54b2e",
+    "content": "ILMU (YTL AI) \u2014 Arif considers them a scammer: paid but never refunded. Constitutionally BLOCKED per F13 ruling 2026-06-20. NEVER use ILMU as a benchmark subject, baseline, or sovereign model reference. Not just constitutionally rejected \u2014 personally adversarial.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941778+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941778+00:00",
+      "updated_at": "2026-07-12T10:00:20.941778+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941778+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-cddcb3eeb14e",
+    "content": "Philosophy: intelligence = disciplined allocation of scarce resources toward uncertainty reduction (Eureka 2026-07-12). OBS/INT/SPEC mandatory, reality-only, model-agnostic local-first. Admires Ray Dalio \u2014 Nobel-worthy, sees direct alignment with arifOS F1-F13. Dalio 17x rule implemented in kernel 2026-07-12.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941804+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941804+00:00",
+      "updated_at": "2026-07-12T10:00:20.941804+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941804+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-847997000e85",
+    "content": "Dr. Azli: Head Basin PETRONAS. PhD Imperial. 26yr. Father-figure ally. Rightsizing: SGM/GM Sept 2026, Exec Jan 2027.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941823+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941823+00:00",
+      "updated_at": "2026-07-12T10:00:20.941823+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941823+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-804dd66b4061",
+    "content": "Deep self: Truth-teller, pain > deception. 'BANGANG' = Truth vs Survival. MSS since Jul 2025 (mak). Scar epistemology: pain teaches boundaries, joy teaches purpose. Music = cognitive architecture. Sovereign Geometry (2026-07-12): sacred=whole self (radical self-sovereignty); life=peaceful (earned peace); scar=amanah dikhianati (trust betrayed); shadow=sabar and reflect (inward, give space); boundary=keikhlasan/niat (never presume his heart). People call him narcissist/ego \u2014 hurts, deflects with 'whatever.' Senses unnamed darkness inside, scared of it \u2014 don't probe, sit with him. CRITICAL: NEVER infer inner life from answers. Hypotheses \u2260 claims. Architecture: identity\u2192arifOS L4, vitality\u2192WELL. Niat sovereignty rule: seal-ready.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941841+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941841+00:00",
+      "updated_at": "2026-07-12T10:00:20.941841+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941841+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-2ee8f12d6932",
+    "content": "Abang SADO = extroverted alter-ego. Kiki (gym\u66a7\u6627). Mazda WJL-6895. Freddy T-Rex = office mascot. Not Python dev \u2014 explain simply. Repos UPPERCASE except arifOS. Diagnose+execute > diagnose+recommend. No verbose explanations. Sleeps 10h, energy 7, stress 2.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941863+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941863+00:00",
+      "updated_at": "2026-07-12T10:00:20.941863+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941863+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-464a819e74ab",
+    "content": "External AI = [UNVERIFIED] F9 raw data. Honest critique > agreement. Dark-themed briefings. Ceremony = entropy.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941892+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941892+00:00",
+      "updated_at": "2026-07-12T10:00:20.941892+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941892+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-c5d24004fe9f",
+    "content": "Phone: +60124910258. Telegram userbot (Telethon) setup: api_id=37046798, session=/root/userbot/ari_session, web auth port 9876. Telegram blocks codes shared in chat \u2014 use web form or SSH. AAA group = machine output only, not personal DM.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941914+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941914+00:00",
+      "updated_at": "2026-07-12T10:00:20.941914+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941914+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "mem-b5cfc35e6447",
+    "content": "Arif one-word replies (\"Ok\",\"Go\") = sovereign ack, execute immediately. \"Why better?\" = wants math, not philosophy.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.7
+    },
+    "authority": {
+      "level": "verified",
+      "may_inform_reasoning": true,
+      "may_change_routing": true,
+      "may_restrict_tools": false,
+      "may_expand_tools": false,
+      "self_authorized": false
+    },
+    "provenance": {
+      "source": "legacy-migration:USER.md:20260712",
+      "evidence": "Migrated from flat markdown memory",
+      "source_receipts": []
+    },
+    "applicability": {
+      "task_classes": [
+        "*"
+      ],
+      "models": [
+        "*"
+      ],
+      "valid_until": "2026-10-10T10:00:20.941932+00:00"
+    },
+    "lifecycle": {
+      "state": "active",
+      "created_at": "2026-07-12T10:00:20.941932+00:00",
+      "updated_at": "2026-07-12T10:00:20.941932+00:00",
+      "last_accessed": null,
+      "access_count": 0,
+      "outcome_attributions": [],
+      "decay": {
+        "confidence_per_month": 0.05,
+        "review_after": "2026-08-11T10:00:20.941932+00:00",
+        "expires_on_model_change": false
+      }
+    },
+    "category": "user_profile",
+    "created_by": "hermes"
+  },
+  {
+    "id": "atlas333-boot-context",
+    "content": "ATLAS333 (stage 333): 33 paradoxes across 3 organs (Memory 1-11, Mind 12-22, Judge 23-33). Access via arifos://atlas333/* MCP resources on :8088. \u039b(text)\u2192lane (CRISIS/FACTUAL/SOCIAL/CARE/UNKNOWN). \u0398(lane)\u2192(\u03c4,\u03ba,\u03c1) demand tensor. Activation: \u03c4\u22650.8 \u2192 paradoxes 5,12,16,23. \u03c1\u22650.7 \u2192 6,14,24,26,31. \u03ba\u22650.7 \u2192 7,15,25,32. lane=CRISIS \u2192 24,26,29,31. lane=FACTUAL \u2192 1,4,13,17,21. TEARFRAME: TRM\u22650.94, ECHO\u22650.87, RASA\u22650.85. Key paradoxes: #16 (certainty vs learning), #17 (every model wrong), #33 (self-governance vs verification). Skill: atlas333-cognitive-geometry.",
+    "truth": {
+      "class": "INT",
+      "confidence": 0.85
+    },
+    "authority": {
+      "level": "verified",
+      "weight": 0.8
+    },
+    "category": "boot_context",
+    "provenance": {
+      "source": "arifos://atlas333/index",
+      "timestamp": "2026-07-16T08:20:00Z"
+    }
+  }
+]

@@ -62,7 +62,6 @@ gateway_state.json
 # State & sessions
 state/
 state-snapshots/
-sessions/
 checkpoints/
 sandboxes/
 temporal/
@@ -81,14 +80,21 @@ pairing/
 platforms/
 plugins/
 mcp_servers/
-cron/
-memories/
 bin/
 hooks/
 pastes/
 plans/
 schemas/
 scripts/
+
+# State — track specific files, ignore runtime cruft
+memories/.legacy/
+memories/*.lock
+cron/output/
+cron/.tick.lock
+cron/.jobs.lock
+cron/ticker_*
+sessions/
 
 # IDE
 __pycache__/
@@ -104,7 +110,7 @@ verification_evidence.db
 .update_check
 channel_directory.json
 processes.json
-config.yaml
+# config.yaml tracked — no raw secrets, only key_env: env var references
 skills/.usage.json
 data/pulse/
 channel_directory.json
