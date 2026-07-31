@@ -245,6 +245,44 @@ AI agent adds value beyond technical analysis by incorporating:
 
 Research via `web_search` or `arif_observe(mode="search")` before each signal.
 
+## XAUUSD Pip Calculation — CRITICAL
+
+**Different brokers use different pip standards. ALWAYS verify before calculating.**
+
+### The Formula
+```
+Pips = Points ÷ Points_Per_Pip
+```
+
+### Standard XAUUSD Pip Values
+
+| Broker Decimal Places | Example Price | Points Per Pip | Calculation |
+|-----------------------|---------------|----------------|-------------|
+| **2 decimals** | 4048.45 | **10 points** | 1 pip = $0.10 |
+| **3 decimals** | 4048.450 | **100 points** | 1 pip = $0.01 |
+| **4 decimals** | 4048.4500 | **1000 points** | 1 pip = $0.001 |
+
+### User's Broker (Confirmed 2026-07-31)
+- **10 points = 1 pip**
+- Display format: 2 decimals (e.g., 4048.45)
+- Example: Entry 4024, Current 4049 → 25 points = **2.5 pips**
+- Example: 2556 points = **255.6 pips** (user rounded to 255)
+
+### Why This Matters
+- Wrong pip calculation = wrong risk calculation = wrong position size
+- If you think 25 points = 25 pips but it's actually 2.5 pips, you'll miscalculate profit/loss by **10x**
+- Always ask: "Broker abang berapa points untuk 1 pip?" before doing any math
+
+### Quick Verification
+```
+Step 1: Look at broker's price display (how many decimals?)
+Step 2: Ask user or check: "1 pip = berapa points?"
+Step 3: Use formula: Pips = Points ÷ Points_Per_Pip
+Step 4: Double-check with user before final calculation
+```
+
+**DO NOT assume. Verify first.** This is more important than technical analysis — if you can't calculate pips correctly, everything else is wrong.
+
 ## XAUUSD Specifics
 
 | Parameter | Value |
@@ -259,6 +297,7 @@ Research via `web_search` or `arif_observe(mode="search")` before each signal.
 
 ## Pitfalls
 
+- **PIPS CALCULATION IS THE #1 TRAP** — Different brokers have different pip standards. Some use 10 points = 1 pip (2 decimals), others 100 points = 1 pip (3 decimals). If you calculate wrong, profit/loss is off by 10x. ALWAYS verify the user's broker pip standard BEFORE doing any math. See §XAUUSD Pip Calculation above. This is more embarrassing than any other mistake — pips are basic, and getting them wrong destroys trust in all other analysis.
 - **MT5 default server is MetaQuotes demo, NOT a real broker** — fresh MT5 install connects to "MetaQuotes Ltd." which says "Not a broker, no real trading accounts." If Broker Information shows this, you need to open a real broker account first. The MT5 app is an empty shell until you log into a broker.
 - **MetaTrader5 Python = Windows only** — no native Linux/Mac. Use Windows VPS or Wine on Linux (see Broker Setup §Wine path).
 - **MT5 mobile has no API** — desktop terminal required for Python automation.

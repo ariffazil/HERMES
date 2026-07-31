@@ -140,6 +140,10 @@ The drift-alert uses a STATE FILE (`/root/.hermes/scripts/.drift-alert-state.jso
 When nothing changed: exit 0 with no output = no message delivered.
 Silence is good. It means the machine is healthy.
 
+### Example: entropy-watch.sh
+
+The entropy-watch.sh script (located at `/root/HERMES/scripts/entropy-watch.sh`) is an example of a T1 monitoring job that implements the silent-when-clean principle. It observes dirty repositories, WELL health, and disk usage, writing JSONL entries to `/root/forge_work/<date>/rsi/entropy-watch.jsonl` and only outputs human‑readable alerts to Telegram when issues are detected (e.g., `WELL_HOLD` signal, dirty repos > 0). The script exits silently when the system is clean, preventing noise.
+
 **State file schema:**
 ```json
 {
@@ -526,7 +530,7 @@ if fixed:
 **Proven 2026-07-25:** Model Drift Watchdog (this session) found 4 drifted jobs — IG Story Gym Quote, Weekly Trading Report, XAUUSD Price Alert, Trading Position Monitor — all pinned to `flame/free`/`custom:flame` when global was `deepseek-v4-flash`/`deepseek`. All 4 were paused. Fixed via direct jobs.json edit with backup. `hermes cron edit` was attempted first but lacks model/provider flags, confirming CLI limitation.
 
 **Bulk fix — Model Drift Watchdog:**
-A self-healing cron job that runs hourly, detects drift across all jobs, and auto-updates them. Pinned explicitly (`deepseek/deepseek-chat`) so it's immune to its own drift. Silent when clean, reports to AAA group when it fixes things.
+A self-healing cron job that runs hourly, detects drift across all jobs, and auto-updates them. Unlike what was previously documented, this job is NOT immune to its own drift and must be checked like any other pinned job. Silent when clean, reports to AAA group when it fixes things.
 
 ### Watchdog Pitfall — Pins Are NOT Automatically Immunity Markers
 
@@ -699,6 +703,9 @@ When Arif asks about:
 - **Don't fight for terminal with AGI subagents.** When an AGI subagent (or any background process) is spawning parallel tool calls that keep interrupting your terminal commands, don't retry the same command — it'll keep getting interrupted. Instead, delegate to a background subagent with its own isolated terminal session (`delegate_task` with `role='orchestrator'`). The subagent gets its own tool context and won't compete for the same terminal. This pattern applies to any long-running multi-repo operation, not just cron debugging.
 - **Don't let AGI subagents add crontab entries during migration.** When migrating OpenClaw crons to Hermes, the AGI subagent may independently add its own crontab entries for the same scripts, creating duplicates. Always verify with `crontab -l | grep -i <script>` after creating a Hermes cron, and remove any crontab duplicates. The AGI subagent acts independently and may race with your fix.
 - **Don't let watchdog + reminder overlap.** If a watchdog job (8am/8pm) already checks freshness AND injects data, a separate reminder job (9am) that just tells the user to check is redundant. Keep the broader-scope job. **Proven 2026-07-16:** WELL biometric reminder (9am) was redundant with well-biometric-feed-watchdog (8am/8pm). Removed the reminder.
+
+- **Fordian Bulk Fix — Model Drift Watchdog:**
+  A self-healing cron job that runs hourly, detects drift across all jobs, and auto-updates them. Unlike what was previously documented, this job is NOT immune to its own drift (session proved drift: `Model Drift Watchdog (5a29d4fd77b8) [model=deepseek-v4-flash, provider=mulerouter]` while global config was `deepseek/deepseek-v4-pro`). It received drift updates via direct JSON editing and now self-reports its corrected state to the AAA group. Pinned explicitly `deepseek/deepseek-chat` only after correction, not before.
 - **Don't leave unbound variables in bash scripts with `set -euo pipefail`.** If a script references `$CHAIN_LEN` but never initializes it, the script crashes with "unbound variable" even if the rest works fine. Always initialize variables before use, especially for `echo` statements at the end of the script. **Proven 2026-07-16:** `steel.sh` line 218 referenced `$CHAIN_LEN` but it was never set. Fixed by adding `CHAIN_LEN=0` initialization + `CHAIN_LEN=$(wc -l < /root/VAULT999/outcomes.jsonl)` computation.
 - **The seal_chain_head.json path** is `/root/.local/share/arifos/vault999/seal_chain_head.json`. The seal chain JSONL is at `/root/.local/share/arifos/vault999/seal_chain.jsonl`.
 - **Kernel health** comes from `curl http://localhost:8088/health`. Parse `thermodynamic.verdict` and `owner_summary.color`.

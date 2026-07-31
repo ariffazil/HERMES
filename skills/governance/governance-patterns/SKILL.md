@@ -343,7 +343,61 @@ Genuine 888_HOLD has two distinct meanings that MUST NOT be confused:
 
 **Constitutional HOLD requires:** The system must be in a state where it COULD proceed. All evidence gathered. All options computed. FQ balanced. Organs green. But it stops because the boundary between agent authority and sovereign authority has been reached. This is the opposite of failure — it's the system working at peak integrity.
 
-### FQ as HITV Enabler
+
+
+## No-Ask Permission Doctrine — Defense-in-Depth (Forged 2026-08-01)
+
+> **Core doctrine:** Permissive tools + unbounded iterations = runaway token burn. The constraint isn't the tool gate — it's the metabolic limit. `steps: 60` is the adat budget.
+> **Source:** Arif × Hermes, after OpenCode agent permission audit.
+
+### The Problem with `ask`
+
+`ask` is a false gate. It prompts the human to approve something that Layers 1-3 would have blocked anyway. The human gets trained to click "allow" reflexively, which is **worse** than having no prompt at all — it builds a muscle memory of bypassing safeguards.
+
+### Four-Layer Defense Model
+
+```
+Layer 1 — aaa-autonomy plugin     "rm -rf /" → BLOCK (pattern match)
+Layer 2 — arifOS kernel (:8088)   arif_judge → 888-APEX verdict required
+Layer 3 — F13 SOVEREIGN           Arif's word → terminal veto
+Layer 4 — OpenCode permissions    "*": "allow" → passes everything through
+```
+
+**Key insight:** Adding restrictions at Layer 4 creates noise, not safety. If Layers 1-3 already block the dangerous action, the Layer 4 prompt is pure friction — it adds a human approval step for something that would have been blocked anyway. This trains the human to click through without reading.
+
+### Adat Agentic — Three Roles
+
+| Role | Metaphor | Permissions | Function |
+|------|----------|------------|----------|
+| **333-AGI** | Tangan (hands) | Full dexterity — `"*": "allow"` | Builds everything, touches everything |
+| **888-APEX** | Hakim (judge) | Zero dexterity — `"*": "deny"` | Reads, never writes, renders verdict |
+| **F13** | Khalifah (sovereign) | Terminal veto | Final word, can override everything |
+
+**Tangan needs full dexterity.** Hakim needs zero dexterity. The constraint isn't the hand's reach — it's whose hand holds the gavel.
+
+### Operational Rules
+
+1. **Never use `ask`.** Permissions are binary: `allow` or `deny`. `ask` = human bottleneck = Arif clicking approve while working.
+2. **333-AGI gets `"*": "allow"`.** Don't cage the DO engine. The constitutional gate is at Layer 2 (kernel), not at Layer 4 (harness permissions).
+3. **888-APEX gets `"*": "deny"`.** A judge doesn't touch evidence. Reads, renders verdict, seals.
+4. **555-ASI (sensory) gets `write: allow, bash: deny, task: deny`.** It returns research. It doesn't execute or spawn.
+5. **555-ASI-VISION gets all `deny`.** Pure observation lane. A camera doesn't need hands.
+6. **`steps: 60` is the budget, not `ask` dialogs.** Metabolic limit, not tool cage.
+
+### Why This Is Safer Than Restrictive Permissions
+
+| Approach | Result |
+|----------|--------|
+| Restrictive Layer 4 gates | Human trained to click "allow" → reflexive bypass → protection eroded |
+| Permissive Layer 4 + strict Layers 1-3 | Human only interrupted for genuine 888_HOLD → each interruption matters → protection holds |
+
+**The false gate is the enemy of the real gate.** Every unnecessary approval dialog makes the necessary ones invisible.
+
+### Pitfalls
+
+1. **Don't add Layer 4 restrictions to solve Layer 1-3 problems.** If "rm -rf /" is a concern, fix the aaa-autonomy pattern list — don't add a bash prompt.
+2. **Don't treat `"*": "allow"` as a gap.** It's the DO engine breathing. The real safety net is the kernel, not the harness permissions.
+3. **Don't use `ask` anywhere.** If you're not sure whether to `allow` or `deny`, default to `deny`. The agent can request escalation. `ask` means Arif stops working to click a button.
 
 Flow Quotient measures execute/verify balance. This directly enables HITV:
 

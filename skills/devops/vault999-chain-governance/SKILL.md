@@ -379,6 +379,47 @@ arifOS source lives at `/root/arifOS/` but the running process uses `/opt/arifos
 ### PITFALL: The chain head file may lag behind
 `seal_chain_head.json` caches the latest seq. If the writer adds entries but doesn't update the head, `tail -1 seal_chain.jsonl` shows a different seq than `head.json`. Always trust the chain file, not the head cache.
 
+### PITFALL: JSONL format corruption — multi-line entries from `json.dumps(obj, indent=2)`
+
+**Root cause:** `outcomes.jsonl` is append-only JSONL (one JSON object per line).
+If any writer calls `json.dumps(obj, indent=2)` before appending, the output
+contains literal `\n` characters — breaking the JSONL format. Also: raw text from
+other files accidentally appended via shell redirect.
+
+**Real incident (2026-08-01):** 2,067 parse errors across 4,898 lines in
+`/root/.local/share/arifos/vault999/outcomes.jsonl`. Two corruptions:
+- L1881: Pretty-printed JSON (`json.dumps(obj, indent=2)`) + literal "test"
+- L4890: arifOS AGENTS.md content accidentally appended
+
+**Fix — pre-write validator (deployed 2026-08-01):** Both canonical write paths in
+`arifosmcp/runtime/tools.py` now validate before writing:
+
+```python
+_outcome_line = json.dumps(_outcome_entry, default=str)
+# F1 AMANAH: JSONL pre-write validator
+if "\n" in _outcome_line:
+    raise ValueError(
+        f"VAULT999 REFUSED: multi-line JSONL entry detected. "
+        f"Use json.dumps(obj) NOT json.dumps(obj, indent=2). "
+        f"Entry preview: {_outcome_line[:120]}"
+    )
+with open(_outcomes_path, "a") as _f:
+    _f.write(_outcome_line + "\n")
+```
+
+**Validator locations:** `tools.py` sync wrapper (~L23847) and async wrapper (~L24052).
+`json.dumps(..., indent=2)` occurs in 50+ locations across A-FORGE — none write to
+outcomes.jsonl directly, but the validator catches any future writer.
+
+**F1 AMANAH compliance:** Existing corrupted entries NEVER repaired. Vault is append-only.
+
+### PITFALL: `outcomes.jsonl` ≠ `seal_chain.jsonl` — two vaults, different risks
+
+`outcomes.jsonl` is the OPERATIONAL LEDGER (every tool call). `seal_chain.jsonl`/`receipts_v2.jsonl`
+is the SEAL CHAIN (constitutional verdicts). Same directory, different writers, different
+corruption profiles. The pre-write validator above guards `outcomes.jsonl` only —
+the seal chain has its own writer hardening (advisory lock + FOR UPDATE).
+
 ## Extending the Seal Chain: New Event Types
 
 seal_chain.js supports extensible event types via `classifyEventType()` and

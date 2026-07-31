@@ -5,6 +5,16 @@
 # FALLBACK: Direct DeepSeek ($12.63 prepaid) → Bailian (20 models) → MiMo → Kimi → Groq → Gemini
 # THROTTLE: When qwen_throttle exists (>80% credit window), route to qwen3.6-flash or fallback.
 #   Check: python3 /root/AAA/scripts/qwen_throttle_check.py (exit 1 = throttle)
+#
+# ── ROUTING CONSTRAINT (Zen 1 — forged 2026-07-31) ──
+# Every model carries `requires:` — what runtime it NEEDS.
+#   api    = cloud API only (DeepSeek, Qwen, Groq, etc.)
+#   local  = local inference only (Ollama, llama.cpp)
+#   any    = both cloud and local work
+# Router rule: if requires=local and local backend is DOWN → FAIL FAST (503).
+#   Do NOT silently fallback to cloud — this is a privacy/determinism boundary.
+#   Docker Model Runner (Jul 2026) validated the model-as-artifact pattern.
+#   We already built FLAME/FED. This field closes the negative-knowledge gap.
 
 probed_at: "2026-07-31T06:30:00Z"
 probe_summary:
@@ -60,6 +70,10 @@ tiers:
     note: "GLM-5.2 — constitutional tier, 753B MoE, MIT license. Zero marginal cost. DS V4 Pro fallback for zero-censorship guarantee."
 
 # ── Live Models (probed alive) ──
+# ALL models in zen_alive + go_alive are cloud API models.
+# requires: api is DEFAULT for these sections — no local inference backends.
+# If a model becomes available locally (e.g., Ollama pulls a matching GGUF),
+# override with requires: any.
 
 zen_alive:
   grok-build-0.1:
@@ -67,37 +81,44 @@ zen_alive:
     http_status: 200
     endpoint: chat_completions
     premium: true
+    requires: api
     
   grok-4.5:
     alive: true
     http_status: 200
     endpoint: chat_completions
     premium: true
+    requires: api
     
   deepseek-v4-pro:
     alive: true
     http_status: 200
     endpoint: chat_completions
+    requires: api
     
   deepseek-v4-flash:
     alive: true
     http_status: 200
     endpoint: chat_completions
+    requires: api
     
   glm-5.2:
     alive: true
     http_status: 200
     endpoint: chat_completions
+    requires: api
     
   glm-5.1:
     alive: true
     http_status: 200
     endpoint: chat_completions
+    requires: api
     
   glm-5:
     alive: true
     http_status: 200
     endpoint: chat_completions
+    requires: api
     
   minimax-m3:
     alive: true
@@ -274,6 +295,33 @@ go_alive:
     http_status: 200
     endpoint: chat_completions
     routing_note: "Hermes source routes this via anthropic_messages (WRONG). Actual: chat_completions."
+
+# ── Local Models (Zen 1 — forged 2026-07-31) ──
+# requires: local — these run on bare-metal Ollama, NOT through any cloud API.
+# FAIL FAST rule: if Ollama is DOWN, return 503. Do NOT silently fallback to cloud.
+# Rationale: local models are a privacy/determinism boundary. Silent cloud fallback
+#   breaks the user's implicit trust that inference stays on-device.
+#   Docker Model Runner validated the model-as-artifact pattern (Jul 2026).
+#   We extend it with constitutional negative-knowledge routing.
+
+zen_local:
+  bge-m3:
+    alive: true
+    ollama_tag: "bge-m3:latest"
+    requires: local
+    model_digest: "sha256:daec91ffb5dd0c27411bd71f29932917c49cf529a641d0168496c3a501e3062c"
+    size_bytes: 1157671200
+    purpose: "embeddings — vector search, RAG retrieval, similarity"
+    note: "Ollama manifest digest verified 2026-07-31. BGE-M3 — 1.2GB, 1024-dim embeddings, 8192 token ctx."
+    
+  qwen2.5-3b:
+    alive: true
+    ollama_tag: "qwen2.5:3b"
+    requires: local
+    model_digest: null
+    size_bytes: 1900000000
+    purpose: "recovery LLM — always-available fallback when all APIs are down"
+    note: "Manifest digest unverified (no manifest file found). Probe at next ollama pull. 1.9GB, 32K ctx."
 
 # ── Dead Models ──
 

@@ -673,13 +673,15 @@ When new evidence emerges AFTER publishing (e.g., Companies House data, new fili
 
 Proven 2026-07-22: SEARAH article updated post-publish after Companies House deep-read revealed true 6:6 board structure (not implied 2:2), SEARA→SEARAH name change, Silia Anak Hamdan token Sarawak appointment, and 31 May mass restructure timeline. Banner placed between cover and first `## Hai Makcik` heading.
 
-## Deploy Pitfalls — 3 Root Causes
+## Deploy Pitfalls — 5 Root Causes
 
-Deploy consistently fails because of these 3 root causes (proven 2026-07-29):
+Deploy consistently fails because of these 5 root causes (proven 2026-07-29 → 2026-07-31):
 
 1. **Register in TWO places or article is invisible.** Slug must appear in BOTH `src/data/makcikgpt/index.ts` (import + array + meta) AND `src/data/essays.json` (dest.path). Missing either → article not in SPA, feed, sitemap, or llms.txt. **Fix:** deploy-makcik.sh scavenger detects this before building.
 2. **`npm install` without `--legacy-peer-deps` → build failure.** The `vite-plugin-ssg` package declares a peer dependency range that conflicts with React 19. Without the flag, TypeScript build fails with `TS2688: Cannot find type definition file for 'vite/client'`. **Fix:** deploy-makcik.sh auto-detects stale node_modules and runs with the flag.
 3. **Caddy `uri strip_prefix` missing for bot handler.** Listing returns 200 for browser but 404 for bot (AI crawlers). The `@ai-bot-landing` handler in `/etc/caddy/Caddyfile` needs `uri strip_prefix /world/makcikgpt` before serving from `makcikgpt-md/`. **Fix:** deploy-makcik.sh verify phase catches bot 404 as a failure.
+4. **Browser SPA shell directory missing.** Caddy serves browser traffic at `/world/makcikgpt/*` from `root * /var/www/html/arif/makcikgpt` but this directory was never created or populated. Without `index.html` (the React SPA shell), ALL article URLs return `ERR_HTTP_RESPONSE_CODE_FAILURE` for browser visitors. Bots work fine because they use `makcikgpt-md/` — masking the bug completely. **Fix:** deploy-makcik.sh Phase 5 now auto-creates `$WEBROOT/makcikgpt/` and copies the SPA index.html from dist after every rsync. Manual fix: `mkdir -p /var/www/html/arif/makcikgpt && cp /var/www/html/arif/index.html /var/www/html/arif/makcikgpt/index.html`. **Pitfall within the pitfall:** the copied index.html must reference the CURRENT JS bundle — copying from a stale file loads the old bundle, which may lack the MakcikGPT routes. Always verify: `grep -o 'src="[^"]*index-[^"]*\.js"' /var/www/html/arif/makcikgpt/index.html` should match the dist output.
+5. **Static HTML/MD filenames use `id` not URL slug.** The deploy-makcik.sh Phase 3 Python script used `e.get('id')` (e.g., `m5-5`) as the filename in `public/makcikgpt-md/`. Caddy's `@ai-bot-world` handler serves files by URL slug (`{path}.html` where `{path}` = `/slug-name`). The filter also required `/world/makcikgpt/` prefix while essays.json entries use `/makcikgpt/`. **Fix:** Phase 3 now extracts the slug from `dest.path` (e.g., `/makcikgpt/bangang-ruslan-hr` → `bangang-ruslan-hr`) and filters on `/makcikgpt/` not `/world/makcikgpt/`. **Diagnosis:** `ls /var/www/html/arif/makcikgpt-md/ | grep <slug>` — file missing = Phase 3 never generated it. Run `deploy-makcik.sh --verify-only` to catch missing static files.
 
 ## Deploy Verification Protocol (MANDATORY)
 
@@ -899,3 +901,4 @@ Proven 2026-07-16: Cloudflare cache served stale tokens.css for 3+ hours after V
 - `references/rakyat-marhaen-voice-pattern.md` — how to write for makcik kat pasar: no epistemic labels, no Greek symbols, numbers as words, metaphors replace analysis.
 - `references/external-auditor-framework.md` — External auditor agent cards (ChatGPT/Gemini/Grok), Gödel lock enforcement code paths.
 - `references/site-infrastructure-audit-pattern.md` — Edge + origin dual probe for site auditing. Diagnosing blank pages (hash mismatch, runtime error, stub). Cloudflare cache purge.
+- `references/makcikgpt-article-404-diagnostic.md` — Two-handler split-brain diagnostic workflow. Bot-vs-browser divergence patterns. Decision tree for 404 root causes (2026-07-31).

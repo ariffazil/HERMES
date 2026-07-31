@@ -25,6 +25,24 @@ triggers:
 
 ---
 
+## Delivery Preference — VISUAL FIRST (Arif/Syed)
+
+**MANDATORY ORDER:**
+1. **CHART** — Generate and deliver image FIRST
+2. **Summary** — 3-5 bullet points MAX (or none if chart is self-explanatory)
+3. **Text analysis** — ONLY if explicitly requested
+
+**User feedback (Jul 2026):** "Aku malas nak baca" — Arif prefers images over long text. When asked for trading analysis, the DEFAULT deliverable is a chart. Text is supplementary, not primary.
+
+**Pattern:**
+- User asks: "Bagi prediction untuk gold" → Deliver chart with S/R levels + 3-line summary
+- User asks: "Baca analysis" → NOW provide detailed text
+- Never lead with long markdown tables when a chart can convey the same info
+
+**Chart = king. Text = servant.**
+
+---
+
 ## Audience
 
 Rakyat marhaen — common people, not brokers. Simple language. BUY HERE, SELL HERE, SL HERE. No Fibonacci, no Elliott Wave jargon. Delivered to Syed/Abang Sado via Telegram and SADO group.
@@ -281,6 +299,8 @@ edge-tts --voice ms-MY-OsmanNeural --rate "+5%" \
 - **R:R consistency.** Use ONE entry midpoint for ALL calculations. Chart entry_mid = PDF entry_mid.
 - **DO NOT use execute_code() for matplotlib/reportlab.** Use write_file() + terminal().
 - **S/R from full 60d data with rolling(20) produces useless levels.** Detect within charted window.
+- **`MEDIA:/path` delivery is NOT guaranteed visible to user.** Verify with `ls -lh` that file exists and has size > 0. If user says "hang x bagi" after MEDIA: delivery, assume the Telegram gateway didn't render it — regenerate or resend. Pitfall (2026-07-31): chart generated at 148K but user repeatedly said not received. Always confirm output file exists and has content before declaring "delivered."
+- **Percentage, not pips, in chart labels.** Label S/R and price levels in price format ($4,050), not pip distance. Let `agentic-trading-companion` handle the % communication.
 
 ---
 

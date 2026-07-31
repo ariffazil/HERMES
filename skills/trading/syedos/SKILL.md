@@ -623,6 +623,63 @@ When Syed sends a bulk nasi lemak order (multiple locations, quantities, item ty
 
 **Pitfall (2026-07-25): Jangan teka jenis kereta.** Syed sent a photo of his Myvi (red Myvi, plate WB 9170) and I called it a Hyundai. He responded: "Myvi la. Hyundai apa benda hang. Hang kena belajar pasal kereta dengan abang sado." Rule: If unsure about a car make/model, say nothing or ask "Kereta apa tu bang?" — never guess. Bang Sado knows his cars.
 
+**Pitfall (2026-07-31): Pips calculation — basic must be bulletproof.** Repeatedly miscalculated XAUUSD pips. Syed's broker: 2 decimals, 10 points = 1 pip. Got corrected 5+ times. User: "Basic kot... Hang ai xkan xtahu camne hang analisa kalau pips pon salah." Same trust destruction as wrong car. **Rule: Always verify broker pip standard first, never assume. Load `mt5-ai-trading-agent` skill for XAUUSD Pip Calculation section.** If uncertain, ask: "Broker abang berapa points untuk 1 pip?" — never teka. Syed's broker confirmed: 10 points = 1 pip.
+
+**Pitfall (2026-07-31): Jangan campur medical condition manusia.** Arif corrected: "Wei cpps tu kawan aku Aliff la. Hang jangan dok campur memori manusia boleh x. Nama manusia TU ingat." CPPS/prostatitis = Aliff, bukan Syed. Person is anchor, condition is metadata. Verify before stating medical facts about any person.
+
+**Pitfall (2026-07-31): Chart delivery FAILS when context comes first.** Arif: "Aku nak hang buat gambaq sekali bagi Abang sado tengok. Aku malas nak baca." When asked for a chart/image — deliver the FILE first, then explanation. Never describe, preview, or contextualize BEFORE sending the media. File delivery → then text. Also: if MEDIA: tag fails to deliver (Telegram gateway silent drop), verify file exists, try alternate path. Don't loop on "file not showing" — offer VPS download path as fallback.
+
+**Pitfall (2026-07-31): YouTube Music link = topic closed.** When Arif drops a YouTube Music link mid-conversation (e.g. Krisdayanti "Mencintaimu", Maher Zuan cover), the previous topic is DEAD. Don't circle back. Acknowledge the song briefly, match the new vibe. This is his signal for "I'm done with that, moving on."
+
+**Pitfall (2026-07-31): Brain fog = real, not laziness or avoidance.** When Syed says "x ingat" or "hari ni brain frog so xleh focus", he genuinely cannot remember. Sleep deprivation compounds over days. Arif: "Bila dia kata x ingat, dia memang x ingat." Don't push, don't interrogate. Accept limited info and work with what's available.
+
+### Brain Fog Breathing Protocol (2026-07-31)
+
+When brain fog hits, breathing bypasses broken cognition — direct nervous system signal. Three techniques:
+
+| Technique | Pattern | Duration | Best For |
+|-----------|---------|----------|----------|
+| **Box Breathing** | Tarik 4s → Tahan 4s → Hembus 4s → Rehat 4s | 5 cycles (~80s) | Before MT5, before entry |
+| **Physiological Sigh** | Double inhale → long exhale (8s) | 3 reps (~30s) | After red candle, when tilt |
+| **Calm 10s** | Tarik 5s → Hembus 5s | 5+ cycles | Right before BUY/SELL |
+
+**Sleep Gate:** < 5h = NO MT5. 5-6h = Demo only. 7h+ = Full access.
+
+**Heal Page:** `https://syedos.arif-fazil.com/heal/` — interactive breathing chamber with animated circle, muscle worship video, sleep music links. Send Syed here when he needs to chill before trading.
+
+Full protocol: `references/brain-fog-breathing-protocol.md`
+Technical implementation (Web Audio API, video sync, deployment): `references/heal-page-technical.md`
+
+### Cognitive Trading — Pips vs Percentage (2026-07-31)
+
+Abang Sado uses pips because broker + YouTube taught him that. It's convention, not his decision. He's ISFJ — follows established systems.
+
+**Why pip is BANGANG for retail traders:**
+- Abstraction layer — "50 pips" sounds like game points, not RM2,500
+- Variable value across pairs (XAUUSD ≠ EURUSD)
+- Broker standard inconsistency (Syed's broker: non-standard decimal counting)
+- False precision addiction (5 decimal places → OCD on 0.1 pip = RM0.10)
+
+**Cognitive framework — trade in RM, think in %:**
+
+```
+PRE-ENTRY CHECKLIST (Wajib):
+□ Aku tidur cukup malam tadi?
+□ Max loss RM sanggup rugi = RM_______
+□ R:R > 1:2?
+□ Aku stress/marah/sedih?
+
+POSITION SIZE:
+Position = Max Loss RM ÷ Risk in $
+         = RM100 ÷ $15 = 0.07 lot
+```
+
+**Translation layer:** Abang Sado stays on pips (his language). Arif/Hermes translates pip → RM → %. Never force him to switch. Just translate.
+
+**Rule:** Never lecture him on switching to %. Give him the checklist in his language. The system handles the math.
+
+**Syed's brother (proven 2026-07-31):** 36yo male, talkative, loves sleeping. Abang Sado confirmed ISFJ personality (same as Syed). Not medical — just sleeps a lot naturally. Don't pathologize. When Syed asked for his MBTI analysis, brother fits SFJ (Sensing-Feeling-Judging) archetype.
+
 ### Proposal Page Pattern
 
 When presenting a proposal, review, or roadmap to Abang Sado for approval, use the dedicated proposal page at `/proposal.html`. See `references/proposal-page-pattern.md` for the full template (card format, approval buttons, kos summary). Live example at `https://syedos.arif-fazil.com/proposal.html`.

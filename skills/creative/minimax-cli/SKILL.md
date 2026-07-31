@@ -447,6 +447,8 @@ ps aux | grep 'gateway run' | grep -v grep
 - **`mmx image generate --output` is ignored** — files save as `image_001.jpg` in current working directory.
 - Key prefix `sk-cp-` = Token Plan (subscription), not pay-as-you-go
 - Video is async — poll with `mmx video task get --task-id <id>`, then download
+- **Pitfall (2026-07-31):** `mmx video generate` can take 60-120s in foreground. Default 60s terminal timeout kills it. ALWAYS run video generation in background: `terminal(background=true, notify_on_complete=true, timeout=600)`. Output saves to `/tmp/mmx-video/<task_id>.mp4`.
+- Video delivery via `MEDIA:/path/to/video.mp4` may not render in Telegram (user reported not seeing video after 3 delivery attempts 2026-07-31). Fallback: provide VPS direct path for manual download, or script to serve via Caddy.
 - Old SSE MCP servers (minimax-media :18090, minimax-code :18091) are DEAD. Use mmx-cli or stdio minimax-coding-plan-mcp instead
 - Output files go to `minimax-output/` in cwd (except image — goes to cwd root)
 - Vision fallback priority: MiniMax (Token Plan) → Anthropic → MiMo → tesseract. MiniMax should be FIRST, not last, because Token Plan is a separate credit pool from OpenRouter/DeepSeek.

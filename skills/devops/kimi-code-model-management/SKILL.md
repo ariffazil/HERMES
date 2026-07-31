@@ -82,6 +82,8 @@ display_name = "<Human Name>"
 
 ### Quota & Capacity
 
+- **🚨 MODEL NAME DRIFT — `kimi-k2.7-code` vs `kimi-for-coding` (PROVEN 2026-07-24):** The correct Kimi K2.7 Code model ID in the `kimi` REST API is `kimi-for-coding`. The name `kimi-k2.7-code` does NOT appear in `/v1/models` (returns: `k3`, `kimi-for-coding`, `kimi-for-coding-highspeed`). However, `kimi-k2.7-code` appears in multiple federation surfaces: AGENT_MODEL_MAP.json (planner primary_model and kimi-code fallback), OpenCode prompt kernel files (IDENTITY.md, TOOLS.md, HEARTBEAT.md), and the `opencode-go` provider's model list. The `opencode_render.py` MODEL_KEY_TRANSLATION table maps `kimi/kimi-k2.7-code` → `kimi/kimi-for-coding` at render time. **When setting `default_model` in config.toml, always use the canonical API name `kimi-for-coding`.** Never copy `kimi-k2.7-code` from another surface — it will fail at runtime if used as a direct model ID with the kimi provider.
+
 - **K3 quota burn**: Massive on cheap plans. A Moderato user may exhaust quota in one coding session. Warn before switching.
 - **Quota exhaustion**: If Arif says "quota finish", revert immediately. Don't argue or suggest upgrading — just switch back to MiniMax-M3.
 - **K3 capacity**: Upstream limited after release. May return 429 errors. If flaky, fall back.

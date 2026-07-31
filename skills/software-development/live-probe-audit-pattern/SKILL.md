@@ -563,6 +563,89 @@ grep -n 'verbosity.*=.*\"minimal\"' /opt/arifos/app/arifosmcp/runtime/tools.py
 
 **Full pattern:** See `references/mcp-response-pipeline-audit.md`.
 
+### Cron-Generated Telemetry: Hardcoded Theater Detection (scar 2026-07-31)
+
+**Signal:** A deployment report claims "live telemetry" with a 15-minute cron refresh, but the data is fake — hardcoded values with a fresh timestamp.
+
+**The tell:** Audit claims `status: ACTIVE_STREAMING_FLOW` with sentiment data (PH 39.8%, BN 39.2%, PN 21%) and `updated_at: 2026-07-31T12:49:42Z`. The timestamp is fresh, but the numbers never change.
+
+**Detection recipe:**
+```bash
+# Step 1: Force a cron tick manually
+cd /root/arif-fazil.com/sites/arif-fazil.com/scripts
+/usr/bin/node generate-ns-telemetry.cjs
+
+# Step 2: Check the source file
+cat public/data/politics/ns_live_telemetry.json | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print(f'updated_at: {d.get(\"updated_at\", \"?\")}')
+print(f'sentiment_index: {d.get(\"sentiment_index\", {})}')
+print(f'source: {d.get(\"sentiment_index\", {}).get(\"source\", \"?\")}')
+print(f'as_of: {d.get(\"sentiment_index\", {}).get(\"as_of\", \"?\")}')
+"
+
+# Step 3: Check the live webroot
+cat /var/www/html/arif/data/politics/ns_live_telemetry.json | python3 -c "..."
+
+# Step 4: Compare timestamps
+stat -c '%y' public/data/politics/ns_live_telemetry.json
+stat -c '%y' /var/www/html/arif/data/politics/ns_live_telemetry.json
+```
+
+**What to look for:**
+- **Hardcoded values:** If sentiment percentages are identical across runs (39.8 / 39.2 / 21), the script is faking it
+- **Missing provenance:** If `source` and `as_of` fields are missing, the data has no grounding
+- **Source vs webroot mismatch:** If source file is newer than webroot file, cron writes but doesn't deploy
+- **No external data source:** If the script doesn't read from a sealed ground-truth file or external API, it's theater
+
+**Root cause (proven 2026-07-31):** The N9 election telemetry script had hardcoded sentiment values with a dynamic `updated_at` timestamp. It looked live but was frozen. Fix: read from a sealed sovereign file (`/root/arif-fazil.com/sealed/n9-ground-truth.json`) with explicit provenance (`Vodus sealed survey · 2026-07-21`) and dual-write to both source and webroot.
+
+**Verdict template:**
+```
+| Claim | Probe | Status | Epistemic |
+|-------|-------|--------|-----------|
+| "Live telemetry" | Hardcoded values, no external source | ❌ FALSE | OBS |
+| "15-min cron refresh" | Cron exists but writes static data | ⚠️ MISREAD | OBS |
+| "Sealed data" | Reads from sealed ground-truth file | ✅ CONFIRMED | OBS |
+```
+
+### Source vs Webroot Sync Gap (Cron-Generated Files)
+
+**Signal:** Cron script writes to source repo (`sites/arif-fazil.com/public/data/...`) but the live HTTP endpoint serves from webroot (`/var/www/html/arif/data/...`). The live feed is stale until the next deploy.
+
+**Detection recipe:**
+```bash
+# Step 1: Check source file timestamp
+stat -c '%y' /root/arif-fazil.com/sites/arif-fazil.com/public/data/politics/ns_live_telemetry.json
+
+# Step 2: Check webroot file timestamp
+stat -c '%y' /var/www/html/arif/data/politics/ns_live_telemetry.json
+
+# Step 3: Compare
+# If webroot is older than source → sync gap
+
+# Step 4: Force a cron tick
+cd /root/arif-fazil.com/sites/arif-fazil.com/scripts
+/usr/bin/node generate-ns-telemetry.cjs
+
+# Step 5: Check both timestamps again
+# If only source updated → dual-write is broken
+# If both updated → sync works
+```
+
+**Fix pattern (proven 2026-07-31):** Cron script must dual-write to both paths:
+```javascript
+const SOURCE_PATH = path.join(SOURCE_PUBLIC, 'ns_live_telemetry.json');
+const LIVE_PATH = '/var/www/html/arif/data/politics/ns_live_telemetry.json';
+fs.writeFileSync(SOURCE_PATH, JSON.stringify(payload, null, 2));  // for git history
+fs.writeFileSync(LIVE_PATH, JSON.stringify(payload, null, 2));    // for live HTTP
+```
+
+**Why this matters:** Humans and agents see the live HTTP endpoint. If it's stale, they think the system is broken. The source file is for version control; the webroot is for users.
+
+---
+
 ## Reference Files
 
 - `references/sovereign-claim-verification-scorecard.md` — verifying sovereign's multi-claim assertions against primary sources, scorecard output (2026-07-21)

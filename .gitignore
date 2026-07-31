@@ -115,6 +115,9 @@ skills/.usage.json
 data/pulse/
 channel_directory.json
 
+# Backup state — binary restic data, not source
+backups/
+
 # Runtime churn (entropy wave2 2026-07-30) — do not track
 .restart_last_processed.json
 .update_check

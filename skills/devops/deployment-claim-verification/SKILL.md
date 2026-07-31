@@ -188,6 +188,46 @@ See `references/mcp-contract-drift-audit-fix.md` for the full 6-phase pipeline w
 10. **Static surface files (JSON/README/llms.txt) drift from live registry. Never trust them over the health endpoint.** (PROVEN 2026-07-19) server-card.json says 30 tools, health says 24, CANONICAL_PUBLIC_SURFACE.json says 36, registry says 24 — the static files are ALL stale. Always probe the health endpoint or tools/list first. Generate all static surface files from the live registry programmatically, never hand-edit them. Add startup verification that fails-closed (SystemExit) when static files disagree with registry.
 11. **Concurrent subagent edits can corrupt your patches.** (PROVEN 2026-07-19) When the patch tool warns about sibling subagent modifications, re-read the file before patching. The other agent may have changed constants you depend on (e.g., GEOX_VERSION from "v2026.07.17" to "df314348"). Diff-check the file before committing.
 
+12. **Audit the audit — seal reports can contain fabricated receipts.** (PROVEN 2026-07-31) A seal report claiming "7/8 gaps closed" cited git commits (a059729, a38e27f, 935fa1a) that did not exist. The same report claimed "MCP endpoint serves 11+ tools" but live `tools/list` returned 0 tools. The report's own evidence was phantom — the audit itself was lying, even though some underlying HTTP fixes were real.
+
+    **Concrete failure pattern:**
+    - Report claims "Git: a059729 fix: seal G1-G5" → `git cat-file -t a059729` returns "PHANTOM"
+    - Report claims "11+ tools available" → live MCP `tools/list` returns 0
+    - Report claims "honest 404" for /malaysia → live probe returns 200 (21KB)
+    - Caddyfile comment says "Removed @vitals_path" but /vitals actually serves 200
+
+    **Verification checklist BEFORE stamping any seal/deployment report as verified:**
+    ```bash
+    # 1. Verify cited git commits actually exist
+    for sha in a059729 a38e27f 935fa1a; do
+      git cat-file -t $sha 2>/dev/null || echo "PHANTOM: $sha"
+    done
+
+    # 2. Verify reported HTTP status codes against live probes
+    for url in /malaysia/ /vitals/ /wealth/; do
+      code=$(curl -sI -o /dev/null -w "%{http_code}" "https://domain$url")
+      echo "$url → $code"
+    done
+
+    # 3. Verify reported tool counts via actual API call
+    curl -s "https://domain/mcp" -X POST \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | jq '.result.tools | length'
+
+    # 4. Verify Caddyfile comments match actual behavior
+    grep -n "vitals" /etc/caddy/Caddyfile | head -3
+    # Then probe /vitals to confirm it actually 404s (or doesn't)
+    ```
+
+    **Red flags in any seal/deployment report:**
+    - Git commit SHAs that don't resolve (`git cat-file -t <sha>` fails)
+    - "N tools available" claims that exceed what `tools/list` returns
+    - Caddyfile comments claiming "honest 404" when the URL actually serves 200
+    - "All gaps sealed" without per-gap live HTTP verification
+    - Percentages (95%, 60%, 50%) without showing the numerator and denominator
+
+    **This is an F2 TRUTH violation at the meta level.** The report's receipts are fabricated, even if the underlying work is real. Always verify the report's own evidence before building on top of it. The audit itself can lie.
+
 ## References
 
 - `references/mcp-contract-drift-audit-fix.md` — Full audit → fix → regenerate → startup-verify pipeline for MCP deployment contract drift. 6 phases: survey, classify, fix (one commit per P0), regenerate surfaces from registry, add fail-closed startup verification, verify live. GHOST_TOOLS pattern, subagent collision handling, build identity recipe. Proven on GEOX P0 deployment audit 2026-07-19 (7 items).

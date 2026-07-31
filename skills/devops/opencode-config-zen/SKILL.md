@@ -517,6 +517,29 @@ This agent needs:
 
 If you add another special agent to the renderer, follow this pattern — keep them in a dict at the top of `generate()`, not scattered through the code.
 
+## Permission Model — Allow or Deny, Never Ask
+
+**Doctrine:** Permissions are binary — `allow` or `deny`. Never `ask`.
+
+**Why:** `ask` makes Arif the approval bottleneck. Every mid-session prompt is a human interruption that breaks the autonomous loop. If an agent should do something, `allow` it. If it shouldn't, `deny` it. The middle ground burns Arif's attention.
+
+**Audit command:**
+```bash
+python3 -c "
+import json; c = json.load(open('/root/.config/opencode/opencode.json'))
+asks = [(n,k) for n, cfg in c['agent'].items() for k, v in cfg.get('permission',{}).items() if v=='ask']
+print(f'ask permissions: {asks}')  # Must be []
+"
+```
+
+**Per-agent permission design (canonical):**
+- **333-AGI (orchestrator):** `*: allow` — full tool access, spawns subagents. Power without authority (kernel gates JUDGE/SEAL)
+- **555-ASI (research):** `edit/write: allow`, `bash/task: deny` — reads and returns results, doesn't execute or cascade
+- **555-ASI-VISION (pure observation):** `read/search/web: allow`, `edit/write/bash/task: deny` — sensory only, zero mutation
+- **888-APEX (judge):** `*: allow` base, `edit/write/bash/task/todowrite: deny` — reads evidence, renders verdict, never executes
+
+**If you're tempted to use `ask`:** The permission shouldn't exist. Either the agent needs the capability (`allow`) or it doesn't (`deny`). If you genuinely need Arif's judgment mid-session, that's a T3 888_HOLD escalation — not a permission dialog.
+
 ## Pitfalls
 
 - **🚨 NEVER hand-edit opencode.json after SOT setup**: Always regenerate via `opencode_render.py --write`. Hand-edits create drift that `--verify` catches. The SOT is the only source of truth.
@@ -527,6 +550,7 @@ If you add another special agent to the renderer, follow this pattern — keep t
 - **`kimi/kimi-k2.7-code` does NOT exist in the kimi provider**: The Kimi REST API exposes `kimi-for-coding`, not `kimi-k2.7-code`. Always verify: `opencode models kimi`.
 - **small_model should be lightweight**: Don't set it to a heavy fallback like MiniMax-M3. Use `ollama/qwen2.5-coder:3b` (local) or another lightweight model.
 - **Deprecated `tools` field in agents**: The OpenCode docs explicitly deprecate `tools` in favor of `permission`. Old configs with `tools` still work but will fail on future versions. Migrate them when you touch the config.
+- **`ask` permissions create bottlenecks**: `\"ask\"` triggers mid-session approval dialogs that break autonomous execution. Arif: \"aku nak kena jadi router click approve. Aku malas.\" Use only `\"allow\"` or `\"deny\"`. If an intermediate permission level is needed, the permission design is wrong — redesign the agent boundary instead.
 - **Backup before first render**: `cp /root/.config/opencode/opencode.json /root/.config/opencode/opencode.json.bak-$(date +%s)`
 
 ## Files

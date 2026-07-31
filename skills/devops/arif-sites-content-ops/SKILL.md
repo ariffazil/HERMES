@@ -1,7 +1,7 @@
 ---
 name: arif-sites-content-ops
 description: "Edit, build, and deploy content on arif-fazil.com (React 19 + Vite). Covers essay location, content structure, build pipeline, and the"
-version: 1.2.0
+version: 1.3.0
 author: Hermes
 license: MIT
 metadata:
@@ -10,7 +10,7 @@ metadata:
     category: devops
     related_skills: [makcikgpt-article-forging, site-deployment-verification, caddy-reverse-proxy]
     floors_protected: [F2, F4, F11]
-    origin: 2026-07-18 essay audit feedback → fix → deploy session
+    origin: 2026-07-18 essay audit → 2026-07-31 MakcikGPT article 404 fix (Caddy↔React sync + missing dir)
 ---
 
 # arifOS Sites Content Operations
@@ -171,13 +171,37 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 14. **MakcikGPT articles need TWO registrations.** The article TS module and its index.ts entry control the React SPA rendering. But feed.xml, llms.txt, and sitemap.xml are generated from `src/data/essays.json` via `scripts/lib/makcik-source.cjs`. For a new article to appear in feeds: update BOTH the TS index and essays.json.
 
-15. **Static HTML required for bot-readable MakcikGPT.** TS source alone only serves the React SPA. Bots (GPTBot, ClaudeBot, curl) read from `public/makcikgpt-md/*.html`. New article slugs need static HTML generated manually — this is NOT part of the npm build. Use the Python extraction pattern from `makcikgpt-article-forging` skill.
+15. **Static HTML required for bot-readable MakcikGPT.** TS source alone only serves the React SPA. Bots (GPTBot, ClaudeBot, curl) read from `public/makcikgpt-md/*.html`. New article slugs need static HTML generated — this is NOT part of the npm build. Use the Python extraction pattern from `makcikgpt-article-forging` skill. **Critical:** Caddy serves bot and browser traffic from DIFFERENT roots — bots from `makcikgpt-md/` (static HTML), browsers from `makcikgpt/` (React SPA shell). A 200 from one handler does NOT mean the other works. Always test BOTH after deploy. See `makcikgpt-article-forging/references/makcikgpt-article-404-diagnostic.md` for the full decision tree. **Quick audit:** `bash /path/to/deploy-makcik.sh --verify-only` checks all 22 articles for bot+browser 200.
 
 16. **llms.txt must be manually synced after adding pages.** The npm build does NOT reliably copy `public/llms.txt` changes to `dist/llms.txt`. After `scripts/deploy-site.sh --apply`, run: `cp sites/arif-fazil.com/public/llms.txt sites/arif-fazil.com/dist/llms.txt && rsync -av sites/arif-fazil.com/dist/llms.txt /var/www/html/arif/llms.txt`. Then verify with `curl https://arif-fazil.com/llms.txt | grep new-slug`.
 
 17. **Caddy serves `/makcikgpt/` from `/var/www/html/arif/makcikgpt-md/`, NOT from the source `makcikgpt/index.html`.** The deploy script syncs `public/makcikgpt-md/` to this webroot directory. If you modify the source `index.html` (the React SPA shell) and run deploy, the build will regenerate the landing page from TypeScript source, wiping manual changes. To directly replace the landing page, put the file at `/var/www/html/arif/makcikgpt-md/index.html` directly — this is what Caddy serves for the `/makcikgpt/` route. See "Deploying the MakcikGPT landing page" section above for the correct workflow.
 
-18. **React SPA client-side routing overrides standalone HTML when navigating from the homepage.** If you replace the MakcikGPT landing page with a standalone HTML file (bypassing the React build), the new design ONLY appears when users access `/makcikgpt/` directly (type URL, new tab, hard refresh). When users navigate FROM the homepage via a link (e.g., clicking "Read MakcikGPT" on the main site), the React SPA intercepts the navigation client-side and renders its built-in MakcikGPT component — which uses the old design compiled into the JS bundle. This is NOT a cache issue. **Diagnosis:** open the page in a new tab to see the static HTML; if it looks different from in-app navigation, the React component is overriding. **Fix permanently:** update the React component in `src/pages/` or `src/data/makcikgpt/` and rebuild the app via `npm run build`. This applies to any route where the React app has a client-side component AND a standalone HTML file exists at the same path.
+18. **React SPA client-side routing overrides standalone HTML when navigating from the homepage.** If you replace the MakcikGPT landing page with a standalone HTML file (bypassing the React build), the new design ONLY appears when users access `/makcikgpt/` directly (type URL, new tab, hard refresh). When users navigate FROM the homepage via a link (e.g., clicking "Read MakcikGPT" on the main site), the React SPA intercepts the navigation client-side and renders its built-in MakcikGPT component — which uses whatever design was compiled into the JS bundle. This is NOT a cache issue. **Diagnosis:** open the page in a new tab to see the static HTML; if it looks different from in-app navigation, the React component is overriding. **Fix permanently:** update the React component in `src/pages/` or `src/data/makcikgpt/` and rebuild the app via `npm run build`. This applies to any route where the React app has a client-side component AND a standalone HTML file exists at the same path.
+
+19. **Caddy wildcard redirects eat article slugs.** A redirect like `redir /makcikgpt/* /world/makcikgpt/ 301` greedily matches ALL paths under `/makcikgpt/` — including article slugs like `/makcikgpt/petronas-dna` — and strips the slug, sending everything to the landing page. **Fix:** use `path_regexp` with capture groups to preserve the slug:
+    ```
+    @mk_slug path_regexp mk_slug ^/makcikgpt/(.+)$
+    redir /makcikgpt /world/makcikgpt/ 301
+    redir /makcikgpt/ /world/makcikgpt/ 301
+    redir @mk_slug /world/makcikgpt/{http.regexp.mk_slug.1} 301
+    ```
+    The bare `/makcikgpt` and `/makcikgpt/` rules handle the landing. The `@mk_slug` regexp handles everything with a slug after it. **Verify:** `curl -sL https://arif-fazil.com/makcikgpt/petronas-dna | grep -o '<title>[^<]*</title>'` — should show the article title, not the landing page title.
+
+20. **Cron-generated JSON files: source vs webroot sync gap.** When a cron script generates a JSON file (telemetry, feeds, etc.), it typically writes to the source repo (e.g., `sites/arif-fazil.com/public/data/...`). But the live HTTP endpoint serves from the webroot (`/var/www/html/arif/data/...`). **If the script only writes to the source, the live feed is stale until the next deploy.** Fix: dual-write to BOTH paths. Pattern:
+    ```javascript
+    const SOURCE_PATH = path.join(SOURCE_PUBLIC, 'ns_live_telemetry.json');
+    const LIVE_PATH = '/var/www/html/arif/data/politics/ns_live_telemetry.json';
+    // Atomic write to both
+    safeWriteAtomic(SOURCE_PATH, payload);  // for git history
+    safeWriteAtomic(LIVE_PATH, payload);    // for live HTTP freshness
+    ```
+    **Audit check:** `stat -c '%y' /var/www/html/arif/data/politics/ns_live_telemetry.json` vs `stat -c '%y' /root/arif-fazil.com/sites/arif-fazil.com/public/data/politics/ns_live_telemetry.json` — if timestamps differ, the dual-write is broken.
+
+21. **Caddy ↔ React route sync trap (the P17 class of bug).** When Caddy canonicalizes article paths (e.g., `/makcikgpt/<slug>` → `/world/makcikgpt/<slug>` 301), TWO things MUST be updated simultaneously: (a) the Caddy `handle` block that serves the SPA shell for the canonical path, and (b) App.tsx with the corresponding `<Route>`. If Caddy redirects but React has no matching route, the SPA shell loads (HTTP 200) but React Router falls through to the `*` catch-all → NotFound. **Diagnosis:** `curl -sI https://arif-fazil.com/makcikgpt/<slug>` shows 301 → `curl -s https://arif-fazil.com/world/makcikgpt/<slug>` returns the SPA shell (index.html) but browser renders 404 → Caddy serves shell but App.tsx has no route. **Fix:** add the route (e.g., `<Route path="/world/makcikgpt/:slug" element={<MakcikGptArticle />} />`) in App.tsx, rebuild, redeploy. Always audit BOTH Caddy AND App.tsx in the same pass when canonical paths change.
+
+22. **Caddy `root` points to nonexistent directory.** The historical Caddy config for `/world/makcikgpt/*` (browser traffic) had `root * /var/www/html/arif/makcikgpt` — a directory never created or populated by any deploy flow. The SPA shell lives at `/var/www/html/arif/` (the standard dist sync target). When `try_files {path} /index.html` can't find the root directory, every article slug returns 404. **Diagnosis:** `ls /var/www/html/arif/makcikgpt/` → "No such file or directory" while `ls /var/www/html/arif/index.html` exists. **Fix:** change `root * /var/www/html/arif/makcikgpt` → `root * /var/www/html/arif` in the `handle /world/makcikgpt/*` block, then `sudo caddy reload`. The SPA shell is already at the standard dist path — no new directory needed. **Why this happened:** Caddy config assumed a separate webroot would be created and populated, but the deploy rsync only writes to `/var/www/html/arif/`. The mkdir+populate step was never automated.
+
 
 ## ABCD Framework Alignment
 
@@ -346,35 +370,93 @@ The 3-second answer pattern (from AGENTS.md §14.3) applies at page level: every
 
 These are **established preferences** for the MakcikGPT site and any civic-journalism surface on arif-fazil.com. Embed them in future designs without asking.
 
-### Palette: Primer (red, blue, yellow)
+### Palette: Primer (red, blue, yellow) — DARK MODE ONLY
 
 "Primer colour" = **red, blue, yellow** — the primary colours. NOT GitHub's Primer design system.
 
 | Role | Hex | Usage |
 |------|-----|-------|
-| Red | `#e0301e` | Accent, energy, call-to-action, M1 series |
-| Blue | `#1f3fd4` | Secondary accent, governance, M2 series |
-| Yellow | `#f2b705` | Highlight, quote accent, M3 series |
-| Dark bg | `#0a0a0a` | Page background |
+| Red | `#e0301e` | Energy series, accent, quote shadow |
+| Blue | `#1f3fd4` | Governance series, hover states, selection highlight |
+| Yellow | `#f2b705` | Tech series, highlights |
+| **Dark bg** | `#0a0a0a` | Page background (NOT cream/paper — "sakit mata terang sangat") |
 | Card bg | `#1a1a1a` | Card/surface backgrounds |
+| Alt bg | `#111111` | Secondary surfaces (hero canvas, alt sections) |
+| Hover bg | `#242424` | Hover states |
+| Border | `#2a2a2a` | Subtle borders |
 | Text | `#f0f0f0` | Primary text |
-| Muted | `#9a9a9a` / `#666666` | Secondary/subtle text |
+| Muted | `#9a9a9a` | Secondary text, timestamps |
+| Subtle | `#666666` | Tertiary text, faint labels |
 
-### Theme: Dark-only, Zen minimal
+**⚠️ DARK MODE ONLY — confirmed 2026-07-31.** Arif said light/cream background "sakit mata terang sangat" (hurts eyes, too bright). Never use cream/paper backgrounds. All MakcikGPT surfaces must be dark.
 
-- **Black background** (`#0a0a0a`), not dark gray
-- No Mondrian blocks, Sierpinski triangles, or fractal trees
-- No heavy paper/texture background
-- Clean cards with rounded corners (10px), subtle borders (`#2a2a2a`)
-- JetBrains Mono for code/mono, Inter for body
-- Subtle particle animations (not heavy canvas) — use the three Primer colours
-- Search bar with dark input, muted placeholder
-- Series cards: 5-column grid, each with its series colour
-- Chip labels use Primer colours with 15% alpha backgrounds
+CSS tokens (the canonical set):
+```css
+:root{
+  --bg:#0a0a0a; --bg-alt:#111111; --bg-card:#1a1a1a; --bg-hover:#242424;
+  --border:#2a2a2a; --border-light:#1e1e1e;
+  --fg:#f0f0f0; --fg-muted:#9a9a9a; --fg-subtle:#666666;
+  --red:#e0301e; --blue:#1f3fd4; --yellow:#f2b705;
+  --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+```
+
+### Theme: Dark Fractal Editorial
+
+- **Entire page is dark** (`#0a0a0a` background). Hero, body, cards, quote box — ALL dark. NOT cream/paper.
+- **Hero canvas:** animated fractal particle field on `#111111` background, particles in Primer colours (red/blue/yellow). Subtle connecting lines between nearby particles.
+- Cards with **subtle borders** (1px solid `#2a2a2a`), rounded corners (10px), box-shadow on hover (`0 8px 24px rgba(0,0,0,.4)`)
+- Archivo Black for display, Space Grotesk for body, JetBrains Mono for code/mono
+- Stats bar: dark cards in a grid, each stat number in a Primer colour (red/blue/yellow)
+- Series cards: dark cards, each with a coloured accent label (red=Energy, blue=Governance, yellow=Tech, etc.)
+- Quote box: dark card, yellow left-border (4px solid), white text
 
 ### Zen rule
 
-The MakcikGPT site is a **Decide/Learn surface** — content-first layout: hero → stats → quote → latest → series → full index with search. No decorative elements that don't serve the reading journey.
+The MakcikGPT site is a **Decide/Learn surface** — content-first layout: hero (fractal canvas) → stats → quote → latest → series → full index with search. Mathematical/decorative elements (fractals, Mondrian, Sierpinski) ARE part of the identity — they stay. "Zen" means content hierarchy, not minimalism stripped of character.
+
+### Human-Readable Labels (CRITICAL)
+
+**Never show machine codes (`M1`, `M2`, `M3`, `M4`, `M5`) in the user interface.** Humans need cognitive clarity. Use the actual series names instead.
+
+**Series code → Human label mapping:**
+- `M1` → **ENERGY**
+- `M2` → **GOVERNANCE**
+- `M3` → **TECH & SOVEREIGNTY**
+- `M4` → **ECONOMY**
+- `M5` → **POLITICS**
+
+**Where this applies:**
+- Series card headers (the big label at the top of each card)
+- Article list chips/badges (category label next to each article title)
+- Any filter UI or category display
+- Breadcrumbs, navigation, metadata displays
+
+**Internal data keys stay as `M1`/`M2`** — those are for JavaScript filtering and CSS class targeting. The UI must speak human language, not machine codes.
+
+**Implementation pattern:**
+```javascript
+// SERIES data uses machine codes as keys
+const SERIES = {
+  M1: { name: "Energy", desc: "PETRONAS, oil, gas, rightsizing" },
+  // ...
+};
+
+// UI rendering uses the human-readable name
+sEl.innerHTML = Object.entries(SERIES).map(([k, v]) =>
+  `<div class="scard" data-s="${k}">
+     <div class="fk">${v.name.toUpperCase()}</div>  ← Show "ENERGY", not "M1"
+     <p>${v.desc}</p>
+   </div>`
+).join('');
+
+// Article chips also use the name
+idxEl.innerHTML = rows.map(a =>
+  `<span class="chip ${a.s}">${SERIES[a.s].name}</span>`  ← Show "Energy", not "M1"
+).join('');
+```
+
+This rule is non-negotiable. Machine codes create cognitive load for human readers. Names create clarity.
 
 ### Deploying the MakcikGPT landing page (standalone HTML)
 

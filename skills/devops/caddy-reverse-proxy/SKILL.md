@@ -161,6 +161,43 @@ handle /gold/* {
 
 **Verification:** After reload, `curl -s -o /dev/null -w "%{http_code}, url: %{redirect_url}" https://site.com/gold` should return `308` and the trailing-slash URL.
 
+### Common Pitfall: SPA Redirect vs Caddy 301 — Redirect Ownership (PROVEN 2026-07-31)
+
+Every redirect claimed in `surfaces.json` or any canonical catalog MUST be a Caddy server-side `301`, NOT a React Router `<Navigate>`. When only the SPA handles a redirect, bots and crawlers get `200` + empty shell — the redirect is invisible to machines. Trailing-slash variants are the canary.
+
+**Symptom:** `surfaces.json` says `status: redirect` for `/old-path`, but `curl -sI https://domain/old-path` returns `HTTP/2 200` (SPA shell), not `301`. Bots see the old page, not the redirect.
+
+**Root cause:** React Router `<Navigate to="/new-path" />` is client-side only. The server returns 200 with the SPA shell, then JavaScript runs the redirect in the browser. Bots without JS execution — GPTBot, ClaudeBot, Googlebot, curl — never see the redirect.
+
+**Fix:** Add a Caddy `redir` directive BEFORE any SPA fallback handler:
+```caddyfile
+# Server-side redirect — visible to bots
+redir /old-path /new-path 301
+
+# SPA fallback (only reached for non-redirected paths)
+handle {
+    try_files {path} /index.html
+    file_server
+}
+```
+
+**Trailing-slash variants:** Always handle both bare and trailing-slash variants:
+```caddyfile
+redir /old-path /new-path 301
+redir /old-path/ /new-path/ 301
+```
+
+**Rule to seal:** Every redirect in `surfaces.json` must be a Caddy server-side 301. Never rely on React Router `<Navigate>` — it's invisible to bots.
+
+**Verification:**
+```bash
+# Must return 301, not 200
+curl -sI https://domain/old-path | head -3
+
+# Trailing-slash variant must also redirect
+curl -sI https://domain/old-path/ | head -3
+```
+
 ### Common Pitfall: Parent Path Conflict
 
 If an existing `handle /wealth/*` block exists and you add `handle /wealth/gold/*`, the gold block MUST appear before the wealth block. Otherwise the wealth block catches the request first and the gold route never triggers.

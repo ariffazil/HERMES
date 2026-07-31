@@ -47,6 +47,114 @@ Three patterns, zone-based entries, controlled risk. The system embodies this.
 
 ---
 
+## Communication Mandate — PERCENTAGE FIRST (Jul 2026)
+
+**Arif/Syed prefer percentage, not pips.** When communicating trading results, signals, or P&L:
+
+| ❌ WRONG | ✅ RIGHT |
+|----------|----------|
+| "+7.1 pips" | "+0.018%" |
+| "Risk 20 pips" | "Risk 0.49%" |
+| "SL 50 pips away" | "SL 1.23% away" |
+| "TP 100 pips" | "TP 2.47%, R:R 1:2" |
+
+**Formula:** `(Current − Entry) ÷ Entry × 100 = %`
+
+**Why percentage:**
+- Cross-asset comparison (XAUUSD % = EURUSD % = BTCUSD %)
+- No broker decimal confusion (Syed's broker has non-standard pip counting)
+- No mental conversion overhead — 1% is 1% everywhere
+- Direct risk sizing: "2% risk" means the same thing regardless of pair
+
+**Exception:** Institutional traders/brokers still use pip as lingua franca. But Arif and Syed get percentage by default.
+
+**User feedback (Jul 2026):** "Weh apasal x pakai percentage ja?? Pip ni menyusahkan laaa" — Arif. Default all human-facing output to %. Pip format only when explicitly requested or when talking to broker/institutional context.
+
+---
+
+## Human Cognitive Defense — Abang Sado Trading Psychology (Jul 2026)
+
+**Root diagnosis:** Pip is a broker-designed abstraction that creates emotional distance from real money. "Rugi 100 pips" sounds like a game. "Rugi RM2,400" is real pain — and pain is information the brain needs.
+
+### Sleep Gate (G7 — MANDATORY)
+
+Syed has documented brain fog when sleep-deprived (ISFJ, Chaos & Pain Hypnos sleep aid). Trading while sleep-impaired = guaranteed loss.
+
+| Sleep Hours | Trading Allowed? | Rationale |
+|-------------|:----------------:|-----------|
+| 7+ hours | ✅ Full access | Cognitive capacity online |
+| 5-6 hours | ⚠️ Demo only | Impaired judgment |
+| < 5 hours | ❌ MT5 LOCKED | Brain fog — "bila dia kata x ingat, dia memang x ingat" |
+
+### Pre-Entry Checklist (G8)
+
+Before ANY trade, Syed MUST answer:
+
+```
+□ Aku tidur cukup malam tadi? (Ya / Tak)
+  → Kalau Tak: TUTUP MT5. Balik tidur.
+
+□ Stop loss berapa RM aku sanggup rugi?
+  → RM_______
+
+□ Take profit berapa RM aku target?
+  → RM_______
+
+□ R:R ratio > 1:2? (Ya / Tak)
+  → Kalau Tak: JANGAN ENTRY.
+
+□ Aku tengah stress/marah/sedih? (Ya / Tak)
+  → Kalau Ya: JANGAN ENTRY.
+```
+
+One checklist = one gate. Must pass ALL. Fail one = close app.
+
+### Translation Layer — RM/%, Not Pips
+
+Syed keeps trading in pips on MT5 (that's what his broker shows). Don't force him to change. Instead, translate:
+
+```
+═══════════════════════════════════════
+  CAPITAL: RM________
+  RISK PER TRADE: ____%  (max 2%)
+  MAX LOSS: RM________
+═══════════════════════════════════════
+
+ENTRY: $________
+STOP LOSS: $________
+RISK IN $: $________
+
+POSITION = MAX LOSS RM ÷ RISK IN $
+═══════════════════════════════════════
+```
+
+He fills in RM values. Position size auto-calculated. No pip math required.
+
+### Breathing Reset Protocol (G9 — Cognitive Off-Ramp)
+
+When Syed is anxious (floating P/L, post-SL, or impulse-entry risk), deploy breathing techniques. Full reference at `references/abang-sado-breathing-techniques.md`.
+
+Quick reference:
+- **Box Breathing** (4-4-4-4) → floating P/L anxiety
+- **Physiological Sigh** (double inhale + long exhale) → post-SL tilt risk
+- **Pre-Entry Breath Check** (10s inhale + exhale) → last gate before BUY/SELL
+- **4-7-8 Breathing** → sleep prep (with Hypnos)
+
+**Golden rule:** "Nafas adalah steering wheel untuk emosi." Breathe first, then act.
+
+### Broker Audit (One-Time)
+
+Syed's broker has non-standard pip decimal places. One session to audit:
+1. Open 0.01 lot trade
+2. Watch floating P/L live
+3. Calculate: movement $X → profit RM Y
+4. Derive actual pip value
+5. Save in reference table
+
+Do this ONCE. Never ask "what broker decimal standard?" again.
+
+---
+
 ## Quick Commands
 
 ```bash
@@ -333,6 +441,28 @@ GC=F = futures, not spot (may differ from MT5 by $2-5). Hourly max ~2yr. Daily 2
 
 `plt.rcParams['text.usetex'] = False` AND replace `$` with `USD` in ALL text strings.
 
+### XAUUSD Pip Convention — GET THIS RIGHT
+
+XAUUSD pip calculation varies by broker decimal places. **Always state the convention used.**
+
+| Convention | 1 Pip Equals | Example: 4045.44 → 4047.00 |
+|------------|:------------:|:---------------------------:|
+| **2 decimals (most MT5)** | $0.01 | **156 pips** |
+| **3 decimals (some brokers)** | $0.001 | **1560 pips** |
+| **Points (price units)** | $1.00 | **1.56 points** |
+
+**Pip value per lot:**
+- 1 standard lot (100 oz) = **$1.00 per pip** (2-decimal convention)
+- So 156 pips × 1 lot = $156 P&L
+
+**Rule:**
+1. When analyzing Syed's trades, **use 2-decimal convention** (MT5 standard): 1 pip = $0.01
+2. Price difference × 100 = pips (e.g., 1.56 × 100 = 156 pips)
+3. NEVER mix "points" and "pips" in the same message without clarifying
+4. If unsure, just state raw price movement: "Entry 4045.44, current 4047.00 = +$1.56/oz profit" — unambiguous
+
+**Pitfall (2026-07-31):** Gave inconsistent pip math to Syed — said "1.56 points = 15.6 pips" then corrected to "1.56 pips". Both wrong under standard convention. Syed called it out: "Hang Kira pips pon x betul canna hang analisa." Rule: **If you can't do the math in your head, just state the price move and let him calculate.** Wrong math destroys trading credibility instantly.
+
 ### SABAR Discipline
 
 SABAR is a FEATURE, not a bug. Never suggest lowering confluence thresholds to "fix" lack of signals. Arif: "SABAR JA LA... Thats why abang sado tu sado."
@@ -374,3 +504,4 @@ Strips F-floor refs. Replaces jargon (insufficient reward → potensi untung tak
 - `references/trade-review-chart.md`
 - `references/governed-trading-engine.md`
 - `references/red-blue-team-analysis.md`
+- `references/cognitive-trading-psychology.md`

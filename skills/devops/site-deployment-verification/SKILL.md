@@ -157,3 +157,61 @@ Plus a prioritized fix list for any issues found.
 11. **HTML edits to deployed copies are untracked artifacts** (PROVEN 2026-07-19). When fixing HTML directly in `/var/www/html/<surface>/index.html`, the change goes live but is not in git. Source-of-truth regeneration will silently overwrite the fix on next deploy. Audit must flag this as a deployment gap, not a completed fix. Confirm via `git status /root/<source-repo>` and `ls -la /var/www/html/<surface>/index.html` — both should be tracked AND deployed consistently.
 12. **Edit the right deployed copy** (PROVEN 2026-07-19). Some surfaces have multiple possible served files: e.g., `/var/www/html/well/index.html` (orphan symlinked from /root/WELL) vs `/var/www/html/well-app/index.html` (the actual one Caddy serves via `handle /well/*` → `root * /var/www/html/well-app`). Verify with `curl -sI https://arif-fazil.com/<surface>/ | grep last-modified` to see which file is actually being served, BEFORE editing. Editing the wrong copy produces "fixed but not live" phantom receipts.
 13. **Asymmetric failure framing hides bugs.** (PROVEN 2026-07-19) When a report says "100% URL pass rate", check if the X represents the right sample. A claim of "100% (91/91)" might be 100% of asset file references but 0% of `.well-known` discovery files. Always split verification by category (HTML routes / static assets / discovery files / redirects) and report per-category pass rates. "100% of routes" + "0% of discovery files" = two separate findings, not "site health 100%".
+
+### Phase 6: Surface Claim Verification (surfaces.json vs Live HTTP)
+
+When a site has a canonical `surfaces.json` catalog listing every route with its claimed status (live/redirect/gone), audit EVERY entry against live HTTP. The catalog IS the ground truth — if it says "live" and the route returns 404, the catalog is lying.
+
+**Methodology:**
+
+```bash
+# 1. Extract all claimed surfaces from the canonical catalog
+cat /var/www/html/surfaces.json | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+for s in d.get('surfaces',d.get('items',[])):
+    print(f\"{s.get('path','?')} :: {s.get('status','?')}\")
+"
+
+# 2. Batch-probe every claimed route
+for route in <extracted_paths>; do
+  code=$(curl -sI -o /dev/null -w "%{http_code}" "https://DOMAIN${route}")
+  echo "$route → $code"
+done
+```
+
+**Critical checks:**
+
+| Check | What to look for | Example |
+|-------|-----------------|---------|
+| Status mismatch | surfaces.json says `live` (200) but probe returns 404 | `/shadow/` claimed 200, actually 404 |
+| Redirect ownership | surfaces.json says `redirect` (301) but probe returns 200 (SPA shell) | Caddy didn't handle it, React Router `<Navigate>` is invisible to bots |
+| Trailing-slash variants | Bare path works, trailing-slash variant returns 404 or 200 SPA | `/rss` → 301 but `/rss/` → 404 |
+| Catalog drift | sitemap.xml URL count ≠ surfaces.json URL count | sitemap has 39 URLs, surfaces.json has 53 |
+| Gone surfaces | surfaces.json says `gone` — probe should return 404 or 410 | Honest 404 = truthful; 200 = lying |
+| Subdomain surfaces | Cross-reference subdomain surfaces against their own domains | `.well-known/agent-card.json` on main domain might redirect to subdomain |
+
+**The Caddy vs SPA redirect wound:**
+
+This is the most common surface gap. When Caddy handles a redirect, bots get a proper `301`. When only the SPA handles it (React Router `<Navigate>`), bots get `200` + empty shell. Trailing-slash variants are the canary — they fall through Caddy matchers and land in the SPA, where the redirect is invisible to machines.
+
+**Rule to seal:** Every redirect claimed in `surfaces.json` must be a Caddy server-side 301, not a React `<Navigate>`.
+
+**Catalog truthfulness:** Generate sitemap.xml, llms.txt, llms.json, and page.json FROM `surfaces.json` — one source, zero drift. If the generation script reads from a different source (e.g., essays.json instead of surfaces.json), the catalogs will drift.
+
+**Output format — the Gap Table:**
+
+```
+| # | Gap | Before | After | Method |
+|---|-----|--------|-------|--------|
+| G1 | /rss/ → 404 | 404 | 301 /feed.xml | Caddy redir |
+| G2 | /wealth → 200 SPA | 200 | 301 /economics | Caddy redir |
+| G3 | surfaces.json wrong status | redirect | live | surfaces.json corrected |
+| G4 | /essays/ → bogus URL | /writing/essays/ | /writing/ | Caddy: bare before wildcard |
+| G5 | trailing-slash → 200 SPA | 200 | 301 server-side | Caddy trailing-slash redirs |
+| G6 | sitemap ≠ surfaces.json | 39 vs 53 | 41 vs 41 | generate-discovery.cjs reads surfaces.json |
+| G7 | surface status wrong | live | redirect | surfaces.json corrected |
+| G8 | no bot content | React shell | React shell | Deferred to T1.1 |
+```
+
+**Post-seal verification:** After fixing, re-probe EVERY route. Do not trust the fix — verify it on the wire.

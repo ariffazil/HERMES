@@ -262,6 +262,7 @@ food logistics, electricity pass-through, and ringgit behaviour are.
 - **CNBC individual article URLs consistently 404.** CNBC story pages (e.g. `/2026/07/30/iran-says...`) return "Not Found" when navigated to directly via browser_navigate. The URL slugs in the CNBC homepage are dynamically routed. Only CNBC quotes pages work (`/quotes/XAU=`, `/%40LCO.1`, `/%40CL.1`) plus the world page (`/world/?region=world`) and its QUICK LINKS aggregation. Article body text extraction is unavailable — rely on homepage headline text, Quick Links topic sections, and the LATEST NEWS sidebar timestamps. (Verified 2026-07-30.)
 - **Gold API port 3456 may return connection refused (exit code 7).** The local gold-api service at port 3456 (`curl -sf localhost:3456/api/gold/ticker`) may be unavailable when the organ is down or hasn't started. When it fails, fall back to browser-based extraction: CNBC quotes page for XAU/USD, XE.com for USD/MYR. Do NOT retry — move immediately to browser fallback path. (Verified 2026-07-30.)
 - **Arif may provide his own market data (M+ Bloomberg).** When he does, DON'T re-search for prices. Take his numbers as OBS, cross-reference trend context from web, and focus on INTERPRETATION (why the move, what it means for Malaysia, what to watch). He doesn't want restated prices — he wants synthesis. Verified Jul 2026 (Brent -5.54% briefing).
+- **web_search may return 432 (Tavily client error).** Treat as backend outage and fall back immediately to Hound MCP `smart_search`/`smart_fetch`. Verified Jul 2026.
 
 ## Trigger Examples
 

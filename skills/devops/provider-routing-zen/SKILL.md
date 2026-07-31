@@ -636,6 +636,8 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | OpenRouter Zen doc | `/root/AAA/docs/OPENROUTER_ZEN_OPTIMIZATION.md` |
 | OpenRouter Agent Guide | `/root/AAA/docs/OPENROUTER_AGENT_GUIDE.md` |
 | OpenRouter Hermes Ops | `/root/AAA/docs/OPENROUTER_HERMES_OPS.md` |
+| Claude Code proxy routing (2026-08-01) | This skill's `references/claude-code-deepseek-proxy-routing.md` |
+| OpenCode SOT pipeline (2026-07-24) | This skill's `references/opencode-sot-pipeline-2026-07-24.md` |
 | Doc architecture pattern | This skill's `references/openrouter-doc-architecture.md` |
 | Hermes live fallback chain (2026-07-29) | This skill's `references/hermes-live-fallback-chain-2026-07-29.md` |
 | Model benchmark methodology | This skill's `references/model-benchmark-methodology.md` |\n| Benchmark test script (runnable) | This skill's `scripts/benchmark-agentic-model-test.py` |\n| Vision diagnostic script (runnable) | This skill's `scripts/vision-auxiliary-diagnostic.py` |\n| Multimodal routing architecture | This skill's `references/multimodal-router-architecture.md` |
