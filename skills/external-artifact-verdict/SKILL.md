@@ -103,6 +103,36 @@ Full transcript in `references/opencode-2026-07-28-cross-witness-audit.md`.
 
 The external AI's job ends at delivery. Yours begins at receipt.
 
+## Verifying Computed Claims in Data/Config Artifacts
+
+Not every artifact is runnable code. A recurring second shape is **structured
+data with embedded computed values** — a design-token JSON shipping a WCAG
+contrast matrix, a financial model with ratios, a physics config with derived
+moduli, a receipt table of percentages/thresholds. These carry the same risk:
+the agent that *asserts* a computed value ("4.76:1 AA", "runway 8.2 months")
+rarely *recomputes* it before asserting, so errors propagate silently into the
+canon. Worse, when the value feeds a CI lint or a governance threshold, the
+error gets **enforced**, not just displayed.
+
+The protocol: extract every (input → computed value → verdict) triple,
+**re-derive the value from first principles with your own `execute_code`** (an
+independent implementation of the formula — don't copy the artifact's helper,
+it may carry the same bug), build a MATCH/DISCREPANCY table, classify each miss
+as over-restriction (safe but capability-wasting) vs under-restriction (unsafe
+— waves through a bad value), then grep the whole artifact for the wrong value
+because it usually appears in more than one place.
+
+**Worked case (2026-08-01):** a PRIMER-1 design-token JSON shipped a 13-row
+contrast matrix, every row labelled with a ratio + verdict. Independent
+re-derivation matched 12/13 to the hundredth and caught one real error —
+teal-900 `#064E3B` on paper claimed **4.76:1 "AA caption-only"**, actual
+**9.08:1 AAA**. Over-restriction, not a safety failure, but it appeared in two
+places and would have driven a CI lint downgrading earth-domain text for no
+reason. Two-line fix; caught only because the math was re-run.
+
+Full technique + a drop-in WCAG contrast verifier + the generalization to
+finance/physics/stats tables: `references/numeric-claim-verification.md`.
+
 ## The Protocol
 
 ### Step 0: Isolate Before Touching

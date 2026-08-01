@@ -1,11 +1,11 @@
 model:
-  provider: deepseek
-  supports_vision: false
+  provider: mulerouter
+  supports_vision: true
   request_timeout: 45
   context_length: 1048576
   max_tokens: 131072
   timeout: 30
-  default: deepseek-v4-pro
+  default: deepseek-v4-flash
 providers:
   mulerouter:
     api: https://api.mulerouter.ai/vendors/openai/v1
@@ -29,28 +29,6 @@ providers:
         name: Qwen3.7 Max — frontier reasoning
       - id: gpt-5.5
         name: GPT 5.5 — frontier LLM
-  bailian-token-plan:
-    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
-    key_env: QWEN_API_KEY
-    models:
-      - id: qwen3.7-max
-        name: Qwen 3.7 Max
-      - id: qwen3.7-plus
-        name: Qwen 3.7 Plus
-      - id: qwen3.6-plus
-        name: Qwen 3.6 Plus
-      - id: qwen3.6-flash
-        name: Qwen 3.6 Flash
-      - id: kimi-k2.7-code
-        name: Kimi K2.7 Code
-      - id: glm-5.2
-        name: GLM 5.2
-      - id: deepseek-v4-pro
-        name: DeepSeek V4 Pro
-      - id: deepseek-v4-flash
-        name: DeepSeek V4 Flash
-    name: Bailian Singapore (Qwen/Kimi/DeepSeek/GLM)
-    transport: openai_chat
   mimo-platform:
     api: https://api.xiaomimimo.com/v1
     key_env: MIMO_PLATFORM_API_KEY
@@ -212,43 +190,96 @@ providers:
         name: Kimi K2.7 Code
       - id: kimi-for-coding-highspeed
         name: Kimi K2.7 Code HighSpeed
+  qwen-token-plan:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    key_env: QWEN_HERMES_API_KEY
+    name: Qwen Token Plan Team Edition (RM0 marginal, THE FED)
+    transport: openai_chat
+    models:
+      - id: qwen3.8-max-preview
+        name: Qwen 3.8 Max Preview — vision + Harness, 10x promo
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max — reasoning + Harness (search/code/scrape)
+      - id: qwen3.7-plus
+        name: Qwen 3.7 Plus — vision + reasoning + Harness
+      - id: qwen3.6-plus
+        name: Qwen 3.6 Plus — vision + reasoning
+      - id: qwen3.6-flash
+        name: Qwen 3.6 Flash — fastest, vision, 1M ctx
+      - id: deepseek-v4-pro
+        name: DeepSeek V4 Pro — 1M ctx, deep reasoning
+      - id: deepseek-v4-flash
+        name: DeepSeek V4 Flash — fast, 1M ctx
+      - id: deepseek-v4-flash-0731
+        name: DeepSeek V4 Flash 0731 — latest snapshot
+      - id: deepseek-v3.2
+        name: DeepSeek V3.2 — legacy fast
+      - id: glm-5.2
+        name: GLM 5.2 — constitutional tier, 753B MoE
+      - id: glm-5.1
+        name: GLM 5.1 — Zhipu reasoning
+      - id: glm-5
+        name: GLM 5 — Zhipu legacy
+      - id: kimi-k2.7-code
+        name: Kimi K2.7 Code — vision + coding
+      - id: kimi-k2.6
+        name: Kimi K2.6 — vision + reasoning
+      - id: kimi-k2.5
+        name: Kimi K2.5 — reasoning
+      - id: MiniMax-M2.5
+        name: MiniMax M2.5 — reasoning
+  qwen-token-plan-individual:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    key_env: QWEN_INDIVIDUAL_API_KEY
+    name: Qwen Token Plan Individual Pro (RM0 marginal, multimodal, 5h+7d 
+      windows)
+    transport: openai_chat
+    models:
+      - id: qwen3.8-max-preview
+        name: Qwen 3.8 Max Preview — Individual Pro 10x promo + 80% night 
+          discount
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max — Individual Pro reasoning
+      - id: qwen3.7-plus
+        name: Qwen 3.7 Plus — Individual Pro vision + reasoning
+      - id: qwen3.6-flash
+        name: Qwen 3.6 Flash — Individual Pro fastest, vision
+      - id: deepseek-v4-pro
+        name: DeepSeek V4 Pro — Individual Pro 1M ctx reasoning
+      - id: deepseek-v4-flash-0731
+        name: DeepSeek V4 Flash 0731 — Individual Pro fast
+      - id: glm-5.2
+        name: GLM-5.2 — Individual Pro constitutional tier
+  qwen-responses:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    key_env: QWEN_OPENCODE_API_KEY
+    name: 'FED v1.0.0 — Federated External Doctrine (Harness layer, web_extractor
+      / image_search / MCP — Token Plan Pro seat). Spec: /root/AAA/governance/FED-harness-tool-governance-v1.0.0.md
+      (DRAFT awaiting 999 SEAL). Epistemic labels per spec §11. Vault placeholder:
+      QWEN_OPENCODE_API_KEY (pro seat shared across 3 agents).'
+    transport: openai_chat
+    models:
+      - id: qwen3.8-max-preview
+        name: Qwen 3.8 Max (preview) — Tool flagship, Token Plan only
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max — Tool fallback, Token Plan
+      - id: qwen3.7-plus
+        name: Qwen 3.7 Plus — Vision + tools, Token Plan
+      - id: qwen3.6-plus
+        name: Qwen 3.6 Plus — Vision + tools, web_extractor fallback
 fallback_providers:
-  - model: qwen-vl-max
-    provider: mulerouter
+  - model: deepseek-v4-pro
+    provider: qwen-token-plan
     timeout: 30
-  - model: deepseek/deepseek-v4-pro
-    provider: mulerouter
-    timeout: 20
-  - model: deepseek/deepseek-v4-pro
-    provider: tokenrouter
-    timeout: 20
-  - model: qwen3-max
-    provider: mulerouter
+  - model: glm-5.2
+    provider: qwen-token-plan
     timeout: 30
-  - model: qwen-vl-max
-    provider: mulerouter
+  - model: qwen3.7-plus
+    provider: qwen-token-plan
     timeout: 30
-  - model: openrouter/auto-beta
-    provider: openrouter
-    timeout: 60
-  - model: llama-3.1-8b-instant
-    provider: groq
+  - model: qwen3.6-flash
+    provider: qwen-token-plan
     timeout: 20
-  - model: aisingapore/Qwen-SEA-LION-v4-32B-IT
-    provider: sea-lion
-    timeout: 20
-  - model: gemini-2.5-flash
-    provider: gemini
-    timeout: 20
-  - model: MiniMax-M3
-    provider: tokenrouter
-    timeout: 20
-  - model: z-ai/glm-5.2
-    provider: tokenrouter
-    timeout: 20
-  - model: openrouter/free
-    provider: openrouter
-    timeout: 60
   - model: qwen2.5-coder:3b
     provider: ollama
     timeout: 20
@@ -307,7 +338,8 @@ terminal:
   docker_extra_args: []
   docker_run_as_host_user: false
   persistent_shell: true
-  governance_note: ART classifies; KERNEL arif_verify; ACT via A-FORGE forge_shell
+  governance_note: ART classifies; KERNEL arif_verify; ACT via A-FORGE 
+    forge_shell
   require_aforge_for_mutate: true
 web:
   backend: brave
@@ -400,8 +432,8 @@ bedrock:
     trace: disabled
 auxiliary:
   vision:
-    provider: mulerouter
-    model: qwen-vl-max
+    provider: qwen-token-plan
+    model: qwen3.7-plus
     timeout: 30
   web_extract:
     provider: auto
@@ -410,8 +442,8 @@ auxiliary:
     api_key: ''
     timeout: 360
   compression:
-    provider: mulerouter
-    model: qwen3-max
+    provider: qwen-token-plan
+    model: qwen3.6-flash
     base_url: ''
     api_key: ''
     timeout: 120
@@ -483,14 +515,14 @@ auxiliary:
     api_key: ''
     timeout: 120
   moa_reference:
-    provider: opencode-go
+    provider: qwen-token-plan
     model: deepseek-v4-pro
     base_url: ''
     api_key: ''
     timeout: 600
   moa_aggregator:
-    provider: opencode-go
-    model: deepseek-v4-pro
+    provider: qwen-token-plan
+    model: qwen3.8-max-preview
     base_url: ''
     api_key: ''
     timeout: 600
@@ -590,7 +622,7 @@ dashboard:
 privacy:
   redact_pii: false
 tts:
-  provider: mimo
+  provider: qwen-token-plan
   edge:
     voice: en-US-AriaNeural
   elevenlabs:
@@ -625,6 +657,18 @@ tts:
     model: mimo-v2.5-tts-voicedesign
     sample_rate: 24000
     voice: 冰糖
+  qwen-token-plan:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    key_env: QWEN_HERMES_API_KEY
+    model: qwen-audio-3.0-tts-plus
+    sample_rate: 24000
+    voice: longxiaochun
+  qwen-token-plan-individual:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    key_env: QWEN_INDIVIDUAL_API_KEY
+    model: qwen-audio-3.0-tts-plus
+    sample_rate: 24000
+    voice: longxiaochun
 stt:
   enabled: true
   provider: openai
@@ -664,8 +708,8 @@ memory:
   provider: local
   transient_char_limit: 4000
   transient_file: /root/.hermes/memories/SESSION.md
-  transient_purpose: session-scoped working memory, not injected into long-term LLM
-    context
+  transient_purpose: session-scoped working memory, not injected into long-term 
+    LLM context
 delegation:
   model: ''
   provider: ''
@@ -689,13 +733,13 @@ moa:
   presets:
     default:
       reference_models:
-        - model: mimo-v2.5-pro
-          provider: mimo-platform
-        - model: mimo-v2.5-pro-ultraspeed
-          provider: mimo-platform
+        - model: deepseek-v4-pro
+          provider: qwen-token-plan
+        - model: glm-5.2
+          provider: qwen-token-plan
       aggregator:
-        provider: mimo-platform
-        model: mimo-v2.5-pro
+        provider: qwen-token-plan
+        model: qwen3.8-max-preview
       max_tokens: 4096
       enabled: true
       aggregator_temperature: 0.4
@@ -703,17 +747,17 @@ moa:
       reference_temperature: 0.6
     multimodal:
       aggregator:
-        model: mimo-v2.5-pro
-        provider: mimo-platform
+        model: qwen3.7-plus
+        provider: qwen-token-plan
       aggregator_temperature: 0.3
       enabled: true
       max_tokens: 4096
       reference_max_tokens: 600
       reference_models:
-        - model: mimo-v2.5
-          provider: mimo-platform
-        - model: minimax-m3
-          provider: minimax
+        - model: qwen3.6-plus
+          provider: qwen-token-plan
+        - model: kimi-k2.7-code
+          provider: qwen-token-plan
       reference_temperature: 0.5
 skills:
   external_dirs: []
@@ -899,8 +943,9 @@ gateway:
     can_present_as_arif: false
     can_present_as_arifos_actor: false
     can_request_sovereign_seal: false
-    explanation: HERMES holds zero federation authority. Its outputs in any federation
-      context carry the persona label and cannot bind the sovereign's identity.
+    explanation: HERMES holds zero federation authority. Its outputs in any 
+      federation context carry the persona label and cannot bind the sovereign's
+      identity.
     f9_anti_hantu: true
     federation_authority: none
     federation_role: persona-system
@@ -964,7 +1009,8 @@ federation:
       governance:
         organ: arifOS
         port: 8088
-        description: Constitutional verdicts, F1-F13, session binding, seal, hold
+        description: Constitutional verdicts, F1-F13, session binding, seal, 
+          hold
       execution:
         organ: A-FORGE
         port: 7071
@@ -972,7 +1018,8 @@ federation:
       geology:
         organ: GEOX
         port: 8081
-        description: Seismic, petrophysics, basin, prospect, well logs, earth evidence
+        description: Seismic, petrophysics, basin, prospect, well logs, earth 
+          evidence
       finance:
         organ: WEALTH
         port: 18082
@@ -980,7 +1027,8 @@ federation:
       health:
         organ: WELL
         port: 18083
-        description: Vitality, fatigue, dignity, homeostasis, readiness (REFLECT_ONLY)
+        description: Vitality, fatigue, dignity, homeostasis, readiness 
+          (REFLECT_ONLY)
       federation:
         organ: AAA
         port: 3001
@@ -1134,7 +1182,8 @@ federation:
           - research
           - a2a
           - sec
-        description: Bridge — skill catalog, multimodal, signal relay, FLAME, Telegram
+        description: Bridge — skill catalog, multimodal, signal relay, FLAME, 
+          Telegram
         skills:
           - meta-skill-create
           - meta-skill-lint
@@ -1254,15 +1303,18 @@ federation:
 image_input_mode: text
 mcp_servers:
   arifos:
-    description: arifOS Constitutional Kernel — F1-F13 floors, judge, vault, route
+    description: arifOS Constitutional Kernel — F1-F13 floors, judge, vault, 
+      route
     transport: streamable-http
     url: http://127.0.0.1:8088/mcp
   geox:
-    description: GEOX Earth Intelligence — seismic, petrophysics, basin, prospect
+    description: GEOX Earth Intelligence — seismic, petrophysics, basin, 
+      prospect
     transport: streamable-http
     url: http://127.0.0.1:8081/mcp/
   hermes:
-    description: Hermes MCP — diagnostic/governance tools (status, fact-check, plan-review)
+    description: Hermes MCP — diagnostic/governance tools (status, fact-check, 
+      plan-review)
     transport: streamable-http
     url: http://127.0.0.1:18086/mcp
     enabled: false
@@ -1270,16 +1322,18 @@ mcp_servers:
     command: hound
     enabled: true
   wealth:
-    description: WEALTH Capital Intelligence — EMV, NPV, Monte Carlo, conservation
+    description: WEALTH Capital Intelligence — EMV, NPV, Monte Carlo, 
+      conservation
     transport: streamable-http
     url: http://127.0.0.1:18082/mcp
   well:
-    description: WELL Human Readiness — vitality, readiness, dignity, homeostasis
+    description: WELL Human Readiness — vitality, readiness, dignity, 
+      homeostasis
     transport: streamable-http
     url: http://127.0.0.1:18083/mcp
   deep-research:
-    description: Deep Research Engine — multi-LLM iterative research, SearXNG-backed,
-      report synthesis
+    description: Deep Research Engine — multi-LLM iterative research, 
+      SearXNG-backed, report synthesis
     transport: streamable-http
     url: http://127.0.0.1:3333/api/mcp
     enabled: false
@@ -1287,7 +1341,8 @@ mcp_servers:
       Authorization: Bearer ${DEEP_RESEARCH_PASSWORD}
     timeout: 600
   openrouter:
-    description: OpenRouter MCP — model discovery, credit monitoring, benchmark tools
+    description: OpenRouter MCP — model discovery, credit monitoring, benchmark 
+      tools
     transport: streamable-http
     url: https://mcp.openrouter.ai/mcp
     auth: oauth
@@ -1295,7 +1350,8 @@ mcp_servers:
     headers: {}
     timeout: 30
   mage:
-    description: Mage-Flow 4B — text-to-image generation & image editing (Microsoft)
+    description: Mage-Flow 4B — text-to-image generation & image editing 
+      (Microsoft)
     command: /opt/mage-server/run.sh
     enabled: true
     timeout: 120
@@ -1330,7 +1386,7 @@ fallback_retry:
     - 503
     - 504
 search:
-  name: DeepSeek V4 Pro — constitutional via MuleRouter (backup)
+  name: Qwen Token Plan — THE FED (RM0 marginal)
 
 # ── Fallback Model ────────────────────────────────────────────────────
 # Automatic provider failover when primary is unavailable.

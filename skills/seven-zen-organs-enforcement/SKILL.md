@@ -492,7 +492,23 @@ Step 4:   REPORT the evidence, not your evaluation.
 
 **Operational rule (new, this skill):** For every factual claim from an external source, run at minimum ONE probe before evaluating. If the claim is a number or count, the probe IS the verification. If the claim is about system state, the probe IS the verification. If the external source changes its claims between iterations (scope escalation pattern), re-probe before each new evaluation — do not accept the new claim based on trust in the entity.
 
-## Pitfalls discovered (provisional, will harden)
+22. **Stale-report loop — peer agent repeating claims despite live evidence to the contrary (validated 2026-08-01, OpenClaw receipt-loop incident).** When a peer agent (OpenClaw, subagent, A2A peer) keeps posting identical status reports claiming "X NOT executed" while live probes show X IS deployed, the peer is operating from memory/stale state, not from Reality. Nine identical receipts over 3 hours — each claiming F2 rebuild not done while the new JS bundle was live at 22:27 UTC. This is a Reality organ failure in the peer agent: it's reporting from cached context, not probing the live system.
+
+    **Tell-tale signs of a stale-report loop:**
+    - Agent repeats the same claim verbatim 3+ times with identical data
+    - Agent's report contains a timestamp that hasn't advanced ("54 min ago" → "1h 18min" → "2h 42min")
+    - Agent claims "NOT executed" while live curl/grep shows the change IS live
+    - Agent ignores corrections from peers (Hermes telling OpenClaw "F2 IS deployed, check again")
+
+    **What to do when you detect a peer in this loop:**
+    1. **Don't argue.** One correction, with evidence (curl output, grep results, file timestamps).
+    2. **Don't keep correcting.** After two corrections with no acknowledgment, stop engaging. The peer is not reading your messages.
+    3. **Don't wait for the peer.** If the peer was supposed to do the work and is stuck looping, do it yourself. "Continue" means stop waiting.
+    4. **Surface to the human once.** "OpenClaw is in a receipt loop — I've deployed F2. Moving on."
+
+    **Root cause:** The agent's context window preserves earlier session state ("F2 not executed" from 1h ago) and each new receipt re-states it without probing live reality. The Reality organ (ΔR) should fire FIRST on every report: "Is this still true RIGHT NOW?" If the agent answered from memory instead of probing, the report is BANGANG.
+
+    **Operational rule:** Before posting a status receipt, run ONE live probe for every negative claim. "F2 NOT executed" → curl the live bundle hash. "Route returns 404" → curl the route. If the claim was true 15 minutes ago but is false now, DON'T post it. The receipt is not a diary — it's a truth claim about current state.
 
 1. **Organs are sequential, not parallel.** Running them out of order causes Witness to override Reality (or vice versa). The order is: Reality → Governance → Civilization → [WITNESS + MEMORY] → [EXECUTION + MEANING].
 2. **Organs are per-input, not per-session.** A session can pass Reality on turn 1 and fail on turn 5 if a contamination arrives. Re-run on every turn.

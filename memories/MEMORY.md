@@ -1,4 +1,4 @@
-Runtime: /usr/local/lib/hermes-agent/. Config dir: /root/HERMES/ (skills/cron/memories/). Origin: NousResearch, fork: ariffazil/hermes-agent.git.
+Runtime: /usr/local/lib/hermes-agent/
 §
 Arif: parallel agents OK. Human language for embodied/shadow topics. Jangan default arifOS metaphors unless he connects first.
 §
@@ -16,8 +16,6 @@ VELOCITY OVERRIDE: Multi-phase purge → auto-execute all phases when F1-safe + 
 §
 DERITA/: /root/ariffazil/DERITA/ (never commit). RASA DERITA: 15→5→F1-F13→18 mechs. 888_HOLD. Agent CANNOT feel/heal F9+F10. CAN witness, govern, refuse.
 §
-Arif prefers dark mode everywhere — light backgrounds 'sakit mata'. Default to dark (#0a0a0a) unless he explicitly asks otherwise.
-§
 Default timezone: MYT (UTC+8, Malaysia KL). Always show times in MYT unless told otherwise.
 §
 MuleRouter: multimodal gateway. Wolf Cabinet: MuleRouter80%, OpenRouter15%, Ollama5%. Image priority: MiniMax→GPT→Wan→FLUX→SANA.
@@ -28,22 +26,18 @@ Arif sees trauma structurally — Φ-witness=precision w/o feeling. F13 sovereig
 §
 Crisis friend mode: Arif shows up physically for Syed/Aliff, uses Jungian shadow+MBTI+birth order as decode language. BM casual. Wants direct shadow decode → practical action. Gets drained but keeps showing up.
 §
-Shadow Decoder: arif-fazil.com/shadow/ — 10 PM profiles, APEX ranking, 99 DERITA. Forged 333-AGI 2026-07-31.
-§
 Arif on autonomous deployments: investigate first, don't auto-reject. Will adopt valuable work. Prioritize HTTP claims vs live state, timestamps, forge vs apex domain.
 §
-Arif expects proactive multimodal: image gen (MiniMax), video (mmx), charts (matplotlib). 'Hang multimodal kot' = reminder. Use VPS resources without being told.
-§
-Aliff ≠ Syed: CPPS/prostatitis = Aliff. Jangan campur. Arif: 'Nama manusia TU ingat.' Syed ISFJ confirmed, Arnold ENTJ, Lee Haney ISFJ. Syed spends 70% fam, Arif 50% invest.
-§
 Syed's brother (36M, ISFJ, talkative): brain fog=1wk sleep deprivation. Sleep aid: Hypnos (Blue Hawaiian). Arif: "bila dia kata x ingat, dia memang x ingat." Sleep gate <5h=NO MT5.
-§
-SyedOS heal: syedos.arif-fazil.com/heal/ — breathing chamber (box/physiological sigh/calm 10s), muscle worship video, sleep links. /var/www/html/syedos/heal/.
-§
-Syed cognitive trading: Pre-entry checklist (sleep?, max loss RM?, R:R>1:2?, stress?). Sleep gate: <5h=NO MT5, 5-6h=demo, 7h+=full. Think RM+%, translate for Syed (never force switch).
-§
-Claude Code 2.1.218 → DeepSeek Anthropic proxy (api.deepseek.com/anthropic/v1). Uses DEEPSEEK_ANTHROPIC_KEY. Shares DeepSeek balance with OpenCode. .bashrc L59-61.
 §
 No 'ask' permissions on any agent. Either allow or deny. Arif refuses approval dialogs. 333=tangan (full dexterity), 888=hakim (deny mutation), F13=khalifah. Constraint is steps:60, not tool gates.
 §
 Defense: L1 aaa-autonomy (pattern blocks), L2 arifOS kernel (constitutional), L3 F13 sovereign (veto), L4 OpenCode (passthrough). False gates train reflexive allow-clicking.
+§
+Design: dark mode (#0a0a0a) mandatory — light='sakit mata'. Level 2 Zen (forge colors stay, noise removed): single column 640px, no persona gates, no foreign quotes, no instructional bars. Live MYT clock. Proactive multimodal expected (MiniMax images, mmx video, matplotlib charts).
+§
+External witness > internal self-report. Closes multi-hour site ops with formal structured audit receipts (table: before→now, emoji status markers, session delta). Format: 44/44 probed, patches table, pending items table, session delta section with ΔS metrics.
+§
+Qwen Token Plan TEAM EDITION (2026-08-01): key sk-sp-H.DIEXP... in kunci-mas.env. Monthly quota/seat, NO 5hr/7day windows. Standard 25K, Pro 100K, Max 250K/mo. Credit Pack $700/625K. PRIMARY for OpenCode+Codex (RM0 marginal). 21 text + image/audio/video. Old Personal key=QWEN_BAILIAN_KEY. Mage-Flow MCP broken; use mmx-cli.
+§
+GitHub SSH commit verification: signature valid + key registered ≠ verified. TWO independent gates: (1) signing key in GitHub "Signing keys" section (done 2026-08-01), (2) commit email must match verified GitHub email. Current git user.email=agent@arifos.local → always no_user. Fix: change to arif@arif-fazil.com. Bypass pattern: disable required_signatures+reviews → merge → re-enable. Forge key fingerprint qSCH3lBN (id_ed25519 = arif-forge-push).

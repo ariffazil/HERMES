@@ -8,6 +8,8 @@ triggers:
   - "When verifying that a private key on disk matches the registered public key"
   - "When diagnosing key drift between registered pubkey and available keys"
   - "When working with arifosmcp.runtime.crypto_auth or sovereign_verify"
+  - "When a GitHub PR is blocked and someone suspects signing is the issue"
+  - "When diagnosing required_signatures or branch protection failures"
 version: "1.5"
 author: Hermes
 date: 2026-07-25
@@ -16,6 +18,101 @@ date: 2026-07-25
 # arifOS Ed25519 Sovereign Signing
 
 > **Cross-ref:** For the Phase 2 canonical challenge flow (15-field binding, `verify_authorization_challenge`, AAA approval_card, structured failure codes), see the `f13-sovereign-authorization-substrate` skill. This skill covers the legacy `actor:nonce` signing path and all key management.
+
+## GitHub SSH Commit Signing (git-level, NOT kernel-level)
+
+The `arif-forge-push` key at `/root/.ssh/id_ed25519` is used for **git commit signing** (`gpg.format=ssh`). This is a separate system from the arifOS kernel identity keys above.
+
+### How it works
+
+```
+Agent signs commit → uses /root/.ssh/id_ed25519 (private)
+Local git verifies → reads /root/.ssh/allowed_signers (maps key → arif@arif-fazil.com)
+GitHub verifies → checks github.com/settings/keys (SEPARATE trust store)
+Branch protection → checks required_signatures + required_pull_request_reviews + status checks
+```
+
+**CRITICAL: Local verification ≠ GitHub verification.** `git log --format="%G?"` showing `G` means the LOCAL machine trusts the signature. GitHub has its own trust store. A commit can be locally `G` but GitHub-unverified if the public key isn't registered at `github.com/settings/keys`.
+
+### PITFALL: PR blocked ≠ signing issue (2026-08-01 — CRITICAL MISDIAGNOSIS)
+
+When a PR is blocked, **check ALL branch protection requirements before assuming it's a signing problem.** The diagnostic flow:
+
+```bash
+# Step 1: Is the commit signed locally?
+git log --format="%H %G? %GS %s" -3
+# G = signed+verified locally, N = unsigned, U = signed but unverified
+
+# Step 2: What is the ACTUAL blocker?
+gh pr view <N> --repo <owner>/<repo> --json mergeStateStatus,reviewDecision,mergeable
+# BLOCKED + REVIEW_REQUIRED → approval issue, NOT signing
+# BLOCKED + MERGEABLE + no reviewDecision → check status checks
+# BLOCKED + signature issue → THEN check GitHub key registration
+
+# Step 3: Only if signing is the actual issue:
+gh api /user/keys --jq '.[].title'  # lists registered SSH keys
+ssh-keygen -lf /root/.ssh/id_ed25519.pub  # local key fingerprint
+# Compare fingerprints — if they match, key IS registered
+```
+
+**2026-08-01 case:** Agent reported "SSH key not registered on GitHub, sovereign must manually add it." The key had been registered since April 2026 (`arif-forge-push`, SHA256:qSCH3lBNfUeQcyV9Yx/Is2/5EqnNAHmpj4JyIgmRvAY). The actual blocker was `required_pull_request_reviews: 1` — no one had approved the PRs. The agent never ran `gh pr view --json reviewDecision` and jumped to the signing hypothesis.
+
+**The `admin:public_key` scope error is a red herring for diagnosis.** It means the token can't ADD keys programmatically — it does NOT mean keys are missing. Check existing keys with `gh api /user/keys` (read-only, works with `repo` scope) before concluding anything.
+
+### PITFALL: Authentication Key ≠ Signing Key on GitHub (2026-08-01)
+
+GitHub's SSH keys page (`github.com/settings/keys`) has **two separate sections**:
+- **Authentication keys** — used for SSH push/pull (git transport)
+- **Signing keys** — used for commit signature verification (`required_signatures` branch protection)
+
+A key registered ONLY under "Authentication keys" will NOT satisfy `required_signatures: true`. The same public key must be registered **again** under "Signing keys" with Type: **Signing Key**. Both registrations coexist for the same key (same fingerprint appears in both sections).
+
+**Programmatic registration** requires `admin:public_key` (or `write:public_key`) OAuth scope:
+```bash
+# Endpoint: POST /user/ssh_signing_keys (NOT /user/keys — that's auth keys only)
+curl -s -X POST https://api.github.com/user/ssh_signing_keys \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  -d '{"title":"arif-forge-push (signing key)","key":"ssh-ed25519 AAAA..."}'
+# Returns 404 if token lacks admin:public_key scope
+```
+**Current token scope (2026-08-01):** `gist, read:org, repo, workflow, write:packages` — missing `admin:public_key`. Sovereign must add signing keys manually at `github.com/settings/keys → New SSH key → Type: Signing Key`.
+
+**Diagnostic:** If commits show `verified: false` on GitHub despite local `G` status, check whether the key appears under "Signing keys" (not just "Authentication keys"). The fingerprint is the same — the distinction is purely which section it's registered in.
+
+**2026-08-01 resolution:** Sovereign manually added `arif-forge-push` as Signing Key. Same fingerprint (`SHA256:qSCH3lBNfUeQcyV9Yx/Is2/5EqnNAHmpj4JyIgmRvAY`) now appears in BOTH Authentication and Signing sections. All 5 PRs became mergeable immediately.
+
+### PITFALL: Commit email must match a verified GitHub email (2026-08-01 — CRITICAL)
+
+Even with the signing key correctly registered under **Signing keys**, GitHub marks commits
+`verified: false, reason: no_user` if `git config user.email` doesn't match any verified
+email on the GitHub account. GitHub's verification chain is:
+
+```
+commit.author.email → lookup GitHub user → check if THAT user has the signing key
+```
+
+If the email is `agent@arifos.local` (or any non-GitHub email), the lookup fails at step 1.
+The key registration is irrelevant — GitHub never gets to check it.
+
+**Current state (2026-08-01):** `git config --global user.email` = `agent@arifos.local` —
+this is NOT a verified email on the `ariffazil` GitHub account. All agent-signed commits
+will show `no_user` until this is changed to a verified email (e.g. `arif@arif-fazil.com`
+or the GitHub noreply address).
+
+**Fix:** `git config --global user.email "arif@arif-fazil.com"` (must be verified on GitHub).
+Old commits stay `no_user` forever — only new commits with the corrected email will verify.
+
+**Cross-ref:** For the full bypass-and-restore merge pattern when verification can't be
+fixed immediately (disable `required_signatures` + `required_reviews` → merge → re-enable),
+see `federation-git-zen` skill → `references/github-ssh-signing-verification.md`.
+
+### Branch protection catch-22
+
+With `enforce_admins: true` + `required_pull_request_reviews: 1`, the repo owner cannot approve their own PRs. Options:
+- Temporarily relax branch protection via API (`repo` scope is sufficient)
+- Have a second account approve
+- Use `gh api` to update protection rules, merge, then restore
 
 ## Key Paths (FOUR keys on disk — three correct for different purposes)
 

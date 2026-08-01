@@ -963,3 +963,23 @@ A previous session reported MuleRouter rejects `data:` URIs, but this was NOT re
 - **Personal vs Org workspace credits are isolated.** OpenRouter has two account tiers: Personal (regular API keys, shared credit pool) and Organization (sub-keys under management keys, per-workspace billing). Credits topupped on a Personal account do NOT apply to an Org workspace's sub-keys — they're separate `workspace_id`s. Always verify with `curl /api/v1/credits` on the active workspace before deploying.
 - **Old management key persists after creating a new one.** `POST /api/v1/keys` to create a management key does NOT deactivate the old one. The old key remains live with full authority until manually disabled at openrouter.ai/keys. There is NO API endpoint to revoke management keys — only the web UI. Sub-keys can be deleted programmatically: `DELETE /api/v1/keys/:hash` → `{"deleted":true}`.
 - **`/admin/keys` returns a 404 HTML page, not JSON.** The correct Management API endpoint is `GET /api/v1/keys` (sub-keys, requires management key Bearer auth), NOT `/admin/keys` which renders an OpenRouter web page.\n- **Key rotation scope-creep trap.** When rotating keys: verify the new key works (auth test + model call), update vault.env, confirm deployment picks it up, then **stop**. Do NOT chase downstream optimizations, audit third-party integrations, or start provisioning guardrails in the same cycle. Each downstream fix belongs in its own task loop. Arif will signal with "bodoh x payah la rotate buat semak kacau bilau. Apa yang ada guna ja" when you've over-scoped. The correct pattern: 3 loops only (scan/update/verify), declare done, surface remaining items as separate follow-ups.\n- **YAML list patching doubles entries.** When using `hermes config set` or python yaml to modify `fallback_providers`, the operation can create duplicates if the same model lands at multiple indices or old entries aren't removed first. Always verify with `hermes fallback list` after a change and run a dedup step if needed.
+
+- **Missing `capabilities` field causes tool-call JSON text dump (PROVEN 2026-08-01).** When a Hermes provider doesn't declare `capabilities: [function_calling]`, Hermes does NOT send the `tools` parameter in the API request. The model has no structured tool-call interface, so it tries to "use tools" by outputting raw JSON like `{"name": "web_extract", "arguments": {...}}` as plain text in the reply. **Symptom:** User sees JSON tool-call syntax dumped in chat, model responds with apologies or "How can I assist?" after the JSON. **Fix:** Add capabilities to the provider block:
+```yaml
+  opencode-go:
+    ...
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
+```
+**How to add safely:** Use `sed` to insert after `transport:` line — do NOT use `hermes config set` (it wipes the entire provider block).
+```bash
+cd ~/.hermes && sed -i '/^  opencode-go:/,/^  [a-z]/ {
+  /transport: openai_chat/a\    capabilities:\n      - chat\n      - function_calling\n      - reasoning
+}' config.yaml
+python3 -c "import yaml; yaml.safe_load(open('config.yaml')); print('YAML valid')"
+```
+**Verification:** After restart, the model should use structured tool calls (invisible to user) instead of dumping JSON text. Compare with a provider that already has capabilities declared (e.g., `tokenrouter` has `capabilities: [chat, function_calling, reasoning]`).
+
+- **`hermes config set providers.<name>.<field>` wipes the entire provider block (PROVEN 2026-08-01).** Running `hermes config set providers.opencode-go.capabilities '["chat"]'` replaced the ENTIRE opencode-go block (name, api, key_env, transport, primary, models list — all gone) with just `capabilities: '["chat"]'`. This is the same destruction pattern as `hermes config set model.provider` wiping the model block. **Recovery:** If config is git-tracked, `cd ~/.hermes && git checkout <commit> -- config.yaml`. Then use `sed` or Python yaml for the edit. **Rule:** `hermes config set` is ONLY safe for isolated leaf values that no other config depends on.

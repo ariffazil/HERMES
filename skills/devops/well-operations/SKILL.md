@@ -236,7 +236,7 @@ Then confirms and restarts well.service.
           if not fn.endswith('.py'): continue
           fpath = os.path.join(dirpath, fn)
           with open(fpath) as f: content = f.read()
-          if '<<<<<<<' not in content and '>>>>>>' not in content: continue
+          if '<<<<<<<' not in content and '>>>>>' not in content: continue
           content = re.sub(r'^>>>>>>> .*$\n?', '', content, flags=re.MULTILINE)
           content = re.sub(r'^=======$\n?', '', content, flags=re.MULTILINE)
           content = re.sub(r'^<<<<<<< HEAD\n?', '', content, flags=re.MULTILINE)
@@ -245,3 +245,7 @@ Then confirms and restarts well.service.
   "
   ```
   After bulk-clear, also check for syntax errors that were **masked** by the conflicts (duplicate lines where HEAD and THEIR versions both ended up in the file) — `grep -n 'default=.*default='` can catch one common pattern.
+
+- **`well_machine_diagnose` tool fails with `name 'os' is not defined`.** The function at `server.py` L10448 imports `json` and `pathlib` but does NOT import `os` — yet L10502 calls `os.cpu_count()`. Fix: add `import os as _os_md` inside the function body, and change the call to `_os_md.cpu_count()`. See `references/code-patches-2026-08-01.md` for both patches.
+
+- **`well_machine_diagnose` fails with `_omega_well_output() missing 1 required positional argument: 'mode'`.** After the `os` fix, the tool still fails because all three `_omega_well_output()` calls inside the function are missing the required `mode` parameter (function signature has no default). Add `mode="M_DIAGNOSE"` after each `lane="AGI"` line. Exact patches in `references/code-patches-2026-08-01.md`.

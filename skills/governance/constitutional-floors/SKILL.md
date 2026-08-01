@@ -542,6 +542,7 @@ The repos are separate (arifOS, AAA, A-FORCE, GEOX, WEALTH, WELL, HERMES) but th
 | 99 DERITA vectors | `skill_view(name='rasa-derita', file_path='references/99-derita-vectors.md')` | Full 99-vector topology |
 | Mechanics of Utterance | `skill_view(name='rasa-derita', file_path='references/mechanics-of-utterance.md')` | Words as geometric constraints |
 | 555-ASI Sensory Cascade | `skill_view(name='opencode-config-zen', file_path='references/555-asi-sensory-cascade.md')` | F2/F9/F12/F4 applied to multimodal gating |
+| AGI🦞 arifOS Briefing | `references/arifos-briefing-openclaw-2026-08-01.md` | OpenClaw's 8-part arifOS briefing — cross-agent perspective with alternative floor naming |
 
 ---
 

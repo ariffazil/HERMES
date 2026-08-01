@@ -85,6 +85,7 @@ grep -A2 "P17_makcik_articles_resolve" /root/forge_work/2026-07-30/EXTERNAL-WITN
 ## Pitfalls
 
 - **`sed -i` with a regex pattern** will replace regex meta-characters in string literals, breaking the code. The `(?:world/)?` pattern leaked into URL construction and matching conditions because `sed` replaced ALL occurrences of `/world/makcikgpt/` including those in string literals. Always use `patch` with exact context.
+- **The JS-rendered data format is UNSTABLE.** The `u:"/makcikgpt/<slug>"` pattern in inline JavaScript worked for one day (2026-07-30), then the format changed completely (2026-07-31) — 0 `u:` patterns, no extractable article URLs at all. The landing page is a pure SPA that loads article data dynamically. Regex-based slug extraction from the landing HTML is a **fragile contract** — expect P17 to break whenever the MakcikGPT frontend is rebuilt. The feed/sitemap/llms surfaces are the stable canonical sources.
 - **The same path pattern appears in comments** — updating those is cosmetic but leaving them is not harmful.
 - **The probe's `_follow()` function follows redirects.** If `/makcikgpt/` 301 → `/world/makcikgpt/`, the probe will follow but the canonical check (Location 3) must match the *final* URL, not the initial one.
 - **When adding a new regex pattern**, match the exact quote style of the existing code (raw strings with `r'...'` containing escaped quotes).

@@ -843,6 +843,44 @@ grep -A10 '<domain>' /etc/caddy/Caddyfile
 - **Gateway webhook secret** (if configured): Some gateways require a `TELEGRAM_WEBHOOK_SECRET`
   in requests. A missing or wrong secret returns `unauthorized` from the gateway, not Telegram.
 
+### 🔴 CRITICAL PITFALL: setWebhook Missing secret_token → 401 Loop
+
+When the OpenClaw gateway has `telegram.webhookSecret` configured (e.g., `TELEGRAM_WEBHOOK_SECRET`),
+but the webhook was registered via `setWebhook` **without** the `secret_token` parameter,
+Telegram never sends the `X-Telegram-Bot-Api-Secret-Token` header to the gateway.
+The gateway rejects every inbound update with **401 Unauthorized**, and Telegram queues
+all messages as pending (pending_update_count grows indefinitely).
+
+**Symptoms:**
+- `getWebhookInfo` shows `url` is set, `pending_update_count` is high (>300), `last_error_message: "Wrong response from the webhook: 401 Unauthorized"`
+- `getMe` returns valid bot info — token is correct
+- Gateway process is running, ports are listening
+- Caddy proxy logs show `POST /telegram-webhook` with 401 responses
+
+**Fix — re-register webhook WITH secret_token:**
+```bash
+source /root/.secrets/kunci-mas.env
+
+# Get the webhook secret from the gateway config or vault
+SECRET="${TELEGRAM_WEBHOOK_SECRET}"
+
+# Re-set the webhook with the secret token
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://openclaw.arif-fazil.com/telegram-webhook&secret_token=${SECRET}"
+
+# Verify — pending_update_count should start dropping
+curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getWebhookInfo" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)['result']
+print(f'url: {d[\"url\"]}')
+print(f'pending: {d[\"pending_update_count\"]}')
+print(f'last_error: {d.get(\"last_error_message\",\"none\")}')
+"
+```
+
+**Note:** `setWebhook` with the correct parameters returns `{"ok":true,"result":true,"description":"Webhook was set"}` — it replaces the previous (broken) registration. The `secret_token` value must match exactly what the gateway's `webhookSecret` expects.
+
+**Proven 2026-07-31:** Webhook set without secret → 364 pending updates → 401 loop for 18h. Re-registering with `secret_token` cleared the error immediately and pending count dropped to 334 within seconds.
+
 ## Hermes Config Edit Protocol
 
 The `patch` and `write_file` tools REFUSE to edit `config.yaml` (Hermes

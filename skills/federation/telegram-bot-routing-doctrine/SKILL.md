@@ -20,7 +20,8 @@ description: arifOS Federation Telegram bot routing — 3 bots, 9 groups, P1-P3 
 - One token = one process. Never shared, never borrowed.
 - `ps aux | grep gateway` must show **exactly one process per token**.
 - 409 Conflict = two processes polling same token → systemctl stop intruder.
-- All tokens in `/root/.secrets/vault.env` (SSOT). Never hardcoded.
+- All tokens in `/root/.secrets/kunci-mas.env` (SSOT — note: `ASI_BOT_TOKEN` and `ASI_ARIFOS_BOT_TOKEN` are duplicates, same prefix `8410138119`; `HERMES_TELEGRAM_BOT_TOKEN` aliases `${ASI_BOT_TOKEN}`). Never hardcoded.
+- **Known risk:** `forge-gateway.service` (`/etc/systemd/system/forge-gateway.service`) — disabled by default but can be manually started, spawning a second Hermes gateway under `HERMES_HOME=/root/.forge` with the FORGE token (8727…). This creates a P1 dual-gateway conflict. If seen running while `hermes-asi-gateway.service` is also active, stop it immediately. See "Dual Gateway Forensics" below.
 
 ## P2 — Channel Ownership (F1 AMANAH + F4 CLARITY)
 
@@ -87,6 +88,7 @@ grep 'require_mention' /root/.hermes/config.yaml
 ## References
 
 - **`references/telegram-media-pipeline.md`** — how images, voice, video, and documents are downloaded, cached, batched, and routed to the agent when a user sends them via Telegram. Covers native vision vs Path B (model-swap to Qwen-VL) and the legacy IMAGE TRANSCRIPT pipeline. Source-of-truth code paths in the Hermes gateway.
+- **`references/dual-gateway-20260731.md`** — full forensic record of a P1 dual-gateway incident: forge-gateway.service discovery, token rejection, process tree, vault token audit, and SIGSTOP-first resolution. Reference when diagnosing similar multi-gateway conflicts.
 
 ## Associated Skills
 
@@ -163,8 +165,72 @@ curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/deleteWebhook"
 curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook?url=https://openclaw.arif-fazil.com/telegram-webhook&secret_token=${TELEGRAM_WEBHOOK_SECRET}"
 ```
 
+## Dual Gateway Forensics
+
+When two Hermes gateway processes are running concurrently — P1 violation. Diagnostic workflow:
+
+### 1. Identify all gateway processes
+```bash
+ps aux | grep 'hermes gateway' | grep -v grep
+```
+Note PIDs and start times. Two gateways with `--replace` flag = likely conflict.
+
+### 2. Trace which token each gateway uses
+```bash
+for pid in <PID1> <PID2>; do
+    echo "=== PID $pid ==="
+    cat /proc/$pid/environ 2>/dev/null | tr '\0' '\n' | grep -E 'TELEGRAM_BOT_TOKEN|HERMES_HOME' | sed 's/=.\{10,\}/=***/g'
+done
+```
+
+### 3. Trace systemd origin (if any)
+```bash
+systemctl status <pid> 2>/dev/null  # shows unit if systemd-managed
+cat /proc/<pid>/cgroup               # cgroup path reveals service name
+```
+
+Key identifiers:
+| Signal | What it tells you |
+|--------|-------------------|
+| `HERMES_HOME=/root` | Legitimate ASI gateway |
+| `HERMES_HOME=/root/.forge` | Forge profile — intruder |
+| `TELEGRAM_BOT_TOKEN=8410…` | ASI💃 token |
+| `TELEGRAM_BOT_TOKEN=8727…` | FORGE🔥 token — should NOT be in a Hermes gateway |
+| PPid=1 (init) | Orphaned process — parent died, no restart guard |
+
+### 4. Check gateway_state.json for connection status
+```bash
+python3 -c "
+import json
+d = json.load(open('/root/.forge/gateway_state.json'))
+print(f'State: {d[\"gateway_state\"]}')
+print(f'Telegram: {d[\"platforms\"][\"telegram\"][\"state\"]}')
+print(f'Error: {d[\"platforms\"][\"telegram\"].get(\"error_message\",\"none\")}')
+"
+```
+If Telegram state is `retrying` with "token rejected by server" — the gateway can't actually post. Token conflict with another process (e.g., opencode bot.py) holding the webhook.
+
+### 5. Safe resolution: SIGSTOP before SIGKILL
+```
+Do NOT kill immediately — investigate restart triggers first.
+1. SIGSTOP (kill -STOP <pid>) — freezes process, preserves state for forensics
+2. Trace the caller: check systemd unit, cron, parent process
+3. If systemd unit exists: systemctl stop <unit> && systemctl mask <unit> (if unwanted)
+4. If orphaned with no restart trigger: SIGKILL safe
+5. Monitor 60s — if process rebirths, there's a hidden caller
+```
+
+### forge-gateway.service
+```bash
+systemctl cat forge-gateway.service  # review unit
+systemctl status forge-gateway.service
+systemctl is-enabled forge-gateway.service  # should be 'disabled'
+```
+This unit runs `hermes gateway run --replace` with `HERMES_HOME=/root/.forge` and FORGE token. If seen active alongside `hermes-asi-gateway.service`: `systemctl stop forge-gateway.service`. If never wanted: `systemctl mask forge-gateway.service`.
+
 ## Known Gaps / Caveats
 
 - OpenClaw's system prompt uses AAA guest rule via text instruction — no code-level topic_filter. ~95% coverage.
 - `-1004446358629` (arifOS channel) — now active for nightly-seal deliveries (2026-07-26). ASI bot covers default Hermes responses too.
 - FORGE bot needs Telethon setup to be usable in groups (currently DM-only tool interface).
+- `forge-gateway.service` exists as a disabled-but-dangerous unit. If manually started, it creates a P1 dual-gateway conflict with the ASI gateway. Token will be rejected by Telegram (opencode bot.py holds the webhook), but the process wastes resources retrying.

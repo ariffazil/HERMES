@@ -27,47 +27,47 @@ probe_summary:
 tiers:
   bulk:
     use: "cron jobs, background scans, high-volume summaries"
-    provider: qwen-token-plan
+    provider: bailian-token-plan
     model: qwen3.6-flash
     endpoint: chat_completions
     cost: "RM0 — Pro plan (flat monthly)"
     fallback: deepseek-v4-flash
-    fallback_provider: bailian
-    fallback_cost: "RM0 — Bailian token plan"
-    note: "Qwen3.6 Flash is fast, 1M ctx, zero marginal cost. Bailian deepseek-v4-flash fallback."
+    fallback_provider: bailian-token-plan
+    fallback_cost: "RM0 — Pro plan"
+    note: "Qwen3.6 Flash — 1M ctx, 64K output, zero marginal cost. Fallback: deepseek-v4-flash."
 
   default:
     use: "Telegram chat, daily work, casual code"
-    provider: qwen-token-plan
+    provider: bailian-token-plan
     model: qwen3.7-plus
     endpoint: chat_completions
     cost: "RM0 — Pro plan (flat monthly)"
     fallback: deepseek-v4-pro
-    fallback_provider: qwen-token-plan
+    fallback_provider: bailian-token-plan
     fallback_cost: "RM0 — Pro plan"
-    note: "Qwen3.7 Plus is fast, has vision for Telegram photos, zero marginal cost. DS V4 Pro fallback for hard questions."
+    note: "Qwen3.7 Plus — 1M ctx, 128K output, vision (Telegram photos), zero marginal cost. DS V4 Pro fallback."
 
   heavy:
     use: "code generation, audits, long-context reasoning"
-    provider: qwen-token-plan
+    provider: bailian-token-plan
     model: deepseek-v4-pro
     endpoint: chat_completions
     cost: "RM0 — Pro plan (flat monthly)"
     fallback: qwen3.7-max
-    fallback_provider: qwen-token-plan
+    fallback_provider: bailian-token-plan
     fallback_cost: "RM0 — Pro plan"
-    note: "DS V4 Pro — 1M ctx, best reasoning, zero marginal cost on Pro plan. Qwen3.7 Max fallback."
+    note: "DS V4 Pro — 1M ctx, best reasoning, zero marginal cost. Qwen3.7 Max (128K output) fallback."
 
   apex:
     use: "rare governed judgments, constitutional reasoning"
-    provider: qwen-token-plan
+    provider: bailian-token-plan
     model: glm-5.2
     endpoint: chat_completions
     cost: "RM0 — Pro plan (flat monthly)"
     fallback: deepseek-v4-pro
-    fallback_provider: qwen-token-plan
+    fallback_provider: bailian-token-plan
     fallback_cost: "RM0 — Pro plan"
-    note: "GLM-5.2 — constitutional tier, 753B MoE, MIT license. Zero marginal cost. DS V4 Pro fallback for zero-censorship guarantee."
+    note: "GLM-5.2 — constitutional tier, 753B MoE, 198K ctx (platform limit), 128K output, MIT license. DS V4 Pro fallback for zero-censorship guarantee."
 
 # ── Live Models (probed alive) ──
 # ALL models in zen_alive + go_alive are cloud API models.
@@ -107,6 +107,9 @@ zen_alive:
     http_status: 200
     endpoint: chat_completions
     requires: api
+    context: 198000
+    output: 131072
+    note: "198K ctx (platform limit), 128K output. 753B MoE, MIT license."
     
   glm-5.1:
     alive: true

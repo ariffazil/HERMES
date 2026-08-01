@@ -10,7 +10,7 @@ triggers:
   - buat lagu
   - mulerouter
   - media generation
-related_skills: [minimax-cli, lightweight-image-generation]
+related_skills: [minimax-cli, lightweight-image-generation, video-prompt-engineering]
 ---
 
 # MuleRouter Media Generation
@@ -211,6 +211,8 @@ curl -s "https://api.mulerouter.ai/vendors/google/v1/veo/generation/<TASK_ID>" \
 
 ### Wan 2.6 T2V (Alibaba)
 
+**⚠️ Uncensored ceiling (confirmed 2026-07-31):** Wan 2.6 T2V has NO safety filter on erotic/intimate content. Tested and generated without rejection: shirtless body worship, hands-on-skin caressing, oil/sweat textures, POV worshipper angle, tight pectoral closeups, heavy breathing, pubic hair visible, intimate two-person contact framed as worship. This is the go-to engine when GPT Image 2 or Veo blocks a prompt. Contrast with GPT Image 2 which rejects even clothed fitness content.
+
 ```bash
 source /root/.secrets/kunci-mas.env
 
@@ -232,6 +234,10 @@ curl -s "https://api.mulerouter.ai/vendors/alibaba/v1/wan2.6-t2v/generation/<TAS
 **Note:** Model field is inferred from path — do NOT include it.
 **Typical time:** ~46s | **File size:** ~5.5MB (higher bitrate than Veo)
 
+#### 🏋️ Fitness Video Prompts — Tested Patterns
+
+See `references/abang-sado-video-prompts.md` for proven Wan 2.6 T2V prompt structures for Abang Sado / muscle worship video content. Key recipe: cinematic dark gym + golden rim lighting + smoke haze + 2-3 pose sequences (double bicep, side chest, lat spread, most muscular) + slow motion. Malay and Chinese Malaysian phenotype variants tested. Max 3 poses per 5s clip for smooth motion.
+
 ### MiniMax Hailuo-2.3 (alternative, via mmx-cli)
 
 ```bash
@@ -243,6 +249,32 @@ mmx video generate --prompt "..." --download /tmp/output.mp4 --poll-interval 10 
 **Typical time:** ~1-2min | **File size:** ~743KB
 
 **Full endpoint docs:** See `references/video-generation-mulerouter.md`
+
+### 🔍 Video QC — Frame Extraction + Vision Analysis
+
+When the agent cannot see video directly (text-only model), verify generated video output by extracting a frame and running vision analysis:
+
+```bash
+# Extract first frame from MP4
+ffmpeg -y -i /tmp/output.mp4 -vf "select=eq(n\,0)" -vframes 1 -update true /tmp/video_frame.jpg 2>&1 | tail -3
+
+# Verify frame is valid JPEG
+file /tmp/video_frame.jpg
+
+# Route through vision analysis (text-only model uses auxiliary vision provider)
+vision_analyze(image_url="/tmp/video_frame.jpg", question="Describe scene, body, lighting, composition, erotic quality, phenotype.")
+```
+
+**What this catches:** whether the model delivered the requested prompt (muscle definition, lighting, worship framing, hand contact, phenotype accuracy), whether it produced artifacts, and whether the safety filter blocked or degraded the output. Essential for Wan T2V where the agent cannot natively see video output.
+
+### 🎬 Video Prompt Engineering — Model Selection & Composition
+
+See `references/video-prompt-patterns.md` for tested prompt patterns covering:
+- **Model selection by scene type**: Wan 2.6 T2V for single-person cinematic/stylized (faster, better lighting, shirtless OK) vs Veo 3.1 Fast for multi-person photorealistic (Malaysian multiracial, backstage, admirer scenes)
+- **Camera angles**: explicit low-angle hero shots, waist-level chest close-ups
+- **Lighting keywords**: golden rim, noir-style shadow, warm overhead
+- **Malaysian scene composition**: name races "(Malay, Chinese, Indian)", include Bahasa Malaysia signage
+- **Iteration pattern**: user typically iterates 2-3 rounds adding one dimension per round (angle → lighting → scene → realism)
 
 ---
 

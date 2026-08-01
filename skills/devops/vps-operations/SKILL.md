@@ -86,7 +86,8 @@ ss -tlnp | head -30
 
 **🟡 Medium (RAM recovery):**
 9. Multiple instances of same process (e.g., 2× kimi-code) — kill older
-10. Orphaned Docker volumes — `docker volume prune -f`
+10. Hermes gateway duplicates — see `references/hermes-gateway-duplicates.md` for detection, telemetry capture, canonical PID verification, and the restart race condition pitfall
+11. Orphaned Docker volumes — `docker volume prune -f`
 11. Stale tsserver/pyright (IDE servers from killed editors) — kill by PID
 
 **🟢 Low (housekeeping):**
@@ -199,6 +200,7 @@ sed -i 's|\$apr1\\$|\\$apr1\\$|g' /path/to/env/file
 - **Never `rm -rf` a git repo.** Always move to quarantine: `mv /root/repo /root/.quarantine-YYYY-MM-DD/repo`. User can verify before permanent deletion.
 - **Parallel probes, serial fixes.** Recon is concurrent. Cleanup is ordered — critical first, then high, then medium. Don't skip the ordering.
 - **Agent session death → orphan cascade (proven 2026-07-23).** When agent sessions (OpenCode, Kimi, Hermes) die without cleanup, their spawned MCP child processes (github-mcp-server, browser, kimi-code, pytest) survive as orphans. These stack up silently: 3× github-mcp-server at 58% CPU each, kimi-code at 25%, stale browser at 75%. Total: 200%+ wasted CPU. Detection: `ps aux --sort=-%cpu | head -15` — look for `github-mcp-server`, `kimi-code`, `MainThr+` with PPID=1. Fix: `kill -9 <pid>` for all orphans, no service impact. Root fix: session-cleanup hook that kills children when parent exits — not yet implemented.
+- **Hermes gateway restart race (proven 2026-07-31).** Killing a stopped (`T` state) orphan gateway can trigger the restart mechanism to spawn a NEW duplicate alongside the active gateway. After kill, wait 10s and re-check: `ps aux | grep "hermes gateway" | grep -v grep | wc -l` — if >1, a race occurred. Don't kill either active gateway without explicit direction. Full pattern in `references/hermes-gateway-duplicates.md`. Root cause: restart watcher sees the dead sibling removed and fires a restart, but the active gateway was never down.
 - **Boot storm after systemd cascade reboot (proven 2026-07-23).** When a service failure cascades to a full VPS reboot (see systemd dependency chain pitfall), all services fire up simultaneously. This creates a transient 1-minute load spike of 11+: `uptime` shows 1 min, load 11.46, service processes all starting. This is NOT a problem — it's normal boot contention. Load decays to single digits within 2-3 minutes as services finish init. Detection: check `uptime` — if 1m load is high but 5m is <50% of it and uptime is <5 min, it's a boot storm. Fix: none needed. Do NOT investigate processes during this window — they'll look busy because they are starting.
 
 ## arifOS Event-Loop Hang — Two Failure Modes

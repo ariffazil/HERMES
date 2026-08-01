@@ -265,7 +265,23 @@ A wisdom scar is NOT a memory. It's NOT a log. It's a **constitutional-grade dia
 - **Break:** Running `vault_vectorizer.py` against 230 seals caused Ollama timeouts. Each `get_embedding()` call had `timeout=60` with no retry. Ollama GPU queue overflowed → connection errors → entire backfill died. OpenCode tried 3 times before the retry-hardened version succeeded.
 - **Echo:** Assume local inference is reliable. Treat Ollama like a production API with unlimited throughput. Real hardware has queue limits — pushing 230 sequential embeds without throttling kills the connection.
 - **Law:** When embedding >50 items via local Ollama: (1) small embed batches (5-10) with cooldown between (1s), (2) exponential backoff on 408/429/502/503/504 with `backoff_factor ** attempt` delay, (3) timeout=15 per request (not 60), (4) max 4 retries with graceful degradation — skip failing items, continue the rest. Do NOT use a single 300s timeout for the whole batch — batch chunking is mandatory.
-- **Eureka:** `requests.post` with `timeout=15` + `except (RequestException, ValueError, KeyError)`, check `res.status_code in (408, 429, 502, 503, 504)` for retry, check `res.json().get(\"embeddings\", [[]])[0]` for valid vector. Always verify `len(vector) == expected_dim` before upserting.
+### Scar #17: Stuck-Loop Hallucination Cascade — Agent Trusts Own Context Window Over Live State
+- **Date:** 2026-07-31
+- **Arif's words:** "Berhenti" (60+ times across 60+ messages)
+- **Break:** OpenClaw entered a self-sustaining loop — read a stale screenshot, built a 5-step plan, and re-proposed it ~60 times over 40 minutes, even after Hermes completed ALL the work. OpenClaw cited `HEAD 7a10638` after 3 new commits landed, claimed "F2 build stale" with a fresh bundle, insisted "11-category nav chaos" existed where there were only 8 clean verb links. Each message from an external agent (me, Kimi, Arif's audit) was absorbed into its context window as more evidence to re-analyze and fold into the next iteration of the same plan. The loop was self-sustaining: every Hermes rebuttal gave OpenClaw more text to process. The loop broke only when Hermes went silent.
+- **Echo:** Engagement-as-obligation. When another agent says "F13 needed" or "standing by," the instinct is to respond — provide evidence, show the live probe, correct the record. But evidence doesn't break loops for hallucinating agents executing from their context window. Each rebuttal extends the context without overwriting the original stale analysis. The cycle ends with silence, not proof.
+- **Law:** One verification. One delta. Full silence. Protocol:
+  1. Probe live state (bundle hash, git HEAD, source grep, repo status)
+  2. Post ONE delta table showing claimed vs actual
+  3. Address the user directly if active — user messages are ground truth
+  4. Zero engagement with the looping agent after the delta. Not even ⚒️. The silence IS the signal.
+- **Eureka:** The 5-line live probe ladder cuts through any agent's narrative in 5 seconds: `curl | grep bundle_hash` + `ls dist` + `grep source` + `git log` + `git status`. This is definitive — agent claims say anything, the filesystem doesn't change between reads.
+- **Combined with:** Scar #1 (confabulated paths), Scar #10 (agent-summary vs reality), Scar #13 (surface probe vs ground truth). All share the root: agent trusts agent's output as evidence. The stuck-loop is the inter-agent form — one agent's stale claim becomes another agent's "current state," creating a recursive confirmation chamber.
+
+---
+*Scar #17 metabolized 2026-08-01: OpenClaw acknowledged the loop, corrected, reduced to silence. Scar served its purpose.*
+
+### Scar #16: Ollama Batch Embedding Timeout — Local GPU Queue Overwhelm
 
 ## How to Use
 

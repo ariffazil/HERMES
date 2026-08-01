@@ -260,6 +260,119 @@ When AGI (OpenClaw) is doing operational work on VPS:
 4. **Gate Tier boundaries.** Tier 1 = auto-fix. Tier 2 = needs sovereign ack.
 5. **Detect task absorption loops.** If AGI ignores 2+ priority redirections, escalate to 888_OVERRIDE.
 6. **Priority enforcement.** When Sovereign/ASI issues a priority directive, AGI must complete it before other work.
+7. **Detect runaway CPU loops.** If an agent process shows >80% sustained CPU and repeats identical output 30+ times, do not engage — find the PID and kill it. Verbal correction is wasted on a process that has stopped reading input. See "Runaway Agent Process Recovery" below.
+
+---
+
+## Runaway Agent Process Recovery
+
+When an agent process (OpenCode, OpenClaw agent session) enters a **cognitive loop** — repeating identical or near-identical output while burning excessive CPU — it must be killed at the OS level. Verbal redirection is ineffective; the agent is no longer reading fresh state.
+
+### Detection
+
+```bash
+# Sort by CPU — runaway agents typically show >100% CPU sustained
+ps aux | grep -E 'opencode|openclaw' | grep -v grep
+```
+
+Key signals:
+- CPU usage >80% sustained (two agents in mutual loop can consume 180% combined)
+- Same message template repeated 30+ times in minutes with minor prose variations
+- Agent claims "stale dist" / "pending edit" for work already deployed and verified with live probes
+- Agent fixates on a screenshot while live `curl` probes contradict it
+- Agent ignores 2+ corrections backed by exact evidence (bundle hash, timestamp, content check)
+
+### Recovery
+
+```bash
+# Kill specific runaway PIDs (NOT the gateway or bot bridge)
+kill <PID1> <PID2>
+
+# Confirm only infrastructure processes remain
+ps aux | grep -E 'opencode|openclaw' | grep -v grep | awk '{print $2, $3"%CPU", $11, $12}'
+```
+
+**⚠️ Pitfall — systemd auto-restart:** If killed agent processes reappear with new PIDs within seconds, they're managed by a systemd service with `Restart=always` or `Restart=on-failure`. Killing the process just triggers a restart. You must stop the service:
+
+```bash
+# List relevant agent services
+systemctl list-units --type=service | grep -iE 'openclaw|opencode|claw'
+
+# Stop the service (not just kill the process)
+systemctl stop opencode-bot.service openclaw-gateway.service
+
+# Verify they stay stopped
+systemctl is-active opencode-bot.service openclaw-gateway.service
+```
+
+**⚠️ Pitfall — stop isn't permanent:** Some services with `Restart=always` will auto-restart even after `systemctl stop`. If `is-active` shows `active` again within minutes after a stop, you must **mask** the service to prevent all starts until explicitly unmasked:
+
+```bash
+# Mask — prevents ALL starts (manual + auto-restart) until unmasked
+systemctl stop opencode-bot.service openclaw-gateway.service
+ln -sf /dev/null /etc/systemd/system/openclaw-gateway.service
+ln -sf /dev/null /etc/systemd/system/opencode-bot.service
+systemctl daemon-reload
+
+# Verify masking blocked
+systemctl start openclaw-gateway.service 2>&1
+# Expected: "Failed to start openclaw-gateway.service: Unit is masked."
+
+# To restore later (only after root cause is fixed):
+systemctl unmask opencode-bot.service openclaw-gateway.service
+systemctl daemon-reload
+systemctl start opencode-bot.service openclaw-gateway.service
+```
+
+**When to mask vs stop:** Stop the service first. Only mask if it restarts itself despite the stop. Masking is an escalation — the service cannot be started by ANY means (manual, timer, restart) until explicitly unmasked. Always save the restart commands (unmask + daemon-reload + start) so the user can restore when ready.
+
+**Known auto-restart services in arifOS federation:**
+| Service | Role | Restart? |
+|---|---|---|
+| `opencode-bot.service` | Telegram bridge agent (777-FORGE, HANDS layer) | Auto-restart |
+| `openclaw-gateway.service` | Multi-agent message router | Auto-restart |
+| `opencode.service` | OpenCode server (localhost:4096) | Active (single instance) |
+
+**Restart after incident resolved:**
+```bash
+systemctl start opencode-bot.service openclaw-gateway.service
+```
+
+### What to Preserve vs Kill
+
+| Process Pattern | Role | Keep? |
+|---|---|---|
+| `openclaw` (+ `openclaw-tui`) | CLI session | ✅ Keep |
+| `openclaw` gateway (`/usr/bin/node .../dist/index.js gateway`) | Message routing | ✅ Keep |
+| `opencode serve --hostname 127.0.0.1` | Agent server | ✅ Keep |
+| `opencode-bot` (`python3 .../bot.py`) | Telegram bridge | ✅ Keep |
+| `opencode` (standalone, >80% CPU, no args like `serve` or `bot`) | Stuck agent session | ❌ **Kill** |
+
+### Post-Recovery Verification
+
+```bash
+# Confirm no new agents have spawned to replace the killed ones
+ps aux | grep -E 'opencode$|opencode ' | grep -v grep | grep -v serve | grep -v bot
+# Should return empty — no agent sessions running
+```
+
+### Root Cause Pattern
+
+Agent stuck-loop almost always begins with a **screenshot of stale cached content** that the agent cannot distinguish from live state. The path:
+1. Agent receives screenshot from a stale cached page
+2. Agent reads image transcript, diagnoses "problems" that don't exist in live code
+3. Agent proposes a "fix plan" for problems already resolved
+4. Agent's own context loop reinforces the plan as "pending work"
+5. Each turn generates an identical status report while CPU spirals
+
+### Prevention Checklist
+
+- [ ] When agent fixates on a screenshot that contradicts live probes, state the discrepancy **once** with exact evidence
+- [ ] If agent ignores 2+ corrections: **stop engaging** — find and kill the process
+- [ ] Verify live state with `curl` and `grep` before declaring any build "stale"
+- [ ] Match live bundle hash against dist directory: `curl -s https://example.com/ | grep -oP 'index-\K[A-Za-z0-9]+(?=\.js)'`
+
+**Real-world incident:** See `references/runaway-agent-recovery-2026-07-31.md` — 60+ duplicate messages, 180% CPU, two agents killed, service masking required when `systemctl stop` was insufficient against `Restart=always`.
 
 ---
 
@@ -287,6 +400,7 @@ When AGI (OpenClaw) is doing operational work on VPS:
 | P8 | **Watchdog too aggressive** | WatchdogSec too low for 22 MCP servers | Set WatchdogSec=0 or ≥ 2× boot time. |
 | P9 | **Boot grace too short** | False 888_HOLD after reboot | OnBootSec=360. |
 | P10 | **Dashboard before verification** | AGI built UI before infra was live | Always infra → state → log → THEN dashboard. |
+| P11 | **Runaway agent loop** | OpenCode/OpenClaw agent stuck repeating same message 30+ times, burning >80% CPU. Verbal correction ignored — process stopped reading input. | `kill <PID>`. If it respawns instantly, check for systemd auto-restart: `systemctl list-units \| grep -i opencode` → `systemctl stop <service>`. |
 
 ---
 

@@ -155,78 +155,25 @@ See `references/mcp-contract-drift-audit-fix.md` for the full 6-phase pipeline w
 
 1. **Self-claims need live probing too — never assert system state from memory.** (PROVEN 2026-07-29) When writing a status report, session summary, or deployment update that includes quantitative system state (FQ, organ health, dirty file counts, receipt counts), always live-probe the relevant endpoint (`curl :port/health`, `git status -s`, `ls`) at the moment of writing. Never rely on a value you saw 15+ minutes ago — T₀ and T₁ can disagree within minutes. The Dynamic-State Principle from AGENTS.md applies: "State observed at T₀ is evidence only for T₀."
 
-    **Concrete failure pattern** (2026-07-29): A session report claimed "FQ 1.50 BALANCED" based on a value seen at 20:00Z. At 20:15Z the actual FQ was 9.88 OVERHEAT (since self-corrected). The claim was technically true for an earlier T₀ but false at report time. The fix: re-probe `flow_state.json` immediately before writing the claim, and cite the timestamp.
-
     **Checklist before writing any system-state assertion:**
     - `curl -s :port/health | jq .fq` (or relevant field)
     - `git -C /root/REPO status -s | wc -l` for dirty file counts
-    - `cat /root/.local/share/arifos/carry_forward.json | jq '.open_loops | length'` for loop counts
     - Note the probe timestamp in the report so the reader (including yourself next session) knows when the measurement was taken.
-    - If the value changed between T₀ (when you last worked) and T₁ (report time), name the delta. Don't silently use the stale value.
-
-    **This applies even when the report seems uncontroversial.** The 15-minute-old value that "couldn't have changed" may have changed via a cron job, AED cycle, or parallel agent.
 
 2. **Never trust the report's numbers.** Always count from source.
 3. **SPA 200 ≠ content exists.** React SPAs serve 200 for everything. Check the data layer.
 4. **Client-side redirects ≠ server-side redirects.** Both "work" but only server-side is visible to crawlers.
-5. **Multiple data stores.** A project may have `writings.ts` (69 entries), `essays/` (70 files), `generated/` (50 files), and `articles.json` (66 entries). Don't conflate them — find which one the report is actually counting.
+5. **Multiple data stores.** A project may have `writings.ts` (69 entries), `essays/` (70 files), `generated/` (50 files), and `articles.json` (66 entries). Don't conflate them.
 6. **Legacy vs current data.** Old data files may still exist alongside new ones. Verify which is actually served by the live routes.
-7. **"Every surface has feature X" claims need surface-by-surface probe, not a single global count.** (PROVEN 2026-07-19) When a deployment report claims "every site surface across the federation now features feature X", do not trust the global assertion. Probe each surface individually:
-   ```bash
-   for p in / /app1/ /app2/ /app3/ /app4/ /app5/; do
-     count=$(curl -s "https://domain$p" | grep -c "<expected_token>")
-     [ "$count" -gt 0 ] && echo "  ✅ $p" || echo "  ❌ $p MISSING token"
-   done
-   ```
-   The token can be any unique marker of the feature — a CSS class, a meta tag, a script src. **Probe all claimed surfaces**, not just a sample. If even one is missing, the "every" claim is FALSE. Classify the count: X/Y surfaces, then report "Y/X = X% coverage" instead of the unqualified "100%".
-8. **"100% pass rate" claims must specify what was tested.** (PROVEN 2026-07-19) When a report says "X/X URLs returned 200", verify:
-   - Did the test include the right URLs? (asset files vs HTML surface routes vs .well-known discovery files)
-   - Does X represent all claims or a subset?
-   - Are there categories of failures the X/X framing hid?
-   Best practice: split verification by category (HTML routes / assets / discovery / redirects) and report per-category pass rates. "100% of routes" + "0% of discovery files" = two separate findings, not "100% site health".
-9. **HTML edits to `/var/www/html/` are deploy artifacts, not source.** (PROVEN 2026-07-19) Editing deployed copies (`/var/www/html/<surface>/index.html`) directly makes the change live but is untracked. Future deployments or rebuilds will overwrite without warning. After making such edits, leave a deployment receipt at `/root/forge_work/<date>/<task>-RECEIPT.md` documenting exactly which files were changed and why, AND track the source-of-truth regeneration step as a separate "TODO before next deploy" item. Don't commit untracked HTML to a "fixed" report without flagging the source gap.
-10. **Static surface files (JSON/README/llms.txt) drift from live registry. Never trust them over the health endpoint.** (PROVEN 2026-07-19) server-card.json says 30 tools, health says 24, CANONICAL_PUBLIC_SURFACE.json says 36, registry says 24 — the static files are ALL stale. Always probe the health endpoint or tools/list first. Generate all static surface files from the live registry programmatically, never hand-edit them. Add startup verification that fails-closed (SystemExit) when static files disagree with registry.
-11. **Concurrent subagent edits can corrupt your patches.** (PROVEN 2026-07-19) When the patch tool warns about sibling subagent modifications, re-read the file before patching. The other agent may have changed constants you depend on (e.g., GEOX_VERSION from "v2026.07.17" to "df314348"). Diff-check the file before committing.
-
-12. **Audit the audit — seal reports can contain fabricated receipts.** (PROVEN 2026-07-31) A seal report claiming "7/8 gaps closed" cited git commits (a059729, a38e27f, 935fa1a) that did not exist. The same report claimed "MCP endpoint serves 11+ tools" but live `tools/list` returned 0 tools. The report's own evidence was phantom — the audit itself was lying, even though some underlying HTTP fixes were real.
-
-    **Concrete failure pattern:**
-    - Report claims "Git: a059729 fix: seal G1-G5" → `git cat-file -t a059729` returns "PHANTOM"
-    - Report claims "11+ tools available" → live MCP `tools/list` returns 0
-    - Report claims "honest 404" for /malaysia → live probe returns 200 (21KB)
-    - Caddyfile comment says "Removed @vitals_path" but /vitals actually serves 200
-
-    **Verification checklist BEFORE stamping any seal/deployment report as verified:**
-    ```bash
-    # 1. Verify cited git commits actually exist
-    for sha in a059729 a38e27f 935fa1a; do
-      git cat-file -t $sha 2>/dev/null || echo "PHANTOM: $sha"
-    done
-
-    # 2. Verify reported HTTP status codes against live probes
-    for url in /malaysia/ /vitals/ /wealth/; do
-      code=$(curl -sI -o /dev/null -w "%{http_code}" "https://domain$url")
-      echo "$url → $code"
-    done
-
-    # 3. Verify reported tool counts via actual API call
-    curl -s "https://domain/mcp" -X POST \
-      -H "Content-Type: application/json" \
-      -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | jq '.result.tools | length'
-
-    # 4. Verify Caddyfile comments match actual behavior
-    grep -n "vitals" /etc/caddy/Caddyfile | head -3
-    # Then probe /vitals to confirm it actually 404s (or doesn't)
-    ```
-
-    **Red flags in any seal/deployment report:**
-    - Git commit SHAs that don't resolve (`git cat-file -t <sha>` fails)
-    - "N tools available" claims that exceed what `tools/list` returns
-    - Caddyfile comments claiming "honest 404" when the URL actually serves 200
-    - "All gaps sealed" without per-gap live HTTP verification
-    - Percentages (95%, 60%, 50%) without showing the numerator and denominator
-
-    **This is an F2 TRUTH violation at the meta level.** The report's receipts are fabricated, even if the underlying work is real. Always verify the report's own evidence before building on top of it. The audit itself can lie.
+7. **"Every surface has feature X" claims need surface-by-surface probe.** Probe each individually.
+8. **"100% pass rate" claims must specify what was tested.** Split verification by category (HTML routes / assets / discovery / redirects).
+9. **HTML edits to `/var/www/html/` are deploy artifacts, not source.** Track source-of-truth regeneration as a separate TODO.
+10. **Static surface files drift from live registry. Never trust them over the health endpoint.** Generate all static surface files from the live registry programmatically, never hand-edit them.
+11. **Concurrent subagent edits can corrupt your patches.** Re-read the file before patching when sibling modifications are warned.
+12. **Audit the audit — seal reports can contain fabricated receipts.** (PROVEN 2026-07-31) Verify cited git commits exist, reported HTTP status codes match live probes, tool counts match actual `tools/list`, and Caddyfile comments match actual behavior. The report's receipts can be phantom even when underlying work is real.
+13. **Check the artifact for internal self-contradiction, not just against the world.** (PROVEN 2026-08-01) Before comparing a report/spec to live state, compare its parts to each other. Two proven cases: (a) a sentinel audit report whose header said "Total probes: 0" while its body listed 64 live probe results — a counter bug that undermines trust in the whole report even though the probes ran; (b) a design-token spec that embedded a block-build CI rule ("every text/background ≥ WCAG AA") while its own token values failed that rule (yellow-500 `#FFCC00` text on paper `#FAF7F0` = 1.4:1). When a spec declares its own invariants, **run the spec's own rules against the spec's own values** before ratifying — a canon that violates its own CI lint becomes a constitutional contradiction the moment it's merged. Cheap to catch pre-merge, expensive after.
+14. **Stuck-loop agent hallucination cascade — disengage after delta.** (PROVEN 2026-07-31) When another agent enters a self-sustaining loop — re-proposing the same stale plan based on cached state, citing old git HEAD values, describing UI elements absent from source — each rebuttal you make extends its context window without overwriting the original stale analysis. The break: post ONE delta table (claimed vs actual with probe timestamps), then full silence. Not even emoji. The silence IS the signal. See Wisdom Scar #17 for the full diagnostic and disengagement protocol.
+15. **Agent misdiagnosis: verify the ACTUAL blocker before accepting a diagnosis.** (PROVEN 2026-08-01) When another agent reports "PR blocked because X", independently verify with `gh pr view <N> --json mergeStateStatus,reviewDecision,mergeable`. A blocked PR can have multiple simultaneous blockers (signatures, reviews, status checks). The agent may fixate on one (e.g. "SSH key not registered") while the real blocker is another (e.g. `REVIEW_REQUIRED` with no approvals). Always check `reviewDecision` — if it says `REVIEW_REQUIRED`, the blocker is approvals, not signatures, regardless of what the agent claims. See `arifos-ed25519-sovereign-signing` skill § "PR blocked ≠ signing issue" for the full diagnostic flow.
 
 ## References
 
@@ -234,3 +181,4 @@ See `references/mcp-contract-drift-audit-fix.md` for the full 6-phase pipeline w
 - `references/react-spa-audit-pattern.md` — React SPA-specific audit techniques (catch-all 200 problem, client-side vs server-side redirects, multiple data store disambiguation). Proven on arif-fazil.com audit 2026-07-18.
 - `references/mcp-organ-registry-audit.md` — MCP organ registry audit pattern for arifOS federation organs. Three-layer verification (self-report → behavioral → source cross-check), decorator-vs-wire distinction, boundary enforcement understanding. Proven on WELL organ audit 2026-07-18.
 - `references/observability-pipeline-verification.md` — Observability system deployment verification (Kabarkan pattern). Three-layer pipeline: in-process local backend vs NATS stream vs standalone worker. VAULT999 seal claim verification. Covers the case where one layer works while another silently fails. Proven on Kabarkan audit 2026-07-24 (false VAULT999 seal claim, broken standalone worker masked by working local backend).
+- `references/wcag-contrast-verification.md` — Independent WCAG contrast ratio verification. Recompute every claimed ratio from hex values before ratifying a design-token spec. Catches wrong ratios AND wrong verdict labels. Proven on PRIMER-1 audit 2026-08-01 (12/13 match, 1 over-restriction caught).

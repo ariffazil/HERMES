@@ -609,22 +609,22 @@ providers:
     key_env: QWEN_API_KEY
     models:
     - id: qwen3.7-max
-      name: Qwen 3.7 Max
+      name: Qwen 3.7 Max (1M ctx, 128K output)
     - id: qwen3.7-plus
-      name: Qwen 3.7 Plus
+      name: Qwen 3.7 Plus (1M ctx, 128K output, vision)
     - id: qwen3.6-plus
       name: Qwen 3.6 Plus
     - id: qwen3.6-flash
-      name: Qwen 3.6 Flash
+      name: Qwen 3.6 Flash (1M ctx, 64K output)
     - id: kimi-k2.7-code
-      name: Kimi K2.7 Code
+      name: Kimi K2.7 Code (256K ctx)
     - id: glm-5.2
-      name: GLM 5.2
+      name: GLM 5.2 (198K ctx, 128K output, 753B MoE)
     - id: deepseek-v4-pro
-      name: DeepSeek V4 Pro
+      name: DeepSeek V4 Pro (1M ctx, reasoning)
     - id: deepseek-v4-flash
-      name: DeepSeek V4 Flash
-    name: Bailian Singapore (Qwen/Kimi/DeepSeek/GLM)
+      name: DeepSeek V4 Flash (1M ctx, fast)
+    name: Qwen Token Plan Pro (SG, RM0 marginal, flat monthly)
     transport: openai_chat
   mimo-platform:
     api: https://api.xiaomimimo.com/v1
@@ -757,7 +757,7 @@ providers:
     - id: k3
       name: Kimi K3 (2.8T, 1M ctx)
     - id: kimi-for-coding
-      name: Kimi K2.7 Code
+      name: Kimi K2.7 Code (256K ctx)
     - id: kimi-for-coding-highspeed
       name: Kimi K2.7 Code HighSpeed
 secrets:

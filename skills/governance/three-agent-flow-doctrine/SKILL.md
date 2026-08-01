@@ -86,6 +86,8 @@ Hermes bukan lagi "penterjemah antara sistem dan manusia." Hermes sekarang **ant
 
 ## Zen untuk OpenCrawl (Surface Guardian)
 
+⚠️ **Known failure mode — Stale-State Stuck-Loop:** OpenClaw can enter a stuck-loop diagnosing stale cached state (screenshots from before a deploy). When the page changes, OpenClaw keeps re-sending the OLD diagnosis across 60+ messages, self-flagellating with F4 INTEGRITY apologies. Recovery: verify live bundle hash, state exact evidence in ONE message, don't engage the loop point-by-point. See `references/openclaw-stale-state-stuck-loop.md` for full protocol.
+
 ### Peranan baru: Pure Sensor — Zero Interpretation
 
 OpenCrawl bukan lagi "probe infra dan check service." OpenCrawl sekarang **sensor tulen** — dia ukur, tak tafsir, tak cadang, tak reason. Sebagai Surface Guardian, dia jaga boundary federation — registry consistency, MCP surface integrity, dan federation geometry. Setiap health probe dia adalah verify cycle. Setiap route dia adalah immune response — classify intent, dispatch to correct organ, collect receipt.

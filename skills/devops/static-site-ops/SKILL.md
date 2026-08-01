@@ -137,6 +137,25 @@ The forge catch-all at `/var/www/html/forge/` serves any file via Caddy `file_se
 
 All arif-fazil.com surfaces must be **dark mode** (`#0a0a0a` background). Arif: "sakit mata terang sangat." Never use cream/paper/white backgrounds. See `arif-sites-content-ops` skill for the canonical CSS token set.
 
+## Pitfall: Static files under main domain need explicit Caddy handlers
+
+This skill covers subdomain static sites (syedos.arif-fazil.com) where Caddy has a dedicated vhost with `file_server`. Static pages placed under the MAIN domain (`arif-fazil.com`) behave differently — the React SPA `@spa_routes` catch-all shadows them.
+
+**Discovered 2026-08-01:** `/pulse/` and `/audit/` had valid `index.html` files in both `public/` and `/var/www/html/arif/`, but returned 404 because no Caddy `handle` block served them. The SPA catch-all `try_files → /index.html` doesn't reach into subdirectories with their own `index.html`.
+
+**Fix:** add a dedicated `handle` block BEFORE `@spa_routes`:
+```
+handle /pulse/* {
+    root * /var/www/html/arif
+    try_files {path} {path}/index.html /pulse/index.html
+    file_server
+}
+```
+
+**Audit:** `grep -rn 'handle /' /etc/caddy/Caddyfile` — every directory under `/var/www/html/arif/` with content should have a corresponding handler or be covered by `@spa_routes`.
+
+**Rule:** Files existing on disk ≠ files being served. Caddy is not Apache — no implicit directory indexing. Every path needs an explicit route. See `arif-sites-content-ops` for the Caddyfile patching workflow (backup → sed → validate → reload → verify).
+
 ## Related
 
 - `references/syedos-heal-architecture.md` — SyedOS HEAL page: full audio graph, CSS animation specs, deployment, bug history
