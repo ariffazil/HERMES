@@ -164,11 +164,63 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 **Result provenance discipline (F2 TRUTH):** label UNOFFICIAL vs OFFICIAL explicitly on the page. Election-night media calls are TIDAK RASMI until SPR declares. Sources that worked 2026-08-01: BHarian live blog (`bharian.com.my` TERKINI PRN NS), Utusan, Harian Metro live, MyUndi (`myundi.com.my/ms`). Cross-check BN/PN/PH seat lists from two outlets before writing to the page. Update the companion `ns_live_telemetry.json` status (e.g. `RESULT_DECLARED`) via dual-write (see Pitfall #20).
 
+**No prediction scorecards — Arif's correction (2026-08-01, PRN16).** After the results, Arif said: *"No need to put out prediction. Kita bukan official Pon. Hang tu bias tengok berita yang ada ja. Aku dah lama kata akan kalah teruk. Sentimen. Manusia hang x faham."* → Do NOT publish "we predicted X vs actual Y" post-mortems on the site as if we're an authoritative pollster. The site shows **ACTUAL RESULTS only** (with UNOFFICIAL/OFFICIAL labels). News-based analysis is biased toward the mainstream narrative — ground sentiment (which Arif reads directly) beats news-based models. If Arif calls a result ahead of time, weight his call over any model; do not argue it with media framing. F2 TRUTH on election pages = results + provenance + honest labels, NOT self-promoting prediction retrospectives.
+
+**Seat-to-seat comparison sub-page (PROVEN 2026-08-01).** `public/politics/ns-election/compare/index.html` + PNG charts, linked from the GIS page footer. Build pattern:
+- Python matplotlib script, dark theme (`#07090E` bg), coalition colors PH `#ef4444` / BN `#3b82f6` / PN `#10b981`, flips amber `#f59e0b` → three static charts (`totals.png` grouped bars 2023→2026, `flip_matrix.png` 3×3 transition heatmap, `ladder.png` all 36 seats as 2023-chip → 2026-chip rows with FLIP labels) + `seat_sweep.mp4` (matplotlib FFMpegWriter, libx264, yuv420p, ~14s seat-reveal sweep + final tally — Telegram-safe under 50MB).
+- Copy PNGs beside the compare page in `public/`, build, rsync. The compare table is data-driven from a JS SEATS array; flip rows get amber background + `FLIP X→Y` badge.
+- **Flip derivation discipline:** flips = actual 2023 winner vs actual 2026 winner. NEVER derive flips from the page's pre-existing labels — the old filter buttons (PH 18/BN 16/PN 2) were PROJECTIONS, not the 2023 baseline (actual 2023: PH 17 / BN 14 / PN 5 per SPR). Pull the official baseline from `pilihanraya.my/keputusan/negeri_sembilan/prn15-2023` (full per-seat winner+majority table, sourced from SPR) and spot-check 5+ seats. PRN16 caught: early banner said "PN flips: Serting, Bagan Pinang" — both were PN since 2023 (holds, not flips); caught by re-derivation. Re-derive seat lists from data, never from memory of media reports.
+- Full recipe + generator code: `references/ns-seat-comparison-viz-2026-08-01.md`.
+
+**Data-driven auto-update pipeline for static pages (PROVEN 2026-08-01, "I want it auto update sekali result dah dapat").** When Arif asks for auto-update on a results/compare page, the durable pattern is JSON SOT + generator + prebuild wiring + a lightweight mtime watchdog cron — NOT a full rebuild on a timer:
+
+1. **JSON source of truth** — `public/data/politics/ns_results.json`: `{metadata:{updated_at,status}, seats:[{code,name,y2023,y2026,maj2023}], tally_*, coalition_*}`. This is the ONLY file humans/agents edit to change results.
+2. **Generator script** — `scripts/generate-ns-compare.cjs`: reads the JSON, emits `compare/index.html` (tally cards + full seat table + flip badges, all derived from data). Never hand-edit the generated HTML — it's overwritten.
+3. **Prebuild wiring** — append `&& node scripts/generate-ns-compare.cjs` to the `prebuild` chain in package.json so every `npm run build` refreshes the page from current data. Test: flip a seat in JSON → build → grep generated HTML → revert.
+4. **Watchdog cron** — `~/.hermes/scripts/ns-compare-watchdog.sh` (no_agent:true, `*/15 * * * *`, deliver=origin): regenerates + rsyncs ONLY that one directory when `[ "$SRC_JSON" -nt "$GEN_HTML" ]`; silent otherwise (empty stdout = no delivery). No full build, no Caddy reload, no T3 gate — it's a verify-class op, safe to chain. Script packaged in this skill at `scripts/ns-compare-watchdog.sh` — copy to `~/.hermes/scripts/` and wire the cron.
+5. **Result data hygiene:** flip counts come from data (`seats.filter(s => s.y2023 !== s.y2026).length`), never hardcoded. Page footer shows "auto-sync dari ns_results.json" so Arif can see it's data-driven.
+
 **Prediction-content policy — "kita bukan pundit" (2026-08-01, Arif):** Do NOT publish prediction scorecards / post-mortem verdicts as site content ("No need to put out prediction. Kita bukan official Pon."). Result pages = pure results. If Arif asks for the projection contrast, build it as a SEPARATE neutral artifact — `projection-vs-actual.html` (standalone static page: seat cards projection→actual, ⚡FLIP highlight, accuracy stat) + a shareable chart PNG — never as an editorialised "we were wrong" narrative on the GIS page. Model truth-telling rule: direction-correct ≠ projection-correct, state both plainly; news-trained models miss ground sentiment, Arif reads the room ("Aku dah lama kata akan kalah teruk. Sentimen. Manusia hang x faham.") — when his sentiment call conflicts with model output, his call wins.
 
 **Projection-vs-actual comparison (companion page, 2026-08-01):** `public/politics/ns-election/projection-vs-actual.html` — standalone static page (no build; lives in public/ next to index.html, rsync + curl 200 + commit). Recover the pre-poll projection from git BEFORE the result commit — the committed pre-result version is the auditable projection source: `git log --oneline -- <file>` → `git show <prev-hash>:<path> > /tmp/ns_prepoll.html`, then parse BOTH `SEATS` arrays (regex `code/name/winner` per line) and diff winner fields to list flips. Deliver multimodal: live page + matplotlib PNG via MEDIA: (dark #0a0a0a bg, Primer palette, two panels: coalition totals bars + 36-seat grid). When the active model has no native vision (vision_analyze returns "[Unsupported Image]"), verify the chart via PIL pixel analysis (size/mode/dominant-colour count) instead of trusting the render blindly.
 
 **Deployment reality (2026-08-01):** FORGE (kimi-code/opencode) edits the SAME files concurrently and will commit before you do. After editing, `git log --oneline -3` — if HEAD already contains your changes (sibling committed them with possibly-refined text), **do not double-commit**; verify content, then move on. `git status --short` showing no changes for your file = someone else committed it — check `git show HEAD:<path> | grep <your-marker>` to confirm your content survived.
+
+## web-canon Atlas — the site constitution (PROVEN 2026-08-01)
+
+The site's law lives in a SEPARATE repo, not the React app: `/root/web-canon` (GitHub `ariffazil/web-canon`). It holds the canonical map every page, coder, and agent must obey. When Arif says "make the Atlas authoritative" or "link to ATLAS333", this is the territory:
+
+```
+/root/web-canon/
+├── canon/                # 12 law files (JSON/YAML): navigation.json, design-tokens.json,
+│                         #   typography.json, components.json, templates.json, routes.yaml,
+│                         #   redirects.yaml, sites.yaml, public-state.schema.json,
+│                         #   federation.json, geometry.json, releases.json, tool-surfaces.json
+├── atlas/                # Long-form doctrine (markdown): WEB_ATLAS.md (the constitution),
+│                         #   WEB-FEDERATION-MAP.md (repos/webroots/topology), STATIC_VS_DYNAMIC.md
+├── docs/                 # SITE_CONTRACTS.md, AUTHORITY_MATRIX.md, RELEASE_POLICY.md, etc.
+└── scripts/              # atlas-sync.sh, canon-sync.sh, canon-lint.js, agentic-web.sh
+```
+
+**Sync to live (two pipelines, both with dry-run default):**
+```bash
+cd /root/web-canon
+bash scripts/canon-sync.sh          # dry-run — validates + diffs canon/ JSON/YAML
+CANON_SYNC_LIVE=1 bash scripts/canon-sync.sh   # live sync canon/ → /var/www/html/canon/
+
+bash scripts/atlas-sync.sh                    # dry-run — validates + diffs atlas/ md
+ATLAS_SYNC_LIVE=1 bash scripts/atlas-sync.sh  # live sync atlas/ → /var/www/html/canon/atlas/
+```
+Both scripts: validate → backup (`.bak.<timestamp>`) → atomic rsync → drift test → arifFlow receipt. Required-doc check enforces `STATIC_VS_DYNAMIC.md` presence. Emits a receipt via arifFlow (HTTP 200, id returned).
+
+**ATLAS333 link:** the web Atlas is the *territory map*; ATLAS333 is the *cognitive substrate* — 33 paradox axes, 7 zones, TEARFRAME thresholds, GPV routing, living in arifOS: `333_MIND_ATLAS.md` (`/root/arifOS/static/arifos/theory/000/`), `ATLAS333_BRIDGE.md` + `atlas.py` (`/root/arifOS/core/shared/`), `paradox_gate.py` (enforcement). Binding paradoxes for web work: P3 (map ≠ territory), P17 (Atlas must be useful/committed), P30 (forgery detectable), automation paradox (autonomy saves hands, demands stronger judgment). `WEB_ATLAS.md` §8 maps each artifact to its web use.
+
+**Search & discovery wiring (the "search strategy" ask):** canon must be discoverable by humans AND agents:
+- `llms.txt` → reference `/canon/atlas/WEB_ATLAS.md` as the site constitution
+- `sitemap.xml` → include `/canon/atlas/` long-form docs
+- `robots.txt` → allow `/canon/`
+- `web_zen.py doctor` → checks canon files exist + canon-sync drift gate
+- **CRITICAL:** the Caddy `/canon/*` handler MUST have `root * /var/www/html/canon` or it serves the SPA shell for JSON/MD files — machine-readable law becomes invisible (see `caddy-reverse-proxy` skill pitfall "handle /canon/* Without root"). Verify: `curl -sI https://arif-fazil.com/canon/navigation.json | grep -i content-type` must be `application/json`.
 
 ## Pitfalls
 
@@ -302,6 +354,12 @@ Arif approved exactly 3 cron jobs for arif-fazil.com autonomous self-healing. Se
 
 The Sense script is available as `scripts/arif-fazil-sense.sh` — deploy to `~/.hermes/scripts/` and wire as a `no_agent: true` cron job. It runs web_zen doctor, probes 6 organ subdomains + 17 SPA routes, checks git dirty state, and exits 0 silently on GREEN (no delivery), exits 1 on RED (triggers alert).
 
+**web_zen TRUTH_MARKERS drift after content redesign (pitfall class, PROVEN 2026-08-01).** Sense reports YELLOW `missing_markers` even when routes are healthy when the `TRUTH_MARKERS` dict in `/root/arif-fazil.com/scripts/web-zen/web_zen.py` no longer matches live content. After a zen/redesign pass, bundle text changes and stale markers fail: `"Six missions"`/`"human cockpit"` left the rebuilt JS bundle, `"Five Organs"` became `"Organs"` in llms.txt. **Fix:** probe live content and update markers to strings that actually exist. Sub-pitfalls:
+   - **SPA route markers are checked against the JS bundle** — web_zen auto-fetches `index-*.js` and searches markers there (F2 honesty, not just shell 200). Find valid markers: `curl -s "https://arif-fazil.com/assets/index-*.js" | grep -oP '.{0,15}Keyword.{0,15}'`.
+   - **Redirect-shadowed URLs return the SPA shell, not the API.** `https://arif-fazil.com/wealth/gold/api/proxies` is shadowed by `redir /wealth /economics 301` + SPA catch-all → returns HTML, so marker `brent` fails; the real API is at `https://arif-fazil.com/gold/api/proxies` (JSON, `brent` present). **When a marker fails, verify the URL isn't shadowed by a redirect/handler ordering issue (grep Caddy for `redir /wealth` style rules, test sibling paths) before assuming content is broken.**
+   - **Static files (llms.txt etc.)** — grep the live file first; markers must match actual content.
+   After fixing markers, commit `web_zen.py` (Sense treats dirty repo as RED), then re-run `bash /root/.hermes/scripts/arif-fazil-sense.sh` — GREEN = silent exit 0.
+
 ## External Witness Verification
 
 Arif independently verifies site state using curl probes from an external sandbox (no sovereign infra access). Treat external witness findings as authoritative — they carry higher epistemic weight than internal self-reports. When an external witness flags a drift, probe it, confirm it, fix it. Don't argue with it. The external witness cryptographically verified the observatory snapshot (ed25519 signature against DID key) — this is F2 TRUTH at a higher bar than infra-side probes can offer.
@@ -377,6 +435,8 @@ The Heal cron job (`🜂 Heal — arif-fazil.com Self-Repair`) has a constitutio
 4. Heal will auto-fire on the next 6h cycle (15 */6 * * *)
 
 **Pattern:** Dirty repo → Heal blocked → commit data → Heal runs next cycle. This is normal — the gate is working as designed.
+
+**⚠️ Build-regenerated files: commit-once is NOT enough — .gitignore them.** (PROVEN 2026-08-01) `ns_live_telemetry.json` is regenerated by the npm `prebuild` script on EVERY build. Committing it once does not stop the dirty loop — the next build regenerates it with new content and Sense/Heal report "1 uncommitted file" again on every 15m cycle. The durable fix for any file the build regenerates with volatile content: add it to `.gitignore` (`echo "sites/arif-fazil.com/public/data/politics/ns_live_telemetry.json" >> .gitignore`) so it stops tripping the git-dirty gate entirely. Reserve "commit the telemetry" for genuinely one-shot data updates (result declarations), not for files the build churns every run.
 
 ## External Witness Verification
 

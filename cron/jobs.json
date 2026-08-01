@@ -886,15 +886,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1343
+        "completed": 1350
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-01T21:10:00+08:00",
-      "last_run_at": "2026-08-01T21:05:57.339629+08:00",
+      "next_run_at": "2026-08-01T21:45:00+08:00",
+      "last_run_at": "2026-08-01T21:40:57.709523+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1117,17 +1117,17 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 62
+        "completed": 64
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-01T21:15:00+08:00",
-      "last_run_at": "2026-08-01T21:01:03.529390+08:00",
-      "last_status": "error",
-      "last_error": "Script exited with code 1",
+      "next_run_at": "2026-08-01T21:45:00+08:00",
+      "last_run_at": "2026-08-01T21:31:03.477544+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1241,7 +1241,53 @@
       ],
       "workdir": null,
       "fire_claim": null
+    },
+    {
+      "id": "47041a1ec62c",
+      "name": "\ud83d\udd01 PRN16 Compare Auto-Sync",
+      "prompt": "Auto-sync PRN16 NS compare page when ns_results.json changes.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "provider_snapshot": null,
+      "model_snapshot": null,
+      "base_url": null,
+      "script": "ns-compare-watchdog.sh",
+      "no_agent": true,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/15 * * * *",
+        "display": "*/15 * * * *"
+      },
+      "schedule_display": "*/15 * * * *",
+      "repeat": {
+        "times": null,
+        "completed": 1
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-08-01T21:24:35.097352+08:00",
+      "next_run_at": "2026-08-01T21:45:00+08:00",
+      "last_run_at": "2026-08-01T21:30:57.563528+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "-1003753855708",
+        "chat_name": "AAA",
+        "thread_id": "43957",
+        "user_id": "267378578"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-01T21:05:57.340131+08:00"
+  "updated_at": "2026-08-01T21:40:57.710077+08:00"
 }

@@ -324,6 +324,8 @@ systemctl daemon-reload
 systemctl start opencode-bot.service openclaw-gateway.service
 ```
 
+**⚠️ Pitfall — `systemctl mask` itself FAILS for manually-created units:** When the unit file lives directly at `/etc/systemd/system/<name>.service` (as arifOS units do — they're hand-written, not symlinks from `/usr/lib/systemd/system/`), `systemctl mask openclaw-gateway.service` errors with `Failed to mask unit: File '/etc/systemd/system/openclaw-gateway.service' already exists`. The mask command only works on symlinked units. **Skip `systemctl mask` entirely for these — go straight to `ln -sf /dev/null /etc/systemd/system/<unit>.service` + `daemon-reload`**, which force-overwrites the unit path with a /dev/null symlink and achieves the same permanent block. `systemctl is-enabled <unit>` then reports `masked`. (PROVEN 2026-08-01: masking openclaw-gateway + opencode-bot after the second loop wave.)
+
 **When to mask vs stop:** Stop the service first. Only mask if it restarts itself despite the stop. Masking is an escalation — the service cannot be started by ANY means (manual, timer, restart) until explicitly unmasked. Always save the restart commands (unmask + daemon-reload + start) so the user can restore when ready.
 
 **⚠️ Pitfall — agents hosted in tmux/screen sessions:** OpenCode/OpenClaw agents may run inside a tmux or screen session (e.g. `tmux ls` shows a `work` session with a window named after the agent — `kimi` in the 2026-07-31 incident). Killing the PID or masking the systemd service does NOT stop these — the tmux session keeps the agent context alive and it can keep posting. Kill the session too:

@@ -294,6 +294,33 @@ entropy-watch (every 6h, aggregated) → federation-health (every 2h)
 
 See also: `governance-patterns` skill → `references/cross-pulse-intelligence-gap.md` for full analysis.
 
+### 14. mtime-Triggered Regeneration Watchdog (PROVEN 2026-08-01, PRN16 compare page)
+
+**Class of job:** a generated artifact (static HTML page, derived JSON, chart set) that must refresh when its source-of-truth data changes — "auto update sekali result dah dapat". The trigger is a FILE CHANGE, not a clock.
+
+**Pattern (no_agent: true, silent-when-clean):**
+```bash
+SRC_JSON=/path/to/source-of-truth.json
+GEN_HTML=/path/to/generated/index.html
+# Only act when source is NEWER than the generated artifact
+if [ ! -f "$GEN_HTML" ] || [ "$SRC_JSON" -nt "$GEN_HTML" ]; then
+  node scripts/generate-thing.cjs >/dev/null 2>&1
+  rsync -a /path/to/generated/ /var/www/html/thing/   # scoped, single dir
+  echo "🔁 Page auto-synced — data changed in source JSON"
+fi
+exit 0   # empty stdout = no delivery
+```
+
+**Design rules (earned in the field):**
+- **Compare mtimes, don't rebuild on schedule.** `[ "$SRC" -nt "$GEN" ]` is the event detector. The cron cadence (e.g. `*/15 * * * *`) is only a latency budget — data change → page refresh within one tick.
+- **Regenerate + rsync ONE directory, never the whole webroot.** No `--delete`, no full site build, no Caddy reload — keeps it a verify-class op that needs no sovereign gate (unlike T3 mutations).
+- **Wiring both paths:** (a) the generator into the npm `prebuild` chain so full builds also refresh, AND (b) the watchdog cron for live data changes between builds. Belt and suspenders.
+- **Silent when unchanged** — the watchdog pattern from #8. An "auto-sync" job that messages every 15m is noise; it must only speak when it acted.
+- **Flip counts / derived numbers come from the data, never hardcoded** — the generator derives them; humans edit only the JSON.
+- **Test before declaring done:** flip a value in the JSON → run generator → grep the generated HTML for the change → revert → regen. Full `npm run build` exercises the prebuild wiring end-to-end.
+
+Example in the wild: `~/.hermes/scripts/ns-compare-watchdog.sh` → regenerates `arif-fazil.com/politics/ns-election/compare/` from `ns_results.json`. Full recipe: `arif-sites-content-ops` skill → "Data-driven auto-update pipeline".
+
 > **Forged 2026-07-25.** Extracting prompts from jobs.json into version-controlled .md files gives F1 (Reversibility) to the most operationally impactful part of a cron job.
 
 LLM jobs store their full prompt inline in `jobs.json`. This prompt has no git history — it's a JSON blob in a generated file. If the prompt breaks the output (wrong tone, wrong length, hallucination), the only way to revert is manual editing. **F1 is violated.**

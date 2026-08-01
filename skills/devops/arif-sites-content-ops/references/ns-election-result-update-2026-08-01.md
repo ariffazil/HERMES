@@ -65,3 +65,35 @@ screenshots asking "translate", give the STORY (who's up, what it means), not th
 - Executive summary = tables (coalition | seats | status) + scalp bullets + scorecard
 - Always state unofficial-vs-official status in the summary
 - BM, direct, no therapy voice — Arif's default register for this content
+
+## Projection-vs-actual contrast (follow-up, same session)
+
+Arif after the result update: "No need to put out prediction. Kita bukan official Pon." — NO
+scorecard/post-mortem narrative as site content, "kita bukan pundit". Then: "Aku nak the
+projections. Contrast seat dulu dengan sekarang" — he WANTS the projection-vs-actual contrast,
+delivered as a neutral data artifact.
+
+Built:
+- `public/politics/ns-election/projection-vs-actual.html` — 36 seat cards projection→actual,
+  ⚡FLIP badge + yellow border on the 10 flips, accuracy card (26/36 = 72%), summary stat cards
+  (PH 19→11, BN 13→18, PN 2→7). rsync to webroot, curl 200 (10,001B), git commit `0210878`.
+- Chart PNG via matplotlib (dark #0a0a0a bg, Primer palette, two panels: coalition totals bars
+  + 36-seat grid). Vision fallback unavailable on the active model ("[Unsupported Image]") →
+  verified via PIL pixel analysis: size (1930×1635), mode RGBA, dominant colours (#0a0a0a bg +
+  BN blue (29,58,195) + PH red (206,44,28) present = render sane).
+
+**Git-history recovery of projection data (reusable technique):**
+```bash
+git log --oneline -5 -- sites/arif-fazil.com/public/politics/ns-election/index.html
+PREV=$(git log --format=%H -2 -- <file> | tail -1)
+git show $PREV:<path> > /tmp/ns_prepoll.html   # committed pre-result state
+# parse both SEATS arrays: regex per line { code:'N\d+', name:'...', winner:'...' }
+# diff winner fields → flips list; projection was PH 19/BN 13/PN 2/TOSSUP 2
+```
+Sibling had already committed the result version (`3afcfd5`); the PREV commit (`8f0440e`) was the
+clean pre-poll projection. Always take the committed pre-result state, not the working tree.
+
+**The 10 flips (projection→actual):** PH→BN Chennah/Pilah/Labu/Repah · PH→PN
+Klawang/Serting/Sikamat/Bagan Pinang · TOSSUP→PN Ampangan · TOSSUP→BN Linggi.
+Pattern: model over-projected PH in Malay/mixed seats; 26/36 correct = **direction right,
+scale wrong** — state it that way, no editorialising.

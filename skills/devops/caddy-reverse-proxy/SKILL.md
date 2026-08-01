@@ -676,6 +676,32 @@ Reference — routes already configured in the main site block (as of 2026-07-22
 
 The `handle /images/* { file_server }` block did NOT exist. When articles embedded `<img src="/images/...">`, Caddy had no handler → fell through to SPA fallback → returned `index.html` instead of the image. Symptom: `curl -sI https://arif-fazil.com/images/foo.jpg` returns `text/html`. Fix: add the handler BEFORE the `/assets/*` block. Any new static directory needs its own `handle` block — Caddy doesn't auto-discover subdirectories.
 
+### Common Pitfall: `handle /canon/*` Without `root` Serves SPA Shell — Machine-Readable Files Become Invisible (PROVEN 2026-08-01)
+
+When a `handle /path/*` block for a **data/JSON/YAML/MD directory** omits `root`, it inherits the site root (`root * /var/www/html/arif`) and `try_files {path} /index.html` falls through to the SPA shell for every request. Files exist on disk at the REAL root (`/var/www/html/canon/...`) but are never reached — agents and humans get `<!doctype html>` where they expect `{...}` JSON or `#` markdown.
+
+**Symptom:** `curl -s https://arif-fazil.com/canon/navigation.json | head -c 80` returns `<!doctype html>` (SPA shell) while `ls /var/www/html/canon/navigation.json` shows the file exists. Content-type is `text/html` instead of `application/json`.
+
+**Root cause:** the site vhost sets `root * /var/www/html/arif` (via `tls_origin` import or explicit directive). A nested `handle /canon/*` WITHOUT its own `root` inherits that root, so `try_files` looks for `/var/www/html/arif/canon/navigation.json` (missing) → falls back to `/index.html` (SPA shell, 200). The canon files live in a SEPARATE webroot `/var/www/html/canon/` — never reached.
+
+**Fix — explicit root + hard 404 fallback (not SPA fallback):**
+```caddyfile
+handle /canon/* {
+    root * /var/www/html/canon
+    try_files {path} {path}/index.html =404
+    file_server
+}
+```
+The `=404` fallback is deliberate: an unknown canon path should 404 loudly, NOT return the SPA shell (a 200 shell for a missing machine file is a soft-404 lie — F2).
+
+**Verify:**
+```bash
+curl -sI https://arif-fazil.com/canon/navigation.json | grep -i content-type   # must be application/json
+curl -s https://arif-fazil.com/canon/atlas/WEB_ATLAS.md | head -3              # must be markdown, not HTML
+```
+
+**General rule:** EVERY `handle` block that serves machine-readable data (`.json`, `.yaml`, `.md`, `.xml`) needs an explicit `root` pointing at the directory that actually holds the files. A missing `root` is silent — the SPA shell 200s and nothing looks broken until an agent greps for content. Same class as the `/images/*` missing-handler pitfall, but subtler because the route EXISTS — only the root is wrong. Note: `/canon` and `/canon/` (bare) may legitimately `redir /doctrine 301` for browsers — that's fine; the sub-path handler above still serves the machine files.
+
 ## Federation Chrome — shared_assets snippet
 
 Every federation subdomain should have `import shared_assets` in its Caddy block to serve `/_shared/design-system/tokens.css` and `/_shared/unified-header-loader.js` from the global `/var/www/html/_shared/` directory.

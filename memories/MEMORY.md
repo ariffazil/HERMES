@@ -38,6 +38,8 @@ Design: dark mode (#0a0a0a) mandatory — light='sakit mata'. Ultra-minimal pref
 §
 External witness > internal self-report. Closes multi-hour site ops with formal structured audit receipts (table: before→now, emoji status markers, session delta). Format: 44/44 probed, patches table, pending items table, session delta section with ΔS metrics.
 §
-OpenClaw services masked 2026-08-01 after 60+ msg spam loop. Restart: `systemctl unmask openclaw-gateway opencode-bot && systemctl start openclaw-gateway opencode-bot`. Shadow Decoder at /politics/shadow/ (sovereign door, no nav link) — NOT in repo; rsync deploys wipe it; restore = cp makcikgpt-md/anwar-jung-shadow.html → politics/shadow/index.html. Gold chart page apiBase=/gold/api (Caddy sorts /wealth/gold/api/* proxy last → shadowed; T3 Caddy fix pending).
+OpenClaw services masked 2026-08-01 (60+ msg spam loop). Restart: systemctl unmask+start openclaw-gateway opencode-bot. Shadow Decoder /politics/shadow/ = sovereign door, no nav link — NOT in repo; rsync wipes; restore cp makcikgpt-md/anwar-jung-shadow.html → politics/shadow/index.html. Gold page apiBase=/gold/api (Caddy /wealth/gold/api/* proxy shadowed).
 §
-T3 gate pattern: Caddyfile mutations require sovereign ACK (888). OpenClaw correctly held for authorization on production config changes. Validate + reload only with explicit go.
+T3 gate: Caddyfile mutations require sovereign ACK (888). Validate + reload only with explicit go.
+§
+Arif: jangan publish prediction scorecards ('kita bukan pundit', PRN16 2026). Sentimen ground > model baca berita; dia dah lama ramal PH kalah teruk. Result pages = pure results.
