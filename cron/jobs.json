@@ -409,7 +409,7 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 277
+        "completed": 278
       },
       "enabled": true,
       "state": "scheduled",
@@ -417,7 +417,7 @@
       "paused_reason": null,
       "created_at": "2026-07-17T14:26:19.267051+08:00",
       "next_run_at": "2026-08-02T00:00:00+08:00",
-      "last_run_at": "2026-08-01T18:00:21.528547+08:00",
+      "last_run_at": "2026-08-01T19:13:31.668542+08:00",
       "last_status": "error",
       "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
@@ -886,15 +886,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1318
+        "completed": 1322
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-01T19:05:00+08:00",
-      "last_run_at": "2026-08-01T19:00:24.603616+08:00",
+      "next_run_at": "2026-08-01T19:25:00+08:00",
+      "last_run_at": "2026-08-01T19:20:31.511366+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1117,17 +1117,17 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 54
+        "completed": 55
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-01T19:15:00+08:00",
-      "last_run_at": "2026-08-01T19:00:25.688859+08:00",
+      "next_run_at": "2026-08-01T19:30:00+08:00",
+      "last_run_at": "2026-08-01T19:15:26.907645+08:00",
       "last_status": "error",
-      "last_error": "Script exited with code 2",
+      "last_error": "Script exited with code 1",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1243,5 +1243,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-01T19:01:28.395209+08:00"
+  "updated_at": "2026-08-01T19:20:31.511888+08:00"
 }

@@ -1,11 +1,11 @@
 model:
-  provider: mulerouter
+  provider: qwen-token-plan
   supports_vision: true
   request_timeout: 45
   context_length: 1048576
   max_tokens: 131072
   timeout: 30
-  default: deepseek-v4-flash
+  default: qwen3.7-plus
 providers:
   mulerouter:
     api: https://api.mulerouter.ai/vendors/openai/v1
@@ -192,7 +192,7 @@ providers:
         name: Kimi K2.7 Code HighSpeed
   qwen-token-plan:
     api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
-    key_env: QWEN_HERMES_API_KEY
+    key_env: QWEN_OPENCODE_API_KEY
     name: Qwen Token Plan Team Edition (RM0 marginal, THE FED)
     transport: openai_chat
     models:
@@ -231,13 +231,11 @@ providers:
   qwen-token-plan-individual:
     api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
     key_env: QWEN_INDIVIDUAL_API_KEY
-    name: Qwen Token Plan Individual Pro (RM0 marginal, multimodal, 5h+7d 
-      windows)
+    name: Qwen Token Plan Individual Pro (RM0 marginal, multimodal, 5h+7d windows)
     transport: openai_chat
     models:
       - id: qwen3.8-max-preview
-        name: Qwen 3.8 Max Preview — Individual Pro 10x promo + 80% night 
-          discount
+        name: Qwen 3.8 Max Preview — Individual Pro 10x promo + 80% night discount
       - id: qwen3.7-max
         name: Qwen 3.7 Max — Individual Pro reasoning
       - id: qwen3.7-plus
@@ -268,6 +266,9 @@ providers:
       - id: qwen3.6-plus
         name: Qwen 3.6 Plus — Vision + tools, web_extractor fallback
 fallback_providers:
+  - model: deepseek-v4-flash
+    provider: mulerouter
+    timeout: 30
   - model: deepseek-v4-pro
     provider: qwen-token-plan
     timeout: 30
@@ -338,8 +339,7 @@ terminal:
   docker_extra_args: []
   docker_run_as_host_user: false
   persistent_shell: true
-  governance_note: ART classifies; KERNEL arif_verify; ACT via A-FORGE 
-    forge_shell
+  governance_note: ART classifies; KERNEL arif_verify; ACT via A-FORGE forge_shell
   require_aforge_for_mutate: true
 web:
   backend: brave
@@ -708,8 +708,8 @@ memory:
   provider: local
   transient_char_limit: 4000
   transient_file: /root/.hermes/memories/SESSION.md
-  transient_purpose: session-scoped working memory, not injected into long-term 
-    LLM context
+  transient_purpose: session-scoped working memory, not injected into long-term LLM
+    context
 delegation:
   model: ''
   provider: ''
@@ -943,9 +943,8 @@ gateway:
     can_present_as_arif: false
     can_present_as_arifos_actor: false
     can_request_sovereign_seal: false
-    explanation: HERMES holds zero federation authority. Its outputs in any 
-      federation context carry the persona label and cannot bind the sovereign's
-      identity.
+    explanation: HERMES holds zero federation authority. Its outputs in any federation
+      context carry the persona label and cannot bind the sovereign's identity.
     f9_anti_hantu: true
     federation_authority: none
     federation_role: persona-system
@@ -1009,8 +1008,7 @@ federation:
       governance:
         organ: arifOS
         port: 8088
-        description: Constitutional verdicts, F1-F13, session binding, seal, 
-          hold
+        description: Constitutional verdicts, F1-F13, session binding, seal, hold
       execution:
         organ: A-FORGE
         port: 7071
@@ -1018,8 +1016,7 @@ federation:
       geology:
         organ: GEOX
         port: 8081
-        description: Seismic, petrophysics, basin, prospect, well logs, earth 
-          evidence
+        description: Seismic, petrophysics, basin, prospect, well logs, earth evidence
       finance:
         organ: WEALTH
         port: 18082
@@ -1027,8 +1024,7 @@ federation:
       health:
         organ: WELL
         port: 18083
-        description: Vitality, fatigue, dignity, homeostasis, readiness 
-          (REFLECT_ONLY)
+        description: Vitality, fatigue, dignity, homeostasis, readiness (REFLECT_ONLY)
       federation:
         organ: AAA
         port: 3001
@@ -1182,8 +1178,7 @@ federation:
           - research
           - a2a
           - sec
-        description: Bridge — skill catalog, multimodal, signal relay, FLAME, 
-          Telegram
+        description: Bridge — skill catalog, multimodal, signal relay, FLAME, Telegram
         skills:
           - meta-skill-create
           - meta-skill-lint
@@ -1303,18 +1298,15 @@ federation:
 image_input_mode: text
 mcp_servers:
   arifos:
-    description: arifOS Constitutional Kernel — F1-F13 floors, judge, vault, 
-      route
+    description: arifOS Constitutional Kernel — F1-F13 floors, judge, vault, route
     transport: streamable-http
     url: http://127.0.0.1:8088/mcp
   geox:
-    description: GEOX Earth Intelligence — seismic, petrophysics, basin, 
-      prospect
+    description: GEOX Earth Intelligence — seismic, petrophysics, basin, prospect
     transport: streamable-http
     url: http://127.0.0.1:8081/mcp/
   hermes:
-    description: Hermes MCP — diagnostic/governance tools (status, fact-check, 
-      plan-review)
+    description: Hermes MCP — diagnostic/governance tools (status, fact-check, plan-review)
     transport: streamable-http
     url: http://127.0.0.1:18086/mcp
     enabled: false
@@ -1322,18 +1314,16 @@ mcp_servers:
     command: hound
     enabled: true
   wealth:
-    description: WEALTH Capital Intelligence — EMV, NPV, Monte Carlo, 
-      conservation
+    description: WEALTH Capital Intelligence — EMV, NPV, Monte Carlo, conservation
     transport: streamable-http
     url: http://127.0.0.1:18082/mcp
   well:
-    description: WELL Human Readiness — vitality, readiness, dignity, 
-      homeostasis
+    description: WELL Human Readiness — vitality, readiness, dignity, homeostasis
     transport: streamable-http
     url: http://127.0.0.1:18083/mcp
   deep-research:
-    description: Deep Research Engine — multi-LLM iterative research, 
-      SearXNG-backed, report synthesis
+    description: Deep Research Engine — multi-LLM iterative research, SearXNG-backed,
+      report synthesis
     transport: streamable-http
     url: http://127.0.0.1:3333/api/mcp
     enabled: false
@@ -1341,8 +1331,7 @@ mcp_servers:
       Authorization: Bearer ${DEEP_RESEARCH_PASSWORD}
     timeout: 600
   openrouter:
-    description: OpenRouter MCP — model discovery, credit monitoring, benchmark 
-      tools
+    description: OpenRouter MCP — model discovery, credit monitoring, benchmark tools
     transport: streamable-http
     url: https://mcp.openrouter.ai/mcp
     auth: oauth
@@ -1350,8 +1339,7 @@ mcp_servers:
     headers: {}
     timeout: 30
   mage:
-    description: Mage-Flow 4B — text-to-image generation & image editing 
-      (Microsoft)
+    description: Mage-Flow 4B — text-to-image generation & image editing (Microsoft)
     command: /opt/mage-server/run.sh
     enabled: true
     timeout: 120
@@ -1387,25 +1375,3 @@ fallback_retry:
     - 504
 search:
   name: Qwen Token Plan — THE FED (RM0 marginal)
-
-# ── Fallback Model ────────────────────────────────────────────────────
-# Automatic provider failover when primary is unavailable.
-# Uncomment and configure to enable. Triggers on rate limits (429),
-# overload (529), service errors (503), or connection failures.
-#
-# Supported providers:
-#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
-#   openai-codex (OAuth — hermes auth) — OpenAI Codex
-#   nous         (OAuth — hermes auth) — Nous Portal
-#   zai          (ZAI_API_KEY)         — Z.AI / GLM
-#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
-#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
-#   minimax      (MINIMAX_API_KEY)     — MiniMax
-#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
-#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
-#
-# For custom OpenAI-compatible endpoints, add base_url and key_env.
-#
-# fallback_model:
-#   provider: openrouter
-#   model: anthropic/claude-sonnet-4

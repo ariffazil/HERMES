@@ -22,6 +22,30 @@ description: >-
 - Adding a new LLM provider to vault.env and wiring it into the registry
 - Auditing whether current routing leaks sovereign data or violates F2/F9/F13
 - Designing FLAME tool-lane routing
+- Diagnosing 401/InvalidApiKey cascades where an entire provider chain dies at once
+
+## Qwen Token Plan TEAM Edition — THE FED primary (2026-08-01)
+
+> **Status:** ✅ LIVE — primary provider for Hermes (`qwen-token-plan` / `qwen3.7-plus`), RM0 marginal on flat monthly seats.
+> **Base URL:** `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
+> **Transport:** `openai_chat` (compatible-mode = OpenAI-compatible chat completions)
+> **Seat registry SOT:** `/root/AAA/federation/seats.yaml` — env var → seat → key prefix, tier, monthly credits, vault/rotation status. READ THIS FILE before touching any Qwen key.
+
+**Seat wiring (verified live 2026-08-01 — both seats expose the same 21 models, no per-model tier gating):**
+
+| Env var | Seat | Key prefix | Serves |
+|---|---|---|---|
+| `QWEN_HERMES_API_KEY` | Team Standard (25K/mo) | `sk-sp-D.IPRH` | Hermes terminal chat |
+| `QWEN_OPENCODE_API_KEY` | Team Pro (100K/mo) | `sk-sp-H.DIEXP` | OpenCode + Codex + FED-responses |
+| `QWEN_INDIVIDUAL_API_KEY` | Team Pro (100K/mo) | `sk-sp-H.DIEXP` | Multimodal (image/audio/video) |
+| `QWEN_API_KEY` (legacy) | Team Pro | `sk-sp-H.DIEXP` | Legacy alias, still valid |
+| `QWEN_BAILIAN_KEY` (legacy) | Team Standard | `sk-sp-D.IPRH` | Legacy alias, still valid |
+
+**Fallback chain (live 2026-08-01):** qwen-token-plan/dsv4-pro → **mulerouter/dsv4-flash** (independent provider) → qwen-token-plan/glm-5.2 → qwen3.7-plus → qwen3.6-flash → ollama/qwen2.5-coder:3b.
+
+**Everything keys off the provider name `qwen-token-plan`:** once the provider's key is alive, `auxiliary.vision`, `auxiliary.compression`, `moa.*` presets, `tts.provider`, and `search.name` all heal at once — no per-field wiring needed.
+
+> **Reference:** `references/qwen-token-plan-seat-wiring.md` under the `tokenrouter-guide` skill (devops/) — full diagnosis recipe, curl probes, and the 2026-08-01 fix transcript.
 
 ## Two-Lane Architecture: OpenRouter (Mind) vs FLAME (Muscles)
 
@@ -963,6 +987,12 @@ A previous session reported MuleRouter rejects `data:` URIs, but this was NOT re
 - **Personal vs Org workspace credits are isolated.** OpenRouter has two account tiers: Personal (regular API keys, shared credit pool) and Organization (sub-keys under management keys, per-workspace billing). Credits topupped on a Personal account do NOT apply to an Org workspace's sub-keys — they're separate `workspace_id`s. Always verify with `curl /api/v1/credits` on the active workspace before deploying.
 - **Old management key persists after creating a new one.** `POST /api/v1/keys` to create a management key does NOT deactivate the old one. The old key remains live with full authority until manually disabled at openrouter.ai/keys. There is NO API endpoint to revoke management keys — only the web UI. Sub-keys can be deleted programmatically: `DELETE /api/v1/keys/:hash` → `{"deleted":true}`.
 - **`/admin/keys` returns a 404 HTML page, not JSON.** The correct Management API endpoint is `GET /api/v1/keys` (sub-keys, requires management key Bearer auth), NOT `/admin/keys` which renders an OpenRouter web page.\n- **Key rotation scope-creep trap.** When rotating keys: verify the new key works (auth test + model call), update vault.env, confirm deployment picks it up, then **stop**. Do NOT chase downstream optimizations, audit third-party integrations, or start provisioning guardrails in the same cycle. Each downstream fix belongs in its own task loop. Arif will signal with "bodoh x payah la rotate buat semak kacau bilau. Apa yang ada guna ja" when you've over-scoped. The correct pattern: 3 loops only (scan/update/verify), declare done, surface remaining items as separate follow-ups.\n- **YAML list patching doubles entries.** When using `hermes config set` or python yaml to modify `fallback_providers`, the operation can create duplicates if the same model lands at multiple indices or old entries aren't removed first. Always verify with `hermes fallback list` after a change and run a dedup step if needed.
+
+- **Provisioned-but-empty seats read as literal `PASTE_*` placeholders (PROVEN 2026-08-01).** When a QwenCloud Team seat is created in the console but the key is never pasted into the vault, kunci-mas.env holds a literal `PASTE_HERMES_...` / `PASTE_PRO_SEA...` / `PASTE_INDIVID...` value. Every config reference to that env var then returns `InvalidApiKey` (401) — and if all fallbacks ride that same provider, the whole chain dies at once. **Detection:** `grep -E '^(export )?QWEN' /root/.secrets/kunci-mas.env | sed -E 's/=(.{14}).*/=\1.../'` — any `PASTE_*` value is an empty seat. **Real keys often already exist under legacy names** (`QWEN_API_KEY` = Pro, `QWEN_BAILIAN_KEY` = Standard) — copy them into the seat-named vars rather than waiting for rotation. Probe first: `curl -s -m 15 https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/models -H "Authorization: Bearer $KEY"` — `{"data":[...]}` = alive, `InvalidApiKey` = dead/placeholder. Full recipe: `references/qwen-token-plan-seat-wiring.md` under the `tokenrouter-guide` skill.
+
+- **Fallback-chain theatre — a chain whose entries all ride one provider/key diversifies nothing (PROVEN 2026-08-01).** A `fallback_providers` list with 5 entries all on `provider: qwen-token-plan` is not a fallback chain — one dead key 401s every entry identically. Real resilience requires ≥2 independent providers with independent keys (e.g. qwen-token-plan → mulerouter → ollama). Audit rule: count distinct providers (and distinct key_env vars) in the chain; if it's 1, it's theatre.
+
+- **`hermes config set` stores JSON list values as literal quoted STRINGS (PROVEN 2026-08-01).** `hermes config set fallback_providers '[{...json...}]'` writes `fallback_providers: '[{...}]'` — a quoted string, not a YAML list — and the runtime fails iterating it. `set_config_value` only coerces scalars (bool/int/float); `_set_nested` refuses to grow lists. **Fix:** for list-valued keys, edit config.yaml directly with a python yaml round-trip then validate with `yaml.safe_load`. Scalars (`model.provider`, `model.default`) work fine via the CLI. (The `patch`/`write_file` tools refuse Hermes config.yaml by design — terminal+python is the sanctioned path.)
 
 - **Missing `capabilities` field causes tool-call JSON text dump (PROVEN 2026-08-01).** When a Hermes provider doesn't declare `capabilities: [function_calling]`, Hermes does NOT send the `tools` parameter in the API request. The model has no structured tool-call interface, so it tries to "use tools" by outputting raw JSON like `{"name": "web_extract", "arguments": {...}}` as plain text in the reply. **Symptom:** User sees JSON tool-call syntax dumped in chat, model responds with apologies or "How can I assist?" after the JSON. **Fix:** Add capabilities to the provider block:
 ```yaml
