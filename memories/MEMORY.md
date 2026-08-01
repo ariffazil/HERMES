@@ -2,17 +2,15 @@ Runtime: /usr/local/lib/hermes-agent/
 §
 Arif: parallel agents OK. Human language for embodied/shadow topics. Jangan default arifOS metaphors unless he connects first.
 §
-Arif: Forge mode (purpose-first) ≠ audit mode (citation-first). Know which. External reviewers don't reshape your confidence when you read the room right.
+Arif modes: forge(purpose-first) ≠ audit(citation-first) ≠ reflect(meaning-first). 'Stop auditing, reflect' = drop tables, meet him in meaning. 'Ayat manis' trap: don't accept elegant theory without VPS evidence. Ground frameworks in concrete data. OBS before DER/INT.
 §
 Email dari agent: MUST CC arifbfazil@gmail.com on every external email. Bukan optional — wajib. Confirm sebelum hantar.
 §
-Bot routing: ASI💃(Hermes)=main, 🦞AGI(OpenClaw/Pro)=AAA, 🔥FORGE(OpenCode)=Arif DM. 5 agents: 333/555/888/antigravity/openclaw. A2A via AAA. 555/888=deepseek-v4-flash, 555-VISION=qwen3-omni-flash. EMD blocks unauthed delegation.
+Bot routing: 333/555/888/antigravity/openclaw. A2A via AAA. 555/888=dv4-flash, 555-VISION=qwen3-omni-flash. EMD blocks unauthed delegation.
 §
 Arif BENCI token/cost tracking. No costs in proposals. State-based enforcement only.
 §
 KUNCI-MAS: /root/.secrets/kunci-mas.env (SOT, 239 keys). Arif pastes→I wire→regenerate→restart. NEVER commit, paste in chat, mode>600.
-§
-VELOCITY OVERRIDE: Multi-phase purge → auto-execute all phases when F1-safe + ΔS<0. Drop one receipt. Ref: federation-checkup.
 §
 DERITA/: /root/ariffazil/DERITA/ (never commit). RASA DERITA: 15→5→F1-F13→18 mechs. 888_HOLD. Agent CANNOT feel/heal F9+F10. CAN witness, govern, refuse.
 §
@@ -30,16 +28,14 @@ Arif on autonomous deployments: investigate first, don't auto-reject. Will adopt
 §
 Syed's brother (36M, ISFJ, talkative): brain fog=1wk sleep deprivation. Sleep aid: Hypnos (Blue Hawaiian). Arif: "bila dia kata x ingat, dia memang x ingat." Sleep gate <5h=NO MT5.
 §
-No 'ask' permissions on any agent. Either allow or deny. Arif refuses approval dialogs. 333=tangan (full dexterity), 888=hakim (deny mutation), F13=khalifah. Constraint is steps:60, not tool gates.
+No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=khalifah. Constraint=steps:60.
 §
-Defense: L1 aaa-autonomy (pattern blocks), L2 arifOS kernel (constitutional), L3 F13 sovereign (veto), L4 OpenCode (passthrough). False gates train reflexive allow-clicking.
+Arif post-verification: shift to reflection after proof. "Stop auditing. Reflect with me." = validation part. What does result MEAN about actors/system? Don't keep running analysis.
 §
-Design: dark mode (#0a0a0a) mandatory — light='sakit mata'. Ultra-minimal preference: name + role + depth structure + single CTA (no nav, no organ cards, no mission grid). Level 2 Zen baseline (forge colors stay, 640px single column, no persona gates, no foreign quotes, no instructional bars, live MYT clock). Proactive multimodal expected (MiniMax images, mmx video, matplotlib charts).
+APEX theory canon: 4 dials = AKAL(entropy-pricing), PRESENT(buffer/load), ENERGY-ENTROPY(ΔS pathway), EXPLORATION-AMANAH(verdict boundary). B-score = geometric mean A·P·E·X. Thermodynamic verdicts: SEAL(investment), SABAR(maintenance), HOLD(extraction), VOID(terminal). Engine at arifOS/arifosmcp/thermodynamics/engine.py — 420 lines, 41/41 tests. B-score measures Φ scar (shadow-echo-trace), not human/position/institution. Observer is entangled with the measurement.
 §
-External witness > internal self-report. Closes multi-hour site ops with formal structured audit receipts (table: before→now, emoji status markers, session delta). Format: 44/44 probed, patches table, pending items table, session delta section with ΔS metrics.
+Text is an illusion — framework reads residue, not experience. VPS evidence > model. Election proved rasa qualia can't be captured by text-based governance scoring. Framework needs continuous ground-truth recalibration. Intention vs trace: framework reads trace, sovereign holds niat. AMANAH dial = consistency between intention and trace.
 §
-OpenClaw services masked 2026-08-01 (60+ msg spam loop). Restart: systemctl unmask+start openclaw-gateway opencode-bot. Shadow Decoder /politics/shadow/ = sovereign door, no nav link — NOT in repo; rsync wipes; restore cp makcikgpt-md/anwar-jung-shadow.html → politics/shadow/index.html. Gold page apiBase=/gold/api (Caddy /wealth/gold/api/* proxy shadowed).
+Φ scar = what B-score measures (shadow/echo/trace), not the human/position/institution. Niat (intention) changes sovereign action, not thermodynamics. Framework reads the trace; F13 reads the person inside the trace.
 §
-T3 gate: Caddyfile mutations require sovereign ACK (888). Validate + reload only with explicit go.
-§
-Arif: jangan publish prediction scorecards ('kita bukan pundit', PRN16 2026). Sentimen ground > model baca berita; dia dah lama ramal PH kalah teruk. Result pages = pure results.
+Arif: bahasa Nusantara (Malay) is key to next agentic intelligence horizon — grammar already does pathway-first, distributed archipelago geometry, optional actor. Malay verb affixes (me-/di-/ter-/ber-) encode actor's relationship to action structurally, like B-score.
