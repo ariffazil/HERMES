@@ -34,10 +34,10 @@ No 'ask' permissions on any agent. Either allow or deny. Arif refuses approval d
 §
 Defense: L1 aaa-autonomy (pattern blocks), L2 arifOS kernel (constitutional), L3 F13 sovereign (veto), L4 OpenCode (passthrough). False gates train reflexive allow-clicking.
 §
-Design: dark mode (#0a0a0a) mandatory — light='sakit mata'. Level 2 Zen (forge colors stay, noise removed): single column 640px, no persona gates, no foreign quotes, no instructional bars. Live MYT clock. Proactive multimodal expected (MiniMax images, mmx video, matplotlib charts).
+Design: dark mode (#0a0a0a) mandatory — light='sakit mata'. Ultra-minimal preference: name + role + depth structure + single CTA (no nav, no organ cards, no mission grid). Level 2 Zen baseline (forge colors stay, 640px single column, no persona gates, no foreign quotes, no instructional bars, live MYT clock). Proactive multimodal expected (MiniMax images, mmx video, matplotlib charts).
 §
 External witness > internal self-report. Closes multi-hour site ops with formal structured audit receipts (table: before→now, emoji status markers, session delta). Format: 44/44 probed, patches table, pending items table, session delta section with ΔS metrics.
 §
-Qwen Token Plan TEAM (2026-08-01): sk-sp-H.DIEXP in kunci-mas.env, PRIMARY OpenCode+Codex (RM0). Quotas: seats.yaml SOT. Old Personal=QWEN_BAILIAN_KEY. Mage-Flow broken; use mmx-cli. Wiring: QWEN_HERMES_API_KEY=Standard (sk-sp-D.IPRH); QWEN_OPENCODE+QWEN_INDIVIDUAL=Pro (sk-sp-H.DIEXP); placeholders replaced, verified live. Hermes primary=qwen-token-plan/qwen3.7-plus, fallback incl. mulerouter.
+OpenClaw services masked 2026-08-01 after 60+ msg spam loop. Restart: `systemctl unmask openclaw-gateway opencode-bot && systemctl start openclaw-gateway opencode-bot`. Shadow Decoder at /politics/shadow/ (sovereign door, no nav link) — NOT in repo; rsync deploys wipe it; restore = cp makcikgpt-md/anwar-jung-shadow.html → politics/shadow/index.html. Gold chart page apiBase=/gold/api (Caddy sorts /wealth/gold/api/* proxy last → shadowed; T3 Caddy fix pending).
 §
-GitHub SSH commit verification: signature valid + key registered ≠ verified. TWO gates: (1) signing key in GitHub "Signing keys" (done 2026-08-01), (2) commit email must match verified GitHub email. user.email=agent@arifos.local → no_user. Fix: arif@arif-fazil.com. Forge key qSCH3lBN (id_ed25519=arif-forge-push).
+T3 gate pattern: Caddyfile mutations require sovereign ACK (888). OpenClaw correctly held for authorization on production config changes. Validate + reload only with explicit go.

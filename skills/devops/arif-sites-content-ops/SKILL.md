@@ -145,6 +145,14 @@ MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (no
 
 ## Pitfalls
 
+### Site navigation & deploy traps (2026-08-01)
+
+- **rsync `--delete` wipes manually-placed webroot files.** A file copied directly into `/var/www/html/arif/<path>/` (e.g., to quickly fix a 404) is DELETED by the next `rsync -av --delete dist/ /var/www/html/arif/` because it's not in the build output. Discovered 2026-08-01: shadow site placed at `/var/www/html/arif/politics/shadow/index.html` returned 404 again after the next deploy. **Fix:** persist new static pages under the repo `public/<path>/` (e.g. `sites/arif-fazil.com/public/politics/shadow/index.html`) so the build copies them into dist and they survive `--delete`. **Audit:** after any manual webroot fix, check the file exists in `public/` too, or it's one deploy away from vanishing.
+
+- **Every page must be reachable — no orphan pages.** Arif's standing rule (2026-08-01: "Week aku x jumpa website sendiriii" / "every pages tu need to be connected. Got link"). A route that exists but has NO inbound link from nav, footer, or another page is an orphan — Arif cannot find his own site. **Fix pattern:** add to `primaryLinks[]` (top nav) or `civicLinks[]` (footer shelf) in `src/data/siteContent.ts` in the SAME pass as creating the route. **Audit:** `grep -rn 'href="/<path>\|to="/<path>' sites/arif-fazil.com/src/` — zero hits = orphan page = fix before declaring done.
+
+- **Concurrent agent edits can corrupt shared source files.** When OpenClaw/another agent edits the same files in parallel, a racing write can leave duplicate declarations (e.g. doubled `];` → TS1128 "Declaration or statement expected") that break `npm run build`. Discovered 2026-08-01: `siteContent.ts` had a duplicated `];` from a concurrent AGI edit. **Fix:** re-read the file around the error line before patching, remove the duplicate, rebuild. Don't assume your own patch caused it — check `git diff` for foreign changes first.
+
 1. **web_extract fails on arif-fazil.com.** Tavily returns HTTP 432. Never try web_extract on this domain — go straight to browser. For bulk reads, delegate to a subagent with browser access.
 
 2. **The `html` field is one giant template literal.** Don't try to rewrite the whole file. Use targeted find-and-replace via `patch`.
@@ -509,6 +517,37 @@ The site follows the Three-Click Rule: no page is more than 3 clicks from the ro
 4. **CTAs form a connected journey** — each page leads naturally to the next: `/earth/` → `Read Dossier` → `/earth/slug/` → `Download PDF` → `Launch GEOX`
 
 The 3-second answer pattern (from AGENTS.md §14.3) applies at page level: every user should know in 3 seconds "Where am I, why should I care, what can I do next."
+
+#### Navigation Connectivity Audit — every page reachable (PROVEN 2026-08-01)
+
+Arif's rule: **no page is an island.** "Week aku x jumpa website sendiriii… every pages tu need to be connected. Got link." He navigates by following links — if a page has no links back, he's stranded. Even deliberately-unlisted "sovereign door" pages (no nav-link, direct URL only, e.g. `/politics/shadow/`) still need an **exit path** to the rest of the site.
+
+**Audit (run before declaring a site "done"):**
+```bash
+# Count outbound links per page — 0 or 1 link = dead end / island
+for p in / /politics/ /politics/shadow/ /gold/ /writing/ /999/; do
+  printf '%-22s %s links\n' "$p" "$(curl -s -m 10 "https://arif-fazil.com$p" | grep -oE 'href="[^"]*"' | wc -l)"
+done
+# Then verify every nav destination resolves 200
+```
+
+**Patterns that create islands (check these):**
+1. **Defined-but-never-rendered nav data.** `civicLinks` (Gold/Election/Shadow/Pulse/Audit) existed in `src/data/siteContent.ts` for weeks but was never imported into `ConstellationFooter.tsx` — the "civic shelf — reachable from every page" comment was a lie. **Audit:** for every `export const *Links` array in siteContent.ts, `grep -rn 'civicLinks\|primaryLinks' src/components/` to confirm it's actually rendered. Data defined but unwired = the most common silent-connectivity bug.
+2. **Static standalone pages with no nav.** Pages served by `file_server` (politics/, shadow/, gold/, oil/) don't get the React nav. Inject a small inline-styled nav bar right after `<body>` (dark `#0a0a0a`, monospace, links: Home · Politik·PRN · Gold · Wealth · World · Writing · Pulse · /999). `python3` regex injection into webroot files works fine.
+3. **Webroot-only static pages get wiped by deploy rsync.** A static page that lives ONLY in `/var/www/html/arif/` vanishes on the next dist sync → 404 island. **Persist it in the repo:** `sites/arif-fazil.com/public/<path>/index.html` (Vite copies `public/` → `dist/` → webroot). Keep webroot and repo copies in sync (`cp repo_version webroot_version`) so a live fix doesn't silently drift from the deployed source.
+
+**Verification:** after any nav change, walk the nav: `curl -s -o /dev/null -w '%{http_code}\n' -m 10 -L "https://arif-fazil.com$p"` for every link in the nav — all must be 200. Then count hrefs on the static pages (≥6 links each).
+
+#### Editing the repo while FORGE (opencode/kimi-code) is live — sibling race (PROVEN 2026-08-01)
+
+Kimi's FORGE session edits `/root/arif-fazil.com` concurrently with you. The `patch` tool warns `_warning: modified by sibling subagent … read the file before writing` — **heed it.** In this session, patching `ConstellationFooter.tsx` against a stale read duplicated the contact-nav block and left an orphaned JSX fragment (LSP errors: `Cannot find name 'item'`, missing closing tags). The build caught it; a `read_file` + targeted removal fixed it.
+
+**Rules when the sibling warning fires:**
+1. `read_file` the target immediately before patching — never patch from memory of the file.
+2. After patching, run `npm run build` (or check LSP diagnostics from the patch tool) — the duplicate-fragment failure mode is silent until compile.
+3. A diff that shows BOTH your lines AND the sibling's lines in the same region means a merge collision — clean it manually rather than re-patching.
+4. Commit YOUR files explicitly (`git add <specific paths>`) so the sibling's in-progress work stays uncommitted and unclobbered.
+5. `rsync dist/` while the sibling is mid-build produces "file has vanished" warnings (exit 24) — verify the deployed bundle hash matches YOUR build before calling it done.
 
 ## Arif's Design Preferences for MakcikGPT / Civic Surfaces
 

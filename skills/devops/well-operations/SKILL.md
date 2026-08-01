@@ -216,6 +216,12 @@ Then confirms and restarts well.service.
 
 ## Pitfalls
 
+- **SCT event write failures (`Errno 30: Read-only file system` on `/root/A-FORGE/forge_work/.../sct_decision_events/`)** — WELL's systemd unit hardens with `ProtectHome=read-only` + `ReadWritePaths=/root/WELL`, so anything outside `/root/WELL` is read-only. `sct_decision_event.py` (line ~37) defaults its event dir to `/root/A-FORGE/forge_work/<date>/sct_decision_events`, which is OUTSIDE the write whitelist → every SCT decision append fails with Errno 30. This does NOT crash the service, but spams journal warnings and silently drops decision audit events. Fix: add the path to `ReadWritePaths` in `/etc/systemd/system/well.service`, then `systemctl daemon-reload && systemctl restart well`:
+  ```ini
+  ReadWritePaths=/root/WELL /root/A-FORGE/forge_work
+  ```
+  Verify: `journalctl -u well --no-pager -n 20 | grep -i "read.only\|errno 30"` → empty. Same pattern applies to ANY organ with `ProtectHome=read-only` writing outside its `ReadWritePaths` — when you see Errno 30 from an otherwise-healthy service, check `systemctl cat <unit>` for the hardening block first.
+
 - **state.json keeps reverting to TEST/MOCK after quarantine.** The keepalive log at `/var/log/well-biometric-keepalive.log` may show alternating `QUARANTINE` ↔ `timestamp-refresh` cycles. Something (unknown process) may be re-writing the TEST state. Setting `environment: PROD` AND `truth_status: OPERATOR_REPORTED` AND including a `biometric` block prevents re-quarantine.
 
 - **/health handler crashes with `well_score: None`.** The `_well_health_handler` at `server.py` line ~19063 does `classification["well_score"] / 100.0` without a None guard. The health endpoint returns 500 Internal Server Error, causing heartbeat systems to report WELL as DOWN when the process is actually running. Fix: inject a state with a numeric `well_score`.

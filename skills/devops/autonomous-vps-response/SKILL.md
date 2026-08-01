@@ -326,6 +326,16 @@ systemctl start opencode-bot.service openclaw-gateway.service
 
 **When to mask vs stop:** Stop the service first. Only mask if it restarts itself despite the stop. Masking is an escalation — the service cannot be started by ANY means (manual, timer, restart) until explicitly unmasked. Always save the restart commands (unmask + daemon-reload + start) so the user can restore when ready.
 
+**⚠️ Pitfall — agents hosted in tmux/screen sessions:** OpenCode/OpenClaw agents may run inside a tmux or screen session (e.g. `tmux ls` shows a `work` session with a window named after the agent — `kimi` in the 2026-07-31 incident). Killing the PID or masking the systemd service does NOT stop these — the tmux session keeps the agent context alive and it can keep posting. Kill the session too:
+
+```bash
+tmux ls                                   # find the session (e.g. "work" with window "kimi")
+tmux kill-session -t work                 # kills every window/agent in it
+screen -ls                                # same check for screen
+```
+
+**⚠️ Pitfall — queued messages outlive the process:** After killing an agent, the gateway/bot bridge may still deliver a backlog of messages the agent queued before death. Several identical "final receipt" messages arriving after the kill is expected drain, not a failed kill. Verify by process table (`ps aux | grep opencode | grep -v serve`), not by message silence alone. Also: a masked service can still be started by `systemctl start` being run from another session — re-check `is-active` after each kill round; a 3-second respawn means a supervisor is involved.
+
 **Known auto-restart services in arifOS federation:**
 | Service | Role | Restart? |
 |---|---|---|

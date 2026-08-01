@@ -67,6 +67,31 @@ ORGANS_DEAD=$(echo "$output" | grep -c '❌' || true)
 
 **Same applies to any command that prints a value but exits non-zero on "empty" results.** `wc -l`, `awk`, and `grep` (without `-c`) all share this pattern.
 
+### `set -euo pipefail` + command substitution kills probe scripts SILENTLY (PROVEN 2026-08-01)
+
+**Problem:** `set -e` treats a failing command-substitution assignment as fatal. `OUT=$(python3 probe.py 2>&1)` — if the probe exits non-zero, the script dies AT THAT LINE. The failure-report code AFTER it never runs → **exit 1 with ZERO output**. A health script designed to print a RED report prints nothing; cron/logs only show "Script exited with code 1" — no clue which check failed.
+
+**Concrete failure** (Sense health probe): script had a `FAILS` counter and a report block, but `WEBZEN_OUT=$(python3 web_zen.py doctor ...)` under `set -euo pipefail` aborted before the report on any transient probe timeout. Cron flapped exit-1-silent for hours; a manual `bash -x` run revealed doctor was the dying line.
+
+**Fix — never let a probe's exit code propagate through `set -e`:**
+
+```bash
+# Fix 1 — suppress, capture exit explicitly
+set +e
+WEBZEN_OUT=$(python3 probe.py 2>&1)
+WEBZEN_EXIT=$?
+set -e
+```
+
+```bash
+# Fix 2 — || true when you don't need the exit code (then judge by output content)
+WEBZEN_OUT=$(python3 probe.py 2>&1) || true
+```
+
+**Better — don't use `set -e` for multi-check health probes at all.** A probe that must report ALL failures is the opposite shape of a linear fail-fast script: accumulate failures explicitly (`FAILS=$((FAILS+1))`) and let the report block at the end decide the exit code. `set -e` belongs in scripts where ANY failure should abort immediately.
+
+**Diagnosis:** silent exit-1 + `set -euo pipefail` + no stdout = died at the first non-zero command. Reproduce with `bash -x script.sh 2>&1 | tail` to see the exact dying line.
+
 ### Trailing newlines in command substitution
 
 `$()` strips trailing newlines, but `grep -c` (and similar) always terminates output with `\n`. The `|| echo 0` fallback also appends `\n`. When both fire, you get `"0\n0"` which as an integer string becomes `"0\n0"` — invalid in JSON and arithmetic contexts.

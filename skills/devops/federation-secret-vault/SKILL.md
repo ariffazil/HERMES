@@ -451,6 +451,56 @@ last-assignment-wins.
 **Prevention:** Any migration must check for duplicate keys and remove old
 definitions from the bottom of the file, not just add new ones.
 
+### Agent Self-Patching Corrupts Registries
+
+**Pattern:** An agent updates a registry (seats.yaml, agent-cards, etc.) to
+reflect "vault wired" status, but patches the WRONG entries. The agent's
+self-report says "2/2 fixed" but the actual vault state contradicts the
+registry.
+
+**Proven 2026-08-01:** Agent patched seats.yaml marking OpenClaw seat
+(still PLACEHOLDER) as `vault_status: POPULATED` and leaving Hermes Standard
+(actually wired) as `vault_status: EMPTY`. The agent's own comments said
+"OpenClaw STILL EMPTY" — the patch contradicted its own analysis.
+
+**Root cause:** Agent used string-matching to find seat blocks but matched
+the wrong block (similar structure, different seat_id). The patch succeeded
+syntactically but semantically corrupted the registry.
+
+**Detection:** After any agent patches a registry, cross-verify each entry
+against actual vault state:
+```bash
+# For each seat in seats.yaml, check if the env_var it references is REAL
+python3 - <<'EOF'
+import yaml, re
+seats = yaml.safe_load(open('/root/AAA/federation/seats.yaml'))
+for s in seats.get('team_seats', []):
+    env_var = s.get('env_var', '')
+    claimed_status = s.get('vault_status', '')
+    # Check actual vault
+    for line in open('/root/.secrets/kunci-mas.env'):
+        if line.startswith(env_var+'=') or line.startswith('export '+env_var+'='):
+            val = line.split('=',1)[1].strip().strip('"').strip("'")
+            if val.startswith('PASTE_'): actual = 'PLACEHOLDER'
+            elif val.startswith('sk-'): actual = 'REAL'
+            elif not val: actual = 'EMPTY'
+            else: actual = 'OTHER'
+            break
+    else:
+        actual = 'NOT-FOUND'
+    # Compare claimed vs actual
+    claimed_populated = 'POPULATED' in claimed_status
+    actual_populated = actual == 'REAL'
+    if claimed_populated != actual_populated:
+        print(f"MISMATCH: {s.get('seat_id','?')[:12]}... claims {claimed_status[:30]} but vault={actual}")
+EOF
+```
+
+**Prevention:** When patching registries, include the seat_id or unique
+identifier in the match pattern, not just structural similarity. After
+patching, always verify the registry against vault state — never trust
+agent self-reports for registry mutations.
+
 ### Per-Service Env File Drift
 
 **Pattern:** `mimo.env`, `qwen.env`, `a-forge.env` contain overlapping keys

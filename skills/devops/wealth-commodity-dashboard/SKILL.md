@@ -150,6 +150,7 @@ curl -s localhost:3458/health | jq .status
 
 ## Pitfalls
 
+- **SPA CommodityPage must fetch the SHORT API path (`/{slug}/api/ticker`), NOT `/wealth/{slug}/api/ticker`.** Discovered 2026-08-01: `/wealth/gold/api/ticker` served the dashboard HTML (the static `/wealth/gold/*` handler won the route match) while `/gold/api/ticker` returned proper JSON — same upstream `:3456`, different path prefixes. `src/pages/CommodityPage.tsx` (the `/world/gold/` React page) was changed from `fetch('/wealth/${slug}/api/ticker')` to `fetch('/${slug}/api/ticker')`. **Verify:** `curl -s https://arif-fazil.com/gold/api/ticker | head -c 60` → JSON `{"symbol":"XAUUSD"...}`; `/wealth/gold/api/ticker` → HTML. **Diagnose route shadowing by dumping the LOADED config, not the Caddyfile:** `curl -s --unix-socket /var/run/caddy-admin.sock http://localhost/config/apps/http/servers/srv0/routes | python3 -m json.tool` — the file on disk may not match what is actually serving (Caddy re-sorts `handle` blocks by specificity; same-group routes are first-match-wins).
 - **Hardcoded defaults rot FAST.** Within 48 hours, the market moves and the site lies. Always replace hardcoded values with `—` loading indicators.
 - **Copy-paste between commodities must change ALL references.** yfinance ticker, API path, asset name, chart title, currency labels. Test with curl after sed.
 - **The `patch` tool refuses `/etc/caddy/Caddyfile`** — use `sudo sed` via terminal for Caddy edits, then `caddy validate` + `systemctl reload caddy`.

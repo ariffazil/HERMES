@@ -496,6 +496,97 @@ bash /root/scripts/post-deploy-pulse.sh
 # so a simple post-deploy restore script resurrects it
 ```
 
+**Same wipe hits ad-hoc sovereign pages** (PROVEN 2026-08-01): deliberately-unlisted pages that are NOT in the repo — e.g. `/politics/shadow/` (no-nav-link "sovereign door") — vanish silently on the next deploy sync (404). Keep a restore source under a synced path (the content lived on as a makcikgpt article: `cp /var/www/html/arif/makcikgpt-md/anwar-jung-shadow.html /var/www/html/arif/politics/shadow/index.html`), or add a post-deploy restore hook. The Caddy route for `/politics/shadow/*` stays in the config — only the file disappears.
+
+### Common Pitfall: 404 Was Stale — Cron Regeneration Window (PROVEN 2026-08-01)
+
+When a static page is cron-rendered (e.g. `/static/wealth.html` regenerated daily at 06:00 UTC), a probe during the pre-regen window sees 404/empty while the handler is actually healthy. **Re-probe before diagnosing a broken handler.**
+
+```bash
+# The page "404'd" at 11:53 — re-probe before touching Caddy:
+curl -sIL https://arif-fazil.com/economics/ | grep -i 'http/\|last-modified'
+# last-modified: Sat, 01 Aug 2026 12:12:15 GMT  ← cron regenerated it, now 200
+```
+
+The handler was live the whole time; the file just hadn't been regenerated for today. Diagnosing this as a broken route leads to a phantom "fix" (F2 TRUTH violation). Sequence: re-probe → check `last-modified` → check the cron log → only then mutate.
+
+### Pattern: SPA Fallback Swap — Comment Out a Static Handler to Let React Render (PROVEN 2026-08-01)
+
+When a static placeholder (e.g. meta-refresh bounce to another page) is worse UX than letting the React SPA render the real component, the fix is to **comment out the specific handler so the request falls through to `@spa_routes`**:
+
+```caddyfile
+# BEFORE — meta-refresh placeholder served
+@economics_exact path /economics /economics/
+handle @economics_exact {
+	root * /var/www/html/arif
+	rewrite * /static/wealth.html
+	file_server
+}
+
+# AFTER — comment out; falls through to @spa_routes → React <Wealth />
+# @economics_exact path /economics /economics/
+# handle @economics_exact {
+# 	root * /var/www/html/arif
+# 	rewrite * /static/wealth.html
+# 	file_server
+# }
+```
+
+**Key discipline (T3 gate):**
+1. Diagnose first — is this a broken handler or a working-but-suboptimal one? A meta-refresh placeholder is functionally correct; swapping to SPA is an *improvement*, not a repair. Say so honestly.
+2. Backup: `cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile.bak-$(date +%Y%m%dT%H%M%S)-<reason>`
+3. `caddy validate --config /etc/caddy/Caddyfile` → must say "Valid configuration"
+4. `caddy reload --config /etc/caddy/Caddyfile` (zero-downtime in-process)
+5. Verify: the path now serves the SPA bundle (`grep -oP 'index-...js'`), placeholder marker gone (`grep -c 'meta http-equiv="refresh"'` → 0), bundle hash MATCHES the homepage bundle
+6. Production Caddyfile mutation requires sovereign ACK (T3). Present the decision cleanly: recommendation + risk if wrong. No reload without explicit go. (Sovereign replied "Go" — executed.)
+7. Sync the live `/etc/caddy/Caddyfile` to the tracked `deploy/Caddyfile` copy and commit — the repo copy is the audit trail.
+
+**Note on cron-vs-SPA fights:** if a cron job keeps regenerating the now-dead static file, it won't hurt (handler is commented out) but it dirties the repo each run. Either remove the cron or add the generated file to `.gitignore` — see the liveness-watchdog pitfall about auto-generated telemetry files.
+
+### Common Pitfall: Caddy v2 SORTS `handle` Blocks — API Proxy Can Land AFTER the Static Catch-All (PROVEN 2026-08-01)
+
+File order ≠ route order. Caddy v2 reorders `handle` directives by path specificity, and a named-matcher route (`handle @app_api path /app/api/*`) can be sorted to the END of the site's route list — after the SPA catch-all and after the less-specific static `handle /app/*`. Result: `/app/api/x` requests hit the static/SPA handler, which serves `index.html` (200, `text/html`) instead of proxying. The page that fetches the API gets HTML → silent client-side breakage (blank chart), zero Caddy errors.
+
+**Symptom:** API endpoint returns `content-type: text/html` with the app's own page body (size ≈ the app's index.html). Sibling routes with IDENTICAL config work (e.g. `/wealth/oil/api/ticker` → JSON and `/wealth/gas/api/ticker` → JSON, but `/wealth/gold/api/ticker` → HTML). Backend direct (`curl localhost:PORT/api/x`) works fine.
+
+**Root cause:** the route EXISTS in the adapted config but sorted after the catch-alls. The "vendor handle anchor" trick (`handle /app/vendor/*` before the catch-all, used for gas) does NOT reliably fix it — gold had the vendor handle and still lost the sort.
+
+**Diagnosis workflow:**
+1. Compare live behavior across sibling routes to isolate the broken one (fast, no tools needed): `curl -s -o /dev/null -w '%{content_type}' https://site/app/api/ticker` for each sibling.
+2. Dump the ACTUAL route order — not the file order:
+```bash
+/usr/bin/caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile > /tmp/caddy.json
+# walk the JSON to see sorted order — ready-made dumper: scripts/caddy-route-order.sh
+# /app/api/* proxy MUST appear BEFORE /app/* static AND before the SPA catch-all
+```
+3. Confirm the running config matches the adapted file: `curl --unix-socket /var/run/caddy-admin.sock http://localhost/config/`.
+
+**Immediate workaround (no Caddyfile mutation, T2):** point the client at a correctly-sorted path. In the gold case `/gold/api/*` (a direct-path matcher) sorted correctly, so changing the page's `apiBase` from `/wealth/gold/api` to `/gold/api` fixed the chart instantly — static file edit, snapshot-first, reversible.
+
+**Proper fix (T3 — Caddyfile + sovereign ACK):** restructure so the API route can't lose the sort — e.g. `handle_path /app/api/*`, a `route { }` block (preserves exact order), or exclude the api path from the SPA catch-all matcher. Always `caddy validate` + reload + verify content-type on the API path after.
+
+**Verification:** `curl -sI https://site/app/api/x | grep -i content-type` → must be JSON, not `text/html`.
+
+See [references/route-sorting-diagnosis.md](references/route-sorting-diagnosis.md) for the full gold-case walkthrough.
+
+### T3 Forensics: Prove WHO Reloaded Caddy and WHEN (PROVEN 2026-08-01)
+
+When a change was HELD for 888 (e.g. a Caddyfile mutation awaiting sovereign ACK) and live behavior changes anyway, verify the reload actually happened and by whom BEFORE declaring the gate crossed:
+
+```bash
+# 1. In-process reloads keep the PID — process start time ≠ config load time
+systemctl show caddy -p ExecMainStartTimestamp --value   # process start (NOT reload time)
+journalctl -u caddy --no-pager -n 20 | grep 'admin.api'  # "load complete" = actual reload timestamp
+# 2. Caddyfile mtime = last edit (edit-then-reload = applied; edit without reload = pending)
+stat -c '%y %n' /etc/caddy/Caddyfile
+# 3. Which agent session was active in that window?
+ps -eo pid,lstart,cmd | grep -iE 'opencode|kimi-code'
+# 4. Live behavior is the tiebreaker:
+curl -s -o /dev/null -w '%{http_code} %{content_type}' https://site/path-that-changed
+```
+
+`caddy reload` is in-process: same PID, `admin.api load complete` in journal, `ExecMainStartTimestamp` unchanged. If another agent (opencode/kimi-code) has a session running and the Caddyfile mtime + journal line up inside its session window, that agent applied the mutation — flag it for sovereign confirmation even if YOU held the gate. This is how a 888-HELD `/economics/` swap was discovered to have been applied by a parallel FORGE session.
+
 ### Common Pitfall: `uri strip_prefix` + Root Path `/` After Strip Leaves `try_files` With a Directory Match (PROVEN 2026-07-29)
 
 When a Caddy config uses `uri strip_prefix` on a directory path (e.g., `/world/makcikgpt/`) that reduces to `/`, the `try_files {path} {path}.html /index.html` with `{path}=/` may **fail to resolve `index.html`** because Caddy treats `/` as a directory hit and `file_server` doesn't automatically serve the directory index.
