@@ -128,3 +128,5 @@ skills/.usage.json
 # Backup files (per zen sweep 2026-08-01)
 *.bak-*
 *.bak
+verification_evidence.db-shm
+verification_evidence.db-wal
