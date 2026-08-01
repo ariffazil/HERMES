@@ -124,3 +124,7 @@ backups/
 gateway/restart_loop.json
 skills/.usage.json
 .skills_prompt_snapshot.json
+
+# Backup files (per zen sweep 2026-08-01)
+*.bak-*
+*.bak
