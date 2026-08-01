@@ -10,6 +10,26 @@ description: "How Hermes uses TokenRouter — model selection, auto-routing, cos
 
 ---
 
+## ⚠️ 2026-08-01 UPDATE — Primary moved off TokenRouter
+
+The 5-tier hierarchy below is HISTORICAL. As of 2026-08-01 Hermes
+**primary = `qwen-token-plan` / `qwen3.7-plus`** (Qwen Token Plan TEAM
+seat — flat monthly, RM0 marginal, 21 models incl. vision + image +
+TTS). TokenRouter remains a valid fallback/backup gateway, not the
+primary. Canonical current routing: `/root/.hermes/model-picker.yaml`
++ `fallback_providers` in `/root/.hermes/config.yaml`.
+
+**Fallback-chain principle (proven 2026-08-01):** a fallback chain where
+every entry rides the SAME provider → SAME key is theatre. One dead key
+(placeholder `PASTE_*`, quota-drained seat, 401) kills the whole chain.
+Real chains diversify providers AND keys: qwen-token-plan → mulerouter
+→ ollama local. When auditing a "fallback chain", verify each hop has an
+independent credential, not just a different model name.
+
+Seat wiring detail: `references/qwen-token-plan-seat-wiring.md`.
+
+---
+
 ## ⚡ 5-DAY PULUN WINDOW (July 20–25, 2026)
 
 **GLM 5.2 FREE tier is active NOW. Expires July 25. 120 hours remaining.**

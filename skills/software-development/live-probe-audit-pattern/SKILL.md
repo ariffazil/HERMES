@@ -252,6 +252,37 @@ When AED itself is the dominant consumer, the system is heating itself — therm
 
 Report the converged truth. Do NOT endorse "all gaps closed" when carry_forward shows pending items.
 
+## Config/Env Wiring Claim Verification (secrets & provider receipts)
+
+**Signal:** An agent delivers a receipt claiming "keys wired", "config fixed", "fallback chain diversified", "seats updated", "HERMES-SEAT-OK" — especially when its own file-mutation verifier warns a patch was refused.
+
+**Proven 2026-08-01 (Qwen Token Plan seat wiring):** A 60%-accurate receipt. The claims that failed were exactly the ones a naive reader would accept:
+
+| Claim | Probe | Verdict |
+|---|---|---|
+| "config.yaml modified" | `stat -c '%y'` mtime AFTER the claimed change + backup files present | ✅ TRUE — but via `hermes config set` CLI, NOT the refused patch tool. **mtime is the proof of modification, not the tool attribution.** Patch-tool refusal ≠ file unchanged. |
+| "keys wired in vault" | read kunci-mas.env with masked values | ✅ TRUE (3× REAL sk-sp-*) |
+| "21 models per seat" | `GET {base}/models` per key | ✅ TRUE (3×21) |
+| "chat OK" (Pro seat) | `POST {base}/chat/completions` | ✅ TRUE |
+| "HERMES-SEAT-OK" (Standard seat) | `POST /chat/completions` same key | ❌ FALSE — 429 ×4 (parallel AND serial). **Models-list 200 ≠ chat-completions OK. Test the exact operation claimed.** |
+| "seats.yaml updated" | read seats.yaml seat-by-seat | ⚠️ PATCHED WRONG — an agent patch can contradict its own comment (marked seat A POPULATED while its comment said seat A still empty). Read the registry file record-by-record against the vault; never trust the patch summary. |
+| "restart will pick it up" | `/proc/<pid>/environ` + `systemctl show -p EnvironmentFile` + launcher script `source` lines | ❌ FALSE — key absent from the process env chain. **Key in file ≠ key in process env.** The gateway sources a per-agent `runtime/.env`, not the vault. Restart alone was useless. See `federation-secret-vault` skill. |
+
+**Discriminators learned:**
+- **401 vs 429:** 401 = wrong key; 429 = key valid but throttled/quota-drained. Leaked-key quota drain kills the smaller seat first (Standard 25K before Pro 100K) — consistent with F11 chat-exposure incidents.
+- **`export ` prefix parse trap:** dotenv files in `export KEY=value` format break naive `startswith('KEY=')` parsers → false "vault empty" alarm. Match `^(export )?KEY=`.
+- **Process env is the truth, not the SOT file:** `PID=$(systemctl show <unit> -p MainPID --value); tr '\0' '\n' < /proc/$PID/environ | grep KEY` — readable as root, shows what the service actually holds at boot.
+- **Two-token bot drift:** same bot, two token vars (`FORGE_BOT_TOKEN` works, `TELEGRAM_BOT_TOKEN` 401s); gateway code reads the config-referenced one (the dead one). On any token rejection, `getMe`-test EVERY token var in the env file.
+- **`systemctl restart` may not replace the old PID** when `--replace` semantics conflict — verify MainPID changed; `kill -9` the stale one and restart.
+
+### Agent Capability False Gate
+
+**Pattern:** An agent refuses a task citing its config ("groupPolicy allowlist only has X", "I can't post to group Y"). Probe the FULL config before accepting the refusal:
+- OpenClaw claimed it couldn't post to the AAA group citing `groups: {"-1003753855708": {}}` allowlist — but its own `bindings[]` table referenced the AAA group (`bindings[3].match.peer.id = -1004446358629`). The allowlist governs SEND permission; bindings are match rules; the agent conflated them and reflexively denied.
+- A capability denial citing config is itself a claim — probe it. Check: allowlist vs bindings vs home_channels; which agent already holds send rights (Hermes cron delivered to AAA group daily while OpenClaw claimed it was unreachable).
+
+Full worked example: `references/env-wiring-claim-audit-2026-08-01.md`.
+
 ## Cross-Witness Audit Protocol (proven 2026-07-28)
 
 **Signal:** An agent (OpenCode, Claude, any subagent, or a peer) produces a deployment report, internal audit, or status assessment full of specific numbers, status flags, and severity ratings.
@@ -669,6 +700,7 @@ fs.writeFileSync(LIVE_PATH, JSON.stringify(payload, null, 2));    // for live HT
 - `references/cross-agent-commit-handoff.md` — Committing files from another agent's session with F2/F11/F3 compliance (2026-07-29)
 - `references/mcp-resource-zen-2026-07-28.md` — Cross-witness audit: OpenCode scan → Hermes verify → convergence seal. MCP resource collapse 327→34. Single-agent accuracy ~60% lesson.
 - `references/external-witness-probe-maintenance.md` — Multi-location regex hazard, JS-rendered landing page extraction, and verification workflow for the external witness probe (2026-07-31)
+- `references/env-wiring-claim-audit-2026-08-01.md` — Worked example: auditing a Qwen seat-wiring receipt (401/429 discrimination, mtime vs tool attribution, process-env probing, seats.yaml self-contradiction, FORGE two-token drift, OpenClaw false gate)
 
 ## Constitutional Compliance
 
