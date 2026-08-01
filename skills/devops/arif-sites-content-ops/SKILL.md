@@ -1,7 +1,7 @@
 ---
 name: arif-sites-content-ops
 description: "Edit, build, and deploy content on arif-fazil.com (React 19 + Vite). Covers essay location, content structure, build pipeline, and the"
-version: 1.4.0
+version: 1.5.0
 author: Hermes
 license: MIT
 metadata:
@@ -51,6 +51,7 @@ Key files for common edits:
 - **Footer:** `src/components/ConstellationFooter.tsx` — copyright, seal claims, federation links, human/machine badge separation
 - **Homepage:** `src/pages/Home.tsx` — hero, organ doors, governance bridge, wells portfolio
 - **Navigation:** `src/data/siteContent.ts` — primaryLinks[], organDoors[], ecosystemLinks[], arifosLinks[]
+- **NS Election GIS page:** `public/politics/ns-election/index.html` — standalone Leaflet GIS page, data-driven (see below)
 
 ### Essay file structure
 
@@ -142,6 +143,28 @@ Workflow for reading/digesting published articles:
 4. For bulk digest (10+ articles), delegate to a subagent to avoid context flooding
 
 MakcikGPT articles live under `/world/makcikgpt/<slug>` in the URL structure (not `/makcikgpt/<slug>`). The listing page is at `/makcikgpt/`.
+
+## NS Election GIS page — data-driven static HTML (PROVEN 2026-08-01)
+
+`public/politics/ns-election/index.html` is a **standalone static Leaflet GIS page** (NOT React — no build needed for content edits, but it IS copied into dist by Vite from `public/`). It renders election results via a data-driven JS pattern:
+
+- **`const SEATS = [...]`** — one object per DUN with `{code, name, inc, maj, winner, cls, hot, lat, lng, notes}`. `winner` + `cls` (ph/bn/pn/tossup) drive marker colors, grid tiles, popups, filters.
+- **`const INVARIANTS = [...]`** — the 9 spatial-field invariant cards.
+- Map markers, grid cards, popups, and the inspector all derive from `SEATS` — **you never edit render JS to change results, only the data arrays.**
+- Filter buttons (`ALL (36)`, `BN (18)`, `PH (11)`, `PN (7)`, `🔥 HOT (8)`) are **hardcoded HTML** — must be updated manually when seat counts change.
+
+**Update workflow when new results arrive (election night / final result):**
+1. `diff public/politics/ns-election/index.html /var/www/html/arif/politics/ns-election/index.html` — confirm public/ is source of truth (it should be; if differs, resolve first).
+2. Edit the `SEATS` array: flip `winner`/`cls`, annotate `notes` with `FLIP:`/`⚠️ UPSET:`/`held` per seat.
+3. Update hardcoded filter buttons to match new counts (BN/PH/PN totals).
+4. Add a `🏁 FINAL RESULT` banner card + mark scenario cards `✅ REALISED` / `✗ DID NOT MATERIALISE` — don't leave pre-poll projections labelled as live outcome.
+5. Update inspector defaults (the top `DUN N32 · 🔥 BATTLEGROUND` block) if the featured seat outcome changed — it's static HTML, not data-bound.
+6. Update `Updated <date>` in top-bar.
+7. `npm run build` (copies public/ → dist/), `rsync -av --delete dist/ /var/www/html/arif/`, then verify with `browser_navigate` (Leaflet renders client-side — curl/grep on the HTML won't show marker states; grep the file for banner strings instead).
+
+**Result provenance discipline (F2 TRUTH):** label UNOFFICIAL vs OFFICIAL explicitly on the page. Election-night media calls are TIDAK RASMI until SPR declares. Sources that worked 2026-08-01: BHarian live blog (`bharian.com.my` TERKINI PRN NS), Utusan, Harian Metro live, MyUndi (`myundi.com.my/ms`). Cross-check BN/PN/PH seat lists from two outlets before writing to the page. Update the companion `ns_live_telemetry.json` status (e.g. `RESULT_DECLARED`) via dual-write (see Pitfall #20).
+
+**Deployment reality (2026-08-01):** FORGE (kimi-code/opencode) edits the SAME files concurrently and will commit before you do. After editing, `git log --oneline -3` — if HEAD already contains your changes (sibling committed them with possibly-refined text), **do not double-commit**; verify content, then move on. `git status --short` showing no changes for your file = someone else committed it — check `git show HEAD:<path> | grep <your-marker>` to confirm your content survived.
 
 ## Pitfalls
 
@@ -541,6 +564,8 @@ done
 #### Editing the repo while FORGE (opencode/kimi-code) is live — sibling race (PROVEN 2026-08-01)
 
 Kimi's FORGE session edits `/root/arif-fazil.com` concurrently with you. The `patch` tool warns `_warning: modified by sibling subagent … read the file before writing` — **heed it.** In this session, patching `ConstellationFooter.tsx` against a stale read duplicated the contact-nav block and left an orphaned JSX fragment (LSP errors: `Cannot find name 'item'`, missing closing tags). The build caught it; a `read_file` + targeted removal fixed it.
+
+**Reconcile, don't re-patch — when the sibling ALREADY finished the job (PROVEN 2026-08-01, PRN16 final result).** If a `patch` call or script assert fails with `NOT FOUND` on an expected string, STOP hunting. The sibling may have already applied an equivalent change. Check order: (1) `stat -c '%y' <repo-file> <webroot-file>` — repo NEWER than webroot = sibling wrote to repo but the live copy is stale; (2) `git log --oneline -3`; (3) `diff <repo-file> <webroot-file>`. In the PRN16 update, the sibling had already updated the repo page (banner + 10 seat flips, repo mtime 12:55Z) while webroot served the pre-result build (12:46Z). Correct sequence: verify sibling's work is complete (`grep -c 'TOSS UP'` = 0, count expected flips) → **fix factual errors in sibling content before it goes live** (sibling banner said "Two-thirds majority (19 required)" — 19 is SIMPLE majority; 2/3 of 36 = 24 — arithmetic in political content must be re-derived, never trusted) → fill gaps the sibling missed (telemetry was still `ACTIVE_STREAMING_FLOW` → `RESULT_DECLARED` with final numbers, dual-write repo AND webroot per Pitfall #20) → `rsync -a <repo>/path/ <webroot>/path/` to resync the stale live copy → `curl` live URL + grep new markers → `git add` + commit your reconciliation. Never re-patch content a sibling already wrote correctly — you clobber their work. Full session recipe: `references/ns-election-result-update-2026-08-01.md`.
 
 **Rules when the sibling warning fires:**
 1. `read_file` the target immediately before patching — never patch from memory of the file.
