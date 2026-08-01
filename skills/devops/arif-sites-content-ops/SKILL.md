@@ -192,15 +192,29 @@ The site's law lives in a SEPARATE repo, not the React app: `/root/web-canon` (G
 
 ```
 /root/web-canon/
-├── canon/                # 12 law files (JSON/YAML): navigation.json, design-tokens.json,
+├── canon/                # Law files (JSON/YAML): navigation.json, design-tokens.json,
 │                         #   typography.json, components.json, templates.json, routes.yaml,
 │                         #   redirects.yaml, sites.yaml, public-state.schema.json,
-│                         #   federation.json, geometry.json, releases.json, tool-surfaces.json
+│                         #   federation.json, geometry.json, releases.json, tool-surfaces.json,
+│                         #   atlas.yaml (route→ring/plane/page_type/layout authority),
+│                         #   file-authority.yaml (CANON/DERIVED/PROPOSAL states + leases)
 ├── atlas/                # Long-form doctrine (markdown): WEB_ATLAS.md (the constitution),
-│                         #   WEB-FEDERATION-MAP.md (repos/webroots/topology), STATIC_VS_DYNAMIC.md
+│                         #   WEB-FEDERATION-MAP.md (repos/webroots/topology),
+│                         #   STATIC_VS_DYNAMIC.md (automation paradox),
+│                         #   INVARIANTS_OF_AGENTIC_SITES.md (13 invariants I1-I13)
 ├── docs/                 # SITE_CONTRACTS.md, AUTHORITY_MATRIX.md, RELEASE_POLICY.md, etc.
-└── scripts/              # atlas-sync.sh, canon-sync.sh, canon-lint.js, agentic-web.sh
+└── scripts/              # atlas-sync.sh, canon-sync.sh, canon-lint.js, agentic-web.sh,
+                          #   verify-design-alignment.cjs (SENSE_ALIGN gate)
 ```
+
+**New canon files (2026-08-01 session):**
+- `canon/atlas.yaml` — route registry: every route declares `ring` (SOUL/MIND/BODY/ORGAN), `plane` (narrative/proof/organ/domain), `page_type`, `layout`, `audience`, `data_source`. The authority the SPA shell must obey.
+- `canon/file-authority.yaml` — file states CANON/DERIVED/SCRATCH/PROPOSAL/RECEIPT/RETIRED/UNKNOWN + lease model + mutation budget + agent roles (scout/architect/implementer/auditor/janitor/judge). Stops multi-agent "forked intention" (six pseudo-Atlases).
+- `atlas/INVARIANTS_OF_AGENTIC_SITES.md` — I1-I13: ATLAS before action, Canon before code, SOT before rendered page, Shared shell before subpage freedom, Tokens before local CSS, Navigation before content, Static evidence before SPA fallback, Diff before mutation, Verification before SEAL, Unknowns declared, Human owns meaning, Agent owns operational clarity, No automation without reversibility.
+
+**Both new YAML files MUST be added to `canon-sync.sh`'s required-files array** or the live mirror won't update (canon-sync only syncs its declared list).
+
+Full architecture map, ring/plane table, I1-I13 summary, enforcement chain, sync commands: `references/atlas-governance-architecture.md`.
 
 **Sync to live (two pipelines, both with dry-run default):**
 ```bash
@@ -221,6 +235,78 @@ Both scripts: validate → backup (`.bak.<timestamp>`) → atomic rsync → drif
 - `robots.txt` → allow `/canon/`
 - `web_zen.py doctor` → checks canon files exist + canon-sync drift gate
 - **CRITICAL:** the Caddy `/canon/*` handler MUST have `root * /var/www/html/canon` or it serves the SPA shell for JSON/MD files — machine-readable law becomes invisible (see `caddy-reverse-proxy` skill pitfall "handle /canon/* Without root"). Verify: `curl -sI https://arif-fazil.com/canon/navigation.json | grep -i content-type` must be `application/json`.
+
+## SENSE_ALIGN — design alignment gate (PROVEN 2026-08-01)
+
+"GREEN route does not mean aligned design." 200 OK only proves the page exists, not that it belongs to the same system. The gate lives at `/root/web-canon/scripts/verify-design-alignment.cjs`:
+
+```bash
+cd /root/web-canon && node scripts/verify-design-alignment.cjs          # all atlas routes
+node scripts/verify-design-alignment.cjs /writing                       # one route
+```
+
+Checks per route: route_200 · tokens_loaded (`/_shared/design-system/tokens.css`) · data_ring · data_plane · trinity_nav · canon_footer. Exit 1 = violations.
+
+**Key implementation lessons:**
+- **SPA routes: markers live in the JS bundle, not the shell HTML.** For any route whose HTML contains `/assets/index-*.js`, fetch the bundle and append it to the haystack before searching for data-ring/data-plane/nav/footer markers. The shell alone never contains client-rendered markers — searching it yields false failures.
+- **Redirects: curl needs `-L`.** `/gold` → 308, `/canon` → 301. Without `-L` the fetch returns 0B and every check fails.
+- **data-ring on static pages vs SPA:** the React shell (`index.html`) hardcodes `data-ring="SOUL"` on `<html>` — every SPA page inherits SOUL until AtlasGate overrides it. Static hand-rolled pages often declare their own ring or none.
+
+**AtlasGate — per-route ring/plane (PROVEN 2026-08-01).** `src/components/AtlasGate.tsx` sets `data-ring`/`data-plane` on `<html>` from a longest-prefix route table (mirrors `canon/atlas.yaml` routes). Wired inside `<BrowserRouter>` in App.tsx. Result: `/` = SOUL/narrative, `/999` = MIND/proof, `/politics/ns-election` = BODY/organ. Verify in browser: `document.documentElement.getAttribute('data-ring')`.
+
+**Static pages don't get AtlasGate** — they're standalone documents outside the React shell. For those, shell-wrap remediation applies (below).
+
+### Shell-wrap remediation — give static pages shell inheritance (non-destructive)
+
+When SENSE_ALIGN fails on sovereign hand-crafted static pages (/000, /999, /earth, GIS map, shadow), the fix is NOT rewriting them as React (content-preservation risk — bespoke features, maps, sealed vaults). Shell-wrap instead: `sites/arif-fazil.com/scripts/shell-wrap.sh` adds, idempotently, to each target `public/<dir>/index.html`:
+1. `<link rel="stylesheet" href="/_shared/design-system/tokens.css" />` after `<head>` if missing
+2. `data-ring="X" data-plane="Y"` on `<html>` (map per atlas.yaml)
+3. CanonFooter block (DITEMPA + WEB_ATLAS/file-authority links) before `</body>` if missing
+
+**Pitfall:** pages with existing `data-ring="ROOT"` and `lang="en"` between `<html` and `data-ring` break naive sed. Use python regex that tolerates attributes between: `re.sub(r'<html([^>]*?)data-ring="[^"]*"', ...)` — and handle the "has ring, no plane" case in a second pass. Backups go to `public/.shell-wrap-backup-<ts>/` before any edit. Then rsync the wrapped dirs to webroot and re-run SENSE_ALIGN. Script packaged in this skill at `scripts/shell-wrap.sh`.
+
+## Canon-driven navigation — one canon, one component, zero duplicates (PROVEN 2026-08-01)
+
+Nav unification doctrine: *"no page owns its own `<nav>`; canon/navigation.json is the only source of truth."* Two IAs were drifting — the canonical trinity (HUMAN/INSTITUTION/EARTH) and the operational primary nav (START/EXPLORE/ANALYZE/...). Resolution per I9 (patch existing canon before inventing): **sync the operational nav INTO canon**, then render from canon only.
+
+Pipeline (SOT → generator → derived → render):
+```
+canon/navigation.json primary_links.items (CANON — edit here)
+  → scripts/generate-nav-canon.cjs (prebuild chain)
+  → src/data/navCanon.ts (DERIVED — auto-generated header, never hand-edit)
+  → ConstellationNav.tsx renders primaryNav (both desktop + mobile menus)
+```
+
+**Key steps:**
+1. Add `primary_links` (label/href items) to `/root/web-canon/canon/navigation.json` — F2: canon must match reality, so mirror the actual site nav.
+2. `scripts/generate-nav-canon.cjs` emits `src/data/navCanon.ts` with `export const primaryNav: NavItem[]` + `export interface NavItem { label; href; external?: boolean }`.
+3. Append to prebuild chain in package.json so every `npm run build` regenerates.
+4. Replace `primaryLinks` import in ConstellationNav.tsx with `primaryNav` (both desktop AND mobile nav blocks).
+5. Verify canon→derived flow: change a label in canon → run generator → grep derived file → revert.
+
+**Pitfalls:**
+- **The generator overwrites manual edits to the derived file.** If you fix the derived file by hand (e.g. add `external?`), ALSO patch the generator template — next build clobbers your fix.
+- **Type mismatch:** `NavItem` must include `external?: boolean` or TS2339 fires when the component checks `item.external` for outbound links.
+- **Two nav blocks** (desktop `hidden md:block` + mobile menu) both iterate — replace BOTH or you get mixed sources.
+- `primaryLinks` in `siteContent.ts` stays for backward compat but is no longer the nav source — don't edit it for nav changes.
+
+## File governance — CANON/DERIVED/PROPOSAL states (PROVEN 2026-08-01)
+
+Arif's doctrine: *"Same directive ≠ same execution. Same mission ≠ same file boundary. Agents do not naturally coordinate."* The disaster pattern: five agents each create their own pseudo-Atlas (WEB_ATLAS.md, ATLAS.md, DESIGN_SYSTEM_V2.md...). Solution is explicit file authority — `/root/web-canon/canon/file-authority.yaml`:
+
+**File states:** CANON (read; mutate only with lease) · DERIVED (generated; never hand-edit) · SCRATCH (temp; clean or promote) · PROPOSAL (human review artifact) · RECEIPT (append-only) · RETIRED (do not use) · UNKNOWN (HOLD — no action).
+
+**Key rules:**
+- No agent may create a new canonical file. Only ARIF (or an authorized promotion step) canonizes.
+- Agents write only to `forge_work/proposals/<agent-id>/<mission>/**` or `receipts/<agent-id>/**`.
+- Lease model: `lease: {agent, mission, files, mode: edit, expires: 30m, authority: ARIF_SEAL_REQUIRED}` — no lease, no mutation; concurrent lease on same file → HOLD.
+- Mutation budget: max 5 files changed, 0 new files outside allowed zones.
+- Roles with separation of powers: scout (detect, no write) · architect (propose) · implementer (leased files only) · auditor (receipts only) · janitor (cleanup) · judge (compare, no direct mutation).
+- Agent prompt header: **FILE GOVERNANCE MODE: FAIL-CLOSED** — list target files, state each authority, UNKNOWN→stop, DERIVED→find upstream SOT, CANON→request lease, no lease→proposal only.
+
+**Where it lives in practice:** the fail-closed header is embedded in `sites/arif-fazil.com/public/AGENTS.md` (and served at `/AGENTS.md`). Site canon files (App.tsx, AtlasGate.tsx, ns_results.json) are CANON — agents edit only with Arif's explicit go. Generated outputs (dist/, compare/index.html, navCanon.ts, ns_live_telemetry.json) are DERIVED. The `canon/` mirror in `/var/www/html/canon/` is DERIVED (synced by canon-sync.sh).
+
+**Pitfall — canon-sync required-files list:** `scripts/canon-sync.sh` has a hardcoded array of files it syncs. Any NEW canon file (atlas.yaml, file-authority.yaml) must be added to that array or the live mirror 404s. Check with `curl -s -o /dev/null -w '%{http_code}' https://arif-fazil.com/canon/<new-file>` after sync.
 
 ## Pitfalls
 
@@ -844,3 +930,11 @@ The Heal cron job (`🜂 Heal — arif-fazil.com Self-Repair`) has a constitutio
 - `site-deployment-verification` — for verifying a deployed site against claims
 - `caddy-reverse-proxy` — for routing changes (888_HOLD required)
 - `agentic-web-surface-architecture` — graph-first methodology for building agentic web surfaces (Phase 0-10 framework)
+
+## Additional Pitfalls (2026-08-01 session)
+
+30. **Caddy `handle /canon/*` without explicit root → SPA shell swallows canon (I7 violation).** The canonical evidence surface must serve real files, NEVER the app shell — if it returns the shell, agents cannot read the law. The handler at ~line 284 had no `root` directive, inherited the site root (`/var/www/html/arif`), so `try_files` looked for `/var/www/html/arif/canon/...` (didn't exist) → fell through to SPA shell. Files physically existed at `/var/www/html/canon/` but were invisible. **Fix:** `root * /var/www/html` + `try_files {path} {path}/index.html =404` + `file_server` in the `/canon/*` handler. Verify: `curl -sI https://arif-fazil.com/canon/navigation.json | grep -i content-type` must be `application/json` (not `text/html`), and `.md` files must serve `text/markdown`. Browser `redir /canon /doctrine 301` stays (UX) — machine paths `/canon/*.json|yaml|md` are what must resolve statically.
+
+31. **Build-regenerated churn files must be `.gitignore`d, not committed repeatedly.** `ns_live_telemetry.json` regenerates on EVERY `npm run build` with a fresh timestamp → git sees it dirty every 15m → Sense reports "Repo: 1 uncommitted files" RED forever. Committing once doesn't stop it. **Fix:** `git rm --cached <file>` + append to `.gitignore` (the file is DERIVED per file-authority — no git history needed). This keeps Sense/Heal gates GREEN.
+
+32. **YAML validation failures on write_file with glob keys / colons in values.** write_file validates YAML and refuses with `YAMLError` if: (a) a block-mapping key contains `*` (glob patterns like `"public/**/*.html"`) — the `*` at key start breaks the parser; (b) an unquoted scalar contains `:` (e.g. `note: "301 only, no render"` written as bare value). **Fix:** quote glob keys (`"public/**/*.html":` with quotes), quote any value containing `:` or special chars, avoid `!=` in scalars (write `not equal` or quote it). The file is NOT created on failure — check `resolved_path` / rewrite cleanly.
