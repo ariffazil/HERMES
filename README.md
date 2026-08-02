@@ -1,7 +1,7 @@
 <!-- SOT-MANIFEST
-federation_release: v2026.08.02
-last_verified: 2026-08-02T06:19:13Z
-live_commit: 5940b07
+federation_release: v2026.07.29
+last_verified: 2026-07-29T18:00Z
+live_commit: fa890a2
 organ: HERMES
 role: multi-modal-bridge (organ 7 of 7)
 authority: OBSERVE_ONLY — routes and bridges, never adjudicates
