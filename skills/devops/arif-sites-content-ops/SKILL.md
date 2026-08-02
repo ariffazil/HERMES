@@ -19,6 +19,7 @@ Edit, build, and deploy content on arif-fazil.com. The site is React 19 + Vite, 
 
 ## When to use
 
+- **CRITICAL:** Before adding/relocating any content, study the architecture first. See `references/site-architecture-pre-workflow.md` — Arif's direct instruction: "jangan tepek, integrate into the instrument system."
 - Arif drops an external AI audit/review (ChatGPT, Perplexity, etc.) on the site and says "fix this" or "reality verdict"
 - Arif shares external audit feedback on an essay and says "fix it"
 - Editing or adding MakcikGPT articles
@@ -31,6 +32,11 @@ Edit, build, and deploy content on arif-fazil.com. The site is React 19 + Vite, 
 > Full topology map (22 subdomains, 7 organs, ports, layers, MakcikGPT dual-path,
 > cron immune system, F13 gates): `references/site-architecture-map-2026-08-01.md` —
 > probe live state before trusting any single line.
+>
+> **Surface catalog + routing map (dual-commodity surfacing, /politics/ section,
+> /forge/ shadow decoder, navCanon auto-generation):**
+> `references/site-architecture-surfaces-2026-08-03.md` —
+> maps every route section, surfaces.json role, and the architecture-first workflow.
 
 ```
 /root/arif-fazil.com/
@@ -326,6 +332,8 @@ Arif's doctrine: *"Same directive ≠ same execution. Same mission ≠ same file
 ## Pitfalls
 
 ### Site navigation & deploy traps (2026-08-01)
+
+- **Architecture-first, never "tepek" — Arif's correction (2026-08-03).** When asked to add content (shadow pages, commodity dashboards, new sections), do NOT jump to proposing changes. First: trace the architecture — surfaces.json (what exists), App.tsx (routes), navCanon.ts (navigation), Caddyfile (handlers), siteContent.ts (link arrays). The site has deliberate architecture (dual surfacing of commodities, hidden surfaces like /forge/, auto-generated nav). Proposing to add content without understanding the architecture is "bangang." Arif: "The site is architecture system design system. Jangan nak buat bangang. Watch ur own shadow." **Workflow:** (1) probe live site + read surfaces.json + App.tsx + navCanon.ts → (2) identify WHERE content fits in existing architecture → (3) propose placement with rationale → (4) only then implement. Never: "let's create a new page at /shadow/" without first checking if /politics/shadow/ or /forge/ or /world/makcikgpt/ is the correct parent.
 
 - **rsync `--delete` wipes manually-placed webroot files.** A file copied directly into `/var/www/html/arif/<path>/` (e.g., to quickly fix a 404) is DELETED by the next `rsync -av --delete dist/ /var/www/html/arif/` because it's not in the build output. Discovered 2026-08-01: shadow site placed at `/var/www/html/arif/politics/shadow/index.html` returned 404 again after the next deploy. **Fix:** persist new static pages under the repo `public/<path>/` (e.g. `sites/arif-fazil.com/public/politics/shadow/index.html`) so the build copies them into dist and they survive `--delete`. **Audit:** after any manual webroot fix, check the file exists in `public/` too, or it's one deploy away from vanishing.
 

@@ -133,6 +133,8 @@ Video wrappers, backgrounds, or any secondary element can sync to the same phase
 
 The forge catch-all at `/var/www/html/forge/` serves any file via Caddy `file_server` without explicit routes or authentication. **No audit trail.** Use for quick static deploys, but be aware: anything placed there is publicly accessible with no access log.
 
+**⚠️ PITFALL (2026-08-03):** `/forge/` is the A-FORGE execution shell — NOT content hosting. Shadow PM profiles, institutional analysis, and political intelligence content should live under `/politics/` (the Shadow Board instrument in `page-instruments.json`), not under `/forge/`. `/forge/shadow/` was a legacy backup location, never deployed to live. See `arif-sites-content-ops/references/site-architecture-pre-workflow.md` for canonical namespace conventions.
+
 ## Dark mode requirement
 
 All arif-fazil.com surfaces must be **dark mode** (`#0a0a0a` background). Arif: "sakit mata terang sangat." Never use cream/paper/white backgrounds. See `arif-sites-content-ops` skill for the canonical CSS token set.

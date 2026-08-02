@@ -9,13 +9,24 @@ tags: [wealth, dashboard, gold, oil, gas, commodity, live-data, caddy, temporal-
 
 Three live commodity dashboards serving **temporal State-of-Truth (SOT)** — every number on screen is pulled from a live API, never hardcoded.
 
-| Dashboard | URL | API port | Symbol |
-|---|---|---|---|
-| Gold | `arif-fazil.com/gold/` | `:3456` | XAUUSD |
-| Brent Crude (Oil) | `arif-fazil.com/oil/` | `:3457` | XBRENT |
-| Natural Gas | `arif-fazil.com/gas/` | `:3458` | XNATGAS |
+| Dashboard | URL | API port | Symbol | Status (2026-08-03) |
+|---|---|---|---|---|---|
+| Gold | `arif-fazil.com/gold/` | `:3456` | XAUUSD | ✅ LIVE — 1,753-line TradingView dashboard with `fetch_gold.py` API |
+| Brent Crude (Oil) | `arif-fazil.com/oil/` | `:3457` | XBRENT | 🔴 STALE — 121-line stub with **hardcoded $84.32** (actual: ~$90.12). Not using live API. |
+| Natural Gas | `arif-fazil.com/gas/` | `:3458` | XNATGAS | ⚫ MISSING — `fetch_gas.py` (1,294 lines) exists but **no HTML dashboard**. wealth.arif-fazil.com/gas/ returns empty shell. |
+
+**API scripts exist for all three** at `/root/arif-fazil.com/sites/arif-fazil.com/dist/{gold,gas}/api/`:
+- `fetch_gold.py` (1,269 lines) — GC=F, XAUUSD=X fallback, full tech indicators + signals
+- `fetch_gas.py` (1,294 lines) — NG=F, NATGAS=X fallback, full tech indicators + signals
+- **`fetch_oil.py` does NOT exist** — Oil dashboard has no live data pipeline
 
 ## Architecture
+
+**Dual surfacing (PROVEN 2026-08-03):** Commodity pages exist in TWO surfaces:
+1. **React SPA:** `/world/oil`, `/world/gas`, `/world/gold` — CommodityPage component, fetches from `/{slug}/api/ticker`
+2. **Static standalone:** `/oil/`, `/gas/`, `/gold/` — standalone HTML served from `/var/www/html/{oil,gas,gold}/`
+
+Legacy redirect: `/oil/` → `/world/oil` etc. The static pages are NOT React — they're standalone with their own JS/API calls.
 
 ```
 Browser → Caddy → Static HTML (/var/www/html/{gold,oil,gas}/index.html)
@@ -150,7 +161,10 @@ curl -s localhost:3458/health | jq .status
 
 ## Pitfalls
 
-- **SPA CommodityPage must fetch the SHORT API path (`/{slug}/api/ticker`), NOT `/wealth/{slug}/api/ticker`.** Discovered 2026-08-01: `/wealth/gold/api/ticker` served the dashboard HTML (the static `/wealth/gold/*` handler won the route match) while `/gold/api/ticker` returned proper JSON — same upstream `:3456`, different path prefixes. `src/pages/CommodityPage.tsx` (the `/world/gold/` React page) was changed from `fetch('/wealth/${slug}/api/ticker')` to `fetch('/${slug}/api/ticker')`. **Verify:** `curl -s https://arif-fazil.com/gold/api/ticker | head -c 60` → JSON `{"symbol":"XAUUSD"...}`; `/wealth/gold/api/ticker` → HTML. **Diagnose route shadowing by dumping the LOADED config, not the Caddyfile:** `curl -s --unix-socket /var/run/caddy-admin.sock http://localhost/config/apps/http/servers/srv0/routes | python3 -m json.tool` — the file on disk may not match what is actually serving (Caddy re-sorts `handle` blocks by specificity; same-group routes are first-match-wins).
+- **Iron Rule #1 IS being violated (2026-08-03).** The Oil dashboard (`/var/www/html/oil/index.html` or `dist/wealth/oil.html`) has hardcoded $84.32 for Brent, $80.15 for WTI, $3.42 for NatGas — while current market is ~$90.12 Brent. The Rule says "NEVER hardcode data in HTML" but this stub was shipped with hardcoded values and no API fetch. **Fix:** create `fetch_oil.py` (clone from `fetch_gas.py`, change ticker to BZ=F), build oil.html from gold template, wire to live API. Until fixed, the oil page is a "stale lie" per Iron Rule #1.
+- **Gas has an API but no HTML page.** `fetch_gas.py` (1,294 lines) is complete with yfinance ticker (NG=F), EMA/RSI/ATR, signal generation, support/resistance, macro context. But there is no `/var/www/html/gas/index.html` dashboard. The wealth.arif-fazil.com/gas/ route shows an empty stub. **Fix:** clone gold.html → gas.html, sed-replace API paths + labels + ticker.
+- **Oil has no fetch script at all.** Unlike gold and gas which have `fetch_*.py` scripts, oil has neither a live API pipeline nor a proper HTML dashboard. It's the most broken of the three.
+- **SPA CommodityPage must fetch the SHORT API path**
 - **Hardcoded defaults rot FAST.** Within 48 hours, the market moves and the site lies. Always replace hardcoded values with `—` loading indicators.
 - **Copy-paste between commodities must change ALL references.** yfinance ticker, API path, asset name, chart title, currency labels. Test with curl after sed.
 - **The `patch` tool refuses `/etc/caddy/Caddyfile`** — use `sudo sed` via terminal for Caddy edits, then `caddy validate` + `systemctl reload caddy`.
