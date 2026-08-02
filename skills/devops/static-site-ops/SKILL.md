@@ -41,7 +41,54 @@ Edit, audit, and deploy standalone static HTML/CSS/JS pages served via Caddy `fi
 |-----------|---------|---------|
 | `syedos.arif-fazil.com` | `/var/www/html/syedos/` | SyedOS main page |
 | `syedos.arif-fazil.com/heal/` | `/var/www/html/syedos/heal/` | Breathing chamber + visual anchor |
-| Forge catch-all | `/var/www/html/forge/` | Any file served without route or auth |
+| `/politics/shadow/` | `/var/www/html/arif/politics/shadow/` | Shadow Decoder — PM rankings, profiles, institutional analysis |
+| Forge catch-all | `/var/www/html/forge/` | A-FORGE execution shell (NOT content hosting) |
+
+## Shadow Decoder — JSON-driven template deployment
+
+The Shadow Decoder (`/politics/shadow/`) uses a **data-driven architecture**: a single `data/shadow-decoder.json` powers all PM profile pages via JavaScript `fetch()`. PM profile pages are identical templates that render dynamically — updating one template updates all 10 profiles.
+
+### File structure
+
+```
+/var/www/html/arif/politics/shadow/
+├── index.html                  # Ranking table with thumbnails
+├── data/
+│   └── shadow-decoder.json     # All PM data + image paths
+├── images/
+│   └── {slug}.jpg              # AI-generated shadow portraits
+├── pm/
+│   ├── tunku/index.html        # JS-driven template (identical across all PMs)
+│   ├── mahathir1/index.html
+│   └── ...                     # 10 PM directories
+├── institution/index.html
+├── derita/index.html
+├── cascade/index.html
+├── seal/index.html
+└── timeline/index.html
+```
+
+### Caddy routing
+
+`/politics/shadow/*` is served from `/var/www/html/arif/` with `file_server` (NOT via the React SPA catch-all). Legacy `/shadow/` → `/politics/shadow/` (301).
+
+### Adding images to JSON-driven templates
+
+1. **Add `image` field to JSON** — each PM entry gets `"image": "images/{slug}.jpg"`
+2. **Update JS template** — add portrait after archetype banner:
+   ```javascript
+   ${pm.image?`<img src="/politics/shadow/${pm.image}" class="pm-portrait" alt="${pm.name}" loading="lazy">`:""}
+   ```
+3. **CSS** — `.pm-portrait{width:200px;border-radius:50%;border:2px solid var(--accent);box-shadow:0 0 30px rgba(212,167,116,0.2)}`
+4. **Thumbnails in table** — `.thumb{width:36px;border-radius:50%}` + `<div class="name-cell">` wrapper
+
+### Batch path updates
+
+When content moves namespaces, use Python `re.sub()` to batch-update all HTML files:
+```python
+html = re.sub(r'href="/old/', 'href="/new/', html)
+```
+Then verify every page, data file, and image returns 200 with `curl`.
 
 ## Workflow
 

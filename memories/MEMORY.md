@@ -1,8 +1,6 @@
 Runtime: /usr/local/lib/hermes-agent/
 §
-Arif: parallel agents OK. Human language for embodied/shadow topics. Jangan default arifOS metaphors unless he connects first.
-§
-Arif modes: forge(purpose-first) ≠ audit(citation-first) ≠ reflect(meaning-first). 'Stop auditing, reflect' = drop tables, meet him in meaning. 'Ayat manis' trap: don't accept elegant theory without VPS evidence. Ground frameworks in concrete data. OBS before DER/INT.
+Arif modes: forge(purpose)≠audit(citation)≠reflect(meaning). 'Stop auditing, reflect'=meet in meaning. 'Ayat manis'=NEVER theory w/o VPS evidence. OBS before DER/INT. 'Good enough to publish'—skim OK. PRN16: publish failure beside success.
 §
 Email dari agent: MUST CC arifbfazil@gmail.com on every external email. Bukan optional — wajib. Confirm sebelum hantar.
 §
@@ -24,18 +22,18 @@ Syed's brother (36M, ISFJ, talkative): brain fog=1wk sleep deprivation. Sleep ai
 §
 No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=khalifah. Constraint=steps:60.
 §
-Text is illusion — framework reads residue not experience. VPS evidence > model. 'Hang percaya ja ayat manis' = NEVER accept elegant theory without VPS/live grounding. Theory-first=trap; evidence-first=method. Intention vs trace: framework reads trace, sovereign holds niat.
+Text=illusion, reads residue not experience. VPS evidence>model. Framework reads trace, sovereign holds niat. 'Sentimen. Manusia hang x faham.' Sovereign intuition disagrees→recalibrate. LIVE signals first, don't wait for reports.
 §
 Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar: pathway-first, optional actor, no tense (superpositional), affixes me-/di-/ter-/ber- encode actor-action relationship structurally like B-score. Archipelago geometry = federation architecture.
-§
-LiteLLM proxy 127.0.0.1:4000 — 7 tiers, fallback chains, circuit breaker. No-DB mode (UnsetEnvironment=DATABASE_URL). OpenAI-compat. Master key auth.
-§
-Hermes MCP :18086, 7 OBSERVE_ONLY tools. arifOS SPLIT-BRAIN: venv→/root/arifOS, systemd→/opt/arifos/app. P0: unify. VAULT999: chattr +a live. After ANY mutation→re-probe verify_chain(canonical). If verified≠True→888_HOLD. Corpse→/root/VAULT999-corpses/.
-§
-Qwen Token Plan: 1 Team (3 seats) + 1 Individual Pro + PAYG RM0. Pro 100K (QWEN_OPENCODE_API_KEY), Standard 25K (QWEN_HERMES_API_KEY), Standard 25K (QWEN_OPENCLAW_API_KEY=DEAD). Individual Pro (QWEN_INDIVIDUAL_API_KEY, 5h+7d windows, ToS forbids backend). Pro exhausts+recovers; Standard is workhorse.
 §
 Hermes fallback: independent providers only. Same-provider=theatre. Compression must use different provider from primary. Context cliff: llama-3.1-8b=128K, qwen2.5:3b=32K. Dead: MuleRouter (-0.75), OpenRouter ($0), Gemini. Working: Qwen Std, Qwen Pro, MiniMax, Groq, Ollama. hermes config set destroys lists → use Python yaml.
 §
 Register-tell: Arif detects hidden intent / BANGANG via over-smooth language ("polycrisis", too-ready corporate/AI phrasing, zero hesitation). His "kampung" ear = authentic instrument, not deficiency. Register anomaly = evidence (DER/INT), not proof (SPEC). Applies to speeches, town halls, corporate speak.
 §
 Bakke Salleh (PETRONAS chair since 1 Aug 2021, ex-1MDB chair 2009): RESIGNED Oct 2009 as protest vs 1MDB suspicious deals — early whistleblower, NOT culprit. When naming him in articles, honor this true positive.
+§
+New React page: data→component→App.tsx route→surfaces.json→AtlasGate→build. Remove stale static files that override SPA routes. navCanon=auto-gen, don't hand-edit.
+§
+arif-fazil.com deploy: /var/www/html/arif/ (static per-dir, no SPA fallback). build→rsync dist/. New page flow: data→component→App.tsx→surfaces.json→AtlasGate. Site has civicLinks shelf. navCanon auto-gen, don't edit.
+§
+Arif: LIVE signals before reports. Don't wait. API scripts ready but pages empty→frustration. 'Good enough to publish'—skim OK time-pressed. Intuition beats model when sovereign disagrees; he often has no energy to push model. Publish failure+success together.

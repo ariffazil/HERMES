@@ -184,6 +184,12 @@ When the user sends a video/image as a **style reference** (often with "buat sat
 
 MiniMax image-01 is the primary tool for bot/agent profile logos. The model is strong at cyberpunk/sci-fi aesthetic but needs precise genre anchoring.
 
+### 🏛️ Institutional Shadow Portraits (site deployment)
+
+For dark-themed institutional portraits (PM profiles, Shadow Decoder, governance dossiers on arif-fazil.com), see `references/shadow-portraits-site.md` — prompt formula, batch workflow, CSS integration, and deployment path to `/var/www/html/arif/politics/shadow/images/`. Proven 2026-08-03: 10 Malaysian PM portraits for the `/politics/shadow/` Shadow Decoder.
+
+### Logo & Branding (continued)
+
 **Workflow: iterative refinement**
 
 ```bash
