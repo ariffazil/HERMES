@@ -149,6 +149,10 @@ When Arif says "pastikan manusia boleh relate" / "relate to my life not a coder"
 
 Full worked example: see `references/hitl-essay-v2-2026-07-10.md`.
 
+### MakcikGPT Page Styling (site-design fact)
+
+MakcikGPT pages (listing `src/pages/MakcikGPT.tsx` + article `src/pages/MakcikGptArticle.tsx`) use **`forge-red` (#f0506e) as the identity accent color** — NOT gold/bronze. Red marks everything MakcikGPT-specific: the `section-label`, the "Sealed 999" badge, card hover border, "Read article →" link, and the "Published directly on" card. This is deliberate: red distinguishes the MakcikGPT civic-journalism surface from the site's default graphite+bronze (forge-orange/gold) so its voice is visually distinct. The overall language still matches the main-page brutalist system (graphite base, section-label, uppercase italic headings). If you add/changed accent colors, keep MakcikGPT on red so it reads as its own surface.
+
 ### When To Push Back During Drafting
 
 Arif sometimes asks for essay on a target the agent doesn't yet understand. Required response (not optional):
@@ -714,6 +718,22 @@ Listing 404 for bot but 200 for browser = Caddy `@ai-bot-landing` handler missin
 `uri strip_prefix`. Fix: add `uri strip_prefix /world/makcikgpt` before serving
 index.html from makcikgpt-md/.
 
+### Deploy-pitfall: bundle "MISMATCH: live=no-live" is often a REGEX false-negative, not a real mismatch
+
+The verification regex `grep -oP 'index-[A-Za-z0-9]+\.js'` does NOT match vite hash
+filenames containing underscores (e.g. `index-_NJqIxhR.js`). When the deployed bundle
+has an underscore in its hash, this regex returns empty → the check reports
+`❌ JS bundle mismatch: dist=index-_NJqIxhR.js live=no-live` — but the deploy is actually
+FINE. Before treating any bundle-mismatch as a real failure, confirm manually:
+
+```bash
+LIVE_JS=$(curl -sk https://arif-fazil.com/ | grep -oP 'src="[^"]*index-[^"]*\.js"' | head -1 | grep -oP 'index-[A-Za-z0-9_]+\.js')
+DIST_JS=$(ls -t /root/arif-fazil.com/sites/arif-fazil.com/dist/assets/*.js | head -1 | xargs basename)
+# match on the underscore-inclusive name:
+[ "$DIST_JS" = "$LIVE_JS" ] && echo "✅ REAL match" || echo "❌ genuine mismatch"
+```
+Proven 2026-08-02: article deployed cleanly (all 200s, slug in feed/sitemap/llms, article present in live bundle with 2 hits), yet the summary showed a lone "bundle mismatch live=no-live" false alarm. The `[A-Za-z0-9]+` character class simply omitted `_`.
+
 ## Image Embedding in MakcikGPT Articles
 
 **FULL WORKFLOW — follow every step or images WILL break.**
@@ -781,6 +801,29 @@ Before publishing any article that makes claims about the SYSTEM ITSELF (arifOS 
 **What doesn't count:** Same model, same provider, same authority chain. That's self-reference.
 
 Proven 2026-07-13: Gemini external audit caught FY2022 PAT error (RM55bn vs actual RM101.6bn) that internal review missed. Proven 2026-07-15: Gödel lock deployed to arifOS kernel as enforcement code (not just documentation).
+
+## Voice Pattern: "Real-Person Naming on a Public Site" — Defamation Guardrail (CRITICAL)
+
+When Arif asks to name REAL public figures (CEO, PM, chairman) on arif-fazil.com, the fact-bar rises and libel risk is real. **One session (2026-08-02) nearly published a false negative claim about a named person — Mohd Bakke Salleh (PETRONAS chairman, ex-1MDB chairman).** The draft's reflexive negative bias wrote "Tak jaga 1MDB, dapat hadiah naik pangkat." **Verification proved the OPPOSITE: Bakke RESIGNED from 1MDB (Oct 2009) as protest against suspicious transactions, raised concerns before leaving** (Reuters, Malay Mail, 2016 parliamentary testimony). He is not a custodian who lost money — he is an early whistleblower. Publishing the unverified claim would have been libel AND hypocrisy (MakcikGPT crying "cetak cerita salah dengan nada yakin" while doing exactly that).
+
+**When Arif says "Letak la nama X" / names public figures for a PUBLIC article:**
+1. **Verify the FULL history of every named person** — the surface role is not enough. Search the person + their controversies (e.g. "Mohd Bakke Salleh 1MDB chairman"). Do NOT assume the negative. Confirmed this session: Taufik = President & GCEO since 1 Jul 2020; Bakke = Chairman since 1 Aug 2021, ex-1MDB chair 2009; Anwar = PM with PMX AI avatar Jul 2026.
+2. **Honor the true positive before the critique.** "Dulu dia tabik — resign bantah 1MDB. Tapi sekarang kenapa suara board senyap?" — the honest positive makes the critique STRONGER and lawsuit-proof because it proves homework.
+3. **Attack CURRENT accountability silence, not fabricated history.** Sharp safe angle for Bakke: "Dia yang pernah berani cakap bila nampak api — kenapa sekarang, bila 5,000 manusia kena buang, board senyap?" That is a shadow-of-policy critique, defensible.
+4. **"Shadow" frame for named figures:** critique = gap between what they SAY and DO ("Depa cakap 'kami jaga pekerja.' Depa buat 'lepas 5,000.'"). Never "they are evil" — always "here is the gap." Libel-safe + civilizational + true to MakcikGPT's "niat siapa?".
+5. **Clarify unfamiliar names BEFORE drafting.** Arif's "Balle Salleh" = Bakke Salleh. When a name is unclear, ask (clarify) rather than guess — a wrong name on a public site harms everyone.
+6. **Arif constraint:** He DOES want names on public pieces (Taufik, Anwar, Bakke). Do not strip names purely for legal caution. Name the person, frame the shadow, keep history true.
+
+## Voice Pattern: "Register as Detector" (too-smooth corporate language as signal, not proof)
+
+When a statement "sounds too ready" — licin, symmetric, paired phrases, no stumbles, no "hmm", no hesitation — that register anomaly is a signal to name, but is NOT proof of AI generation. Use it as WEIGHT (INT), never as verdict (OBS).
+
+- **Human register:** incomplete sentences, hesitation, personal texture, "ah, macam ni la", a thought breaks because the person is thinking.
+- **Synthesized register:** polycrisis, AI-enabled operating model, fairness-respect-professionalism, value-driven decision-making — polished, symmetric, touches no one.
+- **Honest Makcik move:** "Aku tak tahu guna ChatGPT ke tak. Aku bukan polis. Tapi suara tu bukan suara manusia yang aku kenali." Name the anomaly, disclaim the causal claim.
+- **The kampung ear is the instrument:** someone NOT trained to polish language detects the synthetic register others accept. Arif: "Kan ayat dia tu bukan ayat manusia biasa. Aku ni kampung cakap simple ja." His ear is a detector — treat it as such.
+- **NEVER convert register anomaly → "they used ChatGPT" with false confidence.** That is exactly "atom manis / cetak cerita dengan nada yakin" Arif hates. Register = texture; causation = unproven (a top speechwriter can produce it).
+- **Antenna framing:** once AI avatars exist at government level (PMX AI, Jul 2026), "did they use AI?" becomes legitimate to ASK — but the answer stays SPEC until proven. Register gets readers to ASK; evidence would get them to CONCLUDE.
 
 ## Voice Pattern: "Structural Opacity" (when you can't prove the number)
 

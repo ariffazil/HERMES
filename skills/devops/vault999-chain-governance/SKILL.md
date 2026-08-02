@@ -434,6 +434,30 @@ is the SEAL CHAIN (constitutional verdicts). Same directory, different writers, 
 corruption profiles. The pre-write validator above guards `outcomes.jsonl` only —
 the seal chain has its own writer hardening (advisory lock + FOR UPDATE).
 
+### PITFALL (2026-08-02): False-alarm chain break — verify before truncating
+
+**Incident:** A seal report claimed "VAULT999 30021 → 29983 — chain BROKEN — 38 entries lost."
+Forensic investigation found:
+
+1. **Canonical chain (F-004 scope, 44 entries): verified, intact.** `verify_chain(scope='canonical')` returned `status=verified`.
+2. **`/root/arifOS/VAULT999/outcomes.jsonl`: ZERO corrupt JSON lines.** Every line parses.
+3. **The file was actively being written to** by concurrent test suites — line count changed between probes (29983 → 29974 in 3 minutes). The "38 lost" was a moving-target artifact.
+4. **No `chattr +a` on either file.** `lsattr` shows only the `e` flag. The "immutable" claim was never true at filesystem level.
+5. **The `/agent/vault999/receipts/outcomes.jsonl` (different inode, different file)** had 141 corrupt lines in 6 zones — all from pretty-printed JSON heredocs (`json.dumps(obj, indent=2)`) dumped into JSONL. This is format damage, not entry loss.
+6. **PostgreSQL is the primary vault store** (vault999-writer uses asyncpg). JSONL files are secondary audit logs.
+
+**The verifier's `gaps-found` on full scope** is because most outcome ledger entries lack `prev_hash`/`this_hash` — they're operational entries, not hash-chained seals. This is BY DESIGN, not corruption.
+
+**Rules:**
+- NEVER truncate a vault file based on a line-count delta alone. The file may be actively written to.
+- ALWAYS run `verify_chain(scope='canonical')` first. If canonical is verified, the chain is intact regardless of full-scope noise.
+- ALWAYS check `lsattr` before claiming immutability. If `+a` isn't set, the "append-only" guarantee is application-level only.
+- ALWAYS check if the file is being written to: `stat` the file twice with a 5s gap, compare mtime and size.
+- The two `outcomes.jsonl` files (`/root/arifOS/VAULT999/` and `/agent/vault999/receipts/`) are DIFFERENT files with different inodes. Don't confuse them.
+- Pretty-printed JSON in JSONL is format damage (recoverable by collapsing multi-line blocks to single lines), NOT entry loss.
+
+**Anti-pattern:** "The seal report said 38 entries lost, so I should truncate and re-seal." This is motion damaging the thing it serves. The correct response is: verify the canonical chain, check if the file is live, and only then decide if surgery is needed.
+
 ## Extending the Seal Chain: New Event Types
 
 seal_chain.js supports extensible event types via `classifyEventType()` and

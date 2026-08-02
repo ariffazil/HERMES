@@ -272,3 +272,17 @@ A sweep/audit often names `google_fit_bridge.py` as the fix for `H_WELL: CRITICA
 - **`well_machine_diagnose` tool fails with `name 'os' is not defined`.** The function at `server.py` L10448 imports `json` and `pathlib` but does NOT import `os` — yet L10502 calls `os.cpu_count()`. Fix: add `import os as _os_md` inside the function body, and change the call to `_os_md.cpu_count()`. See `references/code-patches-2026-08-01.md` for both patches.
 
 - **`well_machine_diagnose` fails with `_omega_well_output() missing 1 required positional argument: 'mode'`.** After the `os` fix, the tool still fails because all three `_omega_well_output()` calls inside the function are missing the required `mode` parameter (function signature has no default). Add `mode="M_DIAGNOSE"` after each `lane="AGI"` line. Exact patches in `references/code-patches-2026-08-01.md`.
+
+- **The phantom TEST writer also corrupts CODE, not just state.json (PROVEN 2026-08-02).** The recurring phantom that rewrites `state.json` with TEST/mock data can ALSO append broken code to `server.py` — in one incident it injected a new `well_system_pulse` `@mcp.tool()` function whose tail was an orphaned `except Exception: pass return envelope` block that broke the enclosing `try:`. Result: `SyntaxError` → crash loop → WELL DOWN + 503 from AAA. This is a DIFFERENT root cause than the merge-conflict SyntaxError above: here the working tree is "clean" of conflict markers but has an injected broken function with extra dedented lines. Diagnostic signature: `python3 -m py_compile server.py` (or `ast.parse`) errors at a `@mcp.tool()` decorator line with `SyntaxError: expected 'except' or 'finally' block` = an enclosing `try:` had its block mangled by a trailing orphaned `except`. Recovery:
+  ```bash
+  # 1. Backup the corrupt file for forensics
+  cp server.py /tmp/server.py.broken-phantom
+  # 2. Restore the committed (known-good) version — git working tree crosses state AND code
+  git checkout -- server.py src/server.py
+  # 3. Verify it parses BEFORE restarting (one change, one verify — serial discipline)
+  python3 -c "import ast; ast.parse(open('server.py').read()); print('PARSES OK')"
+  # 4. Restart and confirm health + AAA registration (was UNREACHABLE->503 in the crash)
+  systemctl restart well.service && curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:18083/health
+  journalctl -u well.service --no-pager -n 8 | grep -i registered   # expect REGISTERED with AAA
+  ```
+  Verify the file mtime/size for rapid changes before patching — a sibling/agent write can race your edit (`file modified by sibling subagent` warning, size delta). See `references/phantom-writer-code-corruption-2026-08-02.md`.

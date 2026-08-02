@@ -24,24 +24,37 @@ description: >-
 - Designing FLAME tool-lane routing
 - Diagnosing 401/InvalidApiKey cascades where an entire provider chain dies at once
 
-## Qwen Token Plan TEAM Edition — THE FED primary (2026-08-01)
+## Qwen Token Plan TEAM Edition — THE FED primary (2026-08-02)
 
-> **Status:** ✅ LIVE — primary provider for Hermes (`qwen-token-plan` / `qwen3.7-plus`), RM0 marginal on flat monthly seats.
+> **Status:** ✅ LIVE — primary provider for Hermes (`qwen-token-plan` / `deepseek-v4-pro`), RM0 marginal on flat monthly seats.
 > **Base URL:** `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
 > **Transport:** `openai_chat` (compatible-mode = OpenAI-compatible chat completions)
 > **Seat registry SOT:** `/root/AAA/federation/seats.yaml` — env var → seat → key prefix, tier, monthly credits, vault/rotation status. READ THIS FILE before touching any Qwen key.
 
-**Seat wiring (verified live 2026-08-01 — both seats expose the same 21 models, no per-model tier gating):**
+**Seat wiring (verified live 2026-08-02 — 2 actual keys under 6 env var names, 3 Team seats, 1 Individual):**
 
-| Env var | Seat | Key prefix | Serves |
-|---|---|---|---|
-| `QWEN_HERMES_API_KEY` | Team Standard (25K/mo) | `sk-sp-D.IPRH` | Hermes terminal chat |
-| `QWEN_OPENCODE_API_KEY` | Team Pro (100K/mo) | `sk-sp-H.DIEXP` | OpenCode + Codex + FED-responses |
-| `QWEN_INDIVIDUAL_API_KEY` | Team Pro (100K/mo) | `sk-sp-H.DIEXP` | Multimodal (image/audio/video) |
-| `QWEN_API_KEY` (legacy) | Team Pro | `sk-sp-H.DIEXP` | Legacy alias, still valid |
-| `QWEN_BAILIAN_KEY` (legacy) | Team Standard | `sk-sp-D.IPRH` | Legacy alias, still valid |
+| Env var | Seat | Key prefix | Monthly | Serves |
+|---|---|---|---|---|
+| `QWEN_OPENCODE_API_KEY` | Team Pro | `sk-sp-H.DIEXP` | 100K | **Hermes PRIMARY** + OpenCode + Codex |
+| `QWEN_API_KEY` (legacy) | Team Pro | `sk-sp-H.DIEXP` | 100K | **SAME key** as OPENCODE — alias only |
+| `QWEN_HERMES_API_KEY` | Team Standard | `sk-sp-D.IPRH` | 25K | Hermes fallback + LiteLLM forge/planner/ops/small |
+| `QWEN_BAILIAN_KEY` (legacy) | Team Standard | `sk-sp-D.IPRH` | 25K | **SAME key** as HERMES — alias only |
+| `QWEN_INDIVIDUAL_API_KEY` | Individual Pro | `sk-sp-H.DIIYD` | 5h+7d windows | **Multimodal ONLY** (TTS, image, video). NOT primary chat. |
+| `QWEN_OPENCLAW_API_KEY` | Team Standard (Seat 2) | `sk-sp-D.IEHM` | 25K | ❌ DEAD — key purged 2026-08-02. Seat vacated. Needs rotation. |
 
-**Fallback chain (live 2026-08-01):** qwen-token-plan/dsv4-pro → **mulerouter/dsv4-flash** (independent provider) → qwen-token-plan/glm-5.2 → qwen3.7-plus → qwen3.6-flash → ollama/qwen2.5-coder:3b.
+**⚠️ CRITICAL: Only 2 actual keys exist under these 6 env var names.** `QWEN_API_KEY` = `QWEN_OPENCODE_API_KEY` (same key, Pro 100K). `QWEN_BAILIAN_KEY` = `QWEN_HERMES_API_KEY` (same key, Standard 25K). `QWEN_OPENCLAW_API_KEY` is dead (key purged). **Do NOT treat these as independent keys when designing fallback chains.**
+
+**⚠️ Individual Pro ToS risk:** Individual Pro §1 prohibits "automated scripts, application backends, non-interactive batch processing." Using it as Hermes primary is a compliance violation. Use ONLY for multimodal generation (TTS, image gen, video) — never for chat primary or fallback.
+
+**⚠️ Individual Pro quota model:** 5-hour and 7-day rolling windows (12K/5h, 40K/7d), NOT monthly like Team seats. Exhaustion is silent until 429 hits. The error message is `"code": "insufficient_quota"` (not `"Throttling.RateQuota"` — this is quota exhaustion, not transient rate limiting).
+
+**Provider wiring (live 2026-08-02):**
+- `qwen-token-plan` → `key_env: QWEN_OPENCODE_API_KEY` (Pro 100K) — Hermes primary
+- `qwen-token-plan-standard` → `key_env: QWEN_HERMES_API_KEY` (Standard 25K) — fallback lane
+- `qwen-token-plan-individual` → `key_env: QWEN_INDIVIDUAL_API_KEY` (Individual Pro) — multimodal only
+- `qwen-responses` → `key_env: QWEN_INDIVIDUAL_API_KEY` (Individual Pro) — FED Harness
+
+**Fallback chain (live 2026-08-02):** qwen-token-plan/dsv4-pro → **qwen-token-plan-standard/qwen3.6-flash** (different key) → **minimax/minimax-m3** (independent provider) → groq/llama-3.1-8b → ollama/qwen2.5:3b. **4 independent keys, 5 independent providers, 0 fallback theatre.** Live probe results: 5/5 entries verified working. Full breakdown: `references/qwen-fallback-live-test-2026-08-02.md`.
 
 **Everything keys off the provider name `qwen-token-plan`:** once the provider's key is alive, `auxiliary.vision`, `auxiliary.compression`, `moa.*` presets, `tts.provider`, and `search.name` all heal at once — no per-field wiring needed.
 
@@ -672,6 +685,7 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | Hermes config state snapshot | This skill's `references/hermes-openrouter-config-state-2026-07-24.md` |
 | FLAME engine | `/root/A-FORGE/flame/` |
 | LiteLLM federation gateway / FED FLAME FRAME (2026-08-02) | This skill's `references/litellm-federation-gateway-2026-08-02.md` |
+| Qwen fallback chain live test (2026-08-02) | This skill's `references/qwen-fallback-live-test-2026-08-02.md` |
 | OpenCode config | `/root/HERMES/opencode.json` |
 | Secrets | `/root/.secrets/vault.env` (OPENROUTER_API_KEY, OPENROUTER_MANAGEMENT_KEY) |
 | Hermes config | `/root/HERMES/config.yaml` |
@@ -994,6 +1008,22 @@ A previous session reported MuleRouter rejects `data:` URIs, but this was NOT re
 - **Fallback-chain theatre — a chain whose entries all ride one provider/key diversifies nothing (PROVEN 2026-08-01).** A `fallback_providers` list with 5 entries all on `provider: qwen-token-plan` is not a fallback chain — one dead key 401s every entry identically. Real resilience requires ≥2 independent providers with independent keys (e.g. qwen-token-plan → mulerouter → ollama). Audit rule: count distinct providers (and distinct key_env vars) in the chain; if it's 1, it's theatre.
 
 - **`hermes config set` stores JSON list values as literal quoted STRINGS (PROVEN 2026-08-01).** `hermes config set fallback_providers '[{...json...}]'` writes `fallback_providers: '[{...}]'` — a quoted string, not a YAML list — and the runtime fails iterating it. `set_config_value` only coerces scalars (bool/int/float); `_set_nested` refuses to grow lists. **Fix:** for list-valued keys, edit config.yaml directly with a python yaml round-trip then validate with `yaml.safe_load`. Scalars (`model.provider`, `model.default`) work fine via the CLI. (The `patch`/`write_file` tools refuse Hermes config.yaml by design — terminal+python is the sanctioned path.)
+
+- **Broken-fallback retry death spiral → fragmented Telegram responses (PROVEN 2026-08-02).** When `fallback_providers` is a quoted string (not a list), the runtime has NO valid fallback. Every retry hits the same primary, which keeps failing. The agent's internal model-switching status messages (`qwen3.6-flash · 52%`, `deepseek-v4-pro · 7%`) leak into the chat because the agent loop can't complete normally. **Symptom:** User sees multiple rate-limit messages, model names with percentages, and fragmented responses. **Diagnostic:** `python3 -c "import yaml; cfg=yaml.safe_load(open('/root/.hermes/config.yaml')); print(type(cfg.get('fallback_providers')).__name__)"` — if it prints `str` instead of `list`, the fallback chain is dead. **Fix script:** `scripts/diagnose-fallback-chain.py` — runs full provider diversity, key independence, and string-bug detection across both default and ASI profiles.
+
+- **Individual Pro "Allocated quota exceeded" is NOT rate limiting — it's quota exhaustion (PROVEN 2026-08-02).** The Individual Pro seat (`QWEN_INDIVIDUAL_API_KEY`, `sk-sp-H.DIIYD`) has 5h+7d rolling windows, NOT monthly credits. When the window exhausts, the API returns `HTTP 429: Allocated quota exceeded, please increase your quota limit` — the same HTTP status as rate limiting but a completely different root cause. **Distinction:** Team seats return `429` for rate limiting (temporary); Individual Pro returns `429` for quota exhaustion (until window resets). **Detection:** Check the error body — `"code": "insufficient_quota"` = Individual Pro window exhausted; `"code": "Throttling.RateQuota"` = Team seat rate limited. **Fix:** Never use Individual Pro as the primary for an agent backend — it violates ToS §1 ("no automated scripts, application backends") AND has unpredictable rolling-window exhaustion. Use Team seats for agents, Individual Pro for multimodal only (TTS, image gen, vision).
+
+- **OpenClaw background polling silently drains Qwen quota (PROVEN 2026-08-02).** OpenClaw cron jobs that use `bailian-token-plan` or `qwen-token-plan` as their model provider poll in the background, consuming quota from the shared Team seat without any visible user-facing activity. If OpenClaw shares a key with Hermes or LiteLLM, the first sign of trouble is Hermes returning 429 with no obvious cause. **Detection:** Check OpenClaw cron model assignments: `grep -r 'qwen\\|token-plan\\|bailian' /root/HERMES/profiles/hermes_asi/cron/`. **Fix:** Pin OpenClaw cron to an independent provider (MiniMax, Groq, Ollama) or its own dedicated seat. Never let OpenClaw share a key with the primary chat agent.
+
+- **OpenClaw config uses `${QWEN_API_KEY}` by default — same key as Hermes primary (PROVEN 2026-08-02).** OpenClaw's `bailian` provider in `/root/.openclaw/workspace/hermes-config/config.yaml` references `${QWEN_API_KEY}` which resolves to KEY A (Team Pro) — the same key Hermes uses as primary. Every OpenClaw agent process (vision, image_gen, delegation, chat) silently eats from the shared pool. **Fix:** Change all `${QWEN_API_KEY}` references in OpenClaw config to `${QWEN_OPENCLAW_API_KEY}` (KEY D, workspace, 153 models, separate dashscope-intl endpoint). Python yaml round-trip across the file. Restart OpenClaw gateway after change.
+
+- **Hermes cron jobs pinned to dead provider silently fail with 401 while burning quota (PROVEN 2026-08-02).** Cron jobs created with `--provider deepseek --model deepseek-v4-pro` keep that pin forever. When the DeepSeek API key expires or is revoked, every scheduled run fails with `HTTP 401: Invalid API-key` — but the job keeps retrying, burning quota on the dead endpoint. **Detection:** `hermes cron list` — look for `error: RuntimeError: HTTP 401` in the Last run column. **Fix recipe:** (1) Identify all 401 jobs: `hermes cron list | grep 'HTTP 401' -B5`. (2) Pause them all: `hermes cron pause <id>`. (3) Rewire each to `qwen-token-plan`: `hermes cron update <id> --model deepseek-v4-pro --provider qwen-token-plan`. (4) Resume: `hermes cron resume <id>`. (5) Verify next run succeeds. **Prevention:** When creating cron jobs, prefer `--provider qwen-token-plan` (the federation primary with its own fallback chain) over single-provider keys. Single-provider keys die silently; federation primaries have fallback chains.
+
+- **Compression provider MUST be independent from primary (PROVEN 2026-08-02).** When `auxiliary.compression.provider` is set to the same provider as the primary (e.g., both `qwen-token-plan`), a rate limit on the primary ALSO kills compression. The cascade: (1) primary rate-limits, (2) Hermes tries to compress context before falling back, (3) compression uses the same rate-limited provider → fails, (4) context stays at full size, (5) fallback drops to smaller models (groq 128K, ollama 32K), (6) context exceeds their limits → `BadRequestError` / `context length exceeded`. **Symptom:** `Context compression failed after 3 attempts` followed by `BadRequestError` on groq/ollama. **Fix:** Set `auxiliary.compression.provider` to an independent provider with a large context window (e.g., `minimax` with `minimax-m3` at 1M ctx). The compression provider must have: (a) a different key from the primary, (b) a different API endpoint from the primary, (c) ≥1M context window to handle large conversations. **Config:** `cfg['auxiliary']['compression'] = {'provider': 'minimax', 'model': 'minimax-m3', 'timeout': 120}`. **Verification:** After setting, test that compression works when the primary is down: `curl -s -m 15 https://api.minimax.io/v1/chat/completions -H "Authorization: Bearer $MINIMAX_API_KEY" -d '{"model":"minimax-m3","messages":[{"role":"user","content":"Summarize: ..."}],"max_tokens":200}'`.
+
+- **Context cliff in fallback chain — smaller models can't handle large context (PROVEN 2026-08-02).** When fallback models have progressively smaller context limits, a conversation that works on the primary (1M ctx) will fail on smaller fallback models (groq 128K, ollama 32K). This is a separate failure mode from rate limiting — the API call succeeds but returns `BadRequestError` because the payload exceeds the model's max context. **Rule:** Compression must succeed BEFORE the chain reaches the first small-context model. If compression is also failing (see above), the context cliff is guaranteed. **Mitigation:** (1) Independent compression provider, (2) `model.context_length` set to match the SMALLEST cloud fallback model (e.g., 256K to match groq's 128K with some headroom), (3) `compression.threshold` lowered (0.25 instead of 0.30) to trigger earlier. **Context limits of common models:** deepseek-v4-pro 1M, qwen3.6-flash 1M, minimax-m3 1M, llama-3.1-8b-instant 128K, qwen2.5:3b 32K. **Do NOT** put a 32K model after a 1M model without compression in between.
+
+- **Live-probe every fallback entry — never assume (PROVEN 2026-08-02).** What the config says and what the API returns are often different. In this session: MuleRouter had negative balance (-0.75), OpenRouter had $0 credits, Gemini was removed by the user, Ollama had `qwen2.5:3b` not `qwen2.5-coder:3b`. 2 of 6 entries were dead. **Procedure:** For each entry in the fallback chain, run a 1-token chat completion with a 15s timeout. `curl -s -m 15 -X POST <base_url>/chat/completions -H "Authorization: Bearer $KEY" -d '{"model":"<model>","messages":[{"role":"user","content":"Say OK"}],"max_tokens":5}'`. Check for `choices` in response = alive; `error` = dead. **Do this EVERY time you audit a fallback chain.** The skill's `scripts/diagnose-fallback-chain.py` now includes live probes. Run it: `python3 /root/.hermes/skills/devops/provider-routing-zen/scripts/diagnose-fallback-chain.py --live`.
 
 - **Missing `capabilities` field causes tool-call JSON text dump (PROVEN 2026-08-01).** When a Hermes provider doesn't declare `capabilities: [function_calling]`, Hermes does NOT send the `tools` parameter in the API request. The model has no structured tool-call interface, so it tries to "use tools" by outputting raw JSON like `{"name": "web_extract", "arguments": {...}}` as plain text in the reply. **Symptom:** User sees JSON tool-call syntax dumped in chat, model responds with apologies or "How can I assist?" after the JSON. **Fix:** Add capabilities to the provider block:
 ```yaml

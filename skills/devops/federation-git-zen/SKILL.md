@@ -26,6 +26,8 @@ triggers:
 
 - **GitHub SSH commit verification** (signed commits show `verified: false / no_user` and silently block `required_signatures` branch protection): `references/github-ssh-signing-verification.md` — local `allowed_signers` does NOT satisfy GitHub; the signing pubkey must ALSO be added to the GitHub account's SSH keys. Detect + fix recipe. Proven 2026-08-01 (D5 rollout).
 - **Agent identity / registry sync** (separate class from dirty-file cleanup): `references/agentic-toolbench-alignment.md` — for "zen all", "align toolbench", "update AAA", "fix agent cards" tasks. Touches ~30 files across forge_instruments.yaml, ROOT_AGENT_CONFIG.yaml, AAA_AGENTS_REGISTRY.json, a2a/registry/agents.yaml, agent-card.json copies, CIV-33 directories, and WARGAAA_CARD.md.
+- **CI discipline after feature push** (three-file checklist: surface_map, README, pyproject): `references/ci-discipline.md` — every push that adds resources/tools must update these three files or CI will fail. Proven 2026-08-02.
+- **Post-receive hook for auto-deploy**: `references/post-receive-hook.md` — push to mirror → auto-syncs /opt/arifos/app → reinstalls → restarts → health-checks. Ends manual dual-copy updates forever. Split-brain venv fix included.
 - `references/agentic-toolbench-alignment.md`
 
 ## OpenCode Delegation — Model Fallback
@@ -98,5 +100,34 @@ for pr in "owner/repo 1" "owner/repo2 35"; do
     python3 -c "import json,sys; d=json.load(sys.stdin); print(f'{d[\"number\"]} merged={d.get(\"merged\")} | {d[\"title\"][:50]}')"
 done
 ```
+
+## CI Discipline After Feature Push — Three-File Checklist
+
+When you push new features (resources, tools, prompts) to any federation repo, three CI workflows
+will fail if you don't update their source-of-truth files. Every push that adds something must
+check all three:
+
+| # | File | CI Workflow | What to Update | Symptom if Missed |
+|---|------|-------------|----------------|-------------------|
+| 1 | `surface_map.py` | `surface-gate.yml` | Add new resources/tools to `mcp_resources` list | "Phantom resources" — live but undeclared |
+| 2 | `README.md` | `13-sot-manifest-check.yml` | Bump `live_commit` to current `git rev-parse --short=7 HEAD` | "SOT MANIFEST DRIFT DETECTED" |
+| 3 | `pyproject.toml` | `07-publish-pypi.yml` | Bump `version` to current date (scheme: `1!YYYY.M.D`) | PyPI stays stale; `pip install arifos` gets old code |
+
+**Full checklist in:** `references/ci-discipline.md`
+
+### Pitfall: Don't batch-commit `-a` blind
+
+The commit hook `-a` (all) grabs everything — constitutional files, audit fixes, resources, WIP
+artifacts — into a single undifferentiated commit. This makes rollback impossible and violates the
+stacked-PR pattern. **Always separate constitutional changes from audit fixes into distinct commits.**
+`git diff` the constitutional files first, commit them as their own labeled commit, then commit
+audit fixes separately. Proven 2026-08-02: Arif flagged this directly — "Don't batch-commit -a the
+constitution blind."
+
+### Post-Receive Hook — Auto-Deploy to VPS
+
+When a push arrives at the VPS git mirror, a post-receive hook can auto-sync the deployed
+directory (`/opt/arifos/app`) so you never manually update two copies. Full hook template
+and verification in `references/post-receive-hook.md`.
 
 ## The 8 Federation Repos

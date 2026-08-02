@@ -85,7 +85,7 @@ Applied to /root/AAA/skills/ on 2026-07-13:
 | Result | Count | Finding |
 |--------|-------|---------|
 | Pure dupes | 28 pairs | FORGE-* and ASI-* names bulk-copied in a single commit |
-| Byte-identical pair | 1 | constitutional-reasoning / ASI-constitutional-reasoning |
+| Byte-identical pair | 1 | constitutional-reasoning / arifos-constitutional-judge |
 | Genuine divergence | 0 | No pair had differing body content |
 
 This pattern was validated on a VPS filesystem (Linux ext4) in mid-2026. Timestamp granularity is seconds; on sub-second copy operations, actual file content diff is the deciding factor.

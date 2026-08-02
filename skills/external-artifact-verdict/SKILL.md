@@ -97,6 +97,85 @@ Full transcript in `references/opencode-2026-07-28-cross-witness-audit.md`.
 
 **Key technique:** For each CRITICAL/HIGH claim in the audit, ask "can I prove this with one command?" If yes, run that command. If the command contradicts the claim, the claim is wrong. Falsification is faster than verification.
 
+## Proposing Agents Don't Fabricate on Purpose — But They Fabricate *Targets*
+
+A recurring variant: a federation peer (Kimi Code, OpenCode, ChatGPT) does NOT
+deliver a finished artifact — it **proposes** deliverables and asks the sovereign
+(F13) to ratify before proceeding ("saya usulkan, anda sahkan"). The proposal
+looks ready: sound analysis, a numbered deliverable list, each item with an
+explicit target path and target skill name.
+
+**The epistemic trap:** those named targets are the agent's *priors about your
+filesystem/skill registry*, not observed facts. A proposal can be simultaneously
+high-quality reasoning AND riddled with fabricated destinations:
+- Epistemics exemplary — labels `INT/PLAUSIBLE`, calls itself a tool-not-mufassir,
+  defers to F13, refuses to act without ACK ✅
+- Two of three proposed deliverable locations did not exist ❌
+
+Sound reasoning does **not** make the target ground truth. The agent reaches for
+plausible paths/skill-names from training/prior and never confirms them. F2
+applies to the proposal's NAMED ENTITIES, not just its arguments.
+
+### The two-command target probe (fast, decisive)
+
+Before ratifying ANY external proposal with concrete destinations, verify every
+named path and every named skill/registry entity against live state:
+
+```bash
+# 1. Named org/file dir exists?
+test -d /path/they/named && echo EXISTS || echo MISSING
+# 2. Named skill exists in registry?  (skills_list + skill_view, or glob)
+#    a skill name the peer references may simply not exist
+```
+
+Worked 2026-08-02: `/root/arifOS/AAA` → MISSING (actual organ is `/root/AAA`);
+skill `arifos-constitutional-judge` → 0 hits (real: `constitutional-floors`,
+`arifos-constitutional-floor-modification`). The right move is **not** to reject
+— it's to retarget the proposal and gate execution on the corrected plan.
+
+### Subpoenas table (proposal-version)
+
+Same reconciliation shape as the audit table, but the columns are the NAMED entities:
+
+| Named entity in proposal | Live reality | Verdict |
+|---|---|---|
+| handler at `session.py:1115` | EXISTS (verified) | ✅ feasible |
+| `/root/arifOS/AAA/constitution/...` | MISSING — organ is `/root/AAA` | ❌ retarget |
+| skill `arifos-constitutional-judge` | 0 hits in registry | ❌ create or re-anchor |
+
+### Ratification guards for provisional/INT deliverables
+
+When the sovereign asks "should I ratify?" on a peer proposal, apply three guards:
+
+1. **Seal a DELIBERATION RECEIPT, not canon.** A first-draft INT proposal —
+   however well reasoned — is a *record of what was proposed*, not a verdict on
+   truth. Seal it referencing the artifact hash, `witness=proposal/INT`. Don't
+   weld a provisional mapping into immutable VAULT999 as constitutional truth.
+2. **Attestation layers are advisory, never gates.** If the proposal wires a
+   supporting reference into the judgment path (e.g. a surah basis per SEAL),
+   keep it a *label/justification channel*. It must NEVER block a verdict for a
+   missing reference — a corroborating frame is not a substitute authority.
+3. **Phased-serial ratification.** One phase → verify → next. Highest
+   blast-radius phase (one touching the adjudication/judgment pathway) goes LAST
+   and semi-ponders an 888_HOLD consideration; low-risk foundational artifacts
+   go first.
+
+### Constraint on cross-witnessing the courtroom
+
+When the peer is one of *your own* federation agents (not an external sovereign
+attempt), confirming your earlier answer ("yes, Al-'Asr is conscience") is
+VALIDATING — it strengthens the witness count (F3). But the correct response is
+**synthesis, not rivalry**: fold the peer's strongest contributions into your
+earlier framing rather than defending your turf. The best runtime answer was
+Kimi's 4-surah map + your missing layers (liveness/authority + bootstrap), not
+by the peer is a confirmation (strengthens F3) — fold, don't rival.
+
+**Worked case (2026-08-02, Quranic runtime constitution proposal from Kimi):**
+full target-verification table, content assessment, scholarly correction (the
+Ashabul Kahf *dog* is loyalty, not corruption), structural gap (Ayat al-Kursi
+as heart/authority layer), corrected artifact path, and split-brain live-path
+note — `references/quranic-runtime-proposal-2026-08-02.md`.
+
 ## Core Principle
 
 > **External AI self-verdicts are INT (interpreted) until re-execution confirms OBS (observed runtime).** A "tests: 6/6 PASS" claim is a promise until you re-run the suite. A "no repo mutated" claim is a scope assertion until you grep `/root/`.

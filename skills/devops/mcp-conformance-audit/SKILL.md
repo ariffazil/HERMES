@@ -77,6 +77,22 @@ def skill_by_name_resource(name: str) -> str:
 
 **Verify:** `resources/list` shows ~34 items. `resources/read` with `skill://index` returns full list. `resources/read` with `skill://{name}/SKILL.md` loads specific skill on demand.
 
+### Critical Pitfall: templates ≠ static resources (counted separately)
+
+A resource registered with a `{param}` URI template (e.g. `arifos://floor/{fid}`) surfaces via **`resources/templates/list`**, NOT `resources/list`. A static resource (e.g. `arifos://refusal-surface`) surfaces via `resources/list`. They are counted and listed separately.
+
+**The trap:** you register a templated resource, probe `resources/list`, don't see it, and conclude registration failed — then waste restart cycles chasing a non-bug. **Always probe BOTH endpoints** before declaring a resource missing:
+```bash
+# static resources
+curl ... -d '{"method":"resources/list"}'        # → result.resources[]
+# URI templates
+curl ... -d '{"method":"resources/templates/list"}'  # → result.resourceTemplates[]
+```
+
+**Proven 2026-08-02:** added `arifos://floor/{fid}` (template) + `arifos://refusal-surface` (static). After the real fix, `resources/list` went 34→35 (static only) and `resources/templates/list` went 23→24 (template only). The floor template never appeared in `resources/list` — that was correct, not a failure.
+
+**Registration-wiring check:** if a new resource/template is absent from BOTH lists after a restart, the most likely cause is not the resource module itself but the `register_resources()` wiring — the import line and the `registered.extend(register_X(mcp))` call in `resources/__init__.py`. For arifOS specifically, that wiring must be patched in BOTH source trees (see arifos-interceptor-patching pitfall #5, dual-tree trap).
+
 Save output to `artifacts/conformance/initialize-capture.json`.
 
 ### P0.2: Ghost tool classification

@@ -274,3 +274,19 @@ curl -s -X POST http://127.0.0.1:8088/mcp -H 'Content-Type: application/json' -H
 - **arifOS takes 3-4s to start** after restart. Don't probe immediately — sleep 4s.
 - **Session-gated transport:** GEOX, WEALTH, WELL require `Mcp-Session-Id` header for MCP calls and/or authenticated sessions. MCP tools/list returns 0 when session-gated — fall back to health endpoint metadata.
 - **Resources/list vs resources/read:** Resources are listed via `resources/list` MCP method. Content is read via `resources/read` with `"params":{"uri":"arifos://..."}`.
+- **URI templates appear in `resources/templates/list`, NOT `resources/list`:** If your resource uses `{param}` in the URI (e.g. `arifos://floor/{fid}`), it registers as a template. Verify with BOTH methods:
+  ```bash
+  # Static resources
+  curl -s -X POST http://127.0.0.1:8088/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"resources/list","params":{}}'
+  # URI templates
+  curl -s -X POST http://127.0.0.1:8088/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
+    -d '{"jsonrpc":"2.0","id":2,"method":"resources/templates/list","params":{}}'
+  ```
+- **Dual registration path (2026-08-02):** arifOS has TWO resource registration paths that both run at startup:
+  1. `register_resources(mcp)` in `arifosmcp/resources/__init__.py` (line ~540) — the legacy path
+  2. `register_public_resources_and_prompts(mcp)` in `arifosmcp/runtime/fastmcp_ext/__init__.py` (line ~1762 of server.py) — the "single entry point" per 2026-07-28 audit
+
+  Both run. If you add a resource to path 1 but not path 2, it still registers (both contribute to the same FastMCP instance). But if you're debugging "why isn't my resource showing up," check BOTH paths. The `register_resources` call at line 1761 is NOT wrapped in try/except — if it throws, the server crashes. The `register_public_resources_and_prompts` at line 1762 IS wrapped — failures are logged as warnings, not crashes.
+- **Split-brain deploy applies here too:** New resource files must exist in BOTH `/root/arifOS/arifosmcp/resources/` AND `/opt/arifos/app/arifosmcp/resources/`. The `__init__.py` wiring must be in both trees. See `runtime-truth-attestation` skill for the full split-brain pitfall.
+- **systemctl restart may not actually restart:** If the PID doesn't change after `systemctl restart arifos`, the service didn't pick up new code. Verify with `ps -p $(pgrep -f arifosmcp.runtime) -o pid,lstart`. If the start time is old, force-kill: `kill $(pgrep -f arifosmcp.runtime)` and let systemd's `Restart=always` bring it back.

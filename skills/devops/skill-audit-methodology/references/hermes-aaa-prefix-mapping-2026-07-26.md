@@ -111,10 +111,10 @@ These 6 skills have no AAA-scope equivalent:
 ## Key AAA Skills Missing from HERMES (by priority)
 
 ### Critical governance/ASI gaps
-- `ASI-session-seal` — session sealing protocol
+- `forge_vault` — session sealing protocol
 - `ASI-agent-invariants` — agent identity enforcement
 - `ASI-fabrication-prevention` — hallucination gate
-- `ASI-constitutional-reasoning` — floor reasoning
+- `arifos-constitutional-judge` — floor reasoning
 - `ASI-agentic-governance` — governance core
 
 ### FORGE infrastructure gaps

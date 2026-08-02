@@ -49,6 +49,9 @@ triggers:
   - "dual .git_commit"
   - "two .git_commit files"
   - "hidden drift"
+  - "split-brain deploy"
+  - "two trees"
+  - "which code is running"
 ---
 
 # Runtime Truth Attestation — E2 Pattern
@@ -631,6 +634,121 @@ systemctl show arifos.service -p Environment | tr ' ' '\n' | sort -u
 
 **Fix:** Audit every drop-in for environment variables that override Python module defaults. If the module has a safe default (`ARIFOS_ALLOW_FREE_NONCE=false` in `crypto_auth.py`), the drop-in MUST NOT set it unless explicitly intended.
 
+### PITFALL: Split-brain deploy — venv imports from source tree, systemd runs from deploy tree
+
+**The structural bug (named 2026-08-02):** The arifOS venv at `/opt/arifos/venv/` has an editable install pointing to `/root/arifOS/`. The systemd service `arifos.service` has `WorkingDirectory=/opt/arifos/app/`. Python's import resolution via the editable `.pth` file resolves `import arifosmcp` to `/root/arifOS/arifosmcp/`, but the service's CWD is `/opt/arifos/app/`.
+
+**Consequence:** When you edit files in `/root/arifOS/` and restart, the service picks up the changes (because imports resolve there). But when you edit files in `/opt/arifos/app/` directly, they may NOT be picked up if the editable install takes precedence. And when you edit BOTH trees, you can never be sure which one won the import race for a given module.
+
+**This is not "two trees, update both" — it's a split-brain deploy.** Every "done" declaration is a coin-flip on which tree the running process actually imported from.
+
+**Detection:**
+```bash
+# Which tree does the venv actually import from?
+/opt/arifos/venv/bin/python -c "import arifosmcp; print(arifosmcp.__file__)"
+# If this prints /root/arifOS/... → editable install wins
+# If this prints /opt/arifos/venv/... → wheel wins
+
+# Which tree does systemd run from?
+systemctl show arifos.service -p WorkingDirectory
+# WorkingDirectory=/opt/arifos/app
+
+# Are the two trees in sync for a specific file?
+diff /root/arifOS/arifosmcp/resources/__init__.py /opt/arifos/app/arifosmcp/resources/__init__.py
+```
+
+**The fix (structural, not procedural):**
+One tree must feed the process. Either:
+- **Option A:** Point the editable install at `/opt/arifos/app/` (deploy tree is SOT)
+- **Option B:** Point systemd WorkingDirectory at `/root/arifOS/` (source tree is SOT)
+- **Option C:** Build a wheel, install it non-editable, and neither tree is imported directly
+
+Until one of these is done, EVERY deploy requires patching both trees. This is the root cause of "repo fixed, front door serving old code" — the ghost that haunts every arifOS deploy session.
+
+**Proven 2026-08-02:** Added two new MCP resources (floor_table.py, refusal_surface.py) to `/root/arifOS/`. Restarted service. Resources didn't appear. Spent 20 minutes debugging before discovering the live service imports from `/root/arifOS/` via editable install BUT the `__init__.py` wiring also needed to be in `/opt/arifos/app/` because... the import resolution is per-module, not per-package. Some modules resolved from one tree, some from the other.
+
+### PITFALL: Corrupted deployed tree → crash-loop / 502 → restore via the runbook script (NOT hand-copy)
+
+**Symptom:** site health probe (`Sense — arif-fazil.com Health Probe`) reports `https://arifos.arif-fazil.com/health → HTTP 502`. Root cause: Caddy reverse-proxies `/health` (and `/mcp`, `/api/*`, `/static/*`, `/ready`) to the arifOS kernel on **127.0.0.1:8088**. A 502 means the backend is DOWN — which is a REAL outage (the probe is right, not flapping; `curl` confirms `error code: 502`).
+
+**Diagnosis is short — the classic split-brain tell:**
+```
+systemctl status arifos       → failed — crash-looping, "Start request repeated too quickly"
+journalctl -u arifos -n 80    → File ".../arifosmcp/tools/session.py", line 1311: IndentationError: unexpected indent
+ss -tlnp | grep 8088          → ONLY tailscaled bound; no python listener (kernel dead)
+diff /opt/arifos/app/.../session.py /root/arifOS/.../session.py   → deployed copy differs, source is newer/cleaner
+```
+A Python `SyntaxError`/`IndentationError` at import on the DEPLOYED copy means `/opt/arifos/app/arifosmcp/*` drifted from `/root/arifOS/arifosmcp/*` (a bad/partial rsync, or the deployed tree got corrupted while the source tree received newer fixes). The SOURCE is clean — the DEPLOYED copy is stale/broken.
+
+**Triage in one call — which tree is actually broken?**
+```bash
+python3 -m py_compile /opt/arifos/app/arifosmcp/tools/session.py 2>&1   # errors → deployed broken
+python3 -m py_compile /root/arifOS/arifosmcp/tools/session.py 2>&1      # clean → source is SOT
+```
+Also confirm the whole source package imports under the runtime venv before trusting it: `cd /root/arifOS && python3 -m compileall -q arifosmcp` and `/opt/arifos/venv/bin/python -c "import arifosmcp; print(arifosmcp.__file__)"`.
+
+**THE FIX — use the runbook script, never hand-copy:**
+```bash
+bash /root/arifOS/scripts/deploy-to-runtime.sh
+```
+This canonical bridge does exactly the right thing: rsync `--delete` clean `/root/arifOS/arifosmcp/` → `/opt/arifos/app/arifosmcp/`, restarts `arifos.service` + `arifOS-NATS-heartbeat.service`, then health-gates on `curl -sf http://localhost:8088/health` (exits nonzero if the kernel doesn't come back). Why use the script and not manual `cp`/`rsync`: it applies the correct exclusions (`__pycache__`, `*.pyc`), restarts BOTH dependent services, and fails the whole bridge if health doesn't return — a self-verifying recovery.
+
+**Verify from the OUTSIDE in, not just the backend:**
+```bash
+systemctl is-active arifos.service                        # active
+ss -tlnp | grep ":8088 "                                  # python listener, NOT tailscaled
+curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8088/health          # 200
+curl -s https://arifos.arif-fazil.com/health              # public 200 + {"status":"healthy","deployment_drift_status":"aligned"}
+systemctl show arifos.service -p NRestarts                # 0 = stable, not still crash-looping
+```
+Also check `NRestarts` returns 0 and the PID uptime is growing — a green `/health` with a fresh restart counter means it hasn't stabilized yet.
+
+**Root-cause the drift, don't just patch it.** The recurring enabler is that the deploy bridge isn't run automatically on every source change, so the two trees silently diverge (same P0 split-brain noted in memory). A pre-restart `py_compile` gate on the deploy tree, or auto-syncing runtime on source commit, would catch this class before it takes down `/health`. Reversible single-target fix.
+
+### PITFALL: New MCP resources must be declared in surface_map.py or CI gate fails
+
+When adding new MCP resources (e.g. `floor_table.py`, `refusal_surface.py`), the **surface-gate CI** (`surface-gate.yml`, runs on every push) validates that live MCP resources match the canonical surface-map declarations in `arifosmcp/resources/surface_map.py`. If a resource is live on the wire but undeclared in the surface map, it's flagged as a "phantom resource" and the CI gate fails.
+
+**Detection before push:**
+```bash
+# Check if all live resources are declared in surface_map.py
+cd /root/arifOS
+python3 -c "
+import json, sys
+# Parse the surface_map declarations
+from arifosmcp.resources.surface_map import SURFACE_MAP
+declared = set(SURFACE_MAP['arifos_agent_surface_map']['mcp_resources'])
+
+# Find all registered resource URIs in the resources/ directory
+import ast, os
+live = set()
+for f in os.listdir('arifosmcp/resources'):
+    if f.endswith('.py') and f != '__init__.py' and f != 'surface_map.py':
+        with open(f'arifosmcp/resources/{f}') as fh:
+            tree = ast.parse(fh.read())
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                for kw in getattr(node, 'keywords', []):
+                    if kw.arg == 'uri' or (isinstance(node.func, ast.Attribute) and node.func.attr == 'resource'):
+                        if isinstance(kw.value, ast.Constant):
+                            live.add(kw.value.value)
+undeclared = live - declared
+if undeclared:
+    print(f'UNDECLARED RESOURCES: {undeclared}')
+    sys.exit(1)
+else:
+    print('All resources declared.')
+"
+```
+
+**Fix:** Add the new resource URIs to the `mcp_resources` list in `arifosmcp/resources/surface_map.py`:
+```python
+"arifos://floor/{fid}",       # template resource
+"arifos://refusal-surface",   # static resource
+```
+
+**Proven 2026-08-02:** Added `floor_table.py` and `refusal_surface.py` resources, pushed, surface-gate passed locally but would have failed on CI because the resources weren't declared in `surface_map.py`. Committed the surface_map fix as a separate commit (`d36090133`). Pattern: (1) add the resource, (2) declare it in surface_map, (3) commit both together or in adjacent commits, (4) verify surface-gate passes.
+
 ### PITFALL: Service import resolves to source tree, not wheel, when WorkingDirectory = source tree
 
 When the systemd service uses `WorkingDirectory=/opt/arifos/app` and an
@@ -771,3 +889,4 @@ curl -sf http://localhost:8088/health | python3 -c "import json,sys; print(json.
 - **Convergence check script** — `scripts/convergence_check.py`: standalone 5-layer verification, exit code 0=CONVERGED / 2=ROLLBACK
 - **Multi-organ deployment** — `references/multi-organ-deployment.md`: build + deploy + verify for A-FORGE, AAA, GEOX, WEALTH, WELL. The three-location fix pattern, rsync trap, and systemd drop-in auditing.: 9-layer architecture with mandatory/conditional split, `.bak` convention, adversarial test matrix pattern, telemetry counters, acceptance gate pattern
 - **Adversarial test runner** — `scripts/adversarial_test_matrix.py`: reusable fail-closed test harness with JSON persistence, used for P1.3/P1.4 verification
+- **Post-receive hook auto-deploy** — `references/post-receive-hook-auto-deploy.md`: eliminate manual dual-tree updates. Push to git mirror → hook pulls /opt, rebuilds, reinstalls, restarts, health-checks. One push, one surface.

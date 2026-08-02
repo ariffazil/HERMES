@@ -546,9 +546,50 @@ Even if import worked, line 309 only sets `vault_replay = True`. Never sets `rec
 
 `arifosmcp.runtime.canonical_vault_chain.verify_chain()` — walks `seal_chain.jsonl`, classifies every discontinuity, returns `VerifyResult(verified, status, entries, corrupt_lines)`. Already used by REST routes, vault tools, observatory, command center, forge preflight. Read-only.
 
-### Fix (minimal, ~10 lines per file)
+### Fix (minimal, ~10 lines per file) — APPLIED 2026-08-02
 
-Both files: replace broken import with real one, CALL `verify_chain(scope="canonical")`, set `receipt_chain_valid = result.verified`. Fail-closed preserved.
+Both files: replace broken import with real one, CALL `verify_chain(scope="canonical")`, and apply the **epistemic rename** `receipt_chain_valid` → `receipt_chain_intact`.
+
+Why the rename matters: `verify_chain` proves chain **integrity** (every link hashes to the next, no gaps), NOT **veracity** (that the sealed content is true). Claiming `valid=True` overstates what the check proves. `intact` is the honest claim. Keep `receipt_chain_valid` as a backward-compat alias so existing consumers don't break.
+
+**Canonical scope is the right default:** `verify_chain(scope="canonical")` walks only the F-004 forward chain (44 entries, all intact). `scope="full"` includes pre-chain legacy entries (241 total, 9 historical breaks) and returns `verified=False` — true but alarming and not actionable. Report canonical for the live governance chain; surface full-chain breaks separately if ever needed.
+
+Return a structured detail block, not just a bool:
+```python
+telemetry.receipt_chain_intact = result.verified
+telemetry.receipt_chain_valid = result.verified  # backward-compat alias
+telemetry.receipt_chain_detail = {
+    "scope": "canonical",
+    "intact": result.verified,
+    "status": result.status,
+    "entries": result.entries,
+    "corrupt_lines": result.corrupt_lines,
+    "anchor_ref": "https://arif-fazil.com/000",
+    "note": "integrity only — veracity requires external replay",
+}
+```
+Fail-closed preserved: any exception → `intact=False`.
+
+### MCP surface: canon as resources + prompts (2026-08-02)
+
+An agent connecting to `mcp.arif-fazil.com/mcp` saw only the 8 tool verbs — the canon (TRINITY-33, init contract, refusal surface, floor table) lived as website text, invisible to the protocol. MCP has three server primitives; only `tools` was shipped.
+
+**The three primitives and who controls each:**
+- `tools` — model-controlled (agent decides when to call). The 8 verbs. ✅
+- `resources` — application-controlled (context the client loads). Canon belongs here. Read-only.
+- `prompts` — user-controlled (templates a user invokes). BOOT ignition belongs here.
+
+**Wiring (FastMCP):**
+1. Declare all three in `initialize` capabilities: `{tools:{listChanged}, resources:{subscribe,listChanged}, prompts:{listChanged}}`. Without this a compliant client never asks for resources/prompts. FastMCP declares them automatically once you register one.
+2. Static canon → `@mcp.resource("arifos://refusal-surface")` returning markdown. Surfaces via `resources/list` + `resources/read`.
+3. Parametric canon → resource TEMPLATE `@mcp.resource("arifos://floor/{fid}")`. Surfaces via `resources/templates/list`, NOT `resources/list`. Normalize F10-F13 → L10-L13 inside the handler.
+4. BOOT → `@mcp.prompt()` with args, embedding the init-contract resource by reference.
+
+**Verification gotcha:** templates and static resources are counted separately. `resources/list` shows static resources; `resources/templates/list` shows `{param}` templates. A floor template will NOT appear in `resources/list` — check both endpoints before concluding a registration failed.
+
+**Result:** 35 resources + 24 templates + 21 prompts on the wire. The canon is now discoverable mid-session, not just on the website.
+
+**Pitfall — registration wired in wrong tree:** see pitfall #5 (dual-tree trap). The new resource modules existed in both trees but the `resources/__init__.py` import+`register_resources()` wiring was only in `/root/arifOS`, so the live server (loading from `/opt/arifos/app`) never registered them. Patch `__init__.py` in BOTH trees.
 
 ### Diagnostic: phantom import detection
 
@@ -615,20 +656,58 @@ sleep 3
 curl -sf http://127.0.0.1:8088/health
 ```
 
-### 5. Deployed vs source code — editable install (2026-07-25 CORRECTION)
+### 5. Deployed vs source code — the DUAL-TREE trap (2026-08-02 CORRECTION)
 
-The arifOS package is installed in **editable mode** (`pip install -e`). Python loads from **`/root/arifOS/`** (source tree), NOT from `/opt/arifos/app/`. Patches to `/opt/arifos/app/` are silently ignored by the running service. **Always patch the source tree at `/root/arifOS/`.**
+**This supersedes the old "always patch /root/arifOS, /opt/arifos/app is ignored" rule. That rule was WRONG and cost ~8 failed restart cycles this session.**
 
-Verify with: `python3 -c "import arifosmcp.runtime.tools; print(arifosmcp.runtime.tools.__file__)"` — should return `/root/arifOS/arifosmcp/runtime/tools.py`.
+The arifOS service has a split-brain module layout:
+- systemd unit `WorkingDirectory=/opt/arifos/app` → `server.py` and anything imported relative to the cwd load from **`/opt/arifos/app/`**
+- the venv has an editable install pointing at **`/root/arifOS/`** → `import arifosmcp.X` package modules resolve here
 
-After patching source:
+They are SEPARATE directory trees (different inodes), NOT symlinks. A patch to only one tree is silently ignored for any module loaded from the other. This is why a change can "work in a direct python test" but never appear on the live server.
+
+**Verify which tree a given module loads from:**
+```bash
+/opt/arifos/venv/bin/python -c "import arifosmcp.resources; print(arifosmcp.resources.__file__)"
+/opt/arifos/venv/bin/python -c "import arifosmcp.server; print(arifosmcp.server.__file__)"
+```
+
+**Rule: patch BOTH trees for any change that must reach the live server.** Edit `/root/arifOS/...` AND mirror the identical edit to `/opt/arifos/app/...`, then restart.
+
+**Proven this session:** new MCP resources (`floor_table.py`, `refusal_surface.py`) existed in BOTH trees, but the `resources/__init__.py` import + registration wiring was only in `/root/arifOS`. Live `resources/list` stayed at 34 across multiple restarts. The moment the `__init__.py` wiring was ALSO patched in `/opt/arifos/app`, the resources appeared (35 resources, 24 templates). The registration code was correct — it just was not wired in the tree the server actually loaded.
+
+After patching BOTH trees:
 ```bash
 systemctl restart arifos
 sleep 3
 curl -sf http://127.0.0.1:8088/health
 ```
 
-### 5b. Ed25519 params now in MCP schema (RESOLVED 2026-07-25)
+### 5b. Where arif_init ACTUALLY runs — the real-init-path map (2026-08-02)
+
+The MCP public surface in `scripts/arifosd.py` (~line 1317) is a **legacy shim declaring the 7 tool verbs**. It is NOT where session init executes. The real live handler lives in two places that must stay consistent:
+
+1. `core/organs/_0_init.py` → `init()` — the constitutional airlock (`VALID_ACTORS`, `InjectionGuard` L12, L13 sovereign override for `delete`, VAULT999 birth-certificate seal on session open). Canonical stage-000 logic.
+2. `arifosmcp/tools/session.py` → `_project_light()` (light mode, ~line 480+) and the full-init path — builds the frozen header, authority band, `allowed_next_verbs`.
+3. Helper: `arifosmcp/runtime/sct.py` → `identity_band_authority()`.
+
+**Confirm a self-report about init state ("X belum wired") by probing BOTH trees** (`search_files` on `/opt/arifos/app` AND `/root/arifOS`), then reading `_project_light()`. This session's claim (`temporal_fingerprint` / `temporal_root` presence) verified 0 matches in both trees — and time is present but only feeds the call hash:
+```bash
+search /opt/arifos/app  temporal_fingerprint|temporal_root  → 0 matches
+search /root/arifOS     temporal_fingerprint|temporal_root  → 0 matches
+# session.py _project_light ~line 528: _now_ts=_time.time() used only in _call_payload hash.
+# Init is NOT bound to a temporal root — self-report was accurate ("halfway", keystone unmounted).
+```
+
+### 5c. Probe-first discipline for identity/kernel mutations — F13 HOLD on split-vessel bind (2026-08-02)
+
+Before endorsing ANY mutation to session init / identity binding, **verify the self-report against live source first** — don't take the agent's claim on faith (`ditempa bukan diberi`). Confirming a self-report is itself a F2 win worth surfacing ("aku certified self-report dia — tara sikit").
+
+**F13 sincerity principle:** do NOT wire sovereign/identity binding (e.g. a `temporal_fingerprint` into init) while the split-brain vessel topology is unresolved (`/opt/arifos/app` systemd live vs `/root/arifOS` editable-install legacy). Binding identity to an init path whose live/vessel copy is ambiguous = binding to a cracked foundation = **false bind**. Standing ruling: *OBSERVE_ONLY + mutation intent = 888_HOLD until the identity bind is sound.* A direct "proceed" request does not override a failed/ambiguous identity bind.
+
+**Presentation pattern that worked:** don't rubber-stamp a prepared "proceed". Hand the sovereign a discrete decision surface (vessel-first / both-at-once / hold-until-P0 / run-serial-yourself) and note that holding the split-brain P0 first is the theoretically-sound default. When the interactive `clarify` prompt fails to deliver, fall back to plain numbered options inline in the reply.
+
+### 5d. Ed25519 params now in MCP schema (RESOLVED 2026-07-25)
 
 The MCP `arif_judge` schema now exposes `actor_signature`, `nonce`, `key_id`, `reversibility_level`, `seal_purpose`, `authority_effect` — confirmed by `tools/list`. The ingress middleware no longer strips these fields. If F13 ESCALATE persists with correct signature+nonce:
 
