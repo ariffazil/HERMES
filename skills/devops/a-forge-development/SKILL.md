@@ -507,6 +507,31 @@ When modifying arifOS Python kernel files (`judge.py`, `memory.py`, `ops.py`, et
 
 ---
 
+## Igniting Kimi Code (FI-008) for Autonomous Forge Tasks
+
+When Arif says "ignite Kimi Code" / "spawn OpenCode/kimi" for a kernel or A-FORGE task, use non-interactive prompt mode. Binary: `/root/.kimi-code/bin/kimi`. Config home: `KIMI_CODE_HOME=/root/.arifos/agents/kimi`. Main agent: `af-forge`.
+
+**CRITICAL PITFALL: `-p` (prompt mode) is mutually exclusive with BOTH `--auto` AND `--yolo`.** Combining them errors immediately:
+```
+error: Cannot combine --prompt with --auto.
+error: Cannot combine --prompt with --yolo.
+```
+Prompt mode (`-p`) is inherently non-interactive and auto-approves — it does NOT need `--auto` or `--yolo`. Use `-p` ALONE for one-shot autonomous tasks.
+
+**Correct ignition pattern (background + notify):**
+```bash
+cd /opt/arifos/app && KIMI_CODE_HOME=/root/.arifos/agents/kimi /root/.kimi-code/bin/kimi \
+  --agent af-forge \
+  --add-dir /root/forge_work/<date> \
+  -p "READ the directive at /root/forge_work/<date>/DIRECTIVE-<task>.md FIRST. Then execute Phase 1 and Phase 2. Write outputs to /root/forge_work/<date>/. <full task description>. DITEMPA BUKAN DIBERI." \
+  > /root/forge_work/<date>/kimi-<task>.log 2>&1
+```
+Run via `terminal(background=true, notify_on_complete=true)`. Verify ignition with `ps aux | grep kimi` and `tail` the log after ~5s.
+
+**Directive-first pattern:** Write a full directive `.md` (context, phased tasks, F1-F13 constraints, verification steps, deliverables) BEFORE igniting, then point the `-p` prompt at it. Keeps the prompt short and the task self-contained.
+
+**Note:** Two long-lived `kimi-code` processes may already run (interactive sessions on pts/7, pts/8). A new `-p` invocation spawns a separate short-lived process — check the LOG, not just `ps`, to confirm YOUR task started.
+
 ## Reading Large TypeScript Files
 
 `forgeShell.ts` is 867+ lines. Use read_file with offset/limit pagination:
@@ -732,6 +757,10 @@ via compiled JS: `node -e "const w = require('/root/A-FORGE/dist/src/domain/gove
 
 30. **Extend-vs-rewrite (2026-07-25, arifFlow genesis).** When prompting coding agents to work on existing code, always say "EXTEND, don't REWRITE." The first version of the G1 BSP Scheduler prompt would have OpenCode rewrite the entire arifFlow Rust core from scratch — creating two schedulers, two merge engines, two envelope formats. The fix was a one-line prefix: "EXTEND existing arifFlow — do NOT rewrite." Always check: does the prompt reference existing file paths? Does it say "add" or "create"? Use "extend" and "modify" for existing, "create" only for genuinely new modules.
 
+32. **EphemeralGenesis: JSON.parse on code-string implementations.** (Discovered & FIXED 2026-08-02, Gap 8) `buildNonApiLauncher()` assumed all implementations are JSON. Code-generating templates (data_parser, compute_fn, format_converter) emit raw JS function strings like `(input) => { ... }`. JSON.parse crashes on these. Fix: try JSON.parse first; on failure, check templateType against approved code set; if approved, wrap in Node.js runner; else throw fail-closed. Secondary bug: invoke sends `{input: ...}` but code templates expect raw values — launcher must unwrap. See `references/ephemeral-tool-genesis.md` for full pattern.
+
+33. **Stale dist/ after source patch — canary tests old code.** (Discovered 2026-08-02) After patching `src/`, MUST run `npx tsc` to rebuild `dist/` before running canary via `require('./dist/...')`. The canary will appear to fail with the OLD bug even though source is fixed. Always: patch → `npx tsc --noEmit` → `npx tsc` → canary.
+
 31. **A-FORGE ghost processes after systemd stop — orphan detection and remediation.** (Discovered 2026-08-01) When systemctl stop a-forge-mcp is issued, the Node.js process may become orphaned (PPID=1) instead of dying. If a manual nohup node serve.js is then run to restore service, two ghost processes accumulate — one orphan on the systemd port, one child of the shell. Neither survives reboot. Detection: ss -tlnp | grep -E ':(7071|7072)' | grep node to find them, ps -o pid,ppid,user,comm --pid <PID> to check parentage. Remediation: kill both orphans, systemctl restart a-forge-mcp, systemctl status a-forge-mcp --no-pager. After fixing, verify settings.json ports in /root/.gemini/settings.json and /root/.gemini/antigravity-cli/settings.json match the systemd port (typically :7072), not the former ghost port.
 
 19. **Cross-cutting interface change: propagating a new field across A-FORGE.** (Discovered 2026-07-18)
@@ -805,5 +834,6 @@ sudo caddy validate --config /etc/caddy/Caddyfile && sudo caddy reload --config 
 - `references/aaa-react-app-debugging.md` — AAA React SPA crash loop diagnosis.
 - `references/w3-reality-test-methodology.md` — **NEW 2026-07-16**. 8-test methodology proving governed tools are physical systems, not multimodal imitations. Entropy gate fix (ΔS≤0), composite seal validator, anti-collusion invariants.
 - `references/world-model-instrumentation.md` — **NEW 2026-07-21**. World model instrumentation pattern: adding action→observation tracking with SHA256 hash chaining to forge tools. Five architecture laws (L1-L5), tool priority map (P0/P1/P2), eligibility gates, testing strategy, and pitfalls.
+- `references/ephemeral-tool-genesis.md` — **UPDATED 2026-08-02**. Ephemeral tool genesis: operational reality. API signatures, 8 templates, implementation format duality (JSON vs code-string), Gap 8 fix pattern, canary procedure, promotion gate thresholds, gap status table, build/test workflow.
 - `references/forge-fault-fix-flow.md` — **NEW 2026-07-21**. Forge Fault Fix Flow: systematic debugging wired for A-FORGE. T₁ probe, fault map (POLICY_GATE → GodelLock → AUTHORITY_REJECTED), Rule of Three, quick fixes, architecture touch points.
 - `references/echo-paw-loop-closure-arifos.md` — **NEW 2026-07-21**. ECHO/PaW loop closure in arifOS: L3 gradient injection, delta threshold circuit breaker (DELTA_MAX=0.30), strict schema parity. Predict→Observe→Delta→Circuit Breaker→Store→Inject architecture without weight training.

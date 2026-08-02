@@ -171,6 +171,45 @@ This gives the user a single document covering their entire infrastructure, not 
 ### Don't kill systemd-managed processes
 Check if a process is managed by systemd before killing: `systemctl status <service>`. Killing a systemd-managed process just makes systemd restart it. Stop the service instead.
 
+### Orphan verification BEFORE any kill — parent chain + TTY + SSH check (PROVEN 2026-08-02)
+**Never kill a process based on name or CPU% alone.** A process at 99% CPU for 19 minutes may be an active SSH session doing real work. The orphan verification protocol:
+
+```bash
+# 1. Check parent chain — PPID=1 means true orphan. PPID!=1 means has a parent.
+ps -p PID -o pid,ppid,pgid,sess,tty,stat,etime,pcpu,rss,args
+
+# 2. Trace parent — is it a bash shell? An sshd?
+ps -p PPID -o pid,ppid,tty,stat,args
+
+# 3. Check TTY activity — is anyone reading this terminal?
+fuser /dev/pts/N   # "HAS active readers" = session alive
+
+# 4. Check SSH connections — is there an ESTABLISHED connection backing this TTY?
+ss -tnp | grep sshd   # Match sshd PID to the parent chain
+
+# 5. Check tmux/screen — session may be detached but alive
+tmux ls 2>/dev/null; screen -ls 2>/dev/null
+```
+
+**Decision matrix:**
+| PPID | TTY readers | SSH ESTAB | Verdict |
+|------|-------------|-----------|---------|
+| 1 | none | none | TRUE ORPHAN — safe to kill |
+| bash | yes | yes | ACTIVE SESSION — DO NOT KILL |
+| bash | yes | no | Detached tmux/screen — check before killing |
+| bash | no | no | Abandoned session — SIGTERM first, wait 30s, SIGKILL if still alive |
+
+**Proven 2026-08-02:** Four processes (opencode 99.8% CPU, grok 4.7%, kimi-code ×2) all had live parent chains: `sshd → bash → process` with ESTABLISHED SSH from 202.185.89.85. `who` was empty (utmp logging gap) but `ss` confirmed 9 live SSH connections. Killing them would have destroyed active work sessions. Load had already dropped from 6.12 → 2.23 without intervention.
+
+### Swap 100% full ≠ active problem — check PSI first (PROVEN 2026-08-02)
+Before any swap intervention (`swapoff`, reboot, killing processes for swap), check Pressure Stall Information:
+```bash
+cat /proc/pressure/memory
+# some avg10=0.00 avg60=0.00 avg300=0.03
+# full avg10=0.00 avg60=0.00 avg300=0.03
+```
+If `avg10` and `avg60` are 0.00, the system has **zero memory pressure** despite swap being full. The kernel swapped out cold pages long ago and is not thrashing. Forcing a swap cycle (`swapoff -a && swapon -a`) risks OOM kills during the transition for zero benefit. Arif's ruling: "Swap mungkin kekal kelihatan tinggi walaupun tekanan sudah reda; itu bukan alasan untuk paksa swap cycle."
+
 ### Swap hogs are usually symptoms, not causes
 High swap usage (10GB+) usually means a process leaked memory until the kernel swapped it out. Kill the cause (the memory hog), and swap will decay naturally. Don't `swapoff/swapon` unless you've freed physical RAM first.
 

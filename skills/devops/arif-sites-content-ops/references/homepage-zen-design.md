@@ -13,52 +13,49 @@ Applied 2026-08-01 per Arif directive: "remove the chaos of front page design, a
 | 4× `brutalist-card` organ layout | Inconsistent spacing — replaced with uniform `border` cards |
 | `border-b-2` heavy dividers | Replaced with `border-b` (1px) — lighter breathing room |
 
-## Live MYT Clock (enhanced 2026-08-01)
+## Live MYT Clock (enhanced 2026-08-01, machine-twin upgrade 2026-08-01 evening)
 
-Two-tier: MYT primary (large, orange, prominent) + UTC secondary (small, dim, for cross-reference).
+Two-tier: MYT primary (large, orange, prominent) + UTC secondary (small, dim, for cross-reference). Second pass added the **agent machine twin**: render the clock as `<time datetime="ISO-8601">` so agents parsing the page get the exact epoch + timezone without asking — Arif's "add hero clock live with date so that my agents will have temporal intelligence" directive.
 
 ```tsx
-// src/components/LiveClock.tsx
+// src/components/LiveClock.tsx — header/hero variant (props-driven)
 import { useState, useEffect } from 'react';
 
 const MYT_OFFSET = 8; // UTC+8
 
-function formatMYT(): string {
+interface LiveClockProps { withDate?: boolean; withIso?: boolean; className?: string; }
+
+function mytNow(): Date {
   const now = new Date();
-  const myt = new Date(now.getTime() + (MYT_OFFSET - now.getTimezoneOffset() / 60) * 3600000);
-  return myt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  return new Date(now.getTime() + (MYT_OFFSET - now.getTimezoneOffset() / 60) * 3600000);
+}
+function formatTime(d: Date): string {
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+}
+function formatDate(d: Date): string {
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function formatUTC(): string {
-  return new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
-}
-
-function formatDate(): string {
-  const now = new Date();
-  const myt = new Date(now.getTime() + (MYT_OFFSET - now.getTimezoneOffset() / 60) * 3600000);
-  return myt.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-export function LiveClock() {
-  const [time, setTime] = useState(formatMYT());
+export function LiveClock({ withDate = true, withIso = true, className = '' }: LiveClockProps) {
+  const [now, setNow] = useState<Date>(() => mytNow());
+  const [iso, setIso] = useState(() => new Date().toISOString());
   useEffect(() => {
-    const interval = setInterval(() => setTime(formatMYT()), 1000);
+    const interval = setInterval(() => { setNow(mytNow()); setIso(new Date().toISOString()); }, 1000);
     return () => clearInterval(interval);
   }, []);
   return (
-    <div className="flex items-baseline gap-3 font-mono leading-none">
-      <div className="flex items-baseline gap-2">
-        <span className="text-forge-orange font-bold text-2xl md:text-3xl tabular-nums tracking-tight">{time}</span>
-        <span className="text-[0.6rem] text-forge-orange uppercase tracking-widest font-semibold">MYT</span>
-      </div>
-      <span className="hidden sm:inline text-[0.55rem] text-forge-dim/60 uppercase tracking-widest">· UTC {formatUTC()}</span>
-      <span className="hidden md:inline text-[0.55rem] text-forge-dim/60 uppercase tracking-widest ml-2">· {formatDate()}</span>
-    </div>
+    <time dateTime={withIso ? iso : undefined} title={withIso ? `ISO-8601 ${iso}` : 'Malaysia Time (UTC+8)'}
+      className={`flex items-center gap-2 font-mono text-[0.65rem] text-forge-dim uppercase tracking-widest ${className}`}>
+      <span className="inline-block w-1.5 h-1.5 rounded-full bg-forge-green shadow-glow-green animate-pulse" aria-hidden="true" />
+      <span className="text-forge-white">{formatTime(now)}</span>
+      <span>MYT</span>
+      {withDate && <span className="hidden sm:inline text-forge-dim/60">· {formatDate(now)}</span>}
+    </time>
   );
 }
 ```
 
-Key: `setInterval` at 1000ms for live ticking. `toLocaleTimeString('en-GB', { hour12: false })` for 24h format. `text-2xl md:text-3xl` for MYT (8xl was too large for inline bar). `tabular-nums` for stable width. UTC + date hidden on mobile (`hidden sm:inline` / `hidden md:inline`).
+Key upgrades over the first version: `<time dateTime={iso}>` = the machine twin (agents read exact instant, no clock math); props `withDate`/`withIso`/`className` let it serve header (small, inline) AND hero (justify-end) without duplication; green pulse dot = "this is live, not a static timestamp" (F9: live must be real — it IS a real tick). Wire into header (`ConstellationNav.tsx` right side, `hidden md:block`) AND hero (`Home.tsx` next to section-label). Both share the same component — no copies.
 
 ## ZenPulse — Simplified
 

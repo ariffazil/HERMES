@@ -19,6 +19,9 @@ triggers:
   - "arif_seal mode authority downgrade"
   - "arifOS health check times out (TCP accept, no HTTP response)"
   - "arif_think returns empty reasoning"
+  - "receipt_chain_valid always false"
+  - "vault_replay false on validate"
+  - "phantom import — telemetry says broken but system works"
 ---
 
 # arifOS Interceptor Patching
@@ -521,6 +524,49 @@ When arifFlow daemon and flow_state.json disagree on FQ:
 3. **Check log**: `tail -20 /var/log/fq-probe.log` — shows FQ at each 15-min interval
 4. **Fix**: Rewrite probe to mirror daemon values verbatim — no recompute. The daemon IS the single source of truth.
 5. **Verify FQ persist after restart**: restart arifFlow → both sources should agree immediately (receipts loaded from /var/lib/arifflow/receipts.jsonl)
+
+## Receipt chain verification bug — phantom import pattern (2026-08-02)
+
+### The pattern
+
+`arif_init(mode=validate)` returns `receipt_chain_valid: false` and `vault_replay: false` — making the entire auditability claim look broken. But the vault chain itself is fine. The bug is in the **telemetry layer**, not the chain.
+
+### Root cause (two bugs, same class)
+
+**Bug A — Wrong import path (both files):**
+- `arifosmcp/abi/verification_envelope.py` line 305: `from arifosmcp.core.vault999.verify import verify_chain`
+- `arifosmcp/tools/session.py` line 3269: same import
+
+`arifosmcp.core` does NOT exist as a package. The real module: `arifosmcp.runtime.canonical_vault_chain`. Import always fails → `except ImportError: pass` → stays False.
+
+**Bug B — Never calls verify_chain (verification_envelope.py):**
+Even if import worked, line 309 only sets `vault_replay = True`. Never sets `receipt_chain_valid`. Field stays `False` forever.
+
+### The real verify_chain (already production)
+
+`arifosmcp.runtime.canonical_vault_chain.verify_chain()` — walks `seal_chain.jsonl`, classifies every discontinuity, returns `VerifyResult(verified, status, entries, corrupt_lines)`. Already used by REST routes, vault tools, observatory, command center, forge preflight. Read-only.
+
+### Fix (minimal, ~10 lines per file)
+
+Both files: replace broken import with real one, CALL `verify_chain(scope="canonical")`, set `receipt_chain_valid = result.verified`. Fail-closed preserved.
+
+### Diagnostic: phantom import detection
+
+When a validate/telemetry endpoint always returns False for a capability that should work:
+1. Find where the field is set: `grep -rn "field_name" --include="*.py"`
+2. Check the import: `python3 -c "from <module> import <name>"`
+3. Check if the function is actually CALLED (not just imported)
+4. Find the real implementation: `grep -rn "def verify_chain" --include="*.py"`
+
+### Claude audit: 5 ordered kernel blockers (2026-08-02)
+
+1. Receipt chain verification (phantom import above)
+2. Identity verification — `verification_method=null`, session resolves as both "anonymous" and "unknown"
+3. Parallel verdict paths — HOLD + DENY + GREEN + DEGRADED in one response
+4. Token issuance behind authorization — SCT minted on DENY path
+5. APEX floors UNMEASURED — zero witnesses running
+
+Full details: `references/receipt-chain-verification-bug.md`
 
 ## Common pitfalls
 

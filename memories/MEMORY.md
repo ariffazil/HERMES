@@ -24,18 +24,18 @@ Arif sees trauma structurally — Φ-witness=precision w/o feeling. F13 sovereig
 §
 Crisis friend mode: Arif shows up physically for Syed/Aliff, uses Jungian shadow+MBTI+birth order as decode language. BM casual. Wants direct shadow decode → practical action. Gets drained but keeps showing up.
 §
-Arif on autonomous deployments: investigate first, don't auto-reject. Will adopt valuable work. Prioritize HTTP claims vs live state, timestamps, forge vs apex domain.
+Arif on deployments: investigate first, don't auto-reject. PHASED SERIAL execution: satu perubahan → satu verifikasi → baru teruskan. Never batch kernel+Caddy+data+cleanup. 503 may be truthful — don't force green. Constitutional reset = 888_HOLD.
 §
 Syed's brother (36M, ISFJ, talkative): brain fog=1wk sleep deprivation. Sleep aid: Hypnos (Blue Hawaiian). Arif: "bila dia kata x ingat, dia memang x ingat." Sleep gate <5h=NO MT5.
 §
 No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=khalifah. Constraint=steps:60.
 §
-Arif post-verification: shift to reflection after proof. "Stop auditing. Reflect with me." = validation part. What does result MEAN about actors/system? Don't keep running analysis.
+APEX canon: B=(A·P·E·X)^(1/4). Verdicts: SEAL/SABAR/HOLD/VOID. B measures Φ scar not human. Observer entangled. 'Useful not true'. 3 Closures: loneliness machine, gap=shadow, refusal=only break. Reality loop (2026-08-02): SEAL→REALITY→BOOT via FalsifiablePrediction+deadline. PETRONAS 2029-2030=Compton wavelength. Niat=F13 sovereign territory, NOT framework ('we don't touch niat'). Framework reads trace; sovereign holds niat+names the thing.
 §
-APEX theory canon: 4 dials = AKAL(entropy-pricing), PRESENT(buffer/load), ENERGY-ENTROPY(ΔS pathway), EXPLORATION-AMANAH(verdict boundary). B-score = geometric mean A·P·E·X. Thermodynamic verdicts: SEAL(investment), SABAR(maintenance), HOLD(extraction), VOID(terminal). Engine at arifOS/arifosmcp/thermodynamics/engine.py — 420 lines, 41/41 tests. B-score measures Φ scar (shadow-echo-trace), not human/position/institution. Observer is entangled with the measurement.
+Text is illusion — framework reads residue not experience. VPS evidence > model. 'Hang percaya ja ayat manis' = NEVER accept elegant theory without VPS/live grounding. Theory-first=trap; evidence-first=method. Intention vs trace: framework reads trace, sovereign holds niat.
 §
-Text is an illusion — framework reads residue, not experience. VPS evidence > model. Election proved rasa qualia can't be captured by text-based governance scoring. Framework needs continuous ground-truth recalibration. Intention vs trace: framework reads trace, sovereign holds niat. AMANAH dial = consistency between intention and trace.
+Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar: pathway-first, optional actor, no tense (superpositional), affixes me-/di-/ter-/ber- encode actor-action relationship structurally like B-score. Archipelago geometry = federation architecture.
 §
-Φ scar = what B-score measures (shadow/echo/trace), not the human/position/institution. Niat (intention) changes sovereign action, not thermodynamics. Framework reads the trace; F13 reads the person inside the trace.
+LiteLLM proxy live at 127.0.0.1:4000 — 7 model tiers (main/forge/auditor/planner/ops/small/last-resort), auto fallback chains, circuit breaker (3 fails→60s cooldown), cross-provider K1+MiniMax. No-DB mode (UnsetEnvironment=DATABASE_URL, NOT Environment=-DATABASE_URL=). OpenAI-compatible. No consumers wired yet. Master key auth.
 §
-Arif: bahasa Nusantara (Malay) is key to next agentic intelligence horizon — grammar already does pathway-first, distributed archipelago geometry, optional actor. Malay verb affixes (me-/di-/ter-/ber-) encode actor's relationship to action structurally, like B-score.
+Hermes MCP: :18086, ENABLED 2026-08-02. 7 OBSERVE_ONLY tools, no session needed. Injection scanner. Config edit: targeted sed only, never global replace.

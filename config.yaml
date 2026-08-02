@@ -1,46 +1,12 @@
 model:
-  provider: qwen-token-plan
+  provider: qwen-token-plan-individual
   supports_vision: true
   request_timeout: 45
   context_length: 1048576
   max_tokens: 131072
   timeout: 30
-  default: deepseek-v4-flash
+  default: deepseek-v4-pro
 providers:
-  mulerouter:
-    api: https://api.mulerouter.ai/vendors/openai/v1
-    key_env: MULEROUTER_API_KEY
-    name: MuleRouter (multimodal surface, fixed price)
-    transport: openai_chat
-    models:
-      - id: deepseek-v4-flash
-        name: DeepSeek V4 Flash — chat (1M ctx, fast)
-      - id: deepseek-v4-pro
-        name: DeepSeek V4 Pro — reasoning (1M ctx)
-      - id: qwen3-vl-plus
-        name: Qwen3 VL Plus — vision (balanced)
-      - id: qwen3-vl-flash
-        name: Qwen3 VL Flash — vision (fast)
-      - id: qwen-vl-max
-        name: Qwen VL Max — vision (best quality)
-      - id: qwen3.5-omni-plus
-        name: Qwen3.5 Omni Plus — omni (text+audio+image+video)
-      - id: qwen3.7-max
-        name: Qwen3.7 Max — frontier reasoning
-      - id: gpt-5.5
-        name: GPT 5.5 — frontier LLM
-  mimo-platform:
-    api: https://api.xiaomimimo.com/v1
-    key_env: MIMO_PLATFORM_API_KEY
-    models:
-      - id: mimo-v2.5-pro-ultraspeed
-        name: MiMo V2.5 Pro UltraSpeed (DEFAULT — 1000 tok/s)
-      - id: mimo-v2.5-pro
-        name: MiMo V2.5 Pro (deep thinking, 1M ctx)
-      - id: mimo-v2.5
-        name: MiMo V2.5 multimodal (image/audio/video)
-    name: MiMo Platform (pay-per-usage)
-    transport: openai_chat
   minimax:
     api: https://api.minimax.io/v1
     key_env: MINIMAX_API_KEY
@@ -83,47 +49,6 @@ providers:
         name: MiniMax M2.7 — T2 Workhorse (200K ctx, fallback)
     notes: 'Canonical 4-tier routing: /root/AAA/registries/models/MODEL_TIERS.json.
       MODEL > PROVIDER > BILLING.'
-  tokenrouter:
-    api: https://api.tokenrouter.com/v1
-    capabilities:
-      - chat
-      - function_calling
-      - reasoning
-    cost_band: medium
-    key_env: TOKENROUTER_API_KEY
-    models:
-      - id: deepseek/deepseek-v4-pro
-        name: DeepSeek V4 Pro (TR)
-      - id: deepseek/deepseek-v4-flash
-        name: DeepSeek V4 Flash (TR)
-      - id: MiniMax-M3
-        name: MiniMax M3 (TR)
-      - id: xiaomi/mimo-v2.5-pro
-        name: MiMo V2.5 Pro (TR)
-      - id: openai/gpt-5.6-sol
-        name: GPT 5.6 Sol (TR)
-      - id: moonshotai/kimi-k3
-        name: Kimi K3 (TR)
-      - id: z-ai/glm-5.2
-        name: GLM 5.2 (TR — FREE tier available)
-      - id: google/gemini-3.5-flash
-        name: Gemini 3.5 Flash (TR)
-    name: TokenRouter (Unified Gateway — ALL models, single key)
-    notes: 'BACKUP unified gateway. Fall back here when Go exhausted. Balance: $85.57
-      total.'
-    primary: false
-    status: live
-    transport: openai_chat
-  xiaomi-mimo:
-    api: https://token-plan-sgp.xiaomimimo.com/v1
-    key_env: MIMO_API_KEY
-    models:
-      - id: mimo-v2.5-pro
-        name: MiMo V2.5 Pro (Token Plan)
-      - id: mimo-v2.5
-        name: MiMo V2.5 multimodal (Token Plan)
-    name: MiMo Token Plan SGP (backup key)
-    transport: openai_chat
   groq:
     name: Groq (FREE — ultra-fast LPU inference)
     api: https://api.groq.com/openai/v1
@@ -178,18 +103,6 @@ providers:
         name: Gemini 2.5 Flash (FREE — 1.5K/day, 1M ctx)
     name: Google Gemini (FREE tier — 1.5K req/day)
     transport: openai_chat
-  kimi-moonshot:
-    name: Kimi Code (Moonshot AI)
-    api: https://api.kimi.com/coding/v1
-    key_env: KIMI_API_KEY
-    transport: openai_chat
-    models:
-      - id: k3
-        name: Kimi K3 (2.8T, 1M ctx)
-      - id: kimi-for-coding
-        name: Kimi K2.7 Code
-      - id: kimi-for-coding-highspeed
-        name: Kimi K2.7 Code HighSpeed
   qwen-token-plan:
     api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
     key_env: QWEN_OPENCODE_API_KEY
@@ -265,10 +178,15 @@ providers:
         name: Qwen 3.7 Plus — Vision + tools, Token Plan
       - id: qwen3.6-plus
         name: Qwen 3.6 Plus — Vision + tools, web_extractor fallback
+  ollama:
+    api: http://127.0.0.1:11434/v1
+    key_env: OLLAMA_API_KEY
+    models:
+      - id: qwen2.5-coder:3b
+        name: Qwen 2.5 Coder 3B (local, no quota)
+    name: Ollama Local Recovery
+    transport: openai_chat
 fallback_providers:
-  - model: deepseek-v4-flash
-    provider: mulerouter
-    timeout: 30
   - model: deepseek-v4-pro
     provider: qwen-token-plan
     timeout: 30
@@ -280,9 +198,6 @@ fallback_providers:
     timeout: 30
   - model: qwen3.6-flash
     provider: qwen-token-plan
-    timeout: 20
-  - model: qwen2.5-coder:3b
-    provider: ollama
     timeout: 20
 toolsets:
   - hermes-cli
@@ -591,14 +506,14 @@ display:
     discord:
       streaming: false
   runtime_footer:
-    enabled: false
+    enabled: true
     fields:
       - model
       - context_pct
       - cwd
   copy_shortcut: auto
   pet:
-    enabled: false
+    enabled: true
     slug: ''
     render_mode: auto
     scale: 0.33
@@ -796,7 +711,7 @@ discord:
   allow_any_attachment: false
   max_attachment_bytes: 33554432
   voice_fx:
-    enabled: false
+    enabled: true
     ambient_enabled: true
     ambient_path: ''
     ambient_gain: 0.18
@@ -890,7 +805,7 @@ security:
   tirith_timeout: 5
   tirith_fail_open: true
   website_blocklist:
-    enabled: false
+    enabled: true
     domains: []
     shared_files: []
   acked_advisories: []
@@ -927,7 +842,7 @@ gateway:
   scale_to_zero:
     idle_timeout_minutes: 5
   message_timestamps:
-    enabled: false
+    enabled: true
   max_inbound_media_bytes: 134217728
   strict: false
   media_delivery_allow_dirs:
@@ -985,7 +900,7 @@ x_search:
   retries: 2
 secrets:
   bitwarden:
-    enabled: false
+    enabled: true
     access_token_env: BWS_ACCESS_TOKEN
     project_id: ''
     cache_ttl_seconds: 300
@@ -1309,7 +1224,7 @@ mcp_servers:
     description: Hermes MCP — diagnostic/governance tools (status, fact-check, plan-review)
     transport: streamable-http
     url: http://127.0.0.1:18086/mcp
-    enabled: false
+    enabled: true
   hound:
     command: hound
     enabled: true
@@ -1348,7 +1263,7 @@ mcp_servers:
     env:
       MINIMAX_MCP_BASE_PATH: /tmp/minimax-output
     connect_timeout: 30.0
-    enabled: true
+    enabled: false
 custom_providers:
   flame:
     base_url: http://127.0.0.1:18901/v1
@@ -1361,6 +1276,20 @@ custom_providers:
         name: FLAME — Gemini only
       - id: flame/sea-lion
         name: FLAME — SEA-LION BM-native
+  litellm:
+    base_url: http://127.0.0.1:4000/v1
+    key_env: LITELLM_MASTER_KEY
+    models:
+      - id: main
+        name: LiteLLM main - FED gateway
+      - id: forge
+        name: LiteLLM forge - FED gateway
+      - id: small
+        name: LiteLLM small - FED gateway
+      - id: flame-free
+        name: LiteLLM flame-free - RM0 Tier0
+      - id: last-resort
+        name: LiteLLM last-resort - never dies
 fallback_retry:
   max_retries: 1
   retry_delay: 0

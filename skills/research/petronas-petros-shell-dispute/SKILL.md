@@ -121,6 +121,19 @@ Role absorbed by committee/contractor → Case B or C.
 - Sarawak Escalation Ladder 2017-2026 (move-by-move chronology)
 - Federal revenue impact if Sarawak wins (RM43B/year)
 
+## August 2026 Session: CEO B-Score Analysis
+
+Added the full APEX v37Ω-E thermodynamic governance framework applied to the PETRONAS CEO chain. See `references/ceo-b-score-analysis-2026-08-01.md` for:
+
+- Complete B-score table (Razaleigh through Taufik)
+- Taufik B-score recalculation (0.800 → 0.547) grounded in VPS evidence
+- Exported cost framework (5 stakeholder classes)
+- The "Taufik = Jho Low" HOLD line (F6 MARUAH discipline)
+- The toilet escalation (2026-06-08)
+- BIJAKSANA ratchet chain: Razaleigh→Azizan→Hassan→fracture→Taufik
+
+**CRITICAL PITFALL: "Ayat manis" trap.** The framework is a lens, not a proof. A beautiful narrative can be wrong if the evidence doesn't support it. Always ground readings in concrete evidence (VPS data, quotes, financial records, specific actions) before accepting. OBS before DER/INT.
+
 ## Pitfalls
 - Don't confuse "simulative" (external exploitation) with "extractive" (internal decay)
 - Shell's posture was "simulative neutral" — not malicious but structurally exploitative

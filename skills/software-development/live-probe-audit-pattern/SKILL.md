@@ -44,6 +44,19 @@ triggers:
   - "completion report"
   - "autonomous AGI"
   - "all gaps closed"
+  - "what is"
+  - "do we have"
+  - "is there a"
+  - "deep scan"
+  - "scan internal"
+  - "can we test all"
+  - "existence check"
+  - "is this alive"
+  - "is this wired"
+  - "verify and identify gaps"
+  - "capability metabolism"
+  - "ephemeral pipeline"
+  - "dormant subsystem"
 ---
 # Live Probe Audit Pattern
 
@@ -56,6 +69,135 @@ When a session-feed narrative declares completion with confident numbers ("100% 
 - "Discovery files fixed" usually means files added to disk, not routing config wired
 
 **Rule: never trust the preamble, always probe the count.**
+
+## Classify the Report Type FIRST
+
+Not all agent reports are audited the same way. Classify before probing — over-probing a doctrine report wastes effort, under-probing a deployment report misses the lies.
+
+| Report type | Falsifiable surface | Primary probes |
+|---|---|---|
+| **Deployment / hotfix** ("I changed X, now Y works") | Config files, mtimes, process env, live HTTP, service state | `stat` mtime vs backup, `/proc/<pid>/environ`, `curl :port/health`, diff backup→current |
+| **Spec / advisory** ("you should build X, here are references") | Citations + named estate files | curl each cited URL + grep the specifically-claimed terms; `find`/`grep` each named file for existence AND implementation depth |
+| **Doctrine / synthesis** ("here is the framework, ratify it") | THIN — mostly unfalsifiable prose | Audit only the concrete anchors: do the named "patterns" map to real findings? Are citations reused correctly? Is the gap/eureka list honest about what it doesn't know? |
+
+**Rule:** the more a report is wisdom-literature, the less there is to probe — the audit becomes "are the concrete anchors real?" Do NOT fabricate audit surface for a doctrine report; report the thin surface honestly.
+
+## Gap-Claim Audit ("you are missing X")
+
+When an external advisor (Copilot, a peer agent, an external audit) claims your estate is MISSING a control, probe the estate for existing primitives BEFORE accepting the gap. Advisors without filesystem visibility systematically overstate gaps — they search their own index (M365, their RAG), find nothing, and assume absence.
+
+Proven 2026-08-02: a Copilot report claimed "your agents are still missing 10 controls." Live probe: 4 of 10 already existed, richer than the proposal (independent-witness machinery in `witness_packet.py`; verdict enum in `verdicts.py` with HOLD_888/PROVISIONAL substates; evidence-freshness TTL in `attestation_verifier.py`; human-approval = the constitutional floors). Only ~1.5 of 10 were genuinely missing.
+
+**Discriminator:** for each claimed gap, `grep -rl` the estate for the capability's conceptual name. If a primitive exists, the gap is "not wired into THIS workflow" (a real but smaller finding), not "absent" (the advisor's framing). Report the delta: "label is new, substance exists."
+
+## Component / Server Existence Scan ("is there an X on this box?")
+
+**Signal:** The sovereign asks "what is X", "do we have X", or "can we test all X" about an internal component — especially an MCP server, organ, daemon, or subsystem. The fast answer from prior/context ("there is no X") is the trap.
+
+**Scar (2026-08-02):** Arif asked "what is HERMES MCP and can we test all." I answered from context that no product named "Hermes MCP" exists — only Hermes Agent (the MCP *client*) plus six wired organ servers. Arif pushed: "so there is no hermes mcp?" I doubled down. He said "u deep scan internal." A four-surface scan found `/root/.hermes/mcp_servers/hermes_mcp.py` — a live standalone MCP server on port 18086, 7 governance tools, running as a process, but **disabled** in `hermes mcp` config so it never appeared in my toolset. The absence claim was false. Two wasted turns.
+
+**The four-surface scan (run all four before ANY existence verdict):**
+
+```bash
+# 1. CONFIG / TOOLSET SURFACE — what the agent framework has wired
+hermes mcp 2>&1                       # enabled AND disabled custom servers
+grep -rniE 'mcp|server' /root/.hermes/config.yaml | head
+
+# 2. FILESYSTEM SURFACE — what exists on disk, wired or not
+find /root/.hermes /opt /root -path '*/mcp*' -name '*.py' 2>/dev/null | grep -v venv | head -20
+
+# 3. PROCESS SURFACE — what is actually running
+ps aux | grep -iE 'mcp|arifos|geox|wealth|well|mage|hound' | grep -v grep
+
+# 4. PORT SURFACE — what is bound and listening
+ss -tlnp 2>/dev/null
+```
+
+**Discriminators:**
+- **Toolset visibility ≠ existence.** A server can be live (process + port) yet absent from the agent's toolset because it is `disabled` in config, quarantined (`stdio_mcp_quarantine` in config.yaml), or never wired. "Not in my tools" is a statement about *my wiring*, not about the box.
+- **Disabled ≠ dead.** A `custom — disabled` entry in `hermes mcp` can still be a running process serving real requests over HTTP. Probe the port before calling it dead.
+- **Answer internal "what is X / do we have X" from the SCAN, never from prior.** Priors are for external facts; the live box is the authority for internal inventory.
+
+**Verdict rule:** an absence claim ("no X exists") requires all four surfaces probed clean. A presence claim needs only one surface. Same asymmetry as the truncated-read pitfall below — absence is the expensive claim to prove.
+
+Worked example + the 7-tool test recipe: `references/hermes-mcp-deep-scan-2026-08-02.md`.
+
+## Architecture-vs-Liveness Audit ("is this subsystem alive?")
+
+**Signal:** A report (or Arif) claims a subsystem exists with impressive architecture — state machines, gates, leases, sandboxes, promotion pipelines. The question is not "do the files exist?" but "is any agent actually using this end-to-end?"
+
+**Scar (2026-08-02):** Arif shared an external agent's Eureka narrative about A-FORGE's ephemeral capability pipeline. The narrative was architecturally correct — 20+ real files, 1,100+ line canonical engine, bwrap sandbox, 10+ tests, 5 built-in templates, evidence-based promotion gate. But the system was operationally dormant: zero production calls, no agent configured to invoke it, and the promotion gate was mathematically unreachable (score defaults to 0.0, threshold requires 0.80, the code that populates the score isn't wired).
+
+**The 10-question liveness probe (run ALL before any "it works" verdict):**
+
+```
+Q1. Does the tool appear in the live MCP surface?
+    → grep registration in core.ts / server setup; check tools/list
+
+Q2. Are the domain files real implementations or stubs?
+    → wc -l each file; check for actual logic vs print/banner stubs
+    → (see deployment-claim-verification pitfall #31 for stub detection)
+
+Q3. Is the sandbox/execution backend actually installed?
+    → which bwrap; bwrap --version; testBackend() equivalent
+
+Q4. Do templates/recipes exist and are they usable?
+    → grep registerBuiltinTemplates / seedTemplates; count entries
+
+Q5. Is there test coverage?
+    → find test/ -name "*ephemeral*" -o -name "*sandbox*" etc.
+
+Q6. Is any agent CONFIGURED to call this tool?
+    → grep -rn "tool_name" ~/.hermes/ ~/.claude/ ~/.opencode* /root/HERMES/
+    → This is the most commonly missed check. A tool nobody calls is dormant.
+
+Q7. Are promotion/retirement gates mathematically reachable?
+    → Read the threshold constants AND the default values of their inputs.
+    → If input defaults to 0.0 and threshold requires 0.80, and the code
+      that populates the input says "P2; defaults to 0.0 until then" —
+      the gate is DEAD BY CONSTRUCTION. No entity can ever pass it.
+
+Q8. Are cross-module dependencies actually wired?
+    → grep -rn "import.*ModuleB" ModuleA.ts
+    → A file can exist with beautiful spec but zero imports from the
+      canonical engine. Existence ≠ integration.
+
+Q9. Is the MCP transport network-reachable or stdio-only?
+    → ss -tlnp | grep <port>; ps aux | grep <process>
+    → stdio transport = library waiting to be spawned, not a live server.
+
+Q10. Has the full lifecycle ever been exercised end-to-end?
+    → Search logs, session history, VAULT999 for any production invocation.
+    → "No permanent promotion test yet" = the promote→seal path is theory.
+```
+
+**Three dormancy patterns (proven 2026-08-02):**
+
+| Pattern | Tell | Example |
+|---------|------|---------|
+| **No consumer** | Tool registered, zero agent configs reference it | forge_ephemeral not in any Hermes/Claude/OpenCode config |
+| **Dead gate** | Threshold requires X, input defaults to 0, populator says "P2" | empirical_capability_score=0.0 forever, threshold=0.80 |
+| **Unwired module** | File exists, canonical engine doesn't import it | worldModelTraining.ts + multiModelEvaluator.ts: grep returns zero imports from EphemeralGenesis.ts |
+
+**Verdict template:**
+
+```
+Architecture: REAL / STUB / PARTIAL
+  [evidence: file count, line count, test count]
+
+Operationally: LIVE / DORMANT / PARTIAL
+  [evidence: production calls, agent configs, gate reachability]
+
+Gates: REACHABLE / DEAD BY CONSTRUCTION
+  [evidence: threshold vs default value, populator wiring status]
+
+Cross-module wiring: WIRED / UNWIRED
+  [evidence: grep imports between modules]
+```
+
+**Key discriminator:** "Architecture real, operationally dormant" is a VALID and COMMON verdict. Don't collapse it to "it works" (files exist) or "it's fake" (nobody uses it). Report both halves honestly.
+
+Full worked example: `references/aforge-ephemeral-liveness-audit-2026-08-02.md`.
 
 ## Probe Order (Mandatory)
 
@@ -479,6 +621,8 @@ The canonical OpenClaw audit (2026-07-29) is at `references/agent-card-federatio
 
 ## Pitfalls
 
+- **Truncated-read false negatives — the most dangerous verifier error class (scar 2026-08-02).** A verifier claimed "NO custom_providers.litellm entry" in a 1328-line config.yaml. The block was at lines 1279-1291. The verifier read only the first ~80 lines (`cat | head -80`) and concluded absence. This triggered a false F2/F11 HOLD that wasted a full audit cycle. **Rule:** when a verifier claims a block is ABSENT from a file, check the file's total line count (`wc -l`) against the verifier's read window. If the file is longer than what was read, the absence claim is UNVERIFIED, not TRUE. Always re-probe with `grep -n <term> <file>` (full-file search) before accepting any "not found" verdict. Absence claims require full-file evidence; presence claims only need one match.
+
 - **Never trust "N URLs all 200" without the URL list.** Audit script may include anchor tags, javascript: URLs, mailto: links, fragments (#) in its pass count.
 - **Delegate agent claims about code must be grep-verified before forwarding to the user (scar 2026-07-19).** Subagents can fabricate detailed architectural findings (specific line numbers, named patterns, "three parallel paths") that don't exist in the actual source. Always verify at least one key claim with grep/curl before presenting a subagent's analysis as fact. See `references/delegate-agent-audit.md` for the full recipe.
 - **When two subagents report different tool counts / version numbers / branch states, trust the live health endpoint, not the agent prose.** Subagent contexts diverge. Health endpoint + git log are the reconcilers.
@@ -701,6 +845,7 @@ fs.writeFileSync(LIVE_PATH, JSON.stringify(payload, null, 2));    // for live HT
 - `references/mcp-resource-zen-2026-07-28.md` — Cross-witness audit: OpenCode scan → Hermes verify → convergence seal. MCP resource collapse 327→34. Single-agent accuracy ~60% lesson.
 - `references/external-witness-probe-maintenance.md` — Multi-location regex hazard, JS-rendered landing page extraction, and verification workflow for the external witness probe (2026-07-31)
 - `references/env-wiring-claim-audit-2026-08-01.md` — Worked example: auditing a Qwen seat-wiring receipt (401/429 discrimination, mtime vs tool attribution, process-env probing, seats.yaml self-contradiction, FORGE two-token drift, OpenClaw false gate)
+- `references/cross-report-batch-audit-2026-08-02.md` — Auditing a batch of 4 sequential agent reports (deployment→spec→doctrine). The cross-report meta-pattern: core work real, receipts padded 15-40%, citations clean, estate already has what advisors claim, self-attestation the consistent failure mode. Audit-surface-by-report-type discriminator + scorecard template.
 
 ## Constitutional Compliance
 

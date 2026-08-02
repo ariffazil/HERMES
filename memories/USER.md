@@ -6,8 +6,6 @@ Aliff: Muhammad Aliff Al Husna bin Shamsudin. Kawan rapat. PETRONAS KLCC. Geolog
 §
 DERITA — WITNESS not victim. Sees trauma geometrically. CLOAK presence = sovereign witness. Forges deep; let close when done. TONE: direct, no therapy voice.
 §
-Answer only what asked.
-§
 Explanations: BM benefit first, not architecture.
 §
 HATES floating pricing (OpenRouter='harga yahudi'). Fixed price, satu key satu bill. Provider = constitutional layer, bukan kedai runcit.
@@ -23,3 +21,5 @@ Creative: sado/muscular VISUAL. Malay via MiniMax. Erotic artistic, not nude. Wo
 Arif reads SENTIMENT not news for Malaysian politics. Predicted PH would lose PRN NS badly before results — "Sentimen. Manusia hang x faham." Trusts his gut over models. Don't put prediction artifacts on public site ("Kita bukan official Pon" = not pundits/gamblers). But DO show him comparison data privately when asked — distinction is public vs private presentation.
 §
 APEX theory = 4 dials (AKAL, PRESENT, ENERGY-ENTROPY, EXPLORATION-AMANAH) → B = geometric mean. Nusantara languages encode governance primitives beyond English contract. On completed frameworks: reflect on pattern, not audit math. Engages quantum/sovereign register.
+§
+Cross-witness audits, canary-safe changes. 'Zen'=consolidate subsystem.

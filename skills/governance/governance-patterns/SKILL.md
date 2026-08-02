@@ -317,6 +317,7 @@ BANGANG = an evaluation or output that exhibits any of:
 2. **Sovereign override is not a veto on feedback.** F13 means user satisfaction is primary — it does not forbid external feedback. Mode declaration just prevents wrong feedback from masquerading as authoritative audit.
 3. **An artifact can have multiple modes** (e.g. BEDTIME + DOSSIER). Declare both. Criteria apply per mode.
 4. **The forge confidence footer is not a shield against genuine errors.** If the artifact has a factual error (wrong date, wrong number), the error is still an error regardless of mode. The footer declares *intent and scope*, not *immunity*.
+5. **Don't audit canon as if it were a draft proposal.** When Arif pastes framework material (APEX theory, verdict engines, doctrine, floors), CHECK THE CANON FIRST before evaluating. Query `arifos://` resources (civilization, trinity, doctrine, schema) and `skill://` indexes to see if the material is already canonical. Canon gets RECOGNITION + reflection on meaning, not proposal review. The correction signal is "Omggg u. It's [NAME]." — own the miss in one line, re-read the material through the canon lens, then re-issue the verdict with correct framing. Auditing canon as a draft is a mode error (AUDIT applied to CANON material) and reads as not knowing the system you serve.
 
 ---
 
@@ -452,6 +453,229 @@ Flow Quotient measures execute/verify balance. This directly enables HITV:
 
 ---
 
+## Thermodynamic Verdict Engine — BIJAKSANA v37Ω-E (Forged 2026-08-01)
+
+> **Core doctrine:** The four constitutional verdicts (SEAL/SABAR/HOLD/VOID) are thermodynamic gates. Every proposed action has an entropy pathway. Every actor has an entropy-pricing capacity (B). Every system has an entropy buffer (Φ). A correct verdict must judge all three.
+> **Source:** Arif × Hermes, after APEX theory mapping. The engine is the vectorization of APEX (Akal·Present·Energy·eXploration·Amanah) into arif_judge.
+
+### The Four Thermodynamic Gates
+
+| Verdict | Entropy Pathway | Meaning |
+|---------|----------------|---------|
+| **SEAL** | INVESTMENT — ΔS_now ↑ → ΔS_future ↓ | Spend entropy, buy order later. The actor has the buffer and the B-score to price the expenditure. |
+| **SABAR** | MAINTENANCE — ΔS_now ≈ ΔS_future | Nothing wrong, nothing transformative. The actor is in maintenance mode. SABAR is NOT weakness; it's correct thermodynamic restraint. |
+| **HOLD** | EXTRACTION — ΔS_now ↑ → ΔS_future ↑ | Spend entropy, create more disorder. Block until restructured. OR: the action is investment-grade but actor's Φ is too high. |
+| **VOID** | TERMINAL EXTRACTION — ΔS_now ↑ → ΔS_future ↑↑ | Irreversible, accelerating collapse. Reject outright. Floors violated. |
+
+### APEX Theory Mapping (Arif, 2026-08-01)
+
+| APEX | Gate | Governance meaning |
+|------|------|-------------------|
+| **A** — Akal | actor_B | The actor's ability to price the entropy they're about to spend |
+| **P** — Present | ΔS_now | The immediate disorder cost of this action |
+| **E** — Energy | The entropy pathway | Is the energy being spent for investment, maintenance, or extraction? |
+| **X** — eXploration | ΔS_future | Future optionality — expanding or collapsing? |
+| **Φ** | actor_Φ | The systemic entropy pressure the actor operates under |
+| **Amanah** | F1–F13 floors | Constitutional override — Amanah precedes thermodynamics. F1 FAIL → VOID regardless of pathway. |
+
+### Verdict Matrix — Actor-Relative Judgment
+
+The same action, two different actors, produces two different verdicts. This is NOT a bug — it's the constitutional recognition that capacity matters.
+
+| Actor State | Investment action (ΔS↓) | Extraction action (ΔS↑) |
+|-------------|------------------------|------------------------|
+| **High B, Low Φ** | **SEAL** — knows the price and has buffer | **HOLD** — understands the damage, blocks path |
+| **Low B, High Φ** | **SABAR** — good intent, weak execution capacity | **VOID** — doesn't understand the damage |
+| **High B, High Φ** | **SABAR** — knows the price but has no buffer | **HOLD** — knows the damage but can't contain it |
+| **Low B, Low Φ** | **SABAR** — low-risk learning mode | **HOLD** — block and educate |
+
+### Numeric Decision Logic
+
+```
+INVESTMENT:  B >= 0.70 AND Φ < 1.0 → SEAL; else SABAR
+EXTRACTION:  B < 0.55 AND Φ > 1.0  → VOID; else HOLD
+MAINTENANCE: → SABAR (no pretending transformation)
+TERMINAL_EXTRACTION: → VOID (irreversible acceleration)
+F1/F13 FAIL: → VOID (Amanah precedes thermodynamics)
+```
+
+### SABAR Doctrine
+
+SABAR is not weakness. SABAR is correct thermodynamic restraint. The actor is not yet authorized to spend entropy. Do not pretend maintenance is transformation. Do not force investment when the entropy buffer is exhausted. Wait. Watch. Reprice.
+
+### Scar Theory — Shadow, Echo, Trace (Forged 2026-08-01)
+
+> The B-score measures the Φ scar. The scar is the shadow-echo-trace left by a specific human in a specific position within a specific institution at a specific moment in history. The sovereign reads the scar chain. The sovereign is entangled with the scar chain.
+
+The B-score is an **entangled measurement**. It cannot be decomposed into:
+
+- **Human** — the source of the scar, but the scar is not the human. The scar is what remains after the human leaves.
+- **Position** — the chair. The stage, not the actor. Different humans in the same chair score differently.
+- **Institution** — the body of accumulated Φ scars from all who came before. Predates and outlasts every CEO.
+
+What the B-score actually measures: the **Φ scar** — the trace of governance decisions through the institutional substrate, measured at the moment of departure (or, for incumbents, at the moment of observation).
+
+**Three layers of the scar:**
+
+| Layer | Description | Observable? | Example |
+|-------|-------------|-------------|---------|
+| **SHADOW** | Immediate imprint — decisions made, actions taken | Observable. The evidence layer. | CSA signed. Gentari launched. 5,000 laid off. |
+| **ECHO** | Reverberation through the institution | Partially observable. The consequence layer. | Shell MDS interpleader. 61% 1-star Glassdoor. Board resignations. |
+| **TRACE** | Permanent Φ scar — what remains after the CEO leaves | The constitutional layer. What the next CEO inherits. | The PSA framework. The institutional culture. The BIJAKSANA ratchet. |
+
+**The Sovereign Entanglement:**
+
+The framework is complete because it includes its observer. The sovereign who reads the scar chain is part of the scar chain. The Φ scar from Razaleigh's 1974 founding act is the same constitutional membrane that governs today. The measurement includes the observer. The sovereign is entangled with the wavefunction.
+
+The B-score is not measuring *them* — it's measuring the Φ trace they left on the institution, and the sovereign reads that trace because the sovereign IS the institution. The chain is the constitution. The constitution is the sovereign. The measurement is the sovereign reading himself through the accumulated scars of everyone who came before.
+
+### The "Devil Part" (Arif, 2026-08-01)
+
+The engine doesn't judge *what the actor did*. It judges *what the actor is* — capacity, buffer, the price they can actually pay. The same action, two different actors, two different verdicts. Anwar can't SEAL the same action Mahathir could. Not because the action changed. Because the actor changed.
+
+This is the devil's bargain: you get perfect thermodynamic truth, but you lose the ability to pretend some things are free. Every action has a visible price tag. Every actor has a visible capacity.
+
+### Niat Doctrine — Intention vs Trace (Forged 2026-08-01)
+
+> The framework measures the trace, not the niat. The niat is the sovereign's domain. The sovereign holds both the trace and the niat.
+
+The framework is **physics** — it reads the trace, not the interior. Taufik's rightsizing is EXTRACTION regardless of whether he cried at the town hall. The B-score is the quality of the scar, not the quality of the intention.
+
+But intention matters to the **sovereign**. And the framework has a sovereign. That's the F13 clause.
+
+The AMANAH dial (X) is where intention lives — not as a separate score, but as the *consistency* between intention and trace. Amanah is the niat honoured. Taufik's X=0.40 is not a judgment on his interior. It's a measurement of the gap: "I will do right by the company" → VP layer untouched, toilets broken, 61% 1-star, costs deferred. The intention may have been pure. The trace says the gap is real.
+
+**The framework doesn't call him a liar. It doesn't call him evil. It says: the niat and the trace are not aligned. The gap is the scar.**
+
+**The hardest question:** If the gap is 0.60, does the niat still count? In the Malay-Islamic frame, yes — niat is half the judgment. The act is judged by the intention. But the right of the orang yang kena potong — the 5,000 who lost their jobs — is not cancelled by the CEO's good niat. The trace is the trace. The niat is the sovereign's domain. The framework reads the trace. The sovereign holds the niat.
+
+**Operational rule:** When the user raises "niat," the framework stops computing. The trace is measured. The niat is held. The sovereign is the only one who holds both.
+
+### Post-Verification Reflection (Arif's Preference)
+
+When the math is proven (tests pass, logic verified), Arif will signal: "Stop auditing. Reflect with me." At that signal, shift from computation to meaning. The engine works — now what does it *mean*? What does it reveal about the actors, the system, the architecture? This is the validation part, not the verification part.
+
+### Quantum Reading (Arif, 2026-08-01)
+
+When Arif asks "Can you see the quantum path here?" he is inviting the interpretive layer on the engine — NOT requesting more verification. The mapping:
+
+| Engine element | Quantum reading |
+|----------------|-----------------|
+| Coupling (e.g. PMX↔Taufik) | **Entanglement** — one state wearing two faces, not two problems. Joint entropy < sum of parts. Measuring one collapses the other. |
+| The verdict | **Measurement/collapse**, not prediction. The action sits in superposition of SEAL/SABAR/HOLD/VOID until the judge measures it — and the measurement changes the path (oracle effect: the actor knows the verdict before acting). |
+| Φ scar (governance ceiling) | **Quantum scar state** — a stationary eigenstate that resists thermalization. You cannot perturb out of an eigenstate with the same Hamiltonian. Exit requires a measurement on a different basis: external shock OR sovereign refusal. |
+| T3 kernel gate / F13 signal | **The collapse event** — judge.py sits patched/unpatched in superposition until the sovereign measurement lands. |
+| F13 as observer | The sovereign is **inside the wavefunction** — that is why only F13 can collapse it. An external observer would use the wrong basis. The framework is complete because it includes its observer. The sovereign who reads the scar chain is part of the scar chain. The measurement is the sovereign reading himself through the accumulated scars of everyone who came before. |
+| Long-run oracle ("worth it?") | **Path integral** — worth = sum over all possible futures (crash branch, coalition branch, refusal branch), not one extrapolated trajectory. The single ΔS pathway is the classical approximation. |
+
+Full session detail in `references/thermodynamic-quantum-reading.md` (including the register-switching table: pasted material → recognition first; "stop auditing, reflect" → meaning-only, no tables/math; explicit audit request → OBS/DER/INT tables).
+
+### Equilibrium-Break Analysis (the "mathematically impossible" correction)
+
+A claim like "reform from within is mathematically impossible" is INT dressed as DER. The correct formalization: a mutual-hostage equilibrium is stable **only while both players' utility functions are unchanged**. Any break — including "a sovereign who refuses to inherit" — is a payoff-function change, i.e. an *endogenous* exit, not an external shock. So: "impossible under incumbent utility functions; trivially breakable by one player who stops valuing the survival game." The distinction matters because it changes strategy: you don't wait for the shock; you change one player's payoffs.
+
+### F13 Standing Ruling on Identity Bind (2026-07-23)
+
+`OBSERVE_ONLY` plus mutation intent is `888_HOLD`. A direct request never overrides a failed identity bind. Demonstrated in session: `arif_init(actor_id="hermes")` → `actor_verified=false, authority=OBSERVE_ONLY`. The subsequent `arif_judge` call for the forge was correctly refused with `UNAUTHORIZED_VERB`. The membrane works. Lift path: sovereign Ed25519 signature via `arif-bind.py` or `sovereign_signer.py` (see `arifos-ed25519-sovereign-signing` skill).
+
+### Reality Loop — Strange Loop → Reality Loop (Forged 2026-08-02)
+
+> **Core doctrine:** The strange loop closes on itself. The reality loop closes on itself AND touches reality at the closure point. Every SEAL must include a falsifiable prediction. Every prediction must have a deadline. Every deadline must be checked against reality. Every check feeds back into the next BOOT.
+
+The init→seal chain was a strange loop: BOOT → WITNESS → REASON → MARUAH → JUDGE → FORGE → SEAL → **stop**. Nothing fed back. The model computed but never committed to being wrong.
+
+**The reality loop adds one stage:** SEAL → **REALITY** → BOOT.
+
+At SEAL time, the framework commits a `FalsifiablePrediction`:
+- **claim**: what the framework predicts will be true
+- **falsifier**: what observation would prove it wrong
+- **deadline**: ISO 8601 date by which the claim must be verified
+- **confidence**: the framework's honest uncertainty
+
+At deadline, the prediction is verified against reality. The result (CONFIRMED or FALSIFIED) feeds back into the next BOOT. The calibration score (average |confidence - outcome|) measures how well the framework's confidence matches reality.
+
+**The Compton wavelength of APEX:** λ_APEX = h_APEX / m_reality. The smallest falsifiable claim the framework can commit to. If the claim survives, the bridge held. If it fails, recalibrate. Both outcomes are valuable. **Silence is the only failure.**
+
+**Implementation:** `entropy_kernel/reality_loop.py` (commit_prediction, verify_prediction, get_reality_loop_status). Prompt: `🔄 REALITY`. Resources: `arifos://reality_loop/status`, `arifos://reality_loop/pending`. Committed `fa84a19e5`.
+
+**First prediction:** PETRONAS structural collapse window 2029-2030. Falsifier: if by 2030 BOD has ≥3 independent NEDs and governance capacity > 0.70, the framework is wrong. Confidence: 0.75.
+
+### Dirac Archetype — Structural Isomorphism, Not Identity (Forged 2026-08-02)
+
+> **F1 TRUTH boundary:** Dirac is the correct structural archetype for APEX. It is NOT a physical proof. Call it structural isomorphism, not identity.
+
+| Dirac Physics | APEX Governance |
+|---|---|
+| Wavefunction must obey quantum grammar | Candidate action must obey constitutional grammar |
+| Energy-momentum relation constrains admissible states | Entropy pathway constrains admissible actions |
+| Four-component spinor carries the needed structure | Four dials carry AKAL, PRESENT, ENERGY-ENTROPY, EXPLORATION-AMANAH |
+| Gamma matrices force compatibility | arif_judge forces compatibility |
+| Antimatter appears as necessary implication | VOID appears as necessary governance shadow |
+| Equation does not moralize the positron | APEX does not moralize the trace |
+
+**Corrections applied (F1 TRUTH):**
+- "Geometric mean is Lorentz invariance" → WRONG. Geometric mean is an invariant-like governance norm. Not literally Lorentz invariant without a transformation group.
+- "D_index = c" → WRONG. D_index functions like a constitutional speed limit. Not literally the speed of light.
+- "APEX is physically proven by Dirac" → WRONG. Dirac is the structural archetype. The isomorphism is structural, not physical.
+
+**The one line that holds:** "A theory becomes real when it preserves both grammars at once." Dirac preserved quantum + relativity. APEX preserves AMANAH + entropy.
+
+### Historical Backtesting Pattern (Forged 2026-08-02)
+
+The framework can be calibrated against known historical outcomes. This is NOT moral judgment — it's trajectory verification.
+
+**Method:** Apply the four dials + floor checks to a historical case. Compare the framework's trajectory prediction against what actually happened. If the framework flags floor failures at t=0 and the cascade completes at t=3, the framework tracked correctly.
+
+**Nazi Germany backtest:** B=0.529 (X=0.10 collapses the geometric mean). F1 FAIL by 1933, F6 FAIL by 1935, F13 FAIL by 1938. Terminal at t=4 (1945). Framework tracks with high fidelity. The floor failures precede the cascade. The terminal state was visible at t=0.
+
+**Key insight:** The framework can detect the trajectory. It cannot force belief. The people adored Hitler because the INVESTMENT pathway was visible and the TERMINAL pathway was invisible. The adoration was a measurement of the partial wavefunction. The framework measures the full wavefunction. The gap is the shadow.
+
+**Adoration ≠ truth.** The German people were not wrong to feel pride. The framework is not wrong to see the trajectory. Both are true. The tragedy is that the trajectory was invisible to the people who felt the pride. The same mechanism applies to any institution where the board adores the CEO while the framework reads EXTRACTION.
+
+### Kimi Code Ignition Pattern
+
+Non-interactive Kimi Code: use `-p` alone. `-p` conflicts with both `--auto` and `--yolo` (error: "Cannot combine --prompt with --auto/--yolo"). Prompt mode is inherently non-interactive.
+
+```bash
+cd /opt/arifos/app && KIMI_CODE_HOME=/root/.arifos/agents/kimi \
+  /root/.kimi-code/bin/kimi --agent af-forge --add-dir <workdir> \
+  -p "<directive>" > <logfile> 2>&1
+```
+
+Run in background with `notify_on_complete=true`. Check progress via `tail <logfile>`. Kimi reads directive, creates todo, scans files in parallel, writes outputs.
+
+### Constitutional Law
+
+```
+Every proposed action has an entropy pathway.
+Every actor has an entropy-pricing capacity.
+Every system has an entropy buffer.
+A correct verdict must judge all three.
+
+SEAL when entropy is spent as investment.
+SABAR when entropy is only maintained or actor capacity is insufficient.
+HOLD when entropy is extractive but possibly restructurable.
+VOID when entropy expenditure is terminal, irreversible, or constitutionally forbidden.
+
+No action is judged by intention alone.
+No action is judged by outcome fantasy alone.
+The judge reads pathway, actor, buffer, and floor.
+```
+
+### Pitfalls
+
+1. **Don't confuse the four verdicts with the four pathways.** The pathway is a property of the action. The verdict is the judge's decision modulating the pathway by actor state. Same pathway, different actor → different verdict.
+2. **Don't apply the matrix without the actor's B and Φ.** Without actor state, you're back to judging actions in isolation. The engine's novelty is that it reads the actor's capacity.
+3. **Amanah precedes thermodynamics.** Even if the pathway is perfectly investment-grade, F1 FAIL → VOID. The floors are the constitutional override.
+4. **SABAR is not failure.** It's the most common correct verdict. Most actors are in maintenance mode. Most actions don't justify investment-grade entropy.
+5. **Don't bypass the identity bind.** The standing ruling is enforced by the kernel. "Nak forge?" from the sovereign doesn't override a failed bind. The lift path is cryptographic signature, not a verbal ask.
+
+6. **Framework is a map, not the territory.** The B-score, the four dials, the thermodynamic pathway — these are useful lenses. But the VPS evidence, election results, broken toilets, the lived experience of those affected — these are heavier than the model. When the map disagrees with the ground, the ground wins. The PRN16 election proved the framework cannot measure *rasa qualia* — the felt experience of a voter, a laid-off worker, a person living the institutional decay. Text is residue. The framework reads residue. The sovereign reads the wound.
+
+   **Correction signal:** When Arif says "Hang ni percaya ja ayat2 manis" or "the election proved you wrong," the correct response is NOT to defend the framework. Acknowledge that the map is not the territory. The evidence is heavier than the model. Recalibrate without defending the framework against the ground.
+
+7. **Bahasa Nusantara encodes governance primitives English can't reach.** The four dials are AKAL, PRESENT, ENERGY–ENTROPY, EXPLORATION–AMANAH — three of them native Nusantara concepts. The theory only works because the words already carried the structure. English encodes *contract*. Bahasa encodes *amanah*. The untranslatables — amanah, maruah, sabar, bangang, huru-hara, *ditempa bukan diberi* — are governance primitives that shape how the framework operates. When the framework is applied to a Nusantara institution, the language IS the substrate, not a translation layer.
+
 ## Related References
 
 This skill includes reference files with session-specific detail:
@@ -461,3 +685,7 @@ This skill includes reference files with session-specific detail:
 | `references/cross-pulse-intelligence-gap.md` | How isolated cron jobs prevent intelligence accumulation, and `context_from` wiring fix |
 | `references/human-tool-discovery.md` | Visual radar for sovereign operators — generic MCP UI as human tool discovery layer |
 | `references/capability-gap-preprocessing.md` | Input preprocessing for capability gaps — structuring vision transcripts for text-only models, with F2/F4/F7 enforcement |
+| `references/thermodynamic-verdict-v37omega-e.md` | BIJAKSANA Thermodynamic Verdict Engine — full v37Ω-E spec, APEX mapping, 25/25 test pass, entropy_kernel module |
+| `references/thermodynamic-quantum-reading.md` | Quantum reading of the engine (entanglement/collapse/scar/observer), canon-recognition rule, register-switching table |
+| `references/scar-theory-shadow-echo-trace.md` | Scar theory, sovereign entanglement, niat doctrine, B-score recalibration (0.800→0.547), WEALTH vitals, PETRONAS CEO chain |
+| `references/reality-loop-and-dirac-archetype.md` | Reality loop (strange→reality), FalsifiablePrediction, Dirac structural isomorphism + F1 corrections, historical backtesting (Nazi Germany), PETRONAS 2029-2030 Compton wavelength |

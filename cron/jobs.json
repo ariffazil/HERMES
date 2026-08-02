@@ -22,15 +22,15 @@
       "schedule_display": "0 7 * * *",
       "repeat": {
         "times": null,
-        "completed": 30
+        "completed": 31
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-05T15:51:10.719156+08:00",
-      "next_run_at": "2026-08-02T07:00:00+08:00",
-      "last_run_at": "2026-08-01T07:00:53.256936+08:00",
+      "next_run_at": "2026-08-03T07:00:00+08:00",
+      "last_run_at": "2026-08-02T07:00:11.087030+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -62,15 +62,15 @@
       "schedule_display": "every 240m",
       "repeat": {
         "times": null,
-        "completed": 130
+        "completed": 133
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-05T15:52:33.539287+08:00",
-      "next_run_at": "2026-08-02T04:20:00.670001+08:00",
-      "last_run_at": "2026-08-02T00:20:00.670001+08:00",
+      "next_run_at": "2026-08-02T16:20:16.082065+08:00",
+      "last_run_at": "2026-08-02T12:20:16.082065+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -184,17 +184,17 @@
       "schedule_display": "0 8 * * *",
       "repeat": {
         "times": null,
-        "completed": 21
+        "completed": 22
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-12T11:30:37.856302+08:00",
-      "next_run_at": "2026-08-02T08:00:00+08:00",
-      "last_run_at": "2026-08-01T08:10:46.986812+08:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-08-03T08:00:00+08:00",
+      "last_run_at": "2026-08-02T08:00:35.685276+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
       "deliver": "telegram:267378578",
       "origin": null,
@@ -266,15 +266,15 @@
       "schedule_display": "0 8,20 * * *",
       "repeat": {
         "times": null,
-        "completed": 41
+        "completed": 42
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-12T14:27:22.416423+08:00",
-      "next_run_at": "2026-08-02T08:00:00+08:00",
-      "last_run_at": "2026-08-01T20:00:19.148620+08:00",
+      "next_run_at": "2026-08-02T20:00:00+08:00",
+      "last_run_at": "2026-08-02T08:00:08.987326+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -314,15 +314,15 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 18
+        "completed": 19
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-14T22:06:43.781374+08:00",
-      "next_run_at": "2026-08-02T06:00:00+08:00",
-      "last_run_at": "2026-08-01T06:00:48.714724+08:00",
+      "next_run_at": "2026-08-03T06:00:00+08:00",
+      "last_run_at": "2026-08-02T06:00:06.684600+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -409,15 +409,15 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 279
+        "completed": 281
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-17T14:26:19.267051+08:00",
-      "next_run_at": "2026-08-02T06:00:00+08:00",
-      "last_run_at": "2026-08-02T00:01:18.898519+08:00",
+      "next_run_at": "2026-08-02T18:00:00+08:00",
+      "last_run_at": "2026-08-02T12:00:22.866571+08:00",
       "last_status": "error",
       "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
@@ -449,15 +449,15 @@
       "schedule_display": "0 * * * *",
       "repeat": {
         "times": null,
-        "completed": 514
+        "completed": 528
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-24T01:32:18.689018+08:00",
-      "next_run_at": "2026-08-02T02:00:00+08:00",
-      "last_run_at": "2026-08-02T00:01:11.106352+08:00",
+      "next_run_at": "2026-08-02T15:00:00+08:00",
+      "last_run_at": "2026-08-02T14:00:29.007296+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -583,15 +583,15 @@
       "schedule_display": "every 120m",
       "repeat": {
         "times": null,
-        "completed": 82
+        "completed": 88
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:40:15.117573+08:00",
-      "next_run_at": "2026-08-02T02:56:00.073084+08:00",
-      "last_run_at": "2026-08-02T00:56:00.073084+08:00",
+      "next_run_at": "2026-08-02T14:56:15.563413+08:00",
+      "last_run_at": "2026-08-02T12:56:15.563413+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -707,17 +707,17 @@
       "schedule_display": "0 12 * * 0",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:45:39.871077+08:00",
-      "next_run_at": "2026-08-02T12:00:00+08:00",
-      "last_run_at": "2026-07-26T12:09:33.411005+08:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-08-09T12:00:00+08:00",
+      "last_run_at": "2026-08-02T12:00:23.439790+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
       "deliver": "telegram:267378578,telegram:-1004446358629",
       "origin": null,
@@ -886,15 +886,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1389
+        "completed": 1549
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-02T01:05:00+08:00",
-      "last_run_at": "2026-08-02T00:55:59.947507+08:00",
+      "next_run_at": "2026-08-02T14:20:00+08:00",
+      "last_run_at": "2026-08-02T14:15:16.410591+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -928,17 +928,17 @@
       "schedule_display": "0 6 * * 0",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T08:03:50.952843+08:00",
-      "next_run_at": "2026-08-02T06:00:00+08:00",
-      "last_run_at": null,
-      "last_status": null,
-      "last_error": null,
+      "next_run_at": "2026-08-09T06:00:00+08:00",
+      "last_run_at": "2026-08-02T06:00:23.601715+08:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -952,7 +952,8 @@
         "terminal",
         "file"
       ],
-      "workdir": null
+      "workdir": null,
+      "fire_claim": null
     },
     {
       "id": "ca1a2c39965c",
@@ -976,15 +977,15 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 20
+        "completed": 22
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T08:11:14.026394+08:00",
-      "next_run_at": "2026-08-02T06:00:00+08:00",
-      "last_run_at": "2026-08-02T00:01:01.965513+08:00",
+      "next_run_at": "2026-08-02T18:00:00+08:00",
+      "last_run_at": "2026-08-02T12:00:16.879236+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1022,7 +1023,7 @@
       "schedule_display": "0 1 * * *",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
@@ -1030,7 +1031,7 @@
       "paused_reason": null,
       "created_at": "2026-07-31T12:29:22.175840+08:00",
       "next_run_at": "2026-08-03T01:00:00+08:00",
-      "last_run_at": "2026-08-01T01:04:14.921921+08:00",
+      "last_run_at": "2026-08-02T01:01:14.530366+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1117,17 +1118,17 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 77
+        "completed": 131
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-02T01:15:00+08:00",
-      "last_run_at": "2026-08-02T00:46:24.513702+08:00",
+      "next_run_at": "2026-08-02T14:30:00+08:00",
+      "last_run_at": "2026-08-02T14:15:35.915402+08:00",
       "last_status": "error",
-      "last_error": "Script exited with code 1\nstdout:\n\ud83d\udd34 Sense FAILURES:\n  Repo: 1 uncommitted files",
+      "last_error": "Script exited with code 1\nstdout:\n\ud83d\udd34 Sense FAILURES:\n  Repo: 3 uncommitted files",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1150,7 +1151,7 @@
       "skills": [],
       "skill": null,
       "model": "deepseek-v4-flash",
-      "provider": "mulerouter",
+      "provider": "qwen-token-plan",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -1165,17 +1166,17 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:33.574639+08:00",
-      "next_run_at": "2026-08-02T06:00:00+08:00",
-      "last_run_at": "2026-08-02T00:01:02.140368+08:00",
+      "next_run_at": "2026-08-02T18:00:00+08:00",
+      "last_run_at": "2026-08-02T12:00:22.994594+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (provider 'deepseek' -> 'custom'; model 'deepseek-v4-pro' -> 'deepseek-v4-flash'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=f5819987b435 provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
+      "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1199,7 +1200,7 @@
       "skills": [],
       "skill": null,
       "model": "deepseek-v4-flash",
-      "provider": "mulerouter",
+      "provider": "qwen-token-plan",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -1214,17 +1215,17 @@
       "schedule_display": "15 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 4
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:46.888552+08:00",
-      "next_run_at": "2026-08-02T06:15:00+08:00",
-      "last_run_at": "2026-08-02T00:16:01.042338+08:00",
+      "next_run_at": "2026-08-02T18:15:00+08:00",
+      "last_run_at": "2026-08-02T12:15:22.962845+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: Skipped to prevent unintended spend: global inference config drifted since this job was created (provider 'deepseek' -> 'custom'; model 'deepseek-v4-pro' -> 'deepseek-v4-flash'), and this job is unpinned. No inference call was made. To run on the new config, pin it explicitly: `cronjob action=update job_id=feb5032e85f8 provider=<provider> model=<model>` (or pin the original values to keep them). See #44585.",
+      "last_error": "RuntimeError: HTTP 401: Invalid API-key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1264,15 +1265,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 15
+        "completed": 68
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T21:24:35.097352+08:00",
-      "next_run_at": "2026-08-02T01:15:00+08:00",
-      "last_run_at": "2026-08-02T01:01:00.000981+08:00",
+      "next_run_at": "2026-08-02T14:30:00+08:00",
+      "last_run_at": "2026-08-02T14:15:16.378900+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1289,5 +1290,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-02T01:01:00.001590+08:00"
+  "updated_at": "2026-08-02T14:15:35.915904+08:00"
 }

@@ -297,7 +297,21 @@ The fix was implemented and deployed on 2026-07-13. Key changes:
 
 4. **Backfill policy:** Historical `self_report` receipts are NOT rewritten (F1 immutability). Sovereign decision needed on whether to annotate or leave as-is.
 
+## Known Bugs Fixed (2026-08-02)
+1. `prev_seal_id` used integer ID — trigger expects seal_hash hex → use `prev_row["seal_hash"]`
+2. Query filtered `event_type = 'SOVEREIGN_SEAL'` — missed KSR_TRANSITION seals → remove filter
+3. `chain_hash` computed with BLAKE3 — trigger uses SHA256(prev_chain||payload||actor) → pass NULL, let trigger auto-fill
+4. PgBouncer transaction mode — asyncpg needs `statement_cache_size=0` in create_pool
+
 ## Pitfalls
+- Supabase pooler (port 6543) requires `sslmode=require` and `statement_cache_size=0`
+- asyncpg prepared statement cache breaks with PgBouncer transaction pooling
+- Writer systemd drop-in overrides DSN — check `/etc/systemd/system/vault999-writer.service.d/`
+- After patching main.py: `systemctl restart vault999-writer`
+- MCP kernel path (arif_judge → arif_seal) may be stuck at confidence 0.2 if APEX dials are UNMEASURED — direct API is the bypass
+- Vault-writer pubkey (`/run/secrets/arif_vault_signing_key.pub`) ≠ AAA identity PEM key — use `/root/.secrets/vault-signing-ed25519` (OpenSSH format)
+- Load OpenSSH key: `load_ssh_private_key()` → extract raw seed → PyNaCl `SigningKey(raw_seed)`
+- Sig payload must be canonical JSON: `json.dumps(sig_payload, separators=(",",":"), sort_keys=True, ensure_ascii=False)`
 
 ### PITFALL: Kernel verification results are thrown away at write time
 

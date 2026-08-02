@@ -275,6 +275,31 @@ if line.startswith(name+'=') or line.startswith('export '+name+'='):
 ```
 Same trap for grep: `grep -E "^(export )?KEY="` not `grep "^KEY="`.
 
+### Hardcoded `Environment=` in systemd unit overrides vault (Gödel lock violation)
+
+**Pattern:** A service unit has BOTH `EnvironmentFile=/root/.secrets/vault.flat.env`
+AND a hardcoded `Environment=SOME_KEY=value` line. systemd applies `Environment=`
+AFTER `EnvironmentFile=`, so the hardcoded value wins. Vault rotation has NO EFFECT
+on the service — the key is stranded in the unit file, invisible to `make vault-verify`.
+
+**Proven 2026-08-02:** `litellm-proxy.service` had `Environment=LITELLM_MASTER_KEY=sk-...`
+on line 13, overriding the vault.flat.env on line 10. The key was also absent from
+kunci-mas.env entirely — it existed only in the unit file and hermes's local `.env`.
+Fix: (1) append key to kunci-mas.env, (2) `make vault-generate`, (3) remove the
+hardcoded `Environment=` line from the unit, (4) `systemctl daemon-reload &&
+systemctl restart`, (5) verify via `/proc/$PID/environ` that the key matches vault.
+
+**Detection (sweep all units):**
+```bash
+grep -rn '^Environment=' /etc/systemd/system/*.service | grep -v EnvironmentFile
+# Any hit is a potential Gödel lock violation — check if the key also exists in vault
+```
+
+**Gödel lock invariant:** after fix, the ONLY path to rotate a key is:
+edit kunci-mas.env → `make vault-generate` → `systemctl restart <unit>`.
+No other file should contain the key value. If `grep -r KEY /etc/systemd/`
+returns a value (not just a var name), the lock is broken.
+
 ### Key Present in File ≠ Key in Process Env
 
 **Pattern:** Keys are correct in kunci-mas.env, the generator ran, config

@@ -212,7 +212,23 @@ Then confirms and restarts well.service.
 | `/root/WELL/machine_state.json` | Machine health metrics (CPU, memory, uptime) — separate concern |
 | `/root/WELL/scripts/biometric_inject.sh` | Interactive sovereign inject tool |
 | `/root/WELL/scripts/well_auto_keepalive.py` | Automated behavioral telemetry keepalive (LOW confidence) |
+| `/root/WELL/scripts/google_fit_bridge.py` | Xiaomi→Google Fit→WELL bridge (autonomous feed) |
+| `/root/WELL/google_fit_creds.json` | OAuth creds for the bridge — MISSING unless Arif sets up GCP Fitness API |
 | Port 18083 `/health` | Live WELL health endpoint |
+
+## Google Fit Bridge — the "wire the cron" trap (PROVEN 2026-08-01)
+
+A sweep/audit often names `google_fit_bridge.py` as the fix for `H_WELL: CRITICAL — no biometric data`, reporting it "removed from live crontab" and asking to wire it. Two checks BEFORE wiring:
+
+1. **Creds prerequisite:** the bridge reads `/root/WELL/google_fit_creds.json` (Google Cloud project → Fitness API → OAuth client → refresh token via `google_fit_auth_helper.py`). `ls /root/WELL/google_fit_creds.json` — if MISSING, wiring cron = dead cron (every run fails, dirties logs, no data). The bridge CANNOT run until Arif does the ~15 min GCP setup.
+2. **Verify the crontab claim yourself:** `crontab -l | grep -i fit` — script present ≠ wired. Sweeps may be correct; probe anyway (F2).
+
+**Present the honest three-option choice when asked "trigger fresh biometric feed?":**
+- (a) **Sovereign inject now** — `biometric_inject.sh --non-interactive` with self-report values Arif dictates over chat. Breaks the quarantine loop instantly, `truth_status: OPERATOR_REPORTED`. Fast path.
+- (b) **Google Fit bridge later** — needs his GCP OAuth consent; note his stated skepticism of wearable optical HR (chest strap only is the preference). Frame accordingly, never push.
+- (c) **Leave as-is** — `INSUFFICIENT_DATA` + `honesty: "MOCK / TEST"` banner is F2/F9-honest; WELL stays RED until real data exists.
+
+**Never invent biometrics to green the score** — `well_score: None` with an explicit MOCK/TEST honesty banner is the CORRECT honest state until real data arrives (F9 ANTI-HANTU: fake live = hantu).
 
 ## Pitfalls
 
@@ -229,6 +245,7 @@ Then confirms and restarts well.service.
 - **Mock/test contamination is invisible to auto-keepalive.** The `well_auto_keepalive.py` script writes behavioral telemetry with timestamps, but does NOT guard against a pre-existing test/mock state.json. A test script that writes to `/root/WELL/state.json` can overwrite production data silently — always verify `environment` and `reason` fields.
 - **machine_state.json is NOT biometric.** Fresh machine metrics (CPU, uptime) do NOT mean WELL has human data. Always check `state.json` `source_type` and `truth_status` separately.
 - **state.json can be 87 days stale.** WELL's `stale_after_seconds` is 14400 (4h). Once past 168h (7 days), it gets `biometric_state_expired_168h_ceiling`. Without sovereign injection, WELL stays on behavioral inference forever.
+- **`freshness: fresh` with age > 4h is a contradiction — trust the age + honesty_banner, not the status word (PROVEN 2026-08-01).** The `/health` endpoint can report `freshness: fresh` while `age_seconds` is 8.7h and `honesty_banner` says `MOCK / TEST -- not live biometrics`. The quarantine loop writes a MINIMAL_PROD_SHELL whose freshness field lies: `environment: PROD` + `freshness: FRESH` on a shell with NO biometric block. Read the trio together: `freshness.age_seconds` + `honesty_banner` + `truth_status` are the ground truth; `freshness.status` and `environment` are cosmetic on the shell. A sweep reporting "WELL fresh" from the status word alone is wrong — the real state is `INSUFFICIENT_DATA` with no biometrics.
 - **Sovereign injection requires the script to restart well.service.** If restart fails (e.g. systemd not available in container), state.json is written but WELL may not pick it up. Verify with health endpoint after injection.
 - **Import-chain failure from arifOS source conflicts.** When `systemctl restart well` fails with `SyntaxError: invalid decimal literal` but state.json is clean, the root cause may be git merge conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) in the arifOS Python source. WELL imports from `/root/arifOS/` via `PYTHONPATH` — the import chain is:
   `server.py → arifosmcp.rama.state_classifier → arifosmcp.__init__ → core modules`

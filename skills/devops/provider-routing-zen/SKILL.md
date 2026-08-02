@@ -671,6 +671,7 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | Session stickiness patch | This skill's `references/session-stickiness-source-patch.md` |
 | Hermes config state snapshot | This skill's `references/hermes-openrouter-config-state-2026-07-24.md` |
 | FLAME engine | `/root/A-FORGE/flame/` |
+| LiteLLM federation gateway / FED FLAME FRAME (2026-08-02) | This skill's `references/litellm-federation-gateway-2026-08-02.md` |
 | OpenCode config | `/root/HERMES/opencode.json` |
 | Secrets | `/root/.secrets/vault.env` (OPENROUTER_API_KEY, OPENROUTER_MANAGEMENT_KEY) |
 | Hermes config | `/root/HERMES/config.yaml` |
