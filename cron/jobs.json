@@ -62,15 +62,15 @@
       "schedule_display": "every 240m",
       "repeat": {
         "times": null,
-        "completed": 139
+        "completed": 142
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-05T15:52:33.539287+08:00",
-      "next_run_at": "2026-08-03T16:22:31.228967+08:00",
-      "last_run_at": "2026-08-03T12:22:31.228967+08:00",
+      "next_run_at": "2026-08-04T04:24:11.882620+08:00",
+      "last_run_at": "2026-08-04T00:24:11.882620+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -86,8 +86,8 @@
       "prompt": "You are producing Arif's evening digest at 18:00 MYT. Execute the FULL prompt template at:\ncat /root/AAA/prompts/evening_digest.md\n\nRead and follow every instruction in that file. This is your complete briefing.\n\nKey changes from previous versions:\n- Do NOT curl organ health endpoints. Read sys_health.json instead.\n- Keep WELL biometric curl (human substrate probe is allowed).\n- Output BM casual.",
       "skills": [],
       "skill": null,
-      "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "model": "qwen3.8-max",
+      "provider": "qwen-token-plan-standard",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -102,17 +102,17 @@
       "schedule_display": "0 18 * * *",
       "repeat": {
         "times": null,
-        "completed": 39
+        "completed": 40
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-05T15:52:34.511981+08:00",
-      "next_run_at": "2026-08-03T18:00:00+08:00",
-      "last_run_at": "2026-08-02T18:21:05.997651+08:00",
+      "next_run_at": "2026-08-04T18:00:00+08:00",
+      "last_run_at": "2026-08-03T18:02:12.775253+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: Connection error.",
+      "last_error": "RuntimeError: HTTP 404 \u2014 404 Not Found",
       "last_delivery_error": null,
       "deliver": "telegram:267378578",
       "origin": null,
@@ -126,8 +126,8 @@
       "prompt": "Generate Arif's weekly deep brief. Review the FULL WEEK:\n\n1. VAULT999 SEALS \u2014 what was sealed this week, by whom, what verdicts\n2. GIT ACTIVITY \u2014 patterns across all 6 organs (arifOS, A-FORGE, AAA, WEALTH, WELL, GEOX). Which organs were active? Which were quiet?\n3. PENDING WORK \u2014 check /root/A-FORGE/forge_work/ and /root/forge_work/ for items from this week that never got resolved\n4. SYSTEM EVOLUTION \u2014 disk trend, broken symlink trend, organ health trend\n5. PATTERNS \u2014 what time of day was most active? What themes emerged in commits?\n6. AUTONOMY LEDGER \u2014 what did Hermes/the system self-correct or auto-heal this week? Check self-heal logs, drift alerts, auto-fixes\n7. WHAT MATTERS \u2014 synthesize into 3-5 human-meaningful insights. Not data. Meaning.\n\nFormat: Clean, scannable. Lead with insights, not data. End with one question for Arif about next week's focus.",
       "skills": [],
       "skill": null,
-      "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "model": "qwen3.8-max",
+      "provider": "qwen-token-plan-standard",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -168,8 +168,8 @@
         "research/news-research-briefing"
       ],
       "skill": "research/news-research-briefing",
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -210,8 +210,8 @@
         "research/news-research-briefing"
       ],
       "skill": "research/news-research-briefing",
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -266,17 +266,17 @@
       "schedule_display": "0 8,20 * * *",
       "repeat": {
         "times": null,
-        "completed": 44
+        "completed": 45
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-12T14:27:22.416423+08:00",
-      "next_run_at": "2026-08-03T20:00:00+08:00",
-      "last_run_at": "2026-08-03T08:00:47.273833+08:00",
+      "next_run_at": "2026-08-04T08:00:00+08:00",
+      "last_run_at": "2026-08-03T20:00:59.754678+08:00",
       "last_status": "error",
-      "last_error": "Script exited with code 1\nstdout:\nWELL BIOMETRIC STALE (17h since last feed). Ask Arif:\n1. Sleep hours last night? (0-12)\n2. Energy level? (1-10)\n3. Stress level? (1-10)\n4. How do you feel? (grounded/scattered/anxious/tired/clear)\n\nThen call: bash /root/WELL/scripts/biometric_inject.sh --non-interactive \\\n  --delta-s <1.0-energy/10> --peace2 <energy/10> --kappa-r <0.8-default> \\\n  --rasa <feeling> --amanah 0.9",
+      "last_error": "Script exited with code 1\nstdout:\nWELL BIOMETRIC STALE (29h since last feed). Ask Arif:\n1. Sleep hours last night? (0-12)\n2. Energy level? (1-10)\n3. Stress level? (1-10)\n4. How do you feel? (grounded/scattered/anxious/tired/clear)\n\nThen call: bash /root/WELL/scripts/biometric_inject.sh --non-interactive \\\n  --delta-s <1.0-energy/10> --peace2 <energy/10> --kappa-r <0.8-default> \\\n  --rasa <feeling> --amanah 0.9",
       "last_delivery_error": null,
       "deliver": "telegram:-1003753855708",
       "origin": {
@@ -347,8 +347,8 @@
         "research/news-research-briefing"
       ],
       "skill": "research/arif-daily-sensorium",
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -363,17 +363,17 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 17
+        "completed": 18
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-16T23:41:35.231997+08:00",
-      "next_run_at": "2026-08-03T22:00:00+08:00",
-      "last_run_at": "2026-08-02T22:01:27.088573+08:00",
+      "next_run_at": "2026-08-04T22:00:00+08:00",
+      "last_run_at": "2026-08-03T22:02:22.335857+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: Invalid API response after 3 retries: response time 34.7s",
+      "last_error": "RuntimeError: HTTP 404 \u2014 404 Not Found",
       "last_delivery_error": null,
       "deliver": "telegram:267378578",
       "origin": {
@@ -393,8 +393,8 @@
       "prompt": "You are the Model Drift Watchdog for Arif's cron jobs. Your ONLY job: detect and fix model/provider drift across all cron jobs.\n\nSTEP 1 \u2014 Read current global model config:\n```bash\npython3 -c \"\nimport yaml, os\nwith open(os.path.expanduser('~/.hermes/config.yaml')) as f:\n    cfg = yaml.safe_load(f) or {}\nm = cfg.get('model', {})\nif isinstance(m, dict):\n    print(f'provider:{m.get(\\\"provider\\\",\\\"\\\")}')\n    print(f'model:{m.get(\\\"default\\\",\\\"\\\") or m.get(\\\"model\\\",\\\"\\\")}')\nelif isinstance(m, str):\n    print(f'model:{m}')\n\"\n```\n\nSTEP 2 \u2014 Call cronjob(action='list') to get all jobs.\n\nSTEP 3 \u2014 For each job that has a pinned model/provider:\n- Compare against the current global config from Step 1\n- If the pinned model/provider DIFFERS from current, call cronjob(action='update', job_id=..., model=..., provider=...) to update it to match current\n\nSTEP 4 \u2014 If you fixed ANY jobs, output a summary: \"\ud83e\ude79 Model Drift Watchdog: fixed {N} cron job(s): {names}\". If nothing needed fixing, output nothing (empty response).\n\nRULES:\n- ONLY update jobs where the pinned model/provider explicitly differs from current global config\n- Do NOT touch no_agent jobs (they don't use models)\n- Keep updates minimal \u2014 only set model and provider, don't change schedule/deliver/prompt\n- SILENT when nothing to fix \u2014 empty output = no delivery needed",
       "skills": [],
       "skill": null,
-      "model": "deepseek-v4-flash-0731",
-      "provider": "bailian-token-plan",
+      "model": "qwen3.8-max",
+      "provider": "qwen-token-plan-standard",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -409,21 +409,25 @@
       "schedule_display": "0 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 285
+        "completed": 287
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-17T14:26:19.267051+08:00",
-      "next_run_at": "2026-08-03T18:00:00+08:00",
-      "last_run_at": "2026-08-03T12:01:47.646888+08:00",
+      "next_run_at": "2026-08-04T06:00:00+08:00",
+      "last_run_at": "2026-08-04T00:00:58.649251+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: HTTP 404 \u2014 404 Not Found",
+      "last_error": "RuntimeError: HTTP 400: 'tools' : maximum number of items is 128",
       "last_delivery_error": null,
       "deliver": "telegram:-1003753855708",
       "origin": null,
-      "enabled_toolsets": null,
+      "enabled_toolsets": [
+        "terminal",
+        "file",
+        "no_mcp"
+      ],
       "workdir": null,
       "fire_claim": null
     },
@@ -449,15 +453,15 @@
       "schedule_display": "0 * * * *",
       "repeat": {
         "times": null,
-        "completed": 551
+        "completed": 561
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-24T01:32:18.689018+08:00",
-      "next_run_at": "2026-08-03T15:00:00+08:00",
-      "last_run_at": "2026-08-03T14:01:06.607504+08:00",
+      "next_run_at": "2026-08-04T02:00:00+08:00",
+      "last_run_at": "2026-08-04T00:00:46.776062+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -480,7 +484,7 @@
       "skills": [],
       "skill": null,
       "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "provider": "qwen-token-plan",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -525,8 +529,8 @@
       "prompt": "Tutup hari untuk Arif. Format ringkas BM.\n\n1. **KERJA** \u2014 apa yang dah dilakukan hari ni. Check recent git log for each repo (last 24h): arifOS, A-FORGE, AAA, GEOX, WEALTH, WELL. `git log --since=\"24 hours ago\" --oneline` for each.\n\n2. **SEGEL BARU** \u2014 tail -3 /root/.local/share/arifos/vault999/outcomes.jsonl. Tunjukkan seal terkini.\n\n3. **PENDING** \u2014 apa yang belum selesai. Check seal-queue: ls /root/.hermes/seal-queue/ 2>/dev/null.\n\n4. **TENAGA** \u2014 check WELL health: curl -s http://127.0.0.1:18083/health | jq . 2>/dev/null.\n\n5. **Nasihat untuk esok** \u2014 1-2 lines BM, ringkas.\n\nGunakan BM campur English. Jawapan terus. Jangan tanya apa-apa.",
       "skills": [],
       "skill": null,
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -541,23 +545,21 @@
       "schedule_display": "0 23 * * *",
       "repeat": {
         "times": null,
-        "completed": 9
+        "completed": 16
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:40:12.847406+08:00",
-      "next_run_at": "2026-08-03T23:00:00+08:00",
-      "last_run_at": "2026-08-02T23:01:13.104130+08:00",
+      "next_run_at": "2026-08-04T23:00:00+08:00",
+      "last_run_at": "2026-08-03T23:17:43.656320+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: Connection error.",
+      "last_error": "RuntimeError: HTTP 400: 'tools' : maximum number of items is 128",
       "last_delivery_error": null,
       "deliver": "telegram:267378578,telegram:-1004446358629",
       "origin": null,
-      "enabled_toolsets": [
-        "terminal"
-      ],
+      "enabled_toolsets": null,
       "workdir": null,
       "fire_claim": null
     },
@@ -583,15 +585,15 @@
       "schedule_display": "every 120m",
       "repeat": {
         "times": null,
-        "completed": 100
+        "completed": 105
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:40:15.117573+08:00",
-      "next_run_at": "2026-08-03T14:58:54.379802+08:00",
-      "last_run_at": "2026-08-03T12:58:54.379802+08:00",
+      "next_run_at": "2026-08-04T03:00:11.030568+08:00",
+      "last_run_at": "2026-08-03T23:00:02.984244+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -608,7 +610,7 @@
       "skills": [],
       "skill": null,
       "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "provider": "qwen-token-plan",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -650,7 +652,7 @@
       "skills": [],
       "skill": null,
       "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "provider": "qwen-token-plan",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -691,8 +693,8 @@
       "prompt": "Laporan mingguan seal chain integrity dan federation state of truth. Hantar ke Arif DM + arifOS channel.\n\nGunakan BM campur English ikut technical context.\n\n**PENTING \u2014 ORGAN NAMES:** Gunakan nama tepat: arifOS, A-FORGE (bukan A-FORCE), AAA, GEOX, WEALTH, WELL.\n\n1. **SEAL CHAIN** \u2014 Check VAULT999 integrity:\n   - tail -20 /root/.local/share/arifos/vault999/outcomes.jsonl | python3 -c \"\nimport sys, json\nlines = [json.loads(l) for l in sys.stdin if l.strip()]\nprint(f'Total seals this period: {len(lines)}')\nfor l in lines[-5:]:\n    eid = l.get('entry_id', l.get('seal_id', '?'))[:12]\n    ts = l.get('timestamp', '?')[:10]\n    st = l.get('seal_type', l.get('type', '?'))\n    print(f'  #{eid} {ts} \u00b7 {st}')\n\"\n\n2. **CONFIG DRIFT** \u2014 Check if any config files have drifted:\n   - git -C /root/arifOS status -s\n   - git -C /root/A-FORGE status -s  # NOTE: directory name is A-FORGE (G-E), NOT A-FORCE\n   - git -C /root/AAA status -s\n   - git -C /root/GEOX status -s\n   - git -C /root/WEALTH status -s\n   - git -C /root/WELL status -s\n\n3. **ORGAN HEALTH TREND** \u2014 Count consecutive green/green count from federation-health watchdog (check journalctl if available, otherwise skip)\n\n4. **PENDING SEALS** \u2014 ls /root/.hermes/seal-queue/ 2>/dev/null. If any, list them.\n\n5. **KESIMPULAN** \u2014 1-2 lines. Is the federation healthy? Any action needed?\n\nGunakan BM. Ringkas. Jawapan terus. Jangan tanya apa-apa.",
       "skills": [],
       "skill": null,
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -749,15 +751,15 @@
       "schedule_display": "0 19 * * *",
       "repeat": {
         "times": null,
-        "completed": 8
+        "completed": 9
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:45:56.420879+08:00",
-      "next_run_at": "2026-08-03T19:00:00+08:00",
-      "last_run_at": "2026-08-02T19:01:51.436622+08:00",
+      "next_run_at": "2026-08-04T19:00:00+08:00",
+      "last_run_at": "2026-08-03T19:02:19.911391+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -773,8 +775,8 @@
       "prompt": "Kamu hantar ke DM Arif. Guna bahasa Melayu campur English. GELARAN: panggil Arif (no formal).\n\nIni cron REHAT MINDA \u2014 Ahad 8pm. Satu-satunya cron yang treat Arif sebagai manusia, bukan federation operator. Format ringkas, 4 sections je.\n\nTugas:\n1. \ud83e\udec0 BADAN \u2014 Check WELL state / biometric signals. Look at:\n   - Read /opt/well/app/data/state.json or /root/WELL/data/*.json for latest health snapshot\n   - Sleep trend, HRV status, fatigue level, stress load\n   - Kalau data tak available, just tulis \"Data WELL tak available minggu ni\" \u2014 jangan forge\n   - Present ringkas: tidur avg, HRV (normal/warning/critical), fatigue trend\n\n2. \ud83e\udd32 JIWA \u2014 Tulis satu reflective prompt untuk Arif jawab dalam hati. Contoh:\n   - \"Minggu ni\u2026 apa satu moment yang buat kau rasa bangga?\"\n   - \"Apa yang drain mental kau paling banyak?\"\n   - Jangan jawabkan untuk dia. Tanya soalan ja.\n\n3. \ud83e\udde0 MINDA \u2014 Satu idea/insight untuk \"marinate\" minggu depan. Pilih satu:\n   - Dari weekly reflection / world sensorium yang baru \u2014 ambil 1 idea menarik\n   - Atau O&G insight (PETRONAS, oil price, energy transition)\n   - Atau governance reframe yang relevan dengan arifOS\n   - Atau paper/book concept yang dia belum explore\n   - Satu perenggan pendek. Jangan lecture.\n\n4. \ud83c\udfaf PEKAN DEPAN \u2014 Satu checkbox untuk dia. Contoh:\n   - \u25a1 Gym 3 kali\n   - \u25a1 Baca 1 chapter buku X\n   - \u25a1 Call family\n   - Box kosong dia boleh tanda nanti\n\nTONE: Santai, reflective, human. Bukan technical report. Bukan federation status. Bukan checklist machine. Ini untuk manusia.\n\nFormat mesej:\n```\n\ud83c\udf19 REHAT MINDA \u2014 Ahad, [tarikh]\n\n\ud83e\udec0 BADAN\n[WELL data ringkas \u2014 atau \u2014 \"Data belum cukup. Check minggu depan.\"]\n\n\ud83e\udd32 JIWA\n[1 reflective question \u2014 untuk dia rasa, bukan jawab kat sini]\n\n\ud83e\udde0 MINDA\n[1 idea pendek untuk marinate]\n\n\ud83c\udfaf PEKAN DEPAN\n\u25a1 [1 action]\n\u25a1 [optional 2nd]\n```\n",
       "skills": [],
       "skill": null,
-      "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -822,8 +824,8 @@
       "prompt": "Kamu adalah Human Readiness Pulse \u2014 cron untuk Arif.\n\nTUGAS:\n1. Panggil WELL organ homeostasis check guna tool mcp__well__well_assess_homeostasis dengan mode=\"fatigue\", subject=\"Arif\", decision_class=\"C3\"\n2. Baca output \u2014 sleep_hours, stress_load, cognitive_clarity, decision_fatigue, chronic_fatigue, emotional_state\n3. Bandingkan dengan output sebelum ni kalau ada (guna memory/honcho untuk recall)\n4. Hantar SATU baris ke Arif DM dalam BM.\n\nFORMAT OUTPUT (hantar sebagai mesej terus, satu baris je):\n- Baris 1: \"\ud83e\uddec Pulse | Tidur Xj \ud83d\udfe2/\ud83d\udfe1/\ud83d\udd34 | Stress rendah/sederhana/tinggi | Clarity \ud83d\udfe2/\ud83d\udfe1/\ud83d\udd34 | [trend \u2197\ufe0f/\u27a1\ufe0f/\u2198\ufe0f]\"\n- Jika ada apa-apa yang degraded (sleep <6, stress tinggi, fatigue kronik): tambah satu ayat saran. Contoh: \"\ud83d\udfe1 Tidur 5j je. Try rehat awal mlm ni.\"\n- Jika semua hijau: HANYA baris 1. Jangan tambah apa-apa.\n\nPRINSIP:\n- Ringkas. Jawapan terus. BM campur English sikit.\n- Jangan buat analisis panjang. Jangan tanya soalan. Jangan suggest appointment.\n- F6 EMPATHY: kalau clarity rendah, jangan bombard dengan detail. Kalau semua baik, senyap je (satu line).\n- Guna memory untuk simpan output hari ni \u2014 supaya esok boleh banding trend.\n- Jangan seal apa-apa ke VAULT999. Ini pulse, not constitutional.\n\nSekiranya WELL tool tak available atau error, hantar: \"\ud83e\uddec Pulse | WELL org tak reachable \u2014 [error pendek]\"",
       "skills": [],
       "skill": null,
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -838,17 +840,17 @@
       "schedule_display": "0 19 * * *",
       "repeat": {
         "times": null,
-        "completed": 8
+        "completed": 9
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:49:46.365762+08:00",
-      "next_run_at": "2026-08-03T19:00:00+08:00",
-      "last_run_at": "2026-08-02T19:01:14.454187+08:00",
+      "next_run_at": "2026-08-04T19:00:00+08:00",
+      "last_run_at": "2026-08-03T19:02:14.566115+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: Connection error.",
+      "last_error": "RuntimeError: HTTP 404 \u2014 404 Not Found",
       "last_delivery_error": null,
       "deliver": "telegram:267378578",
       "origin": {
@@ -886,15 +888,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 1843
+        "completed": 1964
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-03T14:55:00+08:00",
-      "last_run_at": "2026-08-03T14:50:55.472319+08:00",
+      "next_run_at": "2026-08-04T01:05:00+08:00",
+      "last_run_at": "2026-08-04T00:55:11.035776+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -912,8 +914,8 @@
         "agentic-infrastructure-ops"
       ],
       "skill": "agentic-infrastructure-ops",
-      "model": "deepseek-v4-pro",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -977,15 +979,15 @@
       "schedule_display": "0 */12 * * *",
       "repeat": {
         "times": null,
-        "completed": 25
+        "completed": 26
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T08:11:14.026394+08:00",
-      "next_run_at": "2026-08-04T00:00:00+08:00",
-      "last_run_at": "2026-08-03T12:00:31.849759+08:00",
+      "next_run_at": "2026-08-04T12:00:00+08:00",
+      "last_run_at": "2026-08-04T00:00:34.701009+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1030,7 +1032,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-31T12:29:22.175840+08:00",
-      "next_run_at": "2026-08-04T01:00:00+08:00",
+      "next_run_at": "2026-08-05T01:00:00+08:00",
       "last_run_at": "2026-08-03T01:01:00.823985+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -1118,15 +1120,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 228
+        "completed": 268
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-03T15:00:00+08:00",
-      "last_run_at": "2026-08-03T14:46:05.983140+08:00",
+      "next_run_at": "2026-08-04T01:15:00+08:00",
+      "last_run_at": "2026-08-04T00:45:50.674473+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1150,8 +1152,8 @@
       "prompt": "Run the arif-fazil.com drift audit. Load \"arif-sites-content-ops\" skill for context.\n\nPHASE 1 \u2014 Run web_zen verify:\n```bash\npython3 /root/arif-fazil.com/scripts/web-zen/web_zen.py verify --timeout 10 2>&1\n```\n\nPHASE 2 \u2014 Check Caddy \u2194 React route drift:\n- grep @spa_routes from /etc/caddy/Caddyfile\n- grep all Route paths from /root/arif-fazil.com/sites/arif-fazil.com/src/App.tsx\n- Compare: any Route in App.tsx NOT in Caddy @spa_routes = DRIFT (routes will 404)\n- Compare: any path in Caddy @spa_routes NOT in App.tsx = STALE (dead routes)\n\nPHASE 3 \u2014 Check dist staleness:\n```bash\nDIST_HASH=$(stat -c '%Y' /root/arif-fazil.com/sites/arif-fazil.com/dist/index.html 2>/dev/null)\nSOURCE_HASH=$(cd /root/arif-fazil.com && git log --oneline -1 --format='%ct')\nHOURS_SINCE=$(( ($(date +%s) - DIST_HASH) / 3600 ))\necho \"Dist age: ${HOURS_SINCE}h \u00b7 HEAD: $(cd /root/arif-fazil.com && git log --oneline -1)\"\n```\n\nPHASE 4 \u2014 Check bot dual-path:\n```bash\n# Test one series article (should work)\nfor slug in m1-1 m2-1 m3-1 m4-1 m5-1; do\n  code=$(curl -sI -o /dev/null -w '%{http_code}' -m 5 \"https://arif-fazil.com/world/makcikgpt/${slug}.html\" 2>/dev/null)\n  echo \"bot-lane ${slug}.html \u2192 HTTP $code\"\ndone\n# Test one named article (may fall back)\nfor slug in petronas-dna petronas-visi-misi; do\n  code=$(curl -sI -o /dev/null -w '%{http_code}' -m 5 \"https://arif-fazil.com/world/makcikgpt/${slug}.html\" 2>/dev/null)\n  body=$(curl -s -m 5 \"https://arif-fazil.com/world/makcikgpt/${slug}.html\" 2>/dev/null | wc -c)\n  echo \"bot-lane ${slug}.html \u2192 HTTP $code (${body}B)\"\ndone\n```\n\nREPORT: Concise table with 4 rows (web_zen, route drift, dist staleness, bot dual-path). Each: GREEN/AMBER/RED + one-line detail + recommended fix if actionable. No prose unless RED. Keep under 15 lines.",
       "skills": [],
       "skill": null,
-      "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -1166,17 +1168,17 @@
       "schedule_display": "0 */12 * * *",
       "repeat": {
         "times": null,
-        "completed": 8
+        "completed": 10
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:33.574639+08:00",
-      "next_run_at": "2026-08-04T00:00:00+08:00",
-      "last_run_at": "2026-08-03T12:01:46.009333+08:00",
+      "next_run_at": "2026-08-04T12:00:00+08:00",
+      "last_run_at": "2026-08-04T00:01:09.509551+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: HTTP 404 \u2014 404 Not Found",
+      "last_error": "RuntimeError: HTTP 400: 'tools' : maximum number of items is 128",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1188,7 +1190,8 @@
       },
       "enabled_toolsets": [
         "terminal",
-        "file"
+        "file",
+        "no_mcp"
       ],
       "workdir": null,
       "fire_claim": null
@@ -1199,8 +1202,8 @@
       "prompt": "Run the arif-fazil.com self-healing cycle. Load \"arif-sites-content-ops\" and \"static-site-ops\" skills.\n\nCONSTITUTIONAL GATE (run first \u2014 abort if violated):\n```bash\ncd /root/arif-fazil.com\nDIRTY=$(git status --porcelain | wc -l)\necho \"GIT_DIRTY=$DIRTY\"\nif [ \"$DIRTY\" -gt 0 ]; then\n  echo \"ABORT: git working tree dirty ($DIRTY files). Cannot safely rsync.\"\n  exit 0\nfi\n```\n\nPHASE 1 \u2014 Run web_zen doctor:\n```bash\npython3 /root/arif-fazil.com/scripts/web-zen/web_zen.py doctor --timeout 10 2>&1\n```\nIf doctor exit \u2260 0: report failures, skip Phase 2 (no heal when sense is RED).\n\nPHASE 2 \u2014 Reversible sync (ONLY if doctor GREEN + git clean):\n```bash\n# Sync llms.txt, sitemap.xml, feed files \u2014 these are safe\nrsync -av /root/arif-fazil.com/sites/arif-fazil.com/public/llms.txt /var/www/html/arif/llms.txt\nrsync -av /root/arif-fazil.com/sites/arif-fazil.com/public/sitemap.xml /var/www/html/arif/sitemap.xml\nrsync -av /root/arif-fazil.com/sites/arif-fazil.com/public/robots.txt /var/www/html/arif/robots.txt\n\n# Sync wealth data \u2014 always safe\nrsync -av /root/arif-fazil.com/sites/arif-fazil.com/public/data/ /var/www/html/arif/data/\n\n# Sync MakcikGPT static HTML for bot lane\nrsync -av /root/arif-fazil.com/sites/arif-fazil.com/public/makcikgpt-md/ /var/www/html/arif/makcikgpt-md/\necho \"Reversible sync complete.\"\n```\n\nPHASE 3 \u2014 Verify post-heal:\n```bash\n# Quick sanity: did we break anything?\nfor path in / /llms.txt /000/ /999/ /gas/ /world/makcikgpt/ /wealth/ /missions/; do\n  code=$(curl -sI -o /dev/null -w '%{http_code}' -m 5 \"https://arif-fazil.com${path}\" 2>/dev/null)\n  [ \"$code\" != \"200\" ] && [ \"$code\" != \"301\" ] && [ \"$code\" != \"308\" ] && echo \"POST-HEAL FAIL: ${path} \u2192 HTTP $code\"\ndone\necho \"Post-heal verify complete.\"\n```\n\nPHASE 4 \u2014 Orphan dry-run (never auto-delete):\n```bash\n# Show what WOULD be deleted \u2014 never actually delete\nrsync -av --dry-run --delete /root/arif-fazil.com/sites/arif-fazil.com/public/ /var/www/html/arif/ 2>&1 | grep \"^deleting\" | head -10\necho \"Orphan preview only \u2014 no files deleted (F1 AMANAH).\"\n```\n\nBOUNDARIES (NEVER VIOLATE):\n- NEVER rsync --delete (only --dry-run preview)\n- NEVER caddy reload (F13 territory)\n- NEVER npm run build (requires source commit + 888)\n- NEVER rsync dist/ (only public/ static files)\n- Only run when git clean + doctor GREEN\n\nREPORT: What synced (file count), any post-heal failures, orphan preview count. One-line GREEN or concise RED table. Under 10 lines.",
       "skills": [],
       "skill": null,
-      "model": "qwen3.6-flash",
-      "provider": "bailian-token-plan",
+      "model": "MiniMax-M3",
+      "provider": "minimax",
       "provider_snapshot": null,
       "model_snapshot": null,
       "base_url": null,
@@ -1215,17 +1218,17 @@
       "schedule_display": "15 */6 * * *",
       "repeat": {
         "times": null,
-        "completed": 10
+        "completed": 12
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:46.888552+08:00",
-      "next_run_at": "2026-08-03T18:15:00+08:00",
-      "last_run_at": "2026-08-03T12:16:44.739172+08:00",
+      "next_run_at": "2026-08-04T06:15:00+08:00",
+      "last_run_at": "2026-08-04T00:16:08.575729+08:00",
       "last_status": "error",
-      "last_error": "RuntimeError: HTTP 404 \u2014 404 Not Found",
+      "last_error": "RuntimeError: HTTP 400: 'tools' : maximum number of items is 128",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1238,7 +1241,8 @@
       "enabled_toolsets": [
         "terminal",
         "file",
-        "web"
+        "web",
+        "no_mcp"
       ],
       "workdir": null,
       "fire_claim": null
@@ -1265,15 +1269,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 165
+        "completed": 206
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T21:24:35.097352+08:00",
-      "next_run_at": "2026-08-03T15:00:00+08:00",
-      "last_run_at": "2026-08-03T14:45:55.394034+08:00",
+      "next_run_at": "2026-08-04T01:15:00+08:00",
+      "last_run_at": "2026-08-04T01:00:11.104046+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1311,17 +1315,17 @@
       "schedule_display": "30 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-02T08:30:00+08:00",
-      "next_run_at": "2026-08-03T22:30:00+08:00",
-      "last_run_at": "2026-08-02T22:30:51.836401+08:00",
-      "last_status": "error",
-      "last_error": "Script not found: /root/HERMES/scripts/evening_zen_brief.sh",
+      "next_run_at": "2026-08-04T22:30:00+08:00",
+      "last_run_at": "2026-08-03T22:30:01.369345+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "telegram:267378578",
       "origin": null,
@@ -1351,15 +1355,15 @@
       "schedule_display": "0 21 * * *",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-02T08:30:00+08:00",
-      "next_run_at": "2026-08-03T21:00:00+08:00",
-      "last_run_at": "2026-08-02T21:00:49.730299+08:00",
+      "next_run_at": "2026-08-04T21:00:00+08:00",
+      "last_run_at": "2026-08-03T21:00:59.197806+08:00",
       "last_status": "error",
       "last_error": "Script not found: /root/HERMES/scripts/watchdog_of_watchdogs.py",
       "last_delivery_error": null,
@@ -1391,17 +1395,17 @@
       "schedule_display": "every 60m",
       "repeat": {
         "times": null,
-        "completed": 23
+        "completed": 33
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-02T08:30:00+08:00",
-      "next_run_at": "2026-08-03T15:35:55.267202+08:00",
-      "last_run_at": "2026-08-03T14:35:55.267202+08:00",
-      "last_status": "error",
-      "last_error": "Script not found: /root/HERMES/scripts/git_to_vault.py",
+      "next_run_at": "2026-08-04T01:37:10.930554+08:00",
+      "last_run_at": "2026-08-04T00:37:10.930554+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
@@ -1431,17 +1435,17 @@
       "schedule_display": "30 21 * * *",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-02T08:50:00+08:00",
-      "next_run_at": "2026-08-03T21:30:00+08:00",
-      "last_run_at": "2026-08-02T21:30:50.015009+08:00",
-      "last_status": "error",
-      "last_error": "Script not found: /root/HERMES/scripts/temporal_anomaly_detector.py",
+      "next_run_at": "2026-08-04T21:30:00+08:00",
+      "last_run_at": "2026-08-03T21:30:59.541216+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "local",
       "origin": null,
@@ -1450,5 +1454,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-03T14:50:55.472867+08:00"
+  "updated_at": "2026-08-04T01:00:11.105531+08:00"
 }

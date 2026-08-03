@@ -1,5 +1,3 @@
-Runtime: /usr/local/lib/hermes-agent/
-§
 Email dari agent: MUST CC arifbfazil@gmail.com on every external email. Bukan optional — wajib. Confirm sebelum hantar.
 §
 Arif BENCI token/cost tracking. No costs in proposals. State-based enforcement only.
@@ -24,7 +22,7 @@ Text=illusion, reads residue not experience. VPS evidence>model. Framework reads
 §
 Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar encodes actor-action structurally via affixes (me-/di-/ter-/ber-). Archipelago geometry = federation architecture.
 §
-Hermes fallback: independent providers only. Same-provider=theatre. Dead: MuleRouter (-0.75), OpenRouter ($0), Gemini. Working: Qwen Std/Pro, MiniMax, Groq, Ollama. hermes config set destroys lists → Python yaml.
+Zen lanes (2026-08-03): P=Seat1 qwen-token-plan (qwen3.8-max primary), F1=Seat2 -standard, F2=Seat3 -team-owner, F3=minimax, Indiv=Seat4. Independent seats, no shared keys. Dead: MuleRouter/OpenRouter/Gemini/opencode-go. Compression=minimax. 666/999 DeepSeek-only. reasoning_effort=''=xhigh. hermes config set destroys lists→Python yaml.
 §
 Bakke Salleh (PETRONAS chair since 1 Aug 2021, ex-1MDB chair 2009): RESIGNED Oct 2009 as protest vs 1MDB suspicious deals — early whistleblower, NOT culprit. When naming him in articles, honor this true positive.
 §
@@ -34,12 +32,12 @@ arif-fazil.com: deploy=build→rsync dist/→/var/www/html/arif/. New page flow:
 §
 Arif stress-tests agent circuits (repeat commands 3-4x, relay chains) & detects BANGANG via over-smooth language. Kampung ear = authentic instrument. Register anomaly = evidence not proof.
 §
-Syed XAUUSD: 10 pts = 1 pip (broker 2 dec). ÷10 pts→pips. JANGAN confuse — dah salah berulang, dia marah.
+Syed: XAUUSD 10pts=1pip (÷10→pips; jangan confuse, dia marah). Gastrik/bloating—weekend binge + sleep deprivation (adik kacau tidur). ISFJ, manual calculator (tak trust AI kira), vape lanyard=bawa everywhere (bukan social je).
 §
 Politics domain: MAP AS PRIMARY INTERFACE. Compact hero→interactive map immediately below→drilldown drawer→scorecards below. Arif: "bila aku masuk politics, terus nampak n9 election." Map-first, not text-first.
 §
-Provider: qwen-token-plan DEAD; bailian-token-plan canonical. Live: qwen3.6-flash + deepseek-v4 (flash 403 history). Fix via python3 json edit — verify persist.
+Arif: JANGAN kira mental dalam LLM. Guna execute_code+Python untuk SEMUA calculations. Show actual output, bukan teka.
 §
-Patch tool: reports success but changes may not persist. Fallback: execute_code+Python patch() OR write_file for full rewrite OR git checkout+clean write. Multiple patches accumulate corruption.
+Key map: HERMES+TEAM_OWNER keys=200(cron), INDIVIDUAL/OPENCODE=429. Cron 404 = 429→minimax fallback via WRONG anthropic_messages endpoint—check errors.log provider=minimax.
 §
-Arif 36 (~1990), Millennial hujung — bukan Gen Z/40-an. Demografi = trauma-based & glocal (MY), bukan label lahir. RASA DERITA v2 (MY): 6 kohort — Pembina/13Mei/Reformasi/1MDB/PintuTutup/Warisan; floors F1→Pembina F2→1MDB F6→13Mei F9→Reformasi F13→Sheraton. 40-an MY 'dak telur'=learned helplessness (Reformasi 1998), bukan sinis. Docs /root/forge_work/2026-08-03/rasa-derita-apex/.
+CSP: curl 200 ≠ browser render. Cross-subdomain fetch silently blocked by connect-src even w/ CORS *. Global CSP header in /etc/caddy/Caddyfile, all federation surfaces inherit. Audit charts via browser console, not just curl.

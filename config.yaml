@@ -1,11 +1,11 @@
 model:
   context_length: 1048576
-  default: qwen3.7-plus
+  default: qwen3.8-max
   max_tokens: 131072
-  provider: qwen-token-plan-standard
-  request_timeout: 45
+  provider: qwen-token-plan-individual
+  request_timeout: 90
   supports_vision: true
-  timeout: 30
+  timeout: 60
 providers:
   dashscope-payg:
     api: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -73,7 +73,7 @@ providers:
         name: DeepSeek V4 Pro — deep reasoning
       - id: qwen3.7-max
         name: Qwen 3.7 Max — reasoning
-      - id: qwen3.8-max-preview
+      - id: qwen3.8-max
         name: Qwen 3.8 Max Preview — vision + Harness
       - id: qwen3.7-plus
         name: Qwen 3.7 Plus — vision + reasoning
@@ -151,7 +151,7 @@ providers:
       - reasoning
     key_env: QWEN_HERMES_API_KEY
     models:
-      - id: qwen3.8-max-preview
+      - id: qwen3.8-max
         name: Qwen 3.8 Max Preview — vision + Harness, 10x promo
       - id: qwen3.7-max
         name: Qwen 3.7 Max — reasoning + Harness (search/code/scrape)
@@ -199,7 +199,7 @@ providers:
         name: DeepSeek V4 Flash 0731 — latest snapshot
       - id: glm-5.2
         name: GLM 5.2 — constitutional tier
-      - id: qwen3.8-max-preview
+      - id: qwen3.8-max
         name: Qwen 3.8 Max Preview — vision + Harness
       - id: qwen3.7-max
         name: Qwen 3.7 Max — reasoning + Harness
@@ -215,22 +215,40 @@ providers:
       - chat
       - function_calling
       - reasoning
-    key_env: QWEN_HERMES_API_KEY
+    key_env: QWEN_API_KEY
     models:
-      - id: qwen3.6-flash
-        name: Qwen 3.6 Flash — fastest, vision
-      - id: deepseek-v4-flash-0731
-        name: DeepSeek V4 Flash 0731 — latest snapshot
-      - id: glm-5.2
-        name: GLM 5.2 — constitutional tier
-      - id: qwen3.8-max-preview
-        name: Qwen 3.8 Max Preview — vision + Harness
+      - id: qwen3.8-max
+        name: Qwen 3.8 Max — primary flagship
       - id: qwen3.7-max
-        name: Qwen 3.7 Max — reasoning + Harness
+        name: Qwen 3.7 Max — reasoning flagship
       - id: qwen3.7-plus
         name: Qwen 3.7 Plus — vision + reasoning
+      - id: qwen3.6-plus
+        name: Qwen 3.6 Plus — slower reasoning
+      - id: qwen3.6-flash
+        name: Qwen 3.6 Flash — fastest, vision
       - id: deepseek-v4-pro
-        name: DeepSeek V4 Pro — 1M ctx, deep reasoning
+        name: DeepSeek V4 Pro — deep reasoning
+      - id: deepseek-v4-flash-0731
+        name: DeepSeek V4 Flash 0731 — fast reasoning
+      - id: deepseek-v4-flash
+        name: DeepSeek V4 Flash — fastest reasoning
+      - id: deepseek-v3.2
+        name: DeepSeek V3.2 — balanced
+      - id: glm-5.2
+        name: GLM 5.2 — reasoning
+      - id: glm-5.1
+        name: GLM 5.1 — balanced
+      - id: glm-5
+        name: GLM 5 — base
+      - id: kimi-k2.7-code
+        name: Kimi K2.7 Code — coding specialist
+      - id: kimi-k2.6
+        name: Kimi K2.6 — general
+      - id: kimi-k2.5
+        name: Kimi K2.5 — general
+      - id: MiniMax-M2.5
+        name: MiniMax M2.5 — general
     name: Qwen Token Plan Team Standard — Seat 2/3 (ariffazil, RM0 marginal)
     transport: openai_chat
   sea-lion:
@@ -245,13 +263,62 @@ providers:
         name: Gemma SEA-LION v4 27B (FREE — fast + light)
     name: SEA-LION (AI Singapore — FREE trial, SEA-localized)
     transport: openai_chat
+  qwen-token-plan-team-owner:
+    api: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
+    key_env: QWEN_TEAM_OWNER_API_KEY
+    models:
+      - id: qwen3.8-max
+        name: Qwen 3.8 Max — primary flagship
+      - id: qwen3.7-max
+        name: Qwen 3.7 Max — reasoning flagship
+      - id: qwen3.7-plus
+        name: Qwen 3.7 Plus — vision + reasoning
+      - id: qwen3.6-plus
+        name: Qwen 3.6 Plus — slower reasoning
+      - id: qwen3.6-flash
+        name: Qwen 3.6 Flash — fastest, vision
+      - id: deepseek-v4-pro
+        name: DeepSeek V4 Pro — deep reasoning
+      - id: deepseek-v4-flash-0731
+        name: DeepSeek V4 Flash 0731 — fast reasoning
+      - id: deepseek-v4-flash
+        name: DeepSeek V4 Flash — fastest reasoning
+      - id: deepseek-v3.2
+        name: DeepSeek V3.2 — balanced
+      - id: glm-5.2
+        name: GLM 5.2 — reasoning
+      - id: glm-5.1
+        name: GLM 5.1 — balanced
+      - id: glm-5
+        name: GLM 5 — base
+      - id: kimi-k2.7-code
+        name: Kimi K2.7 Code — coding specialist
+      - id: kimi-k2.6
+        name: Kimi K2.6 — general
+      - id: kimi-k2.5
+        name: Kimi K2.5 — general
+      - id: MiniMax-M2.5
+        name: MiniMax M2.5 — general
+    name: Qwen Token Plan Team Owner — Seat 3/3 (owner, RM0 marginal)
+    transport: openai_chat
 fallback_providers:
-  - model: deepseek-v4-pro
-    provider: opencode-go
+  - model: qwen3.8-max
+    provider: qwen-token-plan-standard
+    timeout: 30
+  - model: qwen3.8-max
+    provider: qwen-token-plan-team-owner
     timeout: 30
   - model: MiniMax-M3
     provider: minimax
     timeout: 30
+  - model: llama-3.3-70b-versatile
+    provider: groq
+    timeout: 15
+    note: Groq FREE — ultra-fast LPU, 280t/s, 1K req/day. Lowest-tier fallback.
 toolsets:
   - hermes-cli
 max_live_sessions: 16
@@ -490,7 +557,7 @@ auxiliary:
     timeout: 600
   moa_aggregator:
     provider: dashscope-payg
-    model: qwen3.8-max-preview
+    model: qwen3.8-max
     base_url: ''
     api_key: ''
     timeout: 600
@@ -707,7 +774,7 @@ moa:
           provider: dashscope-payg
       aggregator:
         provider: dashscope-payg
-        model: qwen3.8-max-preview
+        model: qwen3.8-max
       max_tokens: 4096
       enabled: true
       aggregator_temperature: 0.4
@@ -865,7 +932,7 @@ security:
   acked_advisories: []
   allow_lazy_installs: true
 cron:
-  provider: ''
+  provider: deepseek
   chronos:
     portal_url: https://portal.nousresearch.com
     callback_url: ''
@@ -967,48 +1034,21 @@ paste_collapse_char_threshold: 2000
 computer_use:
   cua_telemetry: false
 _config_version: 33
-custom_providers:
-  - base_url: http://127.0.0.1:18901/v1
-    models:
-      - id: flame/free
-        name: FLAME Free Loop — RM0, Groq primary, OpenRouter T3
-      - id: flame/groq
-        name: FLAME — Groq only
-      - id: flame/gemini
-        name: FLAME — Gemini only
-      - id: flame/sea-lion
-        name: FLAME — SEA-LION BM-native
-    name: flame
-    note: DEPRECATED for direct Hermes use (Zen 2026-08-02). Route via LiteLLM :4000
-      flame-free model instead. FLAME inference mesh still operational for LiteLLM
-      backend routing.
-  - base_url: http://127.0.0.1:4000/v1
-    key_env: LITELLM_MASTER_KEY
-    models:
-      - id: main
-        name: LiteLLM main - FED gateway
-      - id: forge
-        name: LiteLLM forge - FED gateway
-      - id: small
-        name: LiteLLM small - FED gateway
-      - id: flame-free
-        name: LiteLLM flame-free - RM0 Tier0
-      - id: last-resort
-        name: LiteLLM last-resort - never dies
-    name: litellm
+custom_providers: []
 fallback_retry:
-  fail_fast: true
-  max_retries: 1
-  retry_delay: 0
+  fail_fast: false
+  max_retries: 3
+  retry_delay: 3000
   triggers:
-    - 429
+    - 401
     - 402
     - 403
+    - 429
     - 500
     - 502
     - 503
     - 504
-fallback_silent_failover: false
+fallback_silent_failover: true
 federation:
   evidence_envelope:
     invariants:
