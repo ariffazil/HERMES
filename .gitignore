@@ -130,3 +130,5 @@ skills/.usage.json
 *.bak
 verification_evidence.db-shm
 verification_evidence.db-wal
+.hub/index-cache/
+.hub/.ignore
