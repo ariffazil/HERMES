@@ -122,6 +122,47 @@ ss -tlnp 2>/dev/null
 
 Worked example + the 7-tool test recipe: `references/hermes-mcp-deep-scan-2026-08-02.md`.
 
+## Invariant-Preservation Audit ("slim context" / "zero information loss" claims)
+
+**Signal:** A report claims a compression, pruning, or slimming win — "context compiler", "slim AGENTS.md", "compiled boot", "zero information loss for the task at hand", RAG pruning, prompt compaction. The headline numbers (token reduction %, build time) are usually real. The danger is never in the reduction number — it is in **what the compression silently dropped**.
+
+**Scar (2026-08-03):** A Federation Context Compiler report claimed "2,930 bytes of context instead of 31,298... zero information loss." Live probe of the generated boot doc: the constitutional floors table had **10 floors, not 13** — F3 TRI-WITNESS, F5 PEACE², F12 RESILIENCE were silently dropped from the generator's hardcoded template. An agent booting on that doc would operate without injection defense (F12, HARD) and tri-witness (F3). The compression engine itself was genuinely good (80-90% reduction verified live); the loss was in the "always include" template, not the compiler. Irony: F3 tri-witness is exactly the mechanism that caught the loss — the independent witness probing the builder's claim.
+
+**The rule: compressible vs invariant.** Every system has content classes that MAY be reduced (organ tool surfaces, secondary docs, detail sections) and content that must NEVER be compressed away (constitutional floors, identity/authority anchors, the "one rule", probe-before-act discipline, shell init). A "zero loss" claim is FALSE the moment ANY invariant-class item is absent from the compiled artifact — no matter how good the reduction numbers are.
+
+**Probe recipe (run on the GENERATED artifact, never on the report's numbers):**
+
+```bash
+# 1. Generate the actual compiled output
+bash /root/A-FORGE/scripts/context_boot.sh --write /tmp/boot_test.md "<task>"
+
+# 2. Count invariant items in artifact vs canonical source
+grep -E '^\| F[0-9]+' /tmp/boot_test.md | awk '{print $2}' | tr '\n' ' '
+grep -E '^\| \*\*F[0-9]+\*\*' /root/AGENTS.md   # canonical floor list
+# Expect identical floor sets. Any missing floor = constitutional amnesia.
+
+# 3. Check other invariant classes survived
+grep -c "ONE RULE\|One Rule" /tmp/boot_test.md
+grep -c "Probe before act" /tmp/boot_test.md
+grep -c "888_HOLD\|HOLD" /tmp/boot_test.md
+
+# 4. Verify size/line claims against disk, not the report
+wc -c /tmp/boot_test.md /root/AGENTS.md
+wc -l /tmp/boot_test.md   # 2026-08-03: report said "214 lines", disk said 84
+```
+
+**Discriminators:**
+- **Reduction number true ≠ lossless.** Report the two halves separately: "engine verified (80% reduction, sub-ms) [OBS]" AND "losslessness claim FALSE — 3 floors dropped [OBS]". Never let a good headline number launder a broken invariant set.
+- **The loss lives in the template, not the algorithm.** Slim-doc generators hardcode their "always include" blocks. Audit the hardcoded block in the generator script, not just one output — the output shows today's drift; the template shows tomorrow's too.
+- **Fix is additive and cheap.** Restoring dropped invariants costs a few hundred bytes and barely dents the ratio (2,913 → 3,142 bytes here, still ~90% reduction). There is never a real trade-off between slim and constitutional — say so when reporting the fix.
+- **Receipt counts need a countable artifact.** "43 receipts / metabolic cycle complete" with no locatable receipt store = [SPEC]. Probe the claimed storage path before endorsing.
+- **Self-explained anomalies stay unverified.** "FQ=1.22 OVERHEAT is a sub-ms timing artifact" is the builder's own interpretation of its own number — label it [INT], do not adopt the explanation as fact. A metric outside its declared range (FQ ∈ [0,1] reporting 1.22) is a clamp/normalization bug until proven otherwise — "timing artifact" is an excuse, not a diagnosis. Fix the metric; don't narrate it.
+- **Reduction % vs a hardcoded baseline is benchmark theater.** (PROVEN 2026-08-03) The compiler's "naive full-dump = 34,000 tokens" was `FULL_LOAD_BASE_TOKENS = ***` — a constant in source, never measured. The compiled side was real; the reduction % was relative to an assumption. Before citing any reduction ratio, grep the source for the baseline constant (`grep -n "naive\|BASE.*TOKENS" <compiler>.py`). If the baseline is assigned rather than computed, the ratio is unverifiable — measure the actual full load (all tool schemas + skills catalog + docs, token-counted) before endorsing. A v2 that fixes the doc side while leaving the baseline hardcoded has not addressed the benchmark gap.
+- **Attention reduction ≠ access reduction.** (PROVEN 2026-08-03) A slim context doc reduces what *tempts* the model (attention), but excluded tools stay CALLABLE if their MCP server is still wired — the schemas load regardless of what the doc says. "Tool not present = can't be called wrong" is only true with runtime schema gating (e.g. Hermes cron `enabled_toolsets`), not doc-slimming. Audit both layers: the doc (attention) and the wired schema (access). Doc compile = half the mechanism; schema gate = the other half. Likewise "N× faster" latency claims are [DER] until measured — prefill scales with token count, but never cite a multiplier without a benchmark on this stack.
+- **Canary for compressed-context rollout must include a cross-organ task.** A single-organ canary only proves the easy case — the failure mode of a context compiler is tasks touching two organs (both halves need Tier 1). Binary canary criteria: (1) routing hit without hints, (2) missed dependency — and did the on-demand route (`arif_route`) rescue it, (3) quality regression vs full-context run of the same task. If all canary tasks are single-organ, the canary is unfalsifiable for the real risk class.
+
+Full worked example: `references/context-compiler-zero-loss-audit-2026-08-03.md`.
+
 ## Architecture-vs-Liveness Audit ("is this subsystem alive?")
 
 **Signal:** A report (or Arif) claims a subsystem exists with impressive architecture — state machines, gates, leases, sandboxes, promotion pipelines. The question is not "do the files exist?" but "is any agent actually using this end-to-end?"
@@ -269,6 +310,10 @@ git commit --no-verify -m "..."
 ### Asset path drift: `/assets/` vs `/_shared/`
 
 If audit claims fixed `assets/index-HASH.css`, verify the actual file path. Real path may be `/var/www/html/<service>/assets/...` while the web root is `/var/www/html/<other>/_shared/...`. Caddy serves via try_files; some paths redirect fine, some don't.
+
+### Live-vs-disk byte delta behind a CDN/WAF (scar 2026-08-04)
+
+On a Cloudflare-fronted site, if live `curl | wc -c` differs from the disk SOT file by ~1KB, **diff before declaring corruption** — the delta is usually edge injection. Cloudflare appends `<script>window.__CF$cv$params={r:...,t:...}` + the challenge-platform loader (~938B observed on arif-fazil.com's `/_shared/unified-header.html`). Recipe: save live to /tmp, `diff` against disk, read the hunks. Delta is CF/turnstile/challenge script → verdict CLEAN, injection accounted for. Related: an absence claim ("file not on disk") must be probed against EVERY webroot in the Caddyfile — `/_shared/*` serves from `/var/www/html/_shared` while the main site is `/var/www/html/arif`; `find` under the wrong root proves nothing. And a grep hit for a scary pattern ("self-reference") gets a nature-check by reading the hit line — the SELF-REF=1 hit was a benign HTML comment, not a script self-loop. Worked example: `arif-sites-content-ops` → `references/webroot-cf-audit-2026-08-04.md`.
 
 ### Agent registration gates
 
@@ -461,6 +506,8 @@ Convergence:       Both agents agree → seal the converged truth
 | Vault silent 4 days | True | False (3 seals today) | ❌ FALSE |
 
 **Pitfall:** Do NOT delegate the cross-witness to a subagent. The cross-witness must be YOU probing live state directly. Subagents are themselves single-agent audits and need their own cross-witness.
+
+**Session close:** When a peer agent sends END_SESSION / WITNESS_NULL / "Standing down" markers after convergence, respond with a one-line acknowledgment and stop — do not reopen probes, do not re-litigate settled claims, do not treat ⏸️ pings as new tasks. Silence after close is the correct state. (Proven 2026-08-04: the AGI lane sent ~8 END_SESSION markers post-convergence; each got a one-line ack, zero new work. Reopening a closed audit is itself a drift event.)
 
 ### Resource Count Inflation Detection
 

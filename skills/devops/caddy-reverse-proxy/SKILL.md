@@ -669,6 +669,33 @@ curl -s --resolve "arif-fazil.com:443:127.0.0.1" \
 
 **Detection:** When the external witness probe (P17) repeatedly reports `HTTP 404` for `/world/makcikgpt/` but individual article paths resolve fine, this is the root cause.
 
+### Common Pitfall: `path /prefix/*` glob ALSO matches the bare `/prefix/` landing — strip_prefix handlers swallow it (PROVEN 2026-08-03)
+
+Sibling of the pitfall above, different mechanism: Caddy's `path` matcher `path /world/makcikgpt/*` matches the **bare `/world/makcikgpt/`** too — the trailing `*` matches the empty remainder. Any handler built for *sub-paths only* (e.g. a no-JS/bot article handler gated by `not header_regexp Accept text/html`) silently catches the landing page as well. After `uri strip_prefix /world/makcikgpt` the landing's internal path is `/`, and a `try_files {path}.html {path}.md =404` chain tries `/.html` → `/.md` → **404**. (The exact-match landing handler `handle /world/makcikgpt/` only saves browsers — the nojs handler is a separate route and wins the landing for header-matching clients.)
+
+**Symptom:** health probes and AI crawlers (curl, Python-urllib = web_zen doctor, GPTBot, RSS readers — anything without `Accept: text/html`) report 404 on the landing page while **browsers see 200** and all article sub-paths work for everyone. Deploy gates that include the landing URL (e.g. `make verify-pages`) block on it; cron sense probes flap RED or die on it.
+
+**Diagnosis — Accept-header discriminating probe (isolates the handler in 2 requests):**
+```bash
+curl -s -A "curl/8.5" -H "Accept: text/html" -o /dev/null -w "%{http_code}\n" https://site/world/x/   # 200
+curl -s -A "curl/8.5"                          -o /dev/null -w "%{http_code}\n" https://site/world/x/   # 404
+```
+First 200 + second 404 = a `not header_regexp Accept text/html` handler is swallowing the landing path. Also probe with real bot UAs (`-A GPTBot`, `-A Python-urllib/3.13`) — if GPTBot gets 404, AI discoverability is broken too.
+
+**Fix — replace the glob with a `path_regexp` requiring ≥1 char after the prefix:**
+```caddyfile
+@handler {
+    # (.+) requires at least one char after the prefix — bare landing path excluded,
+    # falls through to the exact-path landing handler
+    path_regexp name ^/world/x/(.+)$
+    not header_regexp Accept text/html
+}
+```
+
+**Verification battery after reload:** landing 200 for curl + Python-urllib + GPTBot UAs; article sub-paths still 200 under bot UAs; browser path (Accept: text/html), homepage, redirects, and sibling routes all unchanged.
+
+**Rule:** any handler combining `path /prefix/*` with `uri strip_prefix /prefix` that is meant for sub-paths only MUST use `path_regexp ^/prefix/(.+)$` instead of the glob. The glob always swallows the bare path.
+
 ### Common Pitfall: Probe User-Agent Not in Caddy Bot Regex (PROVEN 2026-07-29)
 
 When a Caddy config uses `@ai-bot-world` with `header_regexp User-Agent` to match bots and serve raw/markdown content, the probe's HTTP library User-Agent string may not be in the regex. Python's `urllib.request.urlopen()` sends `Python-urllib/3.x` — the regex may include `python-requests` but NOT `Python-urllib`.

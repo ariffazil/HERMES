@@ -393,6 +393,10 @@ When in doubt → governed cascade. FLAME is for throughput, not truth.
 
 - **flame.service masked by default**: The unit was symlinked to `/dev/null`. After unmask, must `systemctl enable --now flame.service`. Check `systemctl is-enabled flame.service` after any systemd reinstall.
 
+- **FLAME zombie-process port-conflict loop**: When FLAME crashes silently, the systemd service dies but the Python process can remain listening on port 18901. Re-running `systemctl start flame` fails with `OSError: [Errno 98] Address already in use`. After 3 rapid failures, systemd hits `StartLimitBurst=3` and marks the service failed. **Recovery procedure**: (1) `fuser -k 18901/tcp` — kill zombie, (2) `systemctl reset-failed flame` — clear start counter, (3) `systemctl start flame`. Verify with `ss -tlnp | grep 18901`. Occurred 2026-08-03 after FLAME was dead 4 days and a stale process survived.
+
+- **FLAME `/v1/chat/completions` returns `Empty reply from server` while engine works direct**: The HTTP handler in `do_POST` crashes silently — `/v1/models` and `/health` work, `FlameEngine.call()` works when tested via `python3 -c` import, but the `/completions` POST path returns nothing. **Debug**: isolate engine with `python3 -c "import flame_api_server; ..."` then run server manually (not systemd) to capture stderr. Check exception handling around line 473 `elif action == "completions":` block. Unresolved as of 2026-08-03.
+
 - **Agent cron jobs are NOT FLAME candidates**: Cron jobs that produce user-facing content (`daily-news-briefing`, `evening-digest`, `weekly-reflection`) use the governed cascade intentionally. Routing them through FLAME's weak free models reduces quality. Only wire FLAME for internal sub-task helpers (e.g., news summarization helper function), not the whole cron job model path.
 
 - **Reasoning-model blind spot (gpt-oss-120b, zai-glm-4.7)**: These models spend `max_tokens` budget on `reasoning_content`, leaving `content=""`. FLAME sees empty content → marks ❌. Both work fine for real prompts. **Fix in flame_router.py `_call_model`**: check `reasoning_content` field — if content is empty but reasoning exists, count as success. Probe `max_tokens` also bumped 5→80.
@@ -410,8 +414,12 @@ When in doubt → governed cascade. FLAME is for throughput, not truth.
 
 ## References
 
-- `references/flame-integration-pattern.md` — Architectural rules + reference implementation for wiring MCP tools to FLAME (`flame_client.py` pattern, 4 enforcement rules, provenance envelope). Read this first before wiring any MCP tool.
-- `references/2026-07-25-wiring-audit.md` — Session-specific wiring audit: coverage analysis, what's actually wired vs doc claims, fleet health gaps.
-- `references/2026-07-25-l3-task-routing.md` — L3 Task-Routing implementation detail: task class chains, routing verification, integration guide for new task classes.
-- `references/81-surface-flame-map.md` — Complete 81-entry classification: every MCP tool, CLI, script, cron job with FLAME eligibility. ⚠️ Aspirational — verify actual wiring with `grep`.
+- `references/flame-integration-pattern.md` — Architectural rules + reference implementation for wiring MCP tools to FLAME
+- `references/2026-07-25-wiring-audit.md` — Session-specific wiring audit
+- `references/2026-07-25-l3-task-routing.md` — L3 Task-Routing implementation detail
+- `references/81-surface-flame-map.md` — Complete 81-entry classification table
 - `references/agent-model-map-alignment.md` — AGENT_MODEL_MAP.json registry update procedure
+
+### Cross-skill references
+- **LiteLLM Unified Proxy**: FLAME is LiteLLM's free-tier fallback. See `provider-routing-zen` →
+  `references/litellm-unified-proxy.md` for architecture, health check CLI, and unification plan.

@@ -74,3 +74,30 @@ The federation is NOT a technology project — it is the metabolized institution
 - WEALTH → EMV −2,500, Markowitz excludes Reformasi (0%) despite highest G — capital logic vs trauma-metabolism logic gap; 2 schema bugs (capital_entropy, capital_wisdom)
 - WELL → chronic fatigue 2.88, substrate class MATERIAL_OBJECT (no Malaysian cultural schemas — organ gap)
 - GEOX → INCONCLUSIVE 2/7, 5 UNMEASURED — correct boundary (institutional drift ≠ geophysical)
+
+## Terminology clarifications (2026-08-03 session)
+
+**"Dak telur" = Baby Boomers (13 Mei cohort, 62-80), NOT Gen X.** Arif's Penang Malay: "Generation 40s is generation x. Dak telur. Dah la ramai." — "dak telur" (literally "eggs") = the older generation that produced Gen X, now retiring and leaving institutional mess. Gen X (Reformasi cohort, 46-61) are the ones Arif "benci" because they hold power but maintain broken systems.
+
+**Millennials (25-39) = "Transition generation" / "Bridge generation".** Arif is 36 (born 1990), Millennial cusp. This cohort is special because:
+- Enough old to remember pre-AI (have baseline for comparison)
+- Enough young to adapt quickly
+- Have domain depth BEFORE AI arrived (AI = amplifier, not replacement)
+- Bear disproportionate burden: replace retiring Boomers + train Gen Z + build new systems
+
+**Why Gen Z is NOT AI-cakna:** Fluency ≠ cakna. Gen Z are AI-native (no contrast), so they lack the "sebelum/selepas" needed for awareness. AI-cajna requires: (1) transition memory, (2) domain depth, (3) authority relation (tool, not oracle). Gen Z have fluency but not the contrast that produces understanding.
+
+## The Eureka: Federation = Trauma-Informed Architecture
+
+From Arif's meta-reflection: "Now tell me what we are doing here?" — the session traced from external observation (Fortune article) → personal reflection (why I hate X generation) → pattern discovery (generational trauma) → architectural insight (federation = trauma response).
+
+**The insight:** F1-F13 are NOT abstract principles — they are responses to specific institutional failures:
+- F1 AMANAH ← 1MDB betrayal (sovereign theft)
+- F2 TRUTH ← Institutional lies (1MDB cover-up)
+- F6 MARUAH ← 13 Mei erasure ("jangan kacau")
+- F9 ANTI-HANTU ← Reformasi crackdown (Anwar arrested)
+- F13 SOVEREIGN ← Sheraton Move (hijacked during COVID)
+
+**Federation architecture = metabolization of generational trauma into constitutional constraints.** You don't build constitutional floors because you read textbook — you build because you lived through institutional betrayal. Each floor = scar metabolized into constraint.
+
+**Operational consequence:** When reasoning about arifOS design decisions, trace back to which generational trauma motivated the constraint. The federation is not a technology project — it is the institutional scar of Malaysian generations, encoded as governance.

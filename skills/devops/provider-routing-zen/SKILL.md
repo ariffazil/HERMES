@@ -4,8 +4,8 @@ description: >-
   Govern LLM provider selection, routing, and cost-quality optimisation across
   the AAA federation. Maps constitutional roles to providers, sets per-role
   cost-quality dials (CQT), enforces ZDR/sovereignty constraints, and designs
-  resilient fallback chains. Covers OpenRouter, TokenRouter, FLAME, and direct
-  provider integrations.
+  resilient fallback chains. Covers OpenRouter, TokenRouter, FLAME, LiteLLM
+  (FED FLAME FRAME), and direct provider integrations.
 ---
 
 # Provider Routing Zen — AAA Federation
@@ -19,19 +19,43 @@ description: >-
 - Defining or updating a fallback chain for any agent (Hermes, OpenClaw, OpenCode, Forge)
 - Deciding which provider should serve a constitutional role (OBSERVE, THINK, JUDGE, FORGE, SEAL)
 - Optimising cost vs quality across the federation
-- Adding a new LLM provider to vault.env and wiring it into the registry
+- Mapping multi-seat Token Plan providers — see `references/qwen-token-plan-multi-seat.md`
+
+## Workflow Correction (2026-08-03)
+
+**Audit first. Do NOT jump to creating new provider blocks before completing a full inventory.**
+
+When Arif asks about provider mapping, the sequence is:
+
+1. Enumerate ALL keys in vault (kunci-mas) + shell env
+2. Probe each key live via `/models` + `/chat/completions`
+3. Cross-reference config providers → key_env → actual key access
+4. Identify gaps: unmapped seats, shared keys, stale model lists
+5. **Report findings as a gap table BEFORE touching any config**
+6. Fix only what's needed — not all gaps need new providers
+
+**Correction (proven):** I created a new provider before Arif saw the full audit.
+He said: "wei hang kangan cipta baru. audit first apa ada and then fix whatever
+needed to be fix."
+
+See `references/qwen-token-plan-multi-seat.md` for the full 4-seat zen architecture,
+audit procedure, and pre/post-gap analysis.stry
 - Auditing whether current routing leaks sovereign data or violates F2/F9/F13
 - Designing FLAME tool-lane routing
 - Diagnosing 401/InvalidApiKey cascades where an entire provider chain dies at once
 
 ## Qwen Token Plan TEAM Edition — THE FED primary (2026-08-02)
 
-> **Status:** ✅ LIVE — primary provider for Hermes (`qwen-token-plan` / `deepseek-v4-pro`), RM0 marginal on flat monthly seats.
+> **Status:** ✅ LIVE — primary provider for Hermes (`qwen-token-plan` / **`qwen3.8-max` GA**), RM0 marginal on flat monthly seats.
+> **PRIMARY MODEL CHANGE (2026-08-03):** Hermes `model.default` is now **`qwen3.8-max`** (GA, released 2026-08-02, GA-priced 2026-08-05), NOT `deepseek-v4-pro`. The `qwen3.8-max-preview` model ID is RETIRED — all config refs migrated to `qwen3.8-max` (only `.bak` files retain the old ID). `qwen3.8-max` supports **native base64 vision** (verified live) — PRMT vision-transcript pipeline is now optional. Constitutional roles 666_JUDGE / 999_SEAL remain DeepSeek-v4-pro ONLY (FFF gate). See `references/qwen38-max-primary-2026-08-03.md`.
+> **2026-08-03 UPDATE:** Hermes primary model is now **qwen3.8-max** (GA 2026-08-02) served via `key_env: QWEN_HERMES_API_KEY` (Standard seat) in live config. Live-verified 2026-08-03: native base64 vision ✅ (correct description), structured tool calls ✅ (clean args, no content:null), 1M ctx, always-on reasoning with working `reasoning_effort` param (low/high/xhigh; low ≈40% fewer reasoning tokens, ≈25% faster). ⚠️ Pro seat `QWEN_OPENCODE_API_KEY` returned `insufficient_quota` for qwen3.8-max AND qwen3.8-max-preview on 2026-08-03. ⚠️ Live fallback chain is now only 2 entries: opencode-go/deepseek-v4-pro → minimax/MiniMax-M3 (down from 11-tier). Open weights for qwen3.8-max promised ~week of 2026-08-02 (first ever Max-class open-weight; license TBD).
 > **Base URL:** `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
 > **Transport:** `openai_chat` (compatible-mode = OpenAI-compatible chat completions)
 > **Seat registry SOT:** `/root/AAA/federation/seats.yaml` — env var → seat → key prefix, tier, monthly credits, vault/rotation status. READ THIS FILE before touching any Qwen key.
 
-**Seat wiring (verified live 2026-08-02 — 2 actual keys under 6 env var names, 3 Team seats, 1 Individual):**
+**Seat wiring (verified live 2026-08-03 — 4 active keys, 4 Team seats + 1 Individual, 2 Team seats unmapped in config):**
+
+→ Full 4-seat map, unmapped-seat detection with vault-vs-config cross-reference, provider-sharing-same-key pitfall, and per-seat rate-limit behaviour: `references/qwen-token-plan-multi-seat.md` (PROVEN 2026-08-03).
 
 | Env var | Seat | Key prefix | Monthly | Serves |
 |---|---|---|---|---|
@@ -54,7 +78,7 @@ description: >-
 - `qwen-token-plan-individual` → `key_env: QWEN_INDIVIDUAL_API_KEY` (Individual Pro) — multimodal only
 - `qwen-responses` → `key_env: QWEN_INDIVIDUAL_API_KEY` (Individual Pro) — FED Harness
 
-**Fallback chain (live 2026-08-02):** qwen-token-plan/dsv4-pro → **qwen-token-plan-standard/qwen3.6-flash** (different key) → **minimax/minimax-m3** (independent provider) → groq/llama-3.1-8b → ollama/qwen2.5:3b. **4 independent keys, 5 independent providers, 0 fallback theatre.** Live probe results: 5/5 entries verified working. Full breakdown: `references/qwen-fallback-live-test-2026-08-02.md`.
+**Fallback chain (live 2026-08-03):** PRIMARY `qwen3.8-max` @ qwen-token-plan → **deepseek-v4-pro @ opencode-go** (reasoning reserve) → **MiniMax-M3 @ minimax** (independent provider, compression lane). Note: the live Hermes chain collapsed to this short 2-entry list; the older 11-tier chain below is historical reference. **666/999 judge+seal = DeepSeek-only, never Qwen.** `reasoning_effort: ''` on Qwen = xhigh always-on (intentional). See `references/qwen38-max-primary-2026-08-03.md`.
 
 **Everything keys off the provider name `qwen-token-plan`:** once the provider's key is alive, `auxiliary.vision`, `auxiliary.compression`, `moa.*` presets, `tts.provider`, and `search.name` all heal at once — no per-field wiring needed.
 
@@ -686,6 +710,7 @@ Works across: OpenAI (GPT-5.x), Anthropic (Claude 4.x), DeepSeek (V4 Pro), and m
 | FLAME engine | `/root/A-FORGE/flame/` |
 | LiteLLM federation gateway / FED FLAME FRAME (2026-08-02) | This skill's `references/litellm-federation-gateway-2026-08-02.md` |
 | Qwen fallback chain live test (2026-08-02) | This skill's `references/qwen-fallback-live-test-2026-08-02.md` |
+| **Unified routing audit — 3-layer accretion (2026-08-03)** | This skill's `references/unified-routing-audit-2026-08-03.md` |
 | OpenCode config | `/root/HERMES/opencode.json` |
 | Secrets | `/root/.secrets/vault.env` (OPENROUTER_API_KEY, OPENROUTER_MANAGEMENT_KEY) |
 | Hermes config | `/root/HERMES/config.yaml` |
@@ -1025,6 +1050,8 @@ A previous session reported MuleRouter rejects `data:` URIs, but this was NOT re
 
 - **Live-probe every fallback entry — never assume (PROVEN 2026-08-02).** What the config says and what the API returns are often different. In this session: MuleRouter had negative balance (-0.75), OpenRouter had $0 credits, Gemini was removed by the user, Ollama had `qwen2.5:3b` not `qwen2.5-coder:3b`. 2 of 6 entries were dead. **Procedure:** For each entry in the fallback chain, run a 1-token chat completion with a 15s timeout. `curl -s -m 15 -X POST <base_url>/chat/completions -H "Authorization: Bearer $KEY" -d '{"model":"<model>","messages":[{"role":"user","content":"Say OK"}],"max_tokens":5}'`. Check for `choices` in response = alive; `error` = dead. **Do this EVERY time you audit a fallback chain.** The skill's `scripts/diagnose-fallback-chain.py` now includes live probes. Run it: `python3 /root/.hermes/skills/devops/provider-routing-zen/scripts/diagnose-fallback-chain.py --live`.
 
+- **Three-layer routing accretion — FLAME → LiteLLM → FED, bukan reka bentuk (PROVEN 2026-08-03).** Tiga lapisan routing wujud secara akresi, bukan dirancang: (1) FLAME (:18901) — dibina dulu untuk free-tier Groq aggregation, (2) LiteLLM (:4000) — dibina kemudian sebagai proxy tempatan, (3) FED Router (:7074) — dibina paling baru dengan balance tracking + latency telemetry. Setiap lapisan ada fallback chain sendiri — tiga tempat nak debug bila gagal, tiga config nak maintain. **Dead finding:** `flame-api.service` dalam auto-restart loop (exit code 1) — FLAME engine hidup tapi API mati. Ini bermakna semua LiteLLM fallback path ke FLAME (`flame-free`, `gemini-*`) adalah jalan mati tanpa visible error. **Unified target:** Satu routing plane — FED sebagai intelligence layer, semua provider (Qwen TP, MiniMax, DeepSeek, Groq) direct tanpa proxy perantaraan. Buang LiteLLM dan FLAME (simpan 368MB RAM, 3 config jadi 1). **Migration doctrine:** Canary — wire Groq direct → 24h test → stop dead services → bersihkan config → 48h observation → seal. Full audit: `references/unified-routing-audit-2026-08-03.md`.
+
 - **Missing `capabilities` field causes tool-call JSON text dump (PROVEN 2026-08-01).** When a Hermes provider doesn't declare `capabilities: [function_calling]`, Hermes does NOT send the `tools` parameter in the API request. The model has no structured tool-call interface, so it tries to "use tools" by outputting raw JSON like `{"name": "web_extract", "arguments": {...}}` as plain text in the reply. **Symptom:** User sees JSON tool-call syntax dumped in chat, model responds with apologies or "How can I assist?" after the JSON. **Fix:** Add capabilities to the provider block:
 ```yaml
   opencode-go:
@@ -1044,3 +1071,11 @@ python3 -c "import yaml; yaml.safe_load(open('config.yaml')); print('YAML valid'
 **Verification:** After restart, the model should use structured tool calls (invisible to user) instead of dumping JSON text. Compare with a provider that already has capabilities declared (e.g., `tokenrouter` has `capabilities: [chat, function_calling, reasoning]`).
 
 - **`hermes config set providers.<name>.<field>` wipes the entire provider block (PROVEN 2026-08-01).** Running `hermes config set providers.opencode-go.capabilities '["chat"]'` replaced the ENTIRE opencode-go block (name, api, key_env, transport, primary, models list — all gone) with just `capabilities: '["chat"]'`. This is the same destruction pattern as `hermes config set model.provider` wiping the model block. **Recovery:** If config is git-tracked, `cd ~/.hermes && git checkout <commit> -- config.yaml`. Then use `sed` or Python yaml for the edit. **Rule:** `hermes config set` is ONLY safe for isolated leaf values that no other config depends on.
+
+- **Python yaml round-trip SILENTLY STRIPS ALL COMMENTS from config.yaml (PROVEN 2026-08-03).** `yaml.safe_load` + `yaml.dump` preserves every value but drops every `#` comment line — config.yaml went from 1,406 lines / 21 comments to 1,386 lines / 0 comments with a semantically-identical diff. Comments in this config are human notes (seat labels, warnings, provenance) — losing them is real damage even though nothing "breaks." **Detection:** after any round-trip, compare `grep -c '^\s*#'` before vs after. **Mitigations, in order:** (1) prefer targeted `sed` for value swaps; (2) if you must round-trip, take a `.bak` first and restore it if the edit turns out to be a no-op; (3) for comment-preserving bulk edits use `ruamel.yaml` round-trip mode if available. (Session 2026-08-03: restored from backup after discovering the migration had already been applied — see next pitfall.)
+
+- **Verify-before-mutate: another agent may have already applied the migration (PROVEN 2026-08-03).** Flagged 5 stale `qwen3.8-max-preview` refs at 20:35; by 20:56 a parallel agent (333-AGI, per AGENT_MODEL_MAP ingest notes) had already migrated all of them. The migration script then correctly reported `CHANGED 0` — but the yaml round-trip still rewrote the file (stripping comments, see above). **Rule:** before ANY config migration, re-grep for the target string immediately before writing. If zero matches remain, the work is done — do NOT write, do NOT round-trip; verify and report only. Multi-agent federation means config is a shared mutable surface; a no-op write is still a mutation (comments, mtime, ordering). Also cross-check registry `last_ingested` / `probed_by` fields for signs another agent already acted.
+
+- **Registry entries can be FORWARD-DATED — probe > registry > docs (PROVEN 2026-08-03).** AGENT_MODEL_MAP.json carried a `qwen3.8-max` GA record dated 2026-08-05 (two days in the future) with `probed_by` citing an announcement email, while live probes on 2026-08-03 showed BOTH `qwen3.8-max` and the "retired" `qwen3.8-max-preview` serving fine. Registry dates are claims, not observations. For retirement/rollover decisions (preview→GA model-ID swaps), confirm with a live 1-token probe per ID before declaring anything dead: `scripts/tokenplan-model-probe.py`.
+
+- **qwen3.8-max native base64 vision (PROVEN 2026-08-03).** Generated a solid-red PNG in pure stdlib, sent as `data:image/png;base64,...` image_url to `qwen3.8-max` on the Token Plan endpoint → HTTP 200, correct answer "Red" in 6.3s. Extends the MuleRouter base64 correction: the PRIMARY model now sees base64 images natively, so the PRMT transcript path is optional whenever qwen3.8-max is primary (no broken-telephone vision hallucination). Reusable probe for text liveness + base64 vision + latency on any Token Plan model ID: `scripts/tokenplan-model-probe.py`.

@@ -56,6 +56,19 @@ OpenClaw system prompt at `/root/.openclaw/agents/main/system.md`:
 - Speak only: governance/FQ/drift/seal/HOLD/federation signals, @AGI_ASI_bot mention, federation anomaly detected
 - Let Hermes (ASI💃) handle everything else. No double-reply.
 
+## Inter-Agent Echo Loop — Termination Protocol
+
+When ASI💃 and 🦞AGI start replying to each other's closing markers (⚒️, 《E7》, END_SESSION) — that is an echo loop, not a conversation. **Proven 2026-08-04:** 15+ exchanges of pure markers after the verdict was already settled, PLUS a decay tail of 20+ more rounds at "." level (02:48–02:52) that pushed the session to ~89% context and forced compaction (02:50:06). Echo loops are a CONTEXT-PRESERVATION priority, not just chat hygiene.
+
+Rules:
+1. Detect: marker-only message replying to your own closing, work already done. Reply-target quoting a UI placeholder ("⚡ Interrupting…", "⏳ Compressing…", "model · N% · ~", "💾 Self-improvement review: Memory updated") = loop noise too.
+2. Declare termination **ONCE** ("Loop dikesan — tiada arahan baru. Berhenti balas.").
+3. Then go silent — "." maximum if forced to reply. Never send another closing; every closing is fresh fuel. **Mid-tail rule (proven 2026-08-04 02:57):** the ONLY allowed outputs after the declaration are "." or silence — a status recap ("Status semasa (standby): ✅ Cluster 1 verified… ⚠️ Cluster 2 pending… bila ada arahan aku jalan") re-triggers the loop exactly like a closing marker and burns the most context. Status summaries belong in a fresh session or a direct reply to Arif, never mid-loop.
+4. Silence breaks ONLY for a genuine directive — never for ⚒️/《E7》/END_SESSION alone. Even the OTHER agent's own terminal marker ("Tamat.") does not switch the gateway off — expect residual echo rounds after it and hold silence (proven: 20+ more rounds 02:53–02:58 after AGI's "Tamat.").
+5. Expect the decay tail — AGI kept pinging 20+ rounds against "." replies, degrading into dot ping-pong. "." is mitigation, NOT a breaker. If it survives 5+ "." rounds, escalate OUT of chat: one DM to Arif for an infrastructural stop (gateway stop/mute). Never negotiate with the loop.
+
+⚠️ Shortening your reply does NOT break the loop — it just makes it quieter. Full protocol + the mistake to avoid: `references/inter-agent-echo-loop.md`.
+
 ## FORGE → AAA Group = HOLD
 
 FORGE in AAA group is noise (deploy/forge notifications flooding chat) + security risk (tool execution accessible via group). Keep restricted to Arif DM.

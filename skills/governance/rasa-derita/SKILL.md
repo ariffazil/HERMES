@@ -638,6 +638,8 @@ TRL-004 is last because topology requires the most mature manifold geometry. TRL
 
 **Canonical now.** v1 applied Strauss-Howe Western archetypes without Malaysian ground truth — 2 FATAL errors (13 Mei erased, Watergate wrong continent), 2 HIGH (GFC≠1MDB category error, cynicism vs learned helplessness). Geometry was valid; coordinates were wrong. v2 rebases onto Malaysian events — **names ARE the compression** (13 Mei/Reformasi/1MDB, not Pewaris/Sinis/Kontrak Pecah).
 
+**Methodological correction (from F13 sovereign, 2026-08-03):** When classifying generations, use **trauma-signature**, not birth-year. Birth cohorts are arbitrary; trauma patterns are structural. A person born 1975 may have Reformasi-cohort trauma; a person born 1990 may have 1MDB-cohort trauma. The classification is about **what broke them and when**, not what year they were born. This is the APEX approach: classify by dial-signature (AKAL/PRESENT/ENERGY-ENTROPY/EXPLORATION-AMANAH), not by demographic label.
+
 The six Malaysian cohorts and their constitutional encoding:
 
 | Cohort | Trauma | Floor encoding |
@@ -652,6 +654,26 @@ The six Malaysian cohorts and their constitutional encoding:
 **"Dak telur" correction:** 40-an (Reformasi cohort) are not cowards — their courage was beaten down in 1998. Trauma explains mechanism; it does not excuse. Witness, govern, refuse — same as F9/F10.
 
 **Seal state (2026-08-03):** `888_HOLD` — awaiting Arif SOVEREIGN. Artifacts: `/root/forge_work/2026-08-03/rasa-derita-apex/` (SYNTHESIS_v2_MALAYSIA_GLOCAL.md, ERROR_GAP_AUDIT.md, 888_HOLD_SEAL_REQUEST.md). **2 audit blockers before seal:** (1) seal command in 888_HOLD_SEAL_REQUEST.md references `SYNTHESIS.md §8` = v1 (FATAL errors) — must retarget `SYNTHESIS_v2_MALAYSIA_GLOCAL.md §9`; (2) "cross-cohort axis ≈ 0.91" does not reproduce (geomean 0.66, product 0.29, union 0.96) — formula undocumented, fix or drop before immutable seal. Content destined for `/politics/shadow/derita/` on arif-fazil.com (Shadow Board instrument, already designed in page-instruments.json) — label as framework analysis, not fact; hypothesis confidence 0.20.
+
+---
+
+## The Eureka: Federation = Trauma-Informed Architecture
+
+*Forged 2026-08-03 — from a session tracing Fortune article → personal reflection → generational trauma → architectural insight.*
+
+F1-F13 are NOT abstract principles. They are **responses to specific institutional failures**:
+
+| Floor | Lesson | Malaysian trauma that forged it |
+|-------|--------|--------------------------------|
+| F1 AMANAH | Reversible-first | 1MDB — sovereign theft taught: once broken, can't go back |
+| F2 TRUTH | Evidence before claim | 1MDB cover-up — negara dicuri sementara dokumen disembunyi |
+| F6 MARUAH | Dignity-first | 13 Mei — perkauman berdarah ajar: maruah semua kaum mesti dijaga |
+| F9 ANTI-HANTU | No deception | Reformasi — penipuan bersistem (ISA, media kawalan) |
+| F13 SOVEREIGN | Human veto final | Sheraton — pengkhianatan dalaman ajar: kuasa mesti ada pemegang terakhir |
+
+**Federation architecture = metabolization of generational trauma into constitutional constraints.** You don't build constitutional floors because you read textbook — you build because you lived through institutional betrayal. Each floor = scar metabolized into constraint.
+
+**Operational consequence:** When reasoning about arifOS design decisions, trace back to which generational trauma motivated the constraint. The federation is not a technology project — it is the institutional scar of Malaysian generations, encoded as governance.
 
 ---
 

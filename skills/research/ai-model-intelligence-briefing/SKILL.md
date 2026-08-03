@@ -56,6 +56,18 @@ Use `web_search` for discovery, then `mcp__hound__mcp_smart_fetch` for full extr
 | 4 | Competitive Landscape | Table: compare with rival labs' current flagships |
 | 5 | Federation Implications | What this means for arifOS federation — routing, cost, capability gaps |
 
+### Phase 2.5: Live Federation Audit (when the model is already wired in)
+
+If the model (or its preview/predecessor) already exists in federation config or the model registry, web research alone is NOT enough — the contrast-fit must be grounded in live state:
+
+1. **Live-probe the model ID** on the actual key/endpoint (1-token chat completion, 15s timeout). Preview and GA IDs can coexist; a registry "retired" note needs live confirmation before you act on it.
+2. **Probe vision if claimed** — send a generated base64 PNG (data: URI) and check the answer. Native base64 vision changes the whole PRMT/vision-pipeline calculus. (Reusable recipe: `provider-routing-zen` skill `scripts/tokenplan-model-probe.py`.)
+3. **Audit current config** — what is `model.default`? What still references the old/preview ID? How many fallback entries, and are they independent providers? Check agent.log for REAL latency/error behavior — benchmarks ≠ production.
+4. **Cross-check registry dates** — AGENT_MODEL_MAP.json entries can be forward-dated or speculative (seen 2026-08-03: a GA entry dated 2 days in the future, `probed_by` citing an announcement email). Probe > registry > docs.
+5. **Verify-before-mutate** — if you flag stale model-ID refs for migration, re-grep immediately before editing: another federation agent may have already migrated them mid-session (proven 2026-08-03). A no-op write is still a mutation.
+
+Proven 2026-08-03 (Qwen3.8-Max): live probes confirmed GA ID alive (1.4s text), preview still serving despite "retired" registry note, base64 vision native (6.3s, correct answer); config audit found 5 stale preview refs already migrated by a parallel agent; agent.log showed real behavior — 11-19s cached turns, 82s heavy reasoning, zero 429s. Full dossier: `references/qwen38-max-2026-08-03.md`.
+
 ### Phase 3: Federation Implications (Mandatory)
 
 This is the section Arif actually cares about. Every model briefing MUST include:

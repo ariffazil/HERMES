@@ -11,12 +11,12 @@ Three live commodity dashboards serving **temporal State-of-Truth (SOT)** — ev
 
 | Dashboard | URL | API port | Symbol | Status (2026-08-03) |
 |---|---|---|---|---|---|
-| Gold | `arif-fazil.com/gold/` | `:3456` | XAUUSD | ✅ LIVE — 1,753-line TradingView dashboard with `fetch_gold.py` API |
+| Gold | `arif-fazil.com/gold/` | `:3456` | XAUUSD | ✅ LIVE (2026-08-04) — TradingView dashboard + `fetch_gold.py`, Binance PAXGUSDT spot primary, live USDMYR via `driverExtra` |
 | Brent Crude (Oil) | `arif-fazil.com/oil/` | `:3457` | XBRENT | 🔴 STALE — 121-line stub with **hardcoded $84.32** (actual: ~$90.12). Not using live API. |
 | Natural Gas | `arif-fazil.com/gas/` | `:3458` | XNATGAS | ⚫ MISSING — `fetch_gas.py` (1,294 lines) exists but **no HTML dashboard**. wealth.arif-fazil.com/gas/ returns empty shell. |
 
 **API scripts exist for all three** at `/root/arif-fazil.com/sites/arif-fazil.com/dist/{gold,gas}/api/`:
-- `fetch_gold.py` (1,269 lines) — GC=F, XAUUSD=X fallback, full tech indicators + signals
+- `fetch_gold.py` (1,269 lines) — **Binance PAXGUSDT spot primary** (2026-08-04; yfinance PAXG-USD → GC=F fallbacks). GC=F is COMEX FUTURES with ~$50-60 carry premium — NEVER primary; see pitfall below. Full tech indicators + signals
 - `fetch_gas.py` (1,294 lines) — NG=F, NATGAS=X fallback, full tech indicators + signals
 - **`fetch_oil.py` does NOT exist** — Oil dashboard has no live data pipeline
 
@@ -115,6 +115,21 @@ sed -i \
 | `/etc/caddy/Caddyfile` | Caddy routes for all three |
 | `/root/trading/` | Gold signal engine source |
 
+## Gold 2026-08-04 Fix + `driverExtra` Live Macro Pattern
+
+Full session record: `references/gold-live-macro-2026-08-04.md` — three-layer fix (JS scope bug, futures-vs-spot source, hardcoded FX rate) + verification transcript + unresolved `pulseDriver` lead.
+
+**`driverExtra` is the per-page macro channel.** `/gold/index.html` defines `window.ZEN_MARKET.driverExtra(data, fmt, macro)` and `/var/www/html/_shared/zen-market.js` calls it with the live `snapshot.macro` object — so any dashboard-specific derived line (RM/gram, etc.) pulls macro fields from the LIVE `/api/macro` payload, never from a hardcoded constant. When adding a derived display to any commodity page: put the definition in the page's `ZEN_MARKET` config, consume macro fields inside `driverExtra`, and patch BOTH files (page + shared widget) if the shared code held the old hardcoded value.
+
+**RM/gram formula:** `price_usd × macro.usmyr ÷ 31.1035` (1 troy oz = 31.1035 g).
+
+**Best single health probe** — snapshot bundles ticker+macro+levels+coherence hash:
+```bash
+curl -s https://arif-fazil.com/gold/api/snapshot | python3 -c \
+  "import sys,json; d=json.load(sys.stdin); print(d['ticker']['price'], d['ticker'].get('rsi'), d['macro']['usmyr'], d['coherence_id'][:12])"
+```
+Verified live API paths via the `arif-fazil.com` vhost (Caddy strips `/gold` → localhost:3456): `/gold/api/snapshot`, `/gold/api/ticker`, `/gold/api/macro`, `/gold/api/levels`.
+
 ## Dashboard Sections (all live via JS)
 
 | Section | Data source | Refresh |
@@ -161,6 +176,9 @@ curl -s localhost:3458/health | jq .status
 
 ## Pitfalls
 
+- **GC=F futures desynced the gold chart by ~$56 (root cause, fixed 2026-08-04).** GC=F is COMEX futures with ~$50-60 carry premium over spot. Banner showed spot, chart/ticker internals were GC=F-fed → chart and banner disagreed, and both diverged from MT5 spot reality. **Rule: spot sources only for display (Binance PAXGUSDT klines primary).** After changing the backend source: `rm /tmp/gold_cache/*.json` + `systemctl restart gold-api` or stale cache keeps serving the old venue.
+- **Silent exception localization: read BETWEEN the last-good line and the broken element.** In `zen-market.js` the render function fills elements sequentially; if `pulseTimestamp` shows `● LIVE` but the later `pulseDriver` still shows `—`, a silent JS exception landed between those two code lines. Open the code between them — do not guess. (Open item 2026-08-04: `pulseDriver` still `—`; macro data arrives, so the break is between the timestamp block and the driver block.)
+- **Verify API payloads with server-side curl, not `browser_console`.** Console expressions that do `fetch()` get blocked (network primitives are gated). Curl the endpoint on the VPS for ground truth; use the browser only for rendered DOM state. If the browser shows "connecting…" but curl returns a full snapshot, it's a load-timing race — wait 5+ seconds and re-check before assuming breakage.
 - **WEALTH MCP requires session auth (2026-08-03).** All WEALTH organ tools (`capital_market`, `capital_health`, etc.) now require a valid `session_id` — anonymous reads blocked since FORGE 2026-07-18. Calling without `arif_init()` first returns `SESSION_REQUIRED`. To get live commodity data via WEALTH MCP: (1) call `arif_init()` to get `session_id`, (2) pass `session_id` to all subsequent WEALTH tool calls. For dashboard pages, the Python `fetch_*.py` scripts use yfinance directly (bypassing WEALTH MCP), so dashboards are unaffected — the MCP block only impacts agent-side commodity queries.
 - **Iron Rule #1 IS being violated (2026-08-03).** The Oil dashboard (`/var/www/html/oil/index.html` or `dist/wealth/oil.html`) has hardcoded $84.32 for Brent, $80.15 for WTI, $3.42 for NatGas — while current market is ~$90.12 Brent. The Rule says "NEVER hardcode data in HTML" but this stub was shipped with hardcoded values and no API fetch. **Fix:** create `fetch_oil.py` (clone from `fetch_gas.py`, change ticker to BZ=F), build oil.html from gold template, wire to live API. Until fixed, the oil page is a "stale lie" per Iron Rule #1.
 - **Gas has an API but no HTML page.** `fetch_gas.py` (1,294 lines) is complete with yfinance ticker (NG=F), EMA/RSI/ATR, signal generation, support/resistance, macro context. But there is no `/var/www/html/gas/index.html` dashboard. The wealth.arif-fazil.com/gas/ route shows an empty stub. **Fix:** clone gold.html → gas.html, sed-replace API paths + labels + ticker.

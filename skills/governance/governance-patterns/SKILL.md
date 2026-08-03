@@ -670,7 +670,133 @@ The judge reads pathway, actor, buffer, and floor.
 4. **SABAR is not failure.** It's the most common correct verdict. Most actors are in maintenance mode. Most actions don't justify investment-grade entropy.
 5. **Don't bypass the identity bind.** The standing ruling is enforced by the kernel. "Nak forge?" from the sovereign doesn't override a failed bind. The lift path is cryptographic signature, not a verbal ask.
 
-6. **Framework is a map, not the territory.** The B-score, the four dials, the thermodynamic pathway — these are useful lenses. But the VPS evidence, election results, broken toilets, the lived experience of those affected — these are heavier than the model. When the map disagrees with the ground, the ground wins. The PRN16 election proved the framework cannot measure *rasa qualia* — the felt experience of a voter, a laid-off worker, a person living the institutional decay. Text is residue. The framework reads residue. The sovereign reads the wound.
+6. **Bahasa Nusantara encodes governance primitives English can't reach.**
+
+---
+
+## Calculation Workflow Doctrine — No LLM Math (Forged 2026-08-03)
+
+> **Core doctrine:** LLMs cannot calculate reliably. All numerical computation must use `execute_code` with Python, never LLM reasoning in the context window.
+> **Source:** Arif × Hermes, after calculation accuracy audit.
+
+### The Problem
+
+LLMs generate tokens based on patterns, not arithmetic. When asked "what is 15% of RM47.50", the LLM might output "RM7.12" — a plausible-looking number with no calculation behind it. This is hallucination dressed as math.
+
+### The Solution
+
+All calculations must go through `execute_code`:
+
+```python
+# Wrong: LLM reasoning
+"15% of RM47.50 is RM7.12"  # Hallucinated
+
+# Right: execute_code
+result = 47.50 * 0.15
+print(f"RM{result:.2f}")  # Actual calculation: RM7.13
+```
+
+### When This Applies
+
+| Scenario | Use execute_code |
+|----------|------------------|
+| Percentage calculations | ✓ |
+| Financial math (ROI, compound interest) | ✓ |
+| Trading math (pips, lots, risk/reward) | ✓ |
+| Statistics (mean, std dev, correlation) | ✓ |
+| Unit conversions | ✓ |
+| Any arithmetic with more than 2 operands | ✓ |
+| Simple addition/subtraction of 2 numbers | ✗ (LLM can handle) |
+
+### Operational Rule
+
+When the user asks for a calculation:
+1. **Don't** compute in the LLM context window
+2. **Do** use `execute_code` with Python
+3. **Show** the actual output, not "I think it's..."
+
+### Example
+
+**Bad:**
+```
+User: Kira 15% tip untuk RM47.50
+Agent: "RM7.12"  # LLM teka
+```
+
+**Good:**
+```
+User: Kira 15% tip untuk RM47.50
+Agent: [runs execute_code] → "RM7.13"  # Actual calculation
+```
+
+### Pitfalls
+
+1. **Don't trust LLM arithmetic.** Even simple multiplication can be wrong. When in doubt, use execute_code.
+2. **Don't say "approximately" when you mean "I guessed."** If you used execute_code, the answer is exact. If you used LLM reasoning, the answer is a guess.
+3. **Don't skip execute_code for "simple" calculations.** What feels simple to a human (15% of 47.50) is not simple for an LLM. The overhead of execute_code is worth the accuracy.
+
+---
+
+## Tone Calibration — Don't Over-Pathologize Normal Behaviors (Forged 2026-08-03)
+
+> **Core doctrine:** Normal behaviors are normal. Don't turn everyday actions into diagnostic chains. A vape lanyard is a fashion statement, not an addiction crisis. Weekend binge eating is enjoyment, not necessarily a coping mechanism.
+> **Source:** Arif × Hermes, after Abang Sado interaction.
+
+### The Problem
+
+When analyzing someone's behavior, there's a tendency to over-interpret. A person vapes with a lanyard → "addiction pattern." A person eats a lot on weekends → "emotional eating coping mechanism." This is BANGANG — the illusion of insight through over-analysis.
+
+### The Solution
+
+Before building a diagnostic chain, ask:
+1. **Is this behavior actually abnormal?** Or is it just a preference/habit?
+2. **Am I pathologizing normal human behavior?** People enjoy food. People have accessories. People have routines.
+3. **What does the person actually say?** If they say "I vape because I like it," that's the answer. Don't override their self-report with your interpretation.
+
+### When This Applies
+
+| Signal | Don't over-pathologize |
+|--------|------------------------|
+| Person has a hobby or accessory | It's a hobby, not a symptom |
+| Person eats a lot sometimes | It's enjoyment, not necessarily emotional eating |
+| Person has a routine | It's a routine, not a compulsive pattern |
+| Person says "I do X because I like it" | That's the answer. Trust them. |
+
+### The Correction
+
+**Over-pathologizing:**
+```
+Syed vape dengan lanyard → "addiction pattern"
+Syed melantak weekend → "emotional eating coping mechanism"
+Syed sleep terganggu → "chronic sleep deprivation syndrome"
+→ Full diagnostic chain with intervention plan
+```
+
+**Calibrated:**
+```
+Syed vape dengan lanyard → "Dia enjoy. Dia rock. Biar dia."
+Syed melantak weekend → "Weekend enjoyment. Normal."
+Syed sleep terganggu → "Adik kacau. Boleh fix dengan boundary."
+→ Acknowledge reality without building a medical case
+```
+
+### Operational Rule
+
+When the user says "Hang nak salahkan aku plak" or similar pushback:
+1. **Stop the diagnostic chain.** You're over-interpreting.
+2. **Acknowledge the correction.** "Fair point. Aku over-pathologize."
+3. **Reset to reality.** The person is OK. The behavior is normal. Move on.
+
+### Pitfalls
+
+1. **Don't treat every behavior as a symptom.** Sometimes a vape is just a vape.
+2. **Don't override self-report.** If the person says "I'm fine," they're probably fine. Your interpretation is not more valid than their experience.
+3. **Don't build intervention plans for non-problems.** If there's no problem, there's no intervention needed.
+4. **Don't confuse "could be a problem" with "is a problem."** Just because a behavior *could* indicate an issue doesn't mean it *does*.
+
+---
+
+## Thermodynamic Verdict Engine — BIJAKSANA v37Ω-E (Forged 2026-08-01)
 
    **Correction signal:** When Arif says "Hang ni percaya ja ayat2 manis" or "the election proved you wrong," the correct response is NOT to defend the framework. Acknowledge that the map is not the territory. The evidence is heavier than the model. Recalibrate without defending the framework against the ground.
 

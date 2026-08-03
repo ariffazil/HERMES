@@ -1,6 +1,6 @@
 ---
 name: bangang-surface-audit
-description: "Systematic audit methodology to surface BANGANG (arrogant/overinflated) — both federation-code overreach AND analytical deconstruction of human/institutional persona-shadow gaps."
+description: "Systematic audit methodology to surface BANGANG (arrogant/overinflated) — three dimensions: code overreach, analytical persona-shadow deconstruction, and agent conversational self-audit."
 related_skills: [federation-checkup, governance-patterns, human-sexuality-shadow-framework]
 triggers:
   - "bangang"
@@ -37,8 +37,9 @@ triggers:
 # BANGANG Surface Audit — Methodology
 
 > BANGANG = Malay "swollen/arrogant/overinflated"
-> Two faces: authority BANGANG (system overreach) and analytical BANGANG (persona-shadow gap in humans/institutions).
+> Three dimensions: authority BANGANG (system overreach), analytical BANGANG (persona-shadow gap in humans/institutions), and conversational BANGANG (agent self-audit of its own outputs).
 > When a task involves deconstructing a figure's claimed identity vs actual behavior, load `references/bangang-as-analytical-lens.md`.
+> When the user asks you to measure your own BANGANG level, load `references/agent-self-audit.md`.
 
 ## Cross-Reference: Three BANGANG Dimensions
 
@@ -49,6 +50,7 @@ BANGANG has three dimensions — know which one is in play:
 | **Authority BANGANG** | System acting without authorization | This skill (`bangang-surface-audit`) |
 | **Evaluation BANGANG** | Fake precision, wrong evaluation mode, metric theatre | `governance-patterns` §Evaluation Mode Doctrine |
 | **Analytical BANGANG** | Persona-shadow gap in humans/institutions | `references/bangang-as-analytical-lens.md` (this skill) |
+| **Conversational BANGANG** | Self-audit of agent's own outputs — fake precision, scope creep, mode mismatch | `references/agent-self-audit.md` (this skill) |
 
 > 📖 **Analytical BANGANG reference:** `skill_view(name='bangang-surface-audit', file_path='references/bangang-as-analytical-lens.md')` — Jung Shadow framework, 3-phase biographical deconstruction, rationalisation counter, Victimhood Loop, archetype table. Load when deconstructing a figure, not a codebase.
 

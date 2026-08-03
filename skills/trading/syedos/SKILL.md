@@ -317,22 +317,55 @@ When adding temporal intelligence to any Syed-facing site: add the 5 meta tags i
 6. Verify with `curl -sk --resolve "domain:443:VPS_IP"`
 7. Cloudflare DNS propagates in ~1-2 minutes
 
-**Caddy vhost template:**
+**Caddy vhost template (updated 2026-08-03 — mission cards + upload proxy):**
 ```caddyfile
 syedos.arif-fazil.com {
     import tls_origin
     encode zstd gzip
     root * /var/www/html/syedos
+
+    # Upload — reverse proxy to Python receipt server (port 18900)
+    handle /upload* {
+        reverse_proxy localhost:18900
+    }
+
+    # Dashboard — full interactive page
+    redir /dashboard /dashboard/ 308
     handle /dashboard/* {
         try_files /dashboard.html /index.html
         file_server
     }
+
     handle {
         try_files {path} {path}/index.html /index.html
         file_server
     }
 }
 ```
+
+**Multi-surface architecture (forged 2026-08-03):** The SyedOS site now uses a mission-based surface model extracted from arif-fazil.com architecture:
+
+| Surface | Path | Audience | Content |
+|---|---|---|---|
+| Home (4 misi cards) | `/` | Syed | Live gold, nasi lemak, heal, dashboard links |
+| Emas | `/emas/` | Syed | TradingView chart + live XAUUSD + S/R/RSI |
+| Nasi Lemak | `/nasilemak/` | Syed | Chart.js revenue + order table + vendor pricing |
+| Dashboard | `/dashboard/` | Syed | Unified full dashboard |
+| Heal | `/heal/` | Syed | Breathing chamber + muscle worship |
+| Agent surface | `/llms.txt` | Agents | Page index, live endpoints, cron status |
+
+**⚠️ PITFALL: Emas dashboard dual-source desync + JS scope bug (fixed 2026-08-03).** Banner fetches gold-api.com (spot) but chart/ticker used internal API fed by GC=F futures (~$56 carry premium) → banner and chart showed different prices. Separately, `const diff` declared inside `if (lastPrice)` block but referenced outside → ReferenceError killed RSI/EMA/bias/verdict every tick (they showed "—"). Fixes: `fetch_ohlcv` primary = Binance PAXGUSDT spot klines (`fetch_ohlcv_binance`), yfinance fallback; `let diff = 0` hoisted in `/var/www/html/syedos/emas/index.html`. Debug order for emas page: browser console for ReferenceError first, then compare banner vs chart source venue. After backend source change, clear `/tmp/gold_cache/*.json` + `systemctl restart gold-api`. The main-site `arif-fazil.com/gold/` dashboard got the same class of fix on 2026-08-04 (spot-vs-futures source + JS scope bug + live USDMYR via `driverExtra` instead of hardcoded 4.35) — see `wealth-commodity-dashboard` skill for that surface and its `references/gold-live-macro-2026-08-04.md` for the verification transcript.
+
+**llms.txt pattern:** A single plain-text file at site root listing all pages, live data endpoints, cron jobs, and system services. Agents read this for discovery. See `https://syedos.arif-fazil.com/llms.txt` for live example. Every user-facing sub-site should have one.
+
+**⚠️ PITFALL: Webroot deletion during federation maintenance (proven 2026-08-03).**
+The entire `/var/www/html/syedos/` directory disappeared during a federation web canon reconcile operation. Caddy stayed configured but served 404 on every path. Recovery pattern:
+1. Check `/root/backups/` — look for `www-html-*` tarballs, newest first
+2. Check `/root/_quarantine/` — some files may have been moved during reconciliation
+3. Restore from backup: `mkdir -p /var/www/html/syedos && cp -r /root/backups/<LATEST>/syedos/* /var/www/html/syedos/`
+4. Deploy dashboard from `/root/sado/dashboard.html` if missing from backup
+5. Verify all routes with `curl -sk --resolve` loop
+6. Caddy does NOT need reload for static file_server — files appear instantly
 
 Pitfall: Caddy will 000/SSL handshake fail until Let's Encrypt cert is issued (~5 seconds after first HTTP request hits it via Cloudflare). This is normal — wait for `journalctl -u caddy` to show "certificate obtained successfully".
 
@@ -505,7 +538,7 @@ When generating portfolio review charts or any trading chart for Syed: **labels,
 **Layout pattern (proven):** `matplotlib` figure with `gs = fig.add_gridspec(N, 1, ..., right=0.72)` — leaves 28% of figure width for the legend panel. Three chart rows stacked vertically, all labels/data on the right.
 
 ### Engine Pipeline
-1. Fetch XAUUSD via Yahoo Finance (GC=F futures)
+1. Fetch XAUUSD via Binance PAXGUSDT spot klines (`fetch_ohlcv_binance` in `/var/www/html/gold/api/fetch_gold.py`; yfinance PAXG-USD → GC=F as fallbacks). **GC=F is COMEX FUTURES with ~$50-60 carry premium over spot — never use it as primary; it desyncs charts/signals from MT5 spot.** (Fixed 2026-08-03.)
 2. EMA 20/50 + RSI + RSI divergence
 3. Candlestick patterns (hammer, shooting star, engulfing, doji)
 4. Support/resistance from recent pivots

@@ -88,9 +88,33 @@ set -e
 WEBZEN_OUT=$(python3 probe.py 2>&1) || true
 ```
 
+```bash
+# Fix 3 — capture exit code inline, no set +e bracket (PROVEN 2026-08-03)
+WEBZEN_EXIT=0
+WEBZEN_OUT=$(python3 probe.py 2>&1) || WEBZEN_EXIT=$?
+```
+
+**Re-proven 2026-08-03:** the same Sense probe died silently AGAIN — cron reported only "Script exited with code 1", zero indication of which check failed. This time two unguarded substitutions were latent dying lines (the doctor call and `DIRTY_COUNT=$(git ... | wc -l)`). After applying Fix 3 + `|| DIRTY_COUNT=0` guards to EVERY command substitution, the probe immediately printed the real failure (a single 404 route) instead of fainting. **Rule: in any multi-check probe, guard EVERY command substitution with `|| fallback` — one unguarded assignment under `set -e` turns a reporting tool into a silent exit-1.** The 2026-08-01 fix patched only one line; the 2026-08-03 fix shows guards must be applied systematically to ALL substitutions in the script.
+
 **Better — don't use `set -e` for multi-check health probes at all.** A probe that must report ALL failures is the opposite shape of a linear fail-fast script: accumulate failures explicitly (`FAILS=$((FAILS+1))`) and let the report block at the end decide the exit code. `set -e` belongs in scripts where ANY failure should abort immediately.
 
 **Diagnosis:** silent exit-1 + `set -euo pipefail` + no stdout = died at the first non-zero command. Reproduce with `bash -x script.sh 2>&1 | tail` to see the exact dying line.
+
+### Health probe hardening — transient tolerance + signal-vs-noise threshold (PROVEN 2026-08-03)
+
+Script-based health probes (`no_agent: true`, every 15m) fail in patterns that look like real outages but are just brittle failure detection. Apply these 5 rules to every multi-check probe:
+
+1. **Doctor/YELLOW warnings ≠ failures.** Tools like `web_zen doctor` exit 1 for YELLOW-band checks (caddy hints, etc.) — they're informational, not fatal. Map exit=1 to 0: `if [ "$EXIT" -eq 1 ]; then EXIT=0; fi`.
+
+2. **`git status` counts staged deletions as "dirty".** Filter to only untracked files for true dirt: `grep "^??"`. Modified + staged deletions = work in progress, not a health signal.
+
+3. **Transient network 000 codes ≠ 4xx/5xx errors.** A single route returning `HTTP 000` in a 15-minute window is a network blip. Only fail when failures accumulate: `if [ "$FAILS" -gt 2 ]`.
+
+4. **Every command substitution needs `|| fallback` under `set -e`.** The 2026-08-01 fix patched only one line; 2026-08-03 proved the remaining unguarded assignments died silently. Pattern: `VAR=$(cmd) || VAR_DEFAULT` on EVERY substitution. One unguarded assignment turns a reporting tool into exit-1-silent.
+
+5. **`curl -sI` (HEAD, no Accept header) ≠ browser.** Caddy `Accept`-gated handlers return 404 to probes while humans see 200. Always probe with `-H "Accept: text/html"` and GET (not HEAD).
+
+**Proven 2026-08-03:** Sense health probe (job `db0aa69e0fdc`) failed every 15 min for hours — 3 root causes: doctor exit=1 from YELLOW warnings, dirty repo counting 25 staged deletions, transient 000 codes on 2 routes. All fixed by applying these 5 rules.
 
 ### Trailing newlines in command substitution
 
