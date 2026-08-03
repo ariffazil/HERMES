@@ -330,6 +330,7 @@ Arif's doctrine: *"Same directive ≠ same execution. Same mission ≠ same file
 **Pitfall — canon-sync required-files list:** `scripts/canon-sync.sh` has a hardcoded array of files it syncs. Any NEW canon file (atlas.yaml, file-authority.yaml) must be added to that array or the live mirror 404s. Check with `curl -s -o /dev/null -w '%{http_code}' https://arif-fazil.com/canon/<new-file>` after sync.
 
 ## Pitfalls
+- **patch tool + JSX:** See `references/tsx-patch-pitfalls.md` — the Hermes patch tool can silently drop edits on .tsx files. Use `execute_code` with Python's `hermes_tools.patch()` or `write_file` for whole-file rewrites instead.
 
 ### Site navigation & deploy traps (2026-08-01)
 

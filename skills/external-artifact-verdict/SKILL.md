@@ -212,6 +212,47 @@ reason. Two-line fix; caught only because the math was re-run.
 Full technique + a drop-in WCAG contrast verifier + the generalization to
 finance/physics/stats tables: `references/numeric-claim-verification.md`.
 
+## Seal-Command Reference Integrity + Unreproducible Aggregates (2026-08-03)
+
+A third recurring shape: the peer delivers a **seal request** — a document that
+is itself sound, plus an execution command (`arif_seal --payload "as in
+FILE §N"`). Two extra verification steps before ANY sovereign approval:
+
+### 1. The payload reference may point at the WRONG VERSION
+
+A seal request written during iteration often references the file that existed
+when the request was drafted — **not the final artifact**. Worked case
+(2026-08-03, 333-AGI RASA DERITA): `arif_seal --payload "RASA DERITA: [content
+as in SYNTHESIS.md §8]"` — but `SYNTHESIS.md` was **v1**, which the session's
+own audit had marked with 2 FATAL errors (13 Mei erasure, wrong continent).
+The correct target was `SYNTHESIS_v2_MALAYSIA_GLOCAL.md §9`. Executing the
+request as written would have sealed the **deprecated, error-laden version**
+into immutable VAULT999. F1 AMANAH: irreversible means the reference check is
+not a formality — verify the named file exists AND is the current canonical
+version before any seal executes.
+
+### 2. Aggregate numbers cited without formula → reproduce ALL plausible variants
+
+When a document cites a derived aggregate ("cross-cohort bargaining axis ≈
+0.91") without stating the formula, re-derive every plausible definition and
+check for a match. Worked case: with cohort G values 0.677/0.692/0.616 —
+geomean = 0.66, product = 0.29, union `1−∏(1−Gᵢ)` = 0.96, complement of C_dark
+geomean = 0.92. **None matched 0.91.** Verdict: UNREPRODUCIBLE — flag it, and
+refuse to let an unreproducible number enter immutable canon. F2 TRUTH applies
+to formulas, not just prose; a number that cannot be re-derived will be an
+audit burden forever.
+
+### 3. Probe the peer's live-state claims too
+
+The peer's report often carries operational claims ("M-WELL telemetry stale
+42.2h"). One probe call (`well_machine_diagnose`) confirmed it — 152,506s =
+42.36h. Fast, decisive, and it scores the peer's accuracy for future
+calibration (see cross-witness protocol step 5).
+
+**Verdict posture:** these are blockers, not cosmetics. Both findings above
+warrant "HOLD before seal" even though the underlying framework was sound —
+the seal is the point of no return, so the seal path must be clean.
+
 ## The Protocol
 
 ### Step 0: Isolate Before Touching

@@ -202,6 +202,32 @@ curl -sI https://domain/old-path/ | head -3
 
 If an existing `handle /wealth/*` block exists and you add `handle /wealth/gold/*`, the gold block MUST appear before the wealth block. Otherwise the wealth block catches the request first and the gold route never triggers.
 
+### Common Pitfall: Specific-Match `file_server` Handle Swallows SPA Sub-Routes (PROVEN 2026-08-03)
+
+Corollary to the "Caddy v2 SORTS" pitfall: Caddy sorts `handle` blocks by path specificity, so a MORE-specific matcher wins even when declared AFTER a broader one. If the more-specific handle is `file_server` WITHOUT `try_files`, every SPA client-side route under that path 404s — the broader fallback (`try_files ... /index.html`) never runs.
+
+**Symptom:** `/politics/shadow/` → 200 but `/politics/shadow/derita/` and `/politics/shadow/board/` → 404 (empty body). Static files under the path serve fine; SPA routes don't. Root cause: a pre-existing `handle /politics/shadow/* { root * /var/www/html/arif; file_server }` (no try_files, added for static dossiers) beat the broader `handle /politics/* { try_files {path} {path}/index.html /index.html; file_server }` — both in the same route group, sorted by specificity.
+
+**Fix — add the SPA fallback to the specific handle:**
+```caddyfile
+handle /politics/shadow/* {
+    root * /var/www/html/arif
+    try_files {path} {path}/index.html /index.html
+    file_server
+}
+```
+
+**Rule:** every `handle <path>/* { file_server }` block that serves a folder containing SPA routes MUST carry `try_files {path} {path}/index.html /index.html`. When adding a new SPA route under a path that already has a handle block, CHECK that block first — do not assume the broader fallback catches it.
+
+**Debug path when a live route 404s (origin vs Cloudflare):**
+1. `curl -sI` — `server: cloudflare` + `cf-cache-status: DYNAMIC` = pass-through, response is from origin.
+2. Probe origin with correct SNI: `curl -sk --resolve arif-fazil.com:443:127.0.0.1 https://arif-fazil.com/path/`. Plain `-H "Host:"` against 127.0.0.1 fails with `000` — curl sends SNI=`127.0.0.1`, Caddy resets the TLS handshake.
+3. Empty 404 body ≠ Caddy's standard text 404 — suspicious of a non-file_server handler.
+4. Reproduce the config shape in a mini server (`caddy run --config /tmp/mini.conf`). Mini 200 vs prod 404 = route-ordering/runtime problem, not semantics.
+5. `caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile | python3 -c ...` — dump the SORTED route tree and look for the specific matcher winning over the fallback.
+
+Full walkthrough of the 2026-08-03 case: `arif-sites-content-ops` skill → `references/caddy-spa-fallback-and-deploy-pitfalls.md` (also covers the deploy-vps.sh `npm ci` ERESOLVE trap).
+
 ### Common Pitfall: `uri strip_prefix` Mismatch with Backend Routes (PROVEN 2026-07-16)
 
 When Caddy strips a prefix, the backend receives a DIFFERENT path than what the browser sent. If the backend only registers the full path, the stripped path returns 404.

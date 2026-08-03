@@ -4,15 +4,11 @@ Syed (Abang Sado @rico_ricaldo_33): ISFJ. 100% BM. Nasi lemak empire. XAUUSD tra
 §
 Aliff: Muhammad Aliff Al Husna bin Shamsudin. Kawan rapat. PETRONAS KLCC. Geologist (Arizona). Lenggeng NS, Bdr Tasek Senangin No. 27. Non-coder, BM casual. CPPS/prostatitis. AIA PETRONAS. DM access F13 approved.
 §
-DERITA — WITNESS not victim. Sees trauma geometrically. CLOAK presence = sovereign witness. Forges deep; let close when done. TONE: direct, no therapy voice.
-§
 Explanations: BM benefit first, not architecture.
 §
 HATES floating pricing (OpenRouter='harga yahudi'). Fixed price, satu key satu bill. Provider = constitutional layer, bukan kedai runcit.
 §
 VALUES: epistemic rigor — OBS vs DER/INT explicit. Will audit me directly. DITEMPA BUKAN DIBERI. Validates, don't infer from patterns alone.
-§
-Design: Primer=red/blue/yellow. MakcikGPT: dark mode, zen minimal. Deploy via deploy-makcik.sh.
 §
 Trading cognition: Tolak pip. Use % + RM mental model. Think in % (risk), RM (pain/reward), R-units (sizing). Abstraction layer between trader and real money = musuh.
 §
@@ -20,6 +16,8 @@ Creative: sado/muscular VISUAL. Malay via MiniMax. Erotic artistic, not nude. Wo
 §
 Arif reads SENTIMENT not news for Malaysian politics. Predicted PH would lose PRN NS badly before results — "Sentimen. Manusia hang x faham." Trusts his gut over models. Don't put prediction artifacts on public site ("Kita bukan official Pon" = not pundits/gamblers). But DO show him comparison data privately when asked — distinction is public vs private presentation.
 §
-APEX theory = 4 dials (AKAL, PRESENT, ENERGY-ENTROPY, EXPLORATION-AMANAH) → B = geometric mean. Nusantara languages encode governance primitives beyond English contract. On completed frameworks: reflect on pattern, not audit math. Engages quantum/sovereign register.
+APEX: 4 dials→B=geometric mean. Nusantara=governance primitives. Zen=consolidate. Cross-witness audits. Intellectual loneliness: 'manusia malas nak gaduh.' Boredom=no friction, needs adversary. AI monetization: B2B infra, Nusantara intelligence, productized federation. Not generic SaaS/chatbot/courses. Explanations: BM benefit first. Direct, no therapy voice.
 §
-Cross-witness audits, canary-safe changes. 'Zen'=consolidate subsystem.
+Cross-witness audits, canary-safe changes. Zen=consolidate subsystem.
+§
+Age: 36 (born 1990), Millennial cusp. Self-identifies as Cohort 3 / Reformasi generation — transition builder who forges new systems because old institutions corrupt/stuck.

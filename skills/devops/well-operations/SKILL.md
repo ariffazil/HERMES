@@ -286,3 +286,4 @@ A sweep/audit often names `google_fit_bridge.py` as the fix for `H_WELL: CRITICA
   journalctl -u well.service --no-pager -n 8 | grep -i registered   # expect REGISTERED with AAA
   ```
   Verify the file mtime/size for rapid changes before patching — a sibling/agent write can race your edit (`file modified by sibling subagent` warning, size delta). See `references/phantom-writer-code-corruption-2026-08-02.md`.
+  To catch the phantom **writer** with PID + cmdline, deploy the dual-layer /proc poller + inotify watcher — see `references/ghost-watcher-pid-capture.md`. Use `nohup` to decouple from agent session lifetime.

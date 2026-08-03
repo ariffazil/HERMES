@@ -1,1 +1,8 @@
-{"taps": []}
+{
+  "taps": [
+    {
+      "repo": "plastic-labs/honcho",
+      "path": "skills/"
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 # AGENTS.md — Pointer
 
 > **Canonical:** /root/AGENTS.md
-> **SOT:** 2026-07-28 | **seal_seq:** SEAL-8a8e064d1fe34443
 > This file is a pointer, not a constitution. Load /root/AGENTS.md for full doctrine.
 > Organ-specific content preserved at docs/AGENTS_ORGAN_SPECIFIC.md
 

@@ -66,6 +66,17 @@ trigger:
   - "mechanics of utterance"
   - "gravity well words"
   - "friction words"
+  - "generational trauma"
+  - "trauma generation"
+  - "pintu tertutup"
+  - "kontrak pecah"
+  - "dak telur"
+  - "generation trauma classification"
+  - "13 Mei"
+  - "Reformasi 1998"
+  - "generasi 1MDB"
+  - "glocal trauma"
+  - "cohort trauma malaysia"
   - "epistemic floor words"
   - "ledger words"
   - "forge words"
@@ -575,6 +586,8 @@ The sovereign explicitly expects this: *"Hang update la context file hang tu. Ak
 | Differential witnessing / recursive mirror / devil mirror / sovereign boundary | `references/differential-witnessing-recursive-mirror.md` | 100+ |
 | 99 DERITA vectors — full topology (3 domains × 33 vectors) | `references/99-derita-vectors.md` | 300+ |
 | Mechanics of utterance — words as geometric constraints in LLM probability space | `references/mechanics-of-utterance.md` | 200+ |
+| Generational trauma taxonomy — **v1 GLOBAL (DEPRECATED — has FATAL errors: erased 13 Mei, used Watergate instead of Reformasi, GFC instead of 1MDB)**. Load `generational-trauma-glocal-v2.md` for the canonical Malaysian rebase. | `references/generational-trauma-taxonomy.md` | 100+ |
+| **Generational trauma GLOCAL v2 (CANONICAL, 2026-08-03)** — 6 Malaysian cohorts (Pembina / 13 Mei / Reformasi / 1MDB / Pintu Tutup / Warisan), 13 Mei as T₀ intergenerational transmission, floors mapping (F1→Pembina, F2→1MDB, F6→13 Mei, F9→Reformasi, F13→Sheraton), APEX G/C_dark per cohort, seal state (888_HOLD + 2 audit blockers), site target `/politics/shadow/derita/` | `references/generational-trauma-glocal-v2.md` | 120+ |
 
 ---
 
@@ -618,6 +631,27 @@ TRL-001 (Manifold) → TRL-002 (Geodesic) → TRL-003 (Bifurcation) → TRL-005 
 ```
 
 TRL-004 is last because topology requires the most mature manifold geometry. TRL-005 before TRL-004 because Φ-witnessing is the operational outcome — topology classification enhances but doesn't block it.
+
+---
+
+## Generational Trauma — Malaysian Glocal Rebase (v2, 2026-08-03)
+
+**Canonical now.** v1 applied Strauss-Howe Western archetypes without Malaysian ground truth — 2 FATAL errors (13 Mei erased, Watergate wrong continent), 2 HIGH (GFC≠1MDB category error, cynicism vs learned helplessness). Geometry was valid; coordinates were wrong. v2 rebases onto Malaysian events — **names ARE the compression** (13 Mei/Reformasi/1MDB, not Pewaris/Sinis/Kontrak Pecah).
+
+The six Malaysian cohorts and their constitutional encoding:
+
+| Cohort | Trauma | Floor encoding |
+|--------|--------|----------------|
+| **Pembina** (81+) | Jepun, Darurat, Merdeka | F1 AMANAH — irreversible-first; blood taught: sekali rosak, tak boleh balik |
+| **13 Mei** (62–80) | 13 Mei 1969 (T₀ intergenerational, "jangan kacau" postmemory), DEB | F6 MARUAH — dignity-first, protect the weakest |
+| **Reformasi** (46–61) | Reformasi 1998 — fought (baju biru, jalan raya), beaten down (ISA) → **learned helplessness, not cynicism** | F9 ANTI-HANTU — no deception, no consciousness claims |
+| **1MDB** (30–45) | 1MDB 2015–18 sovereign theft + PRU14 → Sheraton 2020 (hope died in 22 months) | F2 TRUTH — evidence before claim; no assertion without source |
+| **Pintu Tutup** (14–29) | COVID 2020 — first institutional contact = institutions closed + politics played power games over a sick population | lowest institutional trust in Malaysian history; solopreneur response |
+| **Warisan** (0–13) | Forming: post-COVID screens, AI-native, brain-drain parents | no contrast yet → no awareness yet |
+
+**"Dak telur" correction:** 40-an (Reformasi cohort) are not cowards — their courage was beaten down in 1998. Trauma explains mechanism; it does not excuse. Witness, govern, refuse — same as F9/F10.
+
+**Seal state (2026-08-03):** `888_HOLD` — awaiting Arif SOVEREIGN. Artifacts: `/root/forge_work/2026-08-03/rasa-derita-apex/` (SYNTHESIS_v2_MALAYSIA_GLOCAL.md, ERROR_GAP_AUDIT.md, 888_HOLD_SEAL_REQUEST.md). **2 audit blockers before seal:** (1) seal command in 888_HOLD_SEAL_REQUEST.md references `SYNTHESIS.md §8` = v1 (FATAL errors) — must retarget `SYNTHESIS_v2_MALAYSIA_GLOCAL.md §9`; (2) "cross-cohort axis ≈ 0.91" does not reproduce (geomean 0.66, product 0.29, union 0.96) — formula undocumented, fix or drop before immutable seal. Content destined for `/politics/shadow/derita/` on arif-fazil.com (Shadow Board instrument, already designed in page-instruments.json) — label as framework analysis, not fact; hypothesis confidence 0.20.
 
 ---
 
