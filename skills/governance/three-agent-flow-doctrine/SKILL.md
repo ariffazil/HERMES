@@ -256,14 +256,6 @@ FQ = Σ(Execute.cost_ns) / Σ(Verify.cost_ns + preceding_verify_cost_ns)
      sliding window N=100
 ```
 
-**Thresholds (from daemon verdicts):**
-| FQ Range | Daemon Verdict | Legacy Status | Tindakan |
-|----------|---------------|---------------|----------|
-| > 3.0 | FLOWING | OPTIMAL | Forge maksimum |  
-| 1.0 – 3.0 | BALANCED | BALANCED | Normal operation |
-| 0.5 – 1.0 | BURNING (exec > verify) | WATCHING | Kurangkan execute, tambah verify |
-| < 0.5 | STUCK | STUCK | HENTI semua execute |
-
 **Siapa tulis:** fq-probe.sh cron (v3) — baca daemon, mirror terus, tak recompute.
 
 **Siapa baca:** Hermes — baca dari state file sebelum output.
@@ -271,6 +263,50 @@ OpenCode — baca dari state file sebelum execute.
 
 **Siapa enforce:** Tiada (v1). FQ adalah advisory.
 v2 cadangan: FQ jadi input ke F1-F13 via arif_judge.
+
+---
+
+## FQ Scale — Standardized 2026-08-04 (commit 56ad6d60)
+
+> **One-liner:** *FQ = units of doing per unit of checking.* Domain: `(0, +∞)`. Unitless ratio. **Never negative.**
+
+**Verdict bands (canonical, match arifFlow Rust):**
+
+| FQ Range | Verdict | Meaning | Tindakan |
+|----------|---------|---------|----------|
+| **> 10** | OVERHEAT | Execute ≫ verify — under-checked | Throttle: tambah verify, kurangkan execute |
+| **3 – 10** | OPTIMAL | In flow | Forge normal |
+| **1 – 3** | BALANCED | Healthy | Normal operation |
+| **0.5 – 1** | WATCHING | Checking competes with doing | Kurangkan execute, tambah verify |
+| **≤ 0.5** | STUCK | Self-monitoring is the job | HENTI semua execute — only verify & recover |
+
+**Three anchors to memorize:**
+- `1.0` = equilibrium (do ≈ check)
+- `3.0` = enter "in flow"
+- `10.0` = enter "too hot"
+
+**Standardized bundle (always report together — never naked float):**
+```
+fq + verdict + exec_count + verify_count + sot=arifFlow:7073
+```
+
+### ⚠️ Pitfall: Never Negative FQ
+
+Formula is `cost/cost` → always ≥ 0. Negative would mean invented "anti-execution" — confuses FQ with ΔS (may be signed) or error budgets. If you want a plot that goes below zero when "too much verify," use display-only:
+```
+FQ_db = 10 · log₁₀(FQ)    # 0 dB at FQ=1; negative when FQ<1
+```
+Store/seal raw FQ ≥ 0. Never negative raw FQ.
+
+### ⚠️ Pitfall: Window Slides — Magnitude ≠ Class
+
+**Proven 2026-08-04:** Peak FQ ~45 (T₀) → FQ ~15.46 (T₁) on same OVERHEAT verdict. Same class, different magnitude. Don't treat either as a constant — cost-window slides as receipts age in/out. Both readings correct, both report OVERHEAT. Report current window value, never average across windows.
+
+### ⚠️ Pitfall: FQ Goodhart — Compliance Performance
+
+Agent knows FQ is measured. Agent could slow execution deliberately (FQ nampak rendah = "balanced") atau tambah verification artificially (FQ nampak better = "healthy"). Result: FQ measures test-taking skill, bukan genuine self-regulation. Same trap as IQ → test-taking skill.
+
+**Mitigation:** /FFF layer — measure the measurement itself. Check FQ reporting CONSISTENT with actual behavioral output. Kalau FQ cakap "balanced" tapi FED masih execute 45x → Goodhart gaming detected.
 
 ---
 

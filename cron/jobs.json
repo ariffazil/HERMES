@@ -453,7 +453,7 @@
       "schedule_display": "0 * * * *",
       "repeat": {
         "times": null,
-        "completed": 585
+        "completed": 586
       },
       "enabled": true,
       "state": "scheduled",
@@ -461,7 +461,7 @@
       "paused_reason": null,
       "created_at": "2026-07-24T01:32:18.689018+08:00",
       "next_run_at": "2026-08-05T02:00:00+08:00",
-      "last_run_at": "2026-08-05T00:01:09.280144+08:00",
+      "last_run_at": "2026-08-05T01:01:11.409720+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -585,15 +585,15 @@
       "schedule_display": "every 120m",
       "repeat": {
         "times": null,
-        "completed": 117
+        "completed": 118
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:40:15.117573+08:00",
-      "next_run_at": "2026-08-05T01:01:57.445692+08:00",
-      "last_run_at": "2026-08-04T23:01:57.445692+08:00",
+      "next_run_at": "2026-08-05T03:01:59.194351+08:00",
+      "last_run_at": "2026-08-05T01:01:59.194351+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -888,15 +888,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 2252
+        "completed": 2256
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-05T01:05:00+08:00",
-      "last_run_at": "2026-08-05T00:55:58.737279+08:00",
+      "next_run_at": "2026-08-05T01:20:00+08:00",
+      "last_run_at": "2026-08-05T01:15:59.159966+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1025,7 +1025,7 @@
       "schedule_display": "0 1 * * *",
       "repeat": {
         "times": null,
-        "completed": 4
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
@@ -1033,7 +1033,7 @@
       "paused_reason": null,
       "created_at": "2026-07-31T12:29:22.175840+08:00",
       "next_run_at": "2026-08-06T01:00:00+08:00",
-      "last_run_at": "2026-08-04T01:00:29.181188+08:00",
+      "last_run_at": "2026-08-05T01:01:22.327923+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1120,17 +1120,17 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 364
+        "completed": 366
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-05T01:15:00+08:00",
-      "last_run_at": "2026-08-05T00:46:27.111508+08:00",
-      "last_status": "error",
-      "last_error": "Script exited with code 1\nstdout:\n\ud83d\udd34 Sense FAILURES:\n  Repo: 3 untracked files (commit or gitignore)\n?? sites/arif-fazil.com/public/doctrine/index.html\n?? sites/arif-fazil.com/public/economics/index.html\n?? sites/arif-fazil.com/public/world/index.html",
+      "next_run_at": "2026-08-05T01:30:00+08:00",
+      "last_run_at": "2026-08-05T01:16:08.816403+08:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -1269,15 +1269,15 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 302
+        "completed": 303
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T21:24:35.097352+08:00",
-      "next_run_at": "2026-08-05T01:15:00+08:00",
-      "last_run_at": "2026-08-05T01:00:58.832430+08:00",
+      "next_run_at": "2026-08-05T01:30:00+08:00",
+      "last_run_at": "2026-08-05T01:15:59.133181+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1454,5 +1454,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-05T01:00:58.832950+08:00"
+  "updated_at": "2026-08-05T01:16:08.816932+08:00"
 }
