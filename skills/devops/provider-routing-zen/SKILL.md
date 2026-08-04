@@ -16,7 +16,9 @@ description: >-
 
 ## When to Use This Skill
 - Defining or updating a fallback chain for any agent (Hermes, OpenClaw, OpenCode, Forge)
-- Verifying which provider the agent actually used (vs. which one it was supposed to use) — see `references/federation-topology-and-fallbacks.md` for diagnostic commands and the **why chains order the way they do** (cheapest first, MiniMax as safety net, not "best")
+- Verifying which provider the agent actually used (vs. which one it was supposed to use) — see `references/federation-topology-and-fallbacks.md` for diagnostic commands
+- **Diagnosing why a LIVE provider doesn't appear in route output** (see Pitfall #1 below)
+- **Fixing balance-gate demotion on seat-based providers** (see Pitfall #2 below) and the **why chains order the way they do** (cheapest first, MiniMax as safety net, not "best")
 - Diagnosing why a remote agent (wawabot on 100.64.0.4) stopped working — same ref covers multi-node topology and the localhost-only auth pitfall
 - Deciding which provider should serve a constitutional role (OBSERVE, THINK, JUDGE, FORGE, SEAL)
 - Optimising cost vs quality across the federation, see `references/cost-quality-dials.md` for the CQT setting tablehe federation

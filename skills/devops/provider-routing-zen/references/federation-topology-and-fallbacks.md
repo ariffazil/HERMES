@@ -126,7 +126,61 @@ sqlite3 /root/.local/share/arifos/token_bank.db \
 curl -s http://127.0.0.1:4000/v1/models | jq -r '.data[].id'
 ```
 
-## 4. Decision tree — adding a new provider to the chain
+## 4. FED MCP Router — MODEL_ROUTES (the hidden gate)
+
+The FED MCP server (`fed_router.py` on port 7074) has its own routing layer
+**separate from LiteLLM**. The `fed_route` tool returns ranked routes, but
+**only for providers listed in the `MODEL_ROUTES` dictionary** in
+`/root/AAA/scripts/fed_router.py`.
+
+### Pitfall — Provider LIVE but invisible in fed_route
+
+A provider can be LIVE in `route_health`, have good latency in `route_latency`,
+and be configured in Hermes config — but **never appear in fed_route output**
+if it's not in `MODEL_ROUTES`.
+
+**Diagnosis:**
+```bash
+# Check if a provider has routes defined
+sed -n '/^MODEL_ROUTES/,/^}/p' /root/AAA/scripts/fed_router.py | \
+  grep -c "your-provider-name"
+# 0 = NOT in MODEL_ROUTES = invisible to fed_route
+```
+
+**Fix:** Add entries to `MODEL_ROUTES` in `fed_router.py`, then restart:
+```bash
+systemctl restart fed-router.service
+```
+
+### Seat-based vs token-based balance
+
+FED's balance gate demotes providers with balance < $5.00 (soft) or < $1.00
+(hard). For **seat-based plans** (e.g., Qwen Token Plan Team), the FED
+`providers.balance_usd` must reflect **seat value**, not token consumption.
+
+| Plan type | Balance meaning | Fix if $0 |
+|-----------|----------------|-----------|
+| PAYG (DeepSeek) | Actual API credit | Top up or leave as-is |
+| Seat-based (Qwen Team) | Seat allocation value | Set to `seats × $50/mo` |
+| Free tier (Groq, FLAME) | N/A | Set to high value (999) |
+
+```bash
+# Update seat-based provider balance
+sqlite3 /root/.local/share/arifos/token_bank.db \
+  "UPDATE providers SET balance_usd = 150.0 WHERE provider_name = 'qwen-token-plan-team';"
+```
+
+### Track A/B promotion
+
+Track A = primary routing pool. Track B = secondary/fallback. Promotion
+is a metadata update in the `providers` table:
+
+```bash
+sqlite3 /root/.local/share/arifos/token_bank.db \
+  "UPDATE providers SET track_type = 'A' WHERE provider_name = 'your-provider';"
+```
+
+## 5. Decision tree — adding a new provider to the chain
 
 Before adding a new provider to a model_name chain:
 
@@ -143,3 +197,43 @@ Before adding a new provider to a model_name chain:
    - Vision → MiMo multimodal, Qwen VL
    - Judgment → apex-888 (DeepSeek + MiniMax)
    - Compression → MiniMax (text compression)
+
+### Pitfall — cascade insertion renumbers ALL downstream priorities
+
+When adding a new provider between existing entries in `MODEL_ROUTES`,
+you MUST renumber every downstream provider's `priority` field. The
+FED route engine sorts by priority — wrong numbers = wrong cascade order.
+
+**Pattern (from 2026-08-05 qwen-token-plan-team fix):**
+
+```
+BEFORE deepseek-v4-pro:
+  deepseek       → P1
+  mulerouter     → P2
+  tokenrouter    → P3
+
+AFTER adding qwen as P2:
+  deepseek       → P1  (unchanged)
+  qwen-team      → P2  (NEW)
+  mulerouter     → P3  (was P2, renumbered)
+  tokenrouter    → P4  (was P3, renumbered)
+```
+
+**Rule:** Insert the new entry at the right position, then increment
+priority by +1 for every entry that comes after it. Never leave gaps
+(1,2,4,5) — the engine sorts numerically and gaps cause no bug but
+are confusing during debugging.
+
+**Verify after patch:**
+```bash
+# Confirm new provider appears in route output
+curl -s http://127.0.0.1:7074/mcp -d '{"method":"tools/call","params":{"name":"fed_route","arguments":{"model":"deepseek-v4-pro"}}}' | python3 -m json.tool
+# Should show new provider in ranked routes
+```
+
+### Pitfall — constitutional flag must not change
+
+When inserting routes for an existing model, preserve the `constitutional`
+flag on the original primary route. DeepSeek direct is `constitutional: True`
+because it handles F1-F13 governance paths. New providers added alongside
+it must be `constitutional: False` unless explicitly approved by F13.
