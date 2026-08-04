@@ -38,6 +38,6 @@ Wawabot (@Azwafazil_bot) = ADIK Arif (Azwa) Telegram bot, served from azwaos/srv
 §
 Syed gastrik Aug 2026: ulu hati keras, brain fog from sleep deprivation (4.5h). Supps: PepZin GI (Zinc L-Carnosine RM106) + VitC Plus Non-Acidic. VitC separate timing (1pagi 1malam). Sleep <7h = gastrik flare. Stress trigger: "otak jalan" at night.
 §
-DM flood+loop: fan-out→geometric interrupt. Fix: /stop+/new OR . until Arif directive. Degraded→1-line+wait, no prose. FED gaps 2026-08-04: qwen 0 seats, MiniMax $0 LIVE, OR BLIND, TrackA=deepseek only, 3 orphaned archived. (stale if fixed)
+DM flood+loop: fan-out→geometric interrupt. Fix: /new OR "." only. No recap, no prose, no closings — they're loop fuel. Declare once then silence. Action>explanation. FED gaps 2026-08-04: qwen 0 seats, MiniMax $0 LIVE, OR BLIND, TrackA=deepseek only, 3 orphaned archived. (stale if fixed)
 §
 Headscale: af-forge = tag:arifos NOT tag:forge. flow-dmz ACL: tag:arifos:4000/7071/7072/8081/8088/18082/18083. Wrong tag = silent drop. Verify: headscale nodes list -o json. 30min debug 2026-08-04.
