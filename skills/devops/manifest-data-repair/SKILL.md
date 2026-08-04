@@ -22,6 +22,7 @@ prerequisites:
 - Aggregate counters (`total_entries`, `skill_entries`, `tool_entries`) are also stale
 - A repo inventory, SOT, or `diff HEAD` reveals `skill_count` mismatches between manifest and individual agent cards
 - You need to surgically repair a structured data file without rewriting the entire file
+- **Automated tools added bare strings to arrays that expect objects** (schema type violations)
 
 ## Core Pattern
 
@@ -127,6 +128,76 @@ Agent: FI-003 (kimi-code)
 Total entries: 537 → 531 (-6)
 ```
 
+## Schema Type Violations (bare strings in object arrays)
+
+When automated tools modify structured JSON manifests, they sometimes add bare strings to arrays that expect objects. This happens when a tool appends a model name or identifier without wrapping it in the expected object schema. The pre-commit hook will catch this as a schema violation.
+
+### Detection
+
+```python
+import json
+
+with open("path/to/manifest.json") as f:
+    data = json.load(f)
+
+def find_type_violations(obj, path=''):
+    violations = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            violations.extend(find_type_violations(v, f'{path}.{k}'))
+    elif isinstance(obj, list):
+        has_dicts = any(isinstance(x, dict) for x in obj)
+        if has_dicts:
+            for i, item in enumerate(obj):
+                if isinstance(item, str):
+                    violations.append(f'{path}[{i}]: bare string "{item}" in object array')
+        for i, item in enumerate(obj):
+            if isinstance(item, (dict, list)):
+                violations.extend(find_type_violations(item, f'{path}[{i}]'))
+    return violations
+
+violations = find_type_violations(data)
+for v in violations:
+    print(f'  SCHEMA VIOLATION: {v}')
+```
+
+### Repair
+
+Convert bare strings to objects with sensible defaults. Derive object keys from sibling entries:
+
+```python
+def fix_bare_strings(obj, path=''):
+    fixes = 0
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            fixes += fix_bare_strings(v, f'{path}.{k}')
+    elif isinstance(obj, list):
+        has_dicts = any(isinstance(x, dict) for x in obj)
+        if has_dicts:
+            for i, item in enumerate(obj):
+                if isinstance(item, str):
+                    obj[i] = {'model': item, 'priority': 99, 'cost': 'unknown', 'note': 'auto-fixed from bare string'}
+                    fixes += 1
+        for i, item in enumerate(obj):
+            if isinstance(item, (dict, list)):
+                fixes += fix_bare_strings(item, f'{path}[{i}]')
+    return fixes
+
+fixed = fix_bare_strings(data)
+print(f'Fixed {fixed} bare string violations')
+```
+
+### Example: AGENT_MODEL_MAP.json (2026-08-04)
+
+Automated cascade updates added 8 bare strings to fallback chain arrays:
+- `"deepseek/deepseek-v4-pro"` added to 4 agent fallback chains
+- `"kimi-k3"` added to 2 agent fallback chains
+- `"qwen-token-plan/deepseek-v4-flash"` added to 1 agent fallback chain
+
+Each was a bare string in an array of objects `{model, provider, priority, cost, note}`. The pre-commit hook caught this as a schema violation. Fix: convert each bare string to an object with `priority: 99, cost: "unknown"`.
+
+See: `references/agent-model-map-schema-fix-2026-08-04.md`
+
 ## Pitfalls
 
 ### 1. Don't use `patch` or `sed` on JSON for multi-record dedup
@@ -153,6 +224,7 @@ If the manifest has uncommitted changes from prior automated workflows, the diff
 ## Reference Files
 
 - `references/fix-duplicate-entries-2026-07-25.md` — Full worked example: deduping 6 duplicate entries across 5 agents in SKILL_MANIFEST.json, with count reconciliation and validation.
+- `references/agent-model-map-schema-fix-2026-08-04.md` — Worked example: fixing 8 bare strings in AGENT_MODEL_MAP.json fallback chains.
 
 ## Related Skills
 

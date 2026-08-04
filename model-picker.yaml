@@ -18,10 +18,27 @@ tiers:
     model: qwen3.6-flash
     endpoint: chat_completions
     cost: RM0 — Pro plan (flat monthly)
+    # THICKENED 2026-08-04 — cross-provider fallback
+    fallback_chain:
+      - model: deepseek-v4-flash
+        provider: qwen-token-plan-individual
+        reason: Same provider, fast reasoning — first retry
+      - model: deepseek-v4-flash
+        provider: deepseek
+        reason: Direct DS Flash — CROSS-PROVIDER
+      - model: MiniMax-M2.7
+        provider: minimax
+        reason: MiniMax fast — CROSS-PROVIDER
+      - model: qwen3.6-flash
+        provider: qwen-token-plan
+        reason: Qwen Team plan — CROSS-PROVIDER
+      - model: qwen2.5-coder:3b
+        provider: ollama
+        reason: Blind survival
     fallback: deepseek-v4-flash
-    fallback_provider: qwen-token-plan-individual
-    fallback_cost: RM0 — Pro plan
-    note: 'Qwen3.6 Flash — 1M ctx, 64K output, zero marginal cost. Fallback: deepseek-v4-flash.'
+    fallback_provider: deepseek
+    fallback_cost: $0.14/$0.28 per 1M
+    note: 'THICKENED 2026-08-04. Qwen3.6 Flash — fast, zero marginal cost. 5-entry cross-provider chain.'
   default:
     use: Telegram chat, daily work, casual code
     alias: federation/hermes_default
@@ -29,38 +46,93 @@ tiers:
       primary_model: qwen/qwen3.7-plus via qwen-token-plan (SOT agents[hermes].primary_model)
       fallback_model: deepseek/deepseek-v4-pro via deepseek (SOT agents[hermes].fallback_model)
       constraint_tier: 333
-      verified_at: '2026-08-02'
+      verified_at: '2026-08-04'
     provider: qwen-token-plan-individual
     model: qwen3.7-plus
     endpoint: chat_completions
     cost: RM0 — Pro plan (flat monthly)
+    # THICKENED 2026-08-04 — cross-provider fallback chain (7 entries, 5 providers)
+    fallback_chain:
+      - model: deepseek-v4-pro
+        provider: qwen-token-plan-individual
+        reason: Same provider, different model — first retry
+      - model: deepseek-v4-flash
+        provider: qwen-token-plan-individual  
+        reason: Same provider, fast model — second retry
+      - model: deepseek-v4-pro
+        provider: deepseek
+        reason: Direct DS API — CROSS-PROVIDER, $10.41 balance, different network
+      - model: MiniMax-M3
+        provider: minimax
+        reason: MiniMax flagship — CROSS-PROVIDER, dedicated sub, 1M ctx, vision
+      - model: deepseek-v4-pro
+        provider: openrouter
+        reason: OpenRouter DS V4 — CROSS-NETWORK, different routing
+      - model: qwen3.8-max
+        provider: qwen-token-plan
+        reason: Qwen Team plan — CROSS-PROVIDER, 2.4T MoE, GA 2026-08-05
+      - model: qwen2.5-coder:3b
+        provider: ollama
+        reason: Blind survival — local, works when ALL APIs are down
     fallback: deepseek-v4-pro
-    fallback_provider: qwen-token-plan-individual
-    fallback_cost: RM0 — Pro plan
-    note: 'Qwen3.7 Plus — 262K ctx, 128K output, vision (Telegram photos), zero marginal
-      cost. DS V4 Pro fallback. SOT-authoritative: agents[hermes] in federation-models.json.'
+    fallback_provider: deepseek
+    fallback_cost: $0.435/$0.87 per 1M
+    note: 'THICKENED 2026-08-04. 7-entry cross-provider chain: Qwen→DS direct→MiniMax→OpenRouter→Qwen Team→Ollama.
+      NO tokenrouter. NO single-provider dependency. 5 distinct providers, 3 network routes.'
   heavy:
     use: code generation, audits, long-context reasoning
     provider: qwen-token-plan-individual
     model: deepseek-v4-pro
     endpoint: chat_completions
     cost: RM0 — Pro plan (flat monthly)
+    # THICKENED 2026-08-04 — cross-provider fallback
+    fallback_chain:
+      - model: qwen3.8-max
+        provider: qwen-token-plan-individual
+        reason: Same provider, different family — first retry
+      - model: deepseek-v4-pro
+        provider: deepseek
+        reason: Direct DS API — CROSS-PROVIDER, different network
+      - model: MiniMax-M3
+        provider: minimax
+        reason: MiniMax — CROSS-PROVIDER, dedicated sub
+      - model: qwen3.8-max
+        provider: qwen-token-plan
+        reason: Qwen Team plan — CROSS-PROVIDER
+      - model: qwen2.5-coder:3b
+        provider: ollama
+        reason: Blind survival
     fallback: qwen3.7-max
     fallback_provider: qwen-token-plan-individual
     fallback_cost: RM0 — Pro plan
-    note: DS V4 Pro — 1M ctx, best reasoning, zero marginal cost. Qwen3.7 Max (128K
-      output) fallback.
+    note: THICKENED 2026-08-04. DS V4 Pro primary. 5-entry cross-provider chain.
   apex:
     use: rare governed judgments, constitutional reasoning
     provider: qwen-token-plan-individual
     model: glm-5.2
     endpoint: chat_completions
     cost: RM0 — Pro plan (flat monthly)
+    # THICKENED 2026-08-04 — cross-provider fallback
+    fallback_chain:
+      - model: deepseek-v4-pro
+        provider: qwen-token-plan-individual
+        reason: Same provider, DS V4 Pro — first retry
+      - model: deepseek-v4-pro
+        provider: deepseek
+        reason: Direct DS API — CROSS-PROVIDER
+      - model: MiniMax-M3
+        provider: minimax
+        reason: MiniMax M3 — CROSS-PROVIDER, constitutional eligible
+      - model: glm-5.2
+        provider: openrouter
+        reason: OpenRouter GLM — CROSS-NETWORK
+      - model: qwen2.5-coder:3b
+        provider: ollama
+        reason: Blind survival
     fallback: deepseek-v4-pro
-    fallback_provider: qwen-token-plan-individual
-    fallback_cost: RM0 — Pro plan
-    note: GLM-5.2 — constitutional tier, 753B MoE, 198K ctx (platform limit), 128K
-      output, MIT license. DS V4 Pro fallback for zero-censorship guarantee.
+    fallback_provider: deepseek
+    fallback_cost: $0.435/$0.87 per 1M
+    note: THICKENED 2026-08-04. GLM-5.2 constitutional tier. 5-entry cross-provider chain.
 zen_alive:
   grok-build-0.1:
     alive: true

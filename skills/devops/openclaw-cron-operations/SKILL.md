@@ -1,10 +1,10 @@
 ---
 name: openclaw-cron-operations
 description: >-
-  Diagnose and fix OpenClaw (AGI) cron jobs — locate the SQLite job store,
-  decode model allowlist rejections, apply dual-write model fixes, and work
-  around a broken `openclaw` CLI when openclaw.json is invalid. Separate from
-  Hermes' own cron system.
+  Diagnose and fix OpenClaw (AGI) cron jobs AND the autonomous health probe
+  system — locate the SQLite job store, decode model allowlist rejections,
+  apply dual-write model fixes, work around a broken `openclaw` CLI, and
+  diagnose probe RED/YELLOW alerts. Separate from Hermes' own cron system.
 category: devops
 forged: 2026-08-01
 ---
@@ -23,6 +23,7 @@ search Hermes config for these jobs — they live in OpenClaw's own store.
 - Error text mentions `agents.defaults.models allowlist` or `cron payload.model`
 - `openclaw cron list` / `openclaw cron update` fails with `InvalidConfigError`
 - Need to change an OpenClaw cron job's model, schedule, or delivery target
+- User reports `🫀 openclaw probe RED (N): <items>` — probe health alert diagnosis
 
 ## Key Facts
 
@@ -125,3 +126,4 @@ Note: `next_run_at_ms` is epoch milliseconds — convert before reporting
 - `federation-checkup` — federation-wide health protocol
 
 Session-specific detail: `references/forge-weekly-allowlist-fix-2026-08-01.md`
+Probe diagnosis: `references/openclaw-probe-diagnosis.md`

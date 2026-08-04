@@ -1,11 +1,12 @@
 model:
   context_length: 1048576
-  default: qwen3.8-max
+  default: mimo-v2.5-pro
   max_tokens: 131072
-  provider: qwen-token-plan-individual
+  provider: mimo-token-plan
   request_timeout: 90
   supports_vision: true
   timeout: 60
+  _note: "MiMo Token Plan DEFAULT (Qwen quota exhausted). Arif 2026-08-04. Fallback: qwen-token-plan-individual → minimax → groq."
 providers:
   dashscope-payg:
     api: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -251,6 +252,20 @@ providers:
         name: MiniMax M2.5 — general
     name: Qwen Token Plan Team Standard — Seat 2/3 (ariffazil, RM0 marginal)
     transport: openai_chat
+  mimo-token-plan:
+    api: https://token-plan-sgp.xiaomimimo.com/v1
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
+    key_env: MIMO_API_KEY
+    models:
+      - id: mimo-v2.5-pro
+        name: MiMo V2.5 Pro — 1T/42B, 1M ctx, deep reasoning (Qwen fallback)
+      - id: mimo-v2.5
+        name: MiMo V2.5 — 1M ctx, multimodal (text+image)
+    name: MiMo Token Plan (Singapore) — Xiaomi, Qwen fallback before MiniMax
+    transport: openai_chat
   sea-lion:
     api: https://api.sea-lion.ai/v1
     key_env: SEA_LION_API_KEY
@@ -309,12 +324,15 @@ fallback_providers:
   - model: qwen3.8-max
     provider: qwen-token-plan-standard
     timeout: 30
+    note: Qwen fallback #1 — Seat 2 (ariffazil, ~15K remaining)
   - model: qwen3.8-max
     provider: qwen-token-plan-team-owner
     timeout: 30
+    note: Qwen fallback #2 — Seat 3 (owner, ~25K remaining)
   - model: MiniMax-M3
     provider: minimax
     timeout: 30
+    note: MiniMax fallback — 1M ctx flagship
   - model: llama-3.3-70b-versatile
     provider: groq
     timeout: 15
@@ -467,9 +485,10 @@ bedrock:
     trace: disabled
 auxiliary:
   vision:
-    provider: qwen-token-plan
-    model: qwen3.7-plus
+    provider: mimo-token-plan
+    model: mimo-v2.5
     timeout: 30
+    note: MiMo V2.5 multimodal — text+image. Arif 2026-08-04.
   web_extract:
     provider: auto
     model: ''
@@ -1390,11 +1409,15 @@ mcp_servers:
     enabled: true
     timeout: 120
   minimax:
-    command: /root/.local/share/uv/tools/minimax-mcp/bin/minimax-mcp
-    connect_timeout: 30.0
-    enabled: false
+    command: uvx
+    args:
+      - minimax-coding-plan-mcp
+      - '-y'
+    description: MiniMax Token Plan MCP — web_search for coding queries. Arif 2026-08-04.
+    enabled: true
     env:
-      MINIMAX_MCP_BASE_PATH: /tmp/minimax-output
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY}
+      MINIMAX_API_HOST: https://api.minimax.io
   openrouter:
     auth: oauth
     description: OpenRouter MCP — model discovery, credit monitoring, benchmark tools
