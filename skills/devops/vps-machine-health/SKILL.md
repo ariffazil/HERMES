@@ -166,6 +166,49 @@ When the user has multiple VPSes in a federation (e.g., af-forge + srv1642546), 
 
 This gives the user a single document covering their entire infrastructure, not just the local machine.
 
+### 3h. Clean broken symlinks
+
+Broken symlinks accumulate from archived skill directories, Chrome temp profiles, old backups, and stale venvs. They inflate file counts and confuse monitoring (drift-alert cron).
+
+**Categorize first, then clean:**
+```bash
+# Count by source — skip /proc /sys /dev (slow)
+for d in /tmp /archive /srv /root; do
+  count=$(find "$d" -xtype l 2>/dev/null | wc -l)
+  [ "$count" -gt 0 ] && echo "$d: $count"
+done
+```
+
+**Common sources and safe cleanup:**
+| Source | Pattern | Safe? | Why |
+|---|---|---|---|
+| `.grok/skills.zen-archived-*` | Old skill symlinks | ✅ | Archived Jul 17 — superseded |
+| `.codex/skills.zen-archived-*` | Same archive pattern | ✅ | Same reason |
+| `HERMES/skills/` | Dead symlinks to old locations | ✅ | Moved, not deleted |
+| `/tmp` | Chrome profiles, node compile caches | ✅ | Ephemeral by design |
+| `backups/` | Old backup dir symlinks | ✅ | Archive completed |
+| `/srv/*/bin/` | Dead venv symlinks | ✅ | Venv recreated elsewhere |
+
+**Clean by category (maxdepth-limited to avoid timeout):**
+```bash
+# Archived skill symlinks
+find /root/.grok/skills.zen-archived-* -xtype l -delete 2>/dev/null
+find /root/.codex/skills.zen-archived-* -xtype l -delete 2>/dev/null
+find /root/HERMES/skills -xtype l -delete 2>/dev/null
+
+# Temp and backup
+find /tmp -xtype l -delete 2>/dev/null
+find /archive -xtype l -delete 2>/dev/null
+find /srv -xtype l -delete 2>/dev/null
+
+# Deep /root (go deep but with limit to avoid timeout)
+find /root -maxdepth 10 -xtype l -delete 2>/dev/null
+```
+
+**Pitfall:** Full filesystem scan (`find / -xtype l`) times out on large VPS. Always scope to specific directories. If even targeted scans timeout, increase terminal timeout to 60s or scan with `maxdepth` limits.
+
+**Verify after:** Re-run the count loop — all should read 0.
+
 ## Pitfalls
 
 ### Don't kill systemd-managed processes

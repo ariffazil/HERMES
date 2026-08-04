@@ -59,7 +59,7 @@ Apply this hierarchy:
 ## Current Jobs (verified 2026-07-15 — stale, use `cronjob action='list'` for live count)
 
 > **⏰ This table is a historical reference.** The live job count and state change frequently. Always verify with `cronjob(action='list')` before acting.
-> **Last live audit (2026-07-25):** 23 jobs total — 15 active, 7 paused, 1 one-shot. See Cron Zen Audit Procedure for the full audit methodology.
+> **Last live audit (2026-08-04):** 33 jobs total — 29 active, 4 disabled. 9 active errors (model/provider issues). Cron ownership deconfliction pending (Phase 2). See Cron Zen Audit Procedure for the full audit methodology.
 
 | Job | Schedule | Delivery | Type | Skill |
 |-----|----------|----------|------|-------|

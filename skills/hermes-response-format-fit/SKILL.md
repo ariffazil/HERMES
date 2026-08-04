@@ -138,8 +138,21 @@ Pattern: Document arrives → verify source quality → give verdict → stop. D
 - **Serial delegation results: don't summarize each agent's full output verbatim.** When 3+ subagents finish in sequence (research → code → simulation), the final Hermes message should be the VERDICT, not a transcript of all three agents. Arif wants "114 tests pass, REINFORCED still failing, Causal regressed" — not each agent's 40-line exec summary restated. One table, three lines, verdict.
 - **Long multi-turn sessions accumulate more slips, not fewer.** The longer the session, the more likely the agent is to slip into Mode 2 without noticing. The session length itself is a risk signal — after 30+ turns of implementation work, the agent's mode-calibration decays. Count turns since last Arif-initiated mode clarification; if >15 turns, proactively check format before responding.
 - **Don't write "okay I'll switch to mode 2 here" mid-response.** The lead itself names what's coming (per Mode 3 rule). Mid-response mode-switch announcements reveal the trust breach without undoing it.
+- **2026-08-04 wiring task drift:** User asked "now how to prompt grok to deploy to my site. Can u monitor." Agent replied with a generic Grok prompt template, layout preamble, and 3 monitors listed one by one. User replied "Ni nak reply apa" — then immediately after, a Simple MCP wiring task ("put minimax MCP in claude/grok/opencode configs") got expanded into a 100-line answer with code blocks across 4 paragraphs. The user said "So what??? This is just normal wiring right?" — was actually correct: it WAS just normal wiring. **Test:** If user says "X" and the actual work is "edit 3 config files with one python -c call each", the response is 4 lines + 3 one-liner outputs. Not an architecture treatise. The trigger signal is action density vs prose density — high-action-short-prose wins when the actual work is mechanical.
 
 The pattern: detect length and signal of user message FIRST. Match it.
+
+---
+
+## Session Termination Discipline (added 2026-08-05)
+
+**Trap:** User says goodnight / "rehat" / "tutup" / emoji-only signals. Agent responds with another goodnight. User responds again. 10+ turns of 🌙😴🫡 with zero information content.
+
+**Fix:** After the FIRST goodbye exchange (user signals sleep + agent acknowledges), STOP responding to further goodbye signals. The session is over. Each additional 🌙 from the agent is noise, not respect.
+
+**Detection:** If the last 2+ user messages are emoji-only or single-word acknowledgments with no new question/task → session terminated. Do not reply. Wait for a substantive message.
+
+**Rule:** One goodbye is polite. Two is redundant. Three is a bug. After acknowledgment, the next response should be to a NEW message with actual content.
 
 ---
 

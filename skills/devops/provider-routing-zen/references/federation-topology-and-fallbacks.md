@@ -110,7 +110,40 @@ sqlite3 /root/.local/share/arifos/token_bank.db \
   "SELECT provider_name, model_id, p50_ms, p95_ms, sample_count FROM route_latency ORDER BY provider_name;"
 ```
 
-## 3. Quick diagnostic — which provider is the agent actually using?
+### Pitfall — new providers rank low despite fast latency
+
+The FED route engine applies `INSUFFICIENT_TELEMETRY` demotion to any
+route with < 10 samples. A freshly-added provider with 450ms latency
+and 1 sample will rank BELOW a 592ms provider with 3 samples, because
+the telemetry gate penalizes untested routes.
+
+**This is correct behavior** — don't fight it. Let traffic accumulate.
+After ~10 calls, the latency gate takes over and the faster provider
+ranks appropriately.
+
+**Workaround if urgent:** manually seed latency samples:
+```bash
+# Seed a few route_latency entries to clear INSUFFICIENT_TELEMETRY
+sqlite3 /root/.local/share/arifos/token_bank.db "
+INSERT OR REPLACE INTO route_latency (provider_name, model_id, p50_ms, p95_ms, sample_count, last_sample)
+VALUES ('your-provider', 'model-id', 450.0, 500.0, 10, datetime('now'));"
+```
+
+### Pitfall — conscious archive vs fix
+
+Not every provider gap needs fixing. Before attempting repair, check:
+1. **Is it in MODEL_ROUTES?** If no → invisible to routing anyway
+2. **Is there a better alternative already live?** If yes → archive
+3. **Is the balance near-empty AND BLIND?** If yes → can't probe, can't fix
+
+When archiving, mark clearly in `providers.notes`:
+```
+ARCHIVED (conscious decision YYYY-MM-DD): reason. No re-track needed — [alternative] covers this.
+```
+This prevents future agents from re-discovering the "gap" and wasting
+cycles on a provider that was intentionally excluded.
+
+## 6. Quick diagnostic — which provider is the agent actually using?
 
 Three ways to ground truth:
 

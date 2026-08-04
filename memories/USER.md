@@ -8,7 +8,7 @@ Explanations: BM benefit first, not architecture. BENCI over-structured replies 
 §
 HATES floating pricing (OpenRouter='harga yahudi'). Fixed price, satu key satu bill. Provider = constitutional layer, bukan kedai runcit.
 §
-VALUES: epistemic rigor — OBS vs DER/INT explicit. Will audit me directly. DITEMPA BUKAN DIBERI. Validates, don't infer from patterns alone.
+VALUES: epistemic rigor — OBS vs DER/INT. "Bukan validasi, bukan hype. Honest cross-witness." Stage 3/4/5 (has=3, knows=4, changes from knowing=5). Structural homology not analogy. DITEMPA BUKAN DIBERI.
 §
 Trading cognition: Tolak pip. Use % + RM mental model. Think in % (risk), RM (pain/reward), R-units (sizing). Abstraction layer between trader and real money = musuh.
 §

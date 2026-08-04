@@ -205,6 +205,77 @@ systemctl restart <unit>
 curl -s http://127.0.0.1:<port>/health | python3 -c "import sys,json; print('✅' if json.load(sys.stdin).get('status')=='healthy' else '❌')"
 ```
 
+### 6b. Multi-Location Provider Key Rotation (5+ env file sweep)
+
+When the key being rotated drives a **provider that Hermes gateway uses directly** (not only through LiteLLM federation — see pitfall "Dead code trap" in `hermes-image-routing`), the rotation must touch MORE than just `kunci-mas.env`. Per-provider keys are duplicated across multiple independent .env files that are NOT symlinks to each other:
+
+```
+/root/.secrets/kunci-mas.env                  # SOT (path 1)
+/root/.hermes/.env                            # MAIN Hermes env (path 2 — separate file, not a symlink)
+/root/.hermes/profiles/hermes_asi/.env        # per-profile override (path 3)
+/root/.hermes/profiles/hermes_apex/.env       # per-profile override (path 4)
+/root/.hermes/profiles/hermes_forge/.env      # per-profile override (path 5)
+```
+
+The litellm path picks up `kunci-mas.env → vault.flat.env → systemd EnvironmentFile`. The Hermes path does NOT — its launcher scripts source per-profile `.env` directly. **Both paths must be updated**, and the main `~/.hermes/.env` is yet ANOTHER independent file on top of the per-profile files.
+
+**Discovery recipe** (run BEFORE editing to enumerate every location):
+
+```bash
+# Find every file referencing the key, scoped to active config tree
+echo "=== All <PROVIDER>_API_KEY references in active files ==="
+grep -rl "<PROVIDER>_API_KEY" /root/.hermes/.env /root/.hermes/profiles/ /root/.secrets/ 2>/dev/null \
+  | grep -v ".curator_backups\|/backups/\|/sessions/\|skills.backup" \
+  | sort -u
+
+# For each file, show the current value's last chars (confirm stale)
+for f in $(grep -l "<PROVIDER>_API_KEY" /root/.hermes/.env /root/.hermes/profiles/*/.env 2>/dev/null); do
+  suffix=$(grep "$PROVIDER_API_KEY" "$f" | head -1 | tail -c 8)
+  echo "  $f → ...$suffix"
+done
+```
+
+**Atomic rotation recipe:**
+
+```bash
+NEW="<paste here>"
+
+# A. SOT (kunci-mas.env)
+sed -i "s|<OLD_KEY>|$NEW|g" /root/.secrets/kunci-mas.env
+make vault-generate && make vault-verify
+
+# B. MAIN Hermes env (commonly forgotten — not in profiles but separate file)
+sed -i "s|<PROVIDER>_API_KEY=.*|<PROVIDER>_API_KEY=\"$NEW\"|" /root/.hermes/.env
+
+# C. PER-PROFILE .env files (each is independent, not symlinked)
+for f in /root/.hermes/profiles/*/.env; do
+  sed -i "s|<PROVIDER>_API_KEY=.*|<PROVIDER>_API_KEY=\"$NEW\"|" "$f"
+done
+
+# D. RESTART dependent services
+sudo systemctl restart litellm-federation
+# Hermes restarts are per-profile — restart the active one(s):
+sudo systemctl restart hermes-asi-gateway hermes-apex-gateway hermes-forge-gateway
+
+# E. PROBE each layer independently
+curl -s -H "Authorization: Bearer $NEW" https://api.<provider>/v1/models | head -5
+curl -s -X POST http://127.0.0.1:4000/v1/chat/completions -d '{"model":"<preset>","messages":[{"role":"user","content":"hi"}],"max_tokens":5}' | head -5
+```
+
+**Why this trap fires:** The "single source of truth" SOT → flat.env pipeline covers systemd services only. Hermes gateway launcher scripts (`hermes-gateway-secure.sh`, `forge-gateway.sh`, etc.) source per-profile `.env` directly — they do NOT go through `EnvironmentFile=`. The main `~/.hermes/.env` is in the auth/dotenv loader path, the per-profile files are in the launcher path — different ingestion points, both independent. Rotating only KUNCI-MAS leaves Hermes pulling the old key from its per-profile cache while litellm-federation serves the new key. Result: cross-probe shows inconsistent health signals; the gap is not visible in any single signal.
+
+**Discovery shortcut** (when you suspect rot but don't know how many locations):
+
+```bash
+# Count actual <PROVIDER>_API_KEY references in active system (NOT backups/sessions/curator)
+grep -rln "^export $PROVIDER_API_KEY\|^$PROVIDER_API_KEY=" /root/.secrets /root/.hermes 2>/dev/null \
+  | xargs -I{} grep -l "$PROVIDER_API_KEY" {} 2>/dev/null \
+  | sort -u
+# Count the hits. >1 = multi-location, expect 3-5 for a per-profile provider key.
+```
+
+**Proven 2026-08-04:** `MINIMAX_API_KEY` rotation to `sk-cp-5_ouSBp...` required 5 edits + 2 restarts (litellm-federation + Hermes gateway). Initial fix touched only KUNCI-MAS + 4 Hermes profiles — main `/root/.hermes/.env` was missed, so `vision_analyze` continued to fail until that file was also updated. Cross-probe revealed the gap (litellm /health 200, vision_analyze 401). **Lesson:** main `~/.hermes/.env` and per-profile `.env` files are INDEPENDENT, not a hierarchy. Treat them as siblings.
+
 **CRITICAL — Do NOT:**
 - Lecture Arif about key security
 - Refuse with "I can't handle API keys"
@@ -657,4 +728,5 @@ Services using `EnvironmentFile=/root/.secrets/vault.flat.env`:
 - `references/runtime-env-vs-vault-tracing.md` — Trace a service's env chain from SOT → generator → flat → systemd EnvironmentFile → launcher source → /proc/<pid>/environ; worked examples: Qwen seat wiring + FORGE two-token drift (2026-08-01)
 - `references/generator-escape-fixes.md` — Full rewrite recipe for generate-flat.sh: bash-escape decode, inline-comment stripping, atomic write, single-pass parse, verify-vault.py alignment; hex-verification method (2026-08-01)
 - `references/nested-quote-env-bug.md` — OpenCode JSONC parse death from nested quotes + inline comments in vault values
+- `references/multi-location-key-rotation-2026-08-04.md` — 5-file sweep recipe for provider key rotation across Hermes main + per-profile .env files + litellm (proven 2026-08-04 with `MINIMAX_API_KEY`)
 - `references/kunci-mas-protocol.md` — Full protocol doc (also at /root/.secrets/kunci-mas.md)

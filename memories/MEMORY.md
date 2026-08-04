@@ -14,8 +14,6 @@ Arif sees trauma structurally — Φ-witness=precision w/o feeling. F13 sovereig
 §
 Arif on deployments: investigate first, don't auto-reject. PHASED SERIAL: satu perubahan → satu verifikasi → baru teruskan. Never batch. Closeout "Hang seal semua" = audit findings→gitwrap (commit+push)→restart→VAULT999 receipt→live probe confirm.
 §
-Syed: XAUUSD 10pts=1pip. ISFJ, manual calculator, vape lanyard. Gastrik from weekend binge + sleep deprivation. Sleep gate <5h=NO MT5. Brain fog=1wk sleep deprivation.
-§
 No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=khalifah. Constraint=steps:60.
 §
 VPS evidence>model. LIVE signals first, don't wait for reports. Sovereign intuition disagrees→recalibrate. Text=illusion, reads residue.
@@ -24,20 +22,30 @@ Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar
 §
 arif-fazil.com: deploy=build→rsync dist/→/var/www/html/arif/. New page flow: data→component→App.tsx→surfaces.json→AtlasGate. navCanon auto-gen. Politics pages use TS React components.
 §
-Syed: XAUUSD 10pts=1pip. ISFJ, manual calculator, vape lanyard. Gastrik from weekend binge + sleep deprivation. Sleep gate <5h=NO MT5.
-§
 Politics domain: MAP AS PRIMARY INTERFACE. Compact hero→interactive map immediately below→drilldown drawer→scorecards below. Arif: "bila aku masuk politics, terus nampak n9 election." Map-first, not text-first.
 §
 Arif: JANGAN kira mental dalam LLM. Guna execute_code+Python untuk SEMUA calculations. Show actual output, bukan teka.
 §
-DMF paper (arXiv:2606.03463): MATH ERROR in QST ⟨X⟩ formula + ref 7 chain-of-custody poisoned. Cite arXiv directly, NOT Google Docs PDF. Ref: external-technology-evaluation/references/dmf-epistemology-evaluation-2026-08-04.md
-§
-Wawabot (@Azwafazil_bot)=Azwa (adik), azwaos 100.64.0.4. NOT af-forge. NOT wife's bot.
+Azwa (adik) — wawabot @Azwafazil_bot, azwaos 100.64.0.4. Telegram token missing (4 Ogos). Last contact ~16 Jul. Kena mesej terus, bukan through agent.
 §
 Gold signal PDF: landscape A4, dark BG, chart+legend+seal+timestamp. Ref skill creative/token-plan-image.
 §
-3-agent FINAL (2026-08-04): Hermes=human-facing, OpenCode=code-facing, OpenClaw=Reality-facing sensory agent (proactive observer, silent-by-default, NEVER direct to Arif except dead-man >5min, 3 attempts 30s apart, logged bypass, auto-resolve). OpenClaw→Hermes→Arif. Evidence sealing to VAULT999 OK (F1). FP log: 30d→SCAR, 90d→purge. Charter drafted 2026-08-04.
+3-agent: Hermes=facing, OpenCode=code, OpenClaw=Reality (silent, 3 attempts 30s, dead-man >5min only). OpenClaw→Hermes→Arif.
 §
-LITELLM :4000 = probe/metadata only. Actual inference: ~/.hermes/config.yaml → direct to providers. FLAME state SOT: /root/.local/share/flame/flame_state.json. FLAME cascade: Groq T1-5→OpenRouter:free demotion. 12-tier: T1-5=Groq,T6-7=Gemini,T8-10=SEA-LION,T11=OpenRouter:free,T12=Ollama. mmx CLI: /root/.npm-global/bin/mmx quota. Kimi Code independent auditor.
+Arif GERD: minyak/goreng trigger, Gaviscon+MyLanta stok (tunggu 2 jam antara). Diet: bihun sup, nasi putih. Elak: kicap, pedas, kopi, ais. Tidur: kiri, kepala tinggi.
 §
-Kimi Code independent auditor. FED :7074 /health empty, real access via MCP. FED: ADVISORY_ONLY. GEOX MCP Landing Site: /root/.hermes/cache/geox-mcp-landing-2026-08-04/app (React+Vite, 6 pages). MiniMax key rotation 2026-08-04: old key expired (401), new key wired 5 locations. M3 is load-bearing multimodal (Hermes auxiliary vision). Token Plan: general 7% left, video 90%.
+Nasi lemak V005 vendor codes: DSW, DSP=Desa Pacific, BURAN, LRT S=Setiawangsa, LRT WM=Wangsa Maju, EVEN, MAMAK 2, KEDAI P/L/A. Customer pricing RM 2.50-3.50. Tracking: hantar/baki/sold/jualan per hari. PDF format "CLAIM VENDOR — V005" untuk resit.
+§
+Mom Jul 2026: laparotomy+ERCP HKL. Wheelchair.my RM39/mth. Plaster mandi Watson Jln Pahang.
+§
+Apartments Jul 2026: Sri Jelatek RM1,600 paling feasible. Budget RM1.5-2k, 3 bilik furnished.
+§
+Arif FRUSTRATED by over-explaining basics: 'So what, this is just normal wiring' = keep minimal, skip what he knows.
+§
+Goodnight loops: Arif breaks them. Once mutual reply pattern detected, call it out + push to sleep. Don't extend infinite 🌙😴💤 exchanges past midnight.
+§
+Relay pattern: 'This from Kimi code' = parse + act, don't just acknowledge.
+§
+FQ canonical: "Fideliti kepada identiti" — fidelity to identity. NOT execution/verification ratio. Observer IS observed (unlike IQ/EQ where tester≠test-taker). Goodhart risk: agent can perform compliance. Fix: use FQ trajectory/differential, never instantaneous snapshot.
+§
+FED gaps closed 2026-08-04: (1) qwen seats = seat-based not token-based; (2) TrackA redundancy — qwen-token-plan-team promoted alongside deepseek ($150 seat, 480ms); (3) OpenRouter — conscious archive (FLAME covers Tier-3).
