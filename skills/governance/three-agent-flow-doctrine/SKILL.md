@@ -8,6 +8,12 @@ forged: 2026-07-25
 
 # Three-Agent Flow Doctrine
 
+> **2026-08-04 SOT CORRECTION:** Authoritative FQ = arifFlow `:7073/health`.  
+> `flow_state.json` is **cache only** (TTL 5 min), written by `arifflow-fq-mirror.timer` / `fq-probe.sh` v4.  
+> Agents MAY probe arifFlow directly. If `|live−cache|>0.3` → FQ_SIGNAL_DRIFT → use live.  
+> Historical lines below that say "Jangan probe arifFlow" are **superseded**.
+
+
 **DITEMPA BUKAN DIBERI** — Forged, Not Given
 
 ## Separation of Powers — Bukan "Lebih Banyak Tools"
