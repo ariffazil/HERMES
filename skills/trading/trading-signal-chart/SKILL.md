@@ -1,7 +1,7 @@
 ---
 name: trading-signal-chart
 description: "Generate trading signal charts and PDFs — candlestick OHLC with EMA overlays, buy/sell zones, stop loss, targets. **PASSIVE NODE — STRICTLY READ-ONLY. NO broker API, NO MT5 bridge, NO execute_trade.**"
-version: 2.0.0
+version: 2.1.0
 author: Hermes Agent (consolidated from daily-trading-signal-briefing, trading-analysis-xauusd)
 tags: [trading, chart, candlestick, gold, xauusd, signal, pdf, matplotlib, passive]
 organ: WEALTH (:18082)
@@ -34,12 +34,17 @@ triggers:
 
 **User feedback (Jul 2026):** "Aku malas nak baca" — Arif prefers images over long text. When asked for trading analysis, the DEFAULT deliverable is a chart. Text is supplementary, not primary.
 
+**User feedback (Aug 2026 — "live gold today + upcoming week + full agentic intelligence insights, minimize text focus on visual deliver for human cognitive understanding"):** Reinforces the above with two new rules:
+1. **PDF = single visual artifact.** Build the chart + analysis panel + disclaimer in ONE matplotlib figure, then wrap the same figure with `matplotlib.backends.backend_pdf.PdfPages`. Do NOT build a separate reportlab doc for "visual-first" requests — the user wants to open ONE PDF and see the whole picture without scrolling. Chart area + right-side LEGEND PANEL (per Side Panel rule below) + small footer line = the whole PDF.
+2. **Chat-side text ≤ 8 markdown lines.** No repeated values that are already on the chart. No narrative summary. Default = `MEDIA:` link to PDF + `MEDIA:` link to PNG + ≤ 8-line bullet recap (price, range, bull/bear trigger, key zones, sentiment tag, disclaimer).
+
 **Pattern:**
 - User asks: "Bagi prediction untuk gold" → Deliver chart with S/R levels + 3-line summary
 - User asks: "Baca analysis" → NOW provide detailed text
+- User asks: "PDF live gold today + week trend" → ONE-PDF approach (matplotlib + PdfPages) + chat-side bullet recap only
 - Never lead with long markdown tables when a chart can convey the same info
 
-**Chart = king. Text = servant.**
+**Chart = king. Text = servant. PDF = the unit of delivery for visual-first requests.**
 
 ---
 
@@ -268,9 +273,11 @@ web_search("XAUUSD technical analysis support resistance [MONTH] [YEAR]")
 
 **Step 3: Generate Chart** — `write_file()` + `terminal()` (not execute_code — matplotlib not in sandbox).
 
-**Step 4: Generate PDF** — reportlab, `write_file()` + `terminal()`.
+**Step 4a: Generate ONE-PDF (visual-first requests)** — Build the figure with candles + EMAs + zones + right-side LEGEND PANEL carrying all text (sentiment tag, range, bull/bear triggers, action). Wrap the SAME figure with `matplotlib.backends.backend_pdf.PdfPages` — see `templates/gold_live_weekly_pdf.py`. ONE render call, no reportlab table.
 
-**Step 5: Deliver** — chart as image + PDF as document + strategy table in message text.
+**Step 4b: Generate PDF (daily-signal cron format with strategy table)** — reportlab Table below chart, `write_file()` + `terminal()`. Use only when user asks for a paper trading plan / printable signal sheet, not for visual-first "what's gold doing today" requests.
+
+**Step 5: Deliver** — chat-side ≤ 8 lines of markdown bullets. PDF + PNG as `MEDIA:` links. NEVER repeat values that are already on the chart.
 
 ### Voice Note Generation (SADO 8am)
 
@@ -301,6 +308,9 @@ edge-tts --voice ms-MY-OsmanNeural --rate "+5%" \
 - **S/R from full 60d data with rolling(20) produces useless levels.** Detect within charted window.
 - **`MEDIA:/path` delivery is NOT guaranteed visible to user.** Verify with `ls -lh` that file exists and has size > 0. If user says "hang x bagi" after MEDIA: delivery, assume the Telegram gateway didn't render it — regenerate or resend. Pitfall (2026-07-31): chart generated at 148K but user repeatedly said not received. Always confirm output file exists and has content before declaring "delivered."
 - **Percentage, not pips, in chart labels.** Label S/R and price levels in price format ($4,050), not pip distance. Let `agentic-trading-companion` handle the % communication.
+- **Pyrolite style sheet emits non-fatal `legend.bbox_to_anchor` warning** on user-level matplotlibrc. Ignore — chart/PDF still render correctly. Pitfall (2026-08-04).
+- **For visual-first PDF requests, skip reportlab.** Single `matplotlib.backends.backend_pdf.PdfPages.savefig(fig, bbox_inches='tight')` is enough. Building a second reportlab doc duplicates effort and breaks the "one artifact, one picture" preference. Pitfall (2026-08-04).
+- **Chat-side text must be sparse for visual-first requests.** ≤ 8 markdown lines. NEVER repeat price/RSI/levels that are already labelled on the chart. The PDF is the unit; chat is just a delivery notice. Pitfall (2026-08-04).
 
 ---
 
@@ -338,6 +348,8 @@ edge-tts --voice ms-MY-OsmanNeural --rate "+5%" \
 - `references/exit-strategy-framework.md`
 - `references/paper-trading-workflow.md`
 - `references/session-2026-07-14-xauusd.md`
+- `references/visual-first-pdf-recap.md` — chat-side ≤8-line recap template (2026-08-04)
 - `templates/gold_signal_chart.py`
 - `templates/xauusd_signal_pdf.py`
 - `templates/gold_mtf_chart.py`
+- `templates/gold_live_weekly_pdf.py` — one-PDF visual-first template using `PdfPages` (2026-08-04)

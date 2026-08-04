@@ -264,6 +264,58 @@ CSS warnings from weasyprint (`unknown property`, `invalid media type`, `overflo
 
 - `references/kinabalu_basin_data.md` — research data pack from 2026-07-29 session: 6 sources cross-referenced, source provenance map, petrophysical estimates, tectonic event table, stratigraphic column, production status. Reusable for any future Sabah/NW Borneo basin report.
 
+## §12. The Vision Feedback Loop (Build Discipline)
+
+> **Origin:** 2026-08-04 — Sabah Kinabalu cross-section v2 took 4 iterations to reach label readability. First render is always draft; vision_analyze catches what spec review misses.
+
+### 12.1 The Iterative Pattern
+
+```
+Build first render
+   ↓
+vision_analyze(image, question="any overlaps, illegible labels, missing callouts?")
+   ↓
+Patch coordinates / bboxes / colors
+   ↓
+Re-render → vision_analyze again
+   ↓
+... (2-4 iterations is normal)
+   ↓
+Final render → ship
+```
+
+**Why this matters:** matplotlib spec review catches layout issues. vision_analyze catches **what spec review misses** — overlapping labels with hatch patterns, dark text on dark fill, scale bars that disappear against background.
+
+### 12.2 Stratum-Aware Label Bbox Strategy
+
+```python
+for lx, ly, txt, tc in labels:
+    is_deep = ly < -3000   # or whatever threshold matches deepest label
+    bbox_fc = '#1a1a1a' if is_deep else 'white'
+    text_col = '#fff' if is_deep else tc
+    ax.annotate(txt, (lx, ly), ha='center', va='center', fontsize=8.5,
+                color=text_col, weight='bold',
+                bbox=dict(boxstyle='round,pad=0.25', fc=bbox_fc,
+                          ec='gray', alpha=0.92, lw=0.5))
+```
+
+**Pick the bbox color based on the stratum, not just the text color.** White text on `#6b3a2a` (Crystalline Basement) loses letter edges against hatch. Black text on `#4a4642` (Chert-Spilite) is invisible. The stratum-aware approach handles both with one conditional.
+
+### 12.3 Why NOT AI Image Generation for Cross-Sections
+
+mage_generate / DALL-E / ComfyUI workflows are the wrong tool for technical cross-sections because:
+- **Cannot maintain stratigraphic order** — AI doesn't know Quaternary sits on Crystalline Basement
+- **Cannot enforce unit-name accuracy** — will invent plausible-sounding formations ("West Sulu Schist")
+- **Cannot replicate real topography** — peaks end up cartoonishly placed
+- **Cannot show fault geometry consistently** — thrust teeth randomly distributed
+- **Cannot guarantee auditability** — every artifact must trace to data, not to model weights
+
+**Deterministic matplotlib + real data array wins.** Trade speed for accuracy. The 4-iteration feedback loop is faster than prompt-engineering AI to produce the same output.
+
+### 12.4 Reference Files
+
+- `references/sabah_cross_section_v2.md` — proven Sabah Kinabalu cross-section recipe (SRTM topography, bathymetry, 6 stratigraphic units, pluton polygon, stratum-aware label bboxes, 4-iteration vision feedback loop). Reproducible template for any Sabah/NW Borneo transect.
+
 ## Output Requirement
 
 Any geoscience artifact must be reviewable by a working geologist without them needing to ask "where's the geology?" — the tagging system sits on top of real technical substance, not replaces it.
@@ -347,3 +399,11 @@ What a working geologist will push you to do next once the data room opens:
 | GEOX tools return LANE_ENFORCEMENT (session_id required) | Tools in reasoning lane need governed session via `arif_init(mode=init)` | Same pivot as "basin not found" — web research + published data. The PSM workflow still works from published data alone (burial curves, Ro gradients, generation timing can be forward-modeled). See references/psm-figure-patterns.md. |
 | WEALTH MCP session validator crash | arifosmcp dependency broken in WEALTH organ | Fall back to `web_search` for market/pricing data. Note the WEALTH gap. |
 | Dossier output only in chat, not saved | Didn't write to disk | Always write dossiers to `forge_work/YYYY-MM-DD/<BLOCK>-DOSSIER.md` — user will reference later |
+| Cross-section labels invisible on dark strata (Crystalline Basement, Chert-Spilite) | White text on dark hatch loses letter edges; black text on dark fill invisible | **Stratum-aware bbox strategy:** `is_deep = ly < -3000; bbox_fc = '#1a1a1a' if is_deep else 'white'; text_col = '#fff' if is_deep else 'k'`. Render once with `vision_analyze` after build — eyes catch what spec review misses. Patch the patch then re-render. (2026-08-04 Sabah v2) |
+| Bathymetry lost under sea level | `fill_between(elev, 0)` filled above the curve — opposite of intent for offshore segments | Use `mask_submerged = list((elev < 0).tolist())` then `ax.fill_between(x, elev, 0, where=mask_submerged, color='#cfe5f2', alpha=0.45)`. Pyright will complain about `where=np.bool_` array — convert to Python list first. (2026-08-04 Sabah v2) |
+| AI image generation hallucinates geology (wrong stratigraphic order, fake unit names) | Used mage_generate or DALL-E for "scientific" cross-section | **Deterministic matplotlib is the right tool** for cross-sections. AI image models cannot maintain physical constraint satisfaction across 12+ labeled provinces. Fall back from mage_generate `unknown error` → matplotlib with `fill_between` + hatch patterns + real topography array. Trade speed for accuracy. (2026-08-04 Sabah v2) |
+| GEOX MCP tools return LANE_ENFORCEMENT for non-sovereign actor | `geox_geological_model_generate` requires `session_id` from governed `arif_init`. Non-sovereign `hermes-edge` fails Ed25519 verification → DENY | Don't retry. The matplotlib fallback is faster than fixing auth. If you need GEOX data (basin profile, well ingest), pivot to web research (Hound smart_search/smart_fetch) for published literature. Mark GEOX gap explicitly in artifact caption. See §11.4. (2026-08-04) |
+| Cross-section PNG written direct to `/var/www/html/<site>/data/` bypassing Caddy/git/deploy flow | Agent took shortcut instead of running `web_zen sense` / `arifos-sites-content-ops` deploy flow | **NOT governance-deployed.** File accessible via HTTP 200 ≠ artifact shipped. Honor PHASED SERIAL: `git status` → `web_zen sense` → write to `forge_work/` → commit → push → deploy. Direct `cp` to webroot is a debugging shortcut, not a deploy. (2026-08-04 Sabah v2 — filesystem-staged, NOT governance-sealed.) |
+| Quaternary Alluvium label clipped at view boundary | Set `(50, 4500)` when `ax.set_ylim(4400)` | Keep labels within `ylim + 5%` margin. Move to safe coordinates like `(12, 3500)`. Verify with `vision_analyze` after every coordinate change. (2026-08-04) |
+| Crystalline Basement + Pre-Tertiary Basement labels duplicated | Two labels for same formation stack visually | Pick one canonical label per formation. "Crystalline Basement" alone is enough — drop the "Pre-Tertiary" synonym unless user explicitly wants formation-then-era stacking. (2026-08-04) |
+| Vision feedback loop gave 4 itérations to reach label readability | Skipped first vision_analyze and went straight to final render | **Build → vision_analyze → patch → re-render is the discipline.** Treat first render as draft. Two iterations is normal for label visibility, three if stratum-aware bbox logic is new. Don't ship first render as final. (2026-08-04) |

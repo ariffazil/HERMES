@@ -15,8 +15,9 @@ description: >-
 > **Deep reference:** `/root/AAA/docs/OPENROUTER_ZEN_OPTIMIZATION.md` (OpenRouter-specific)
 
 ## When to Use This Skill
-
 - Defining or updating a fallback chain for any agent (Hermes, OpenClaw, OpenCode, Forge)
+- Verifying which provider the agent actually used (vs. which one it was supposed to use) — see `references/federation-topology-and-fallbacks.md` for diagnostic commands and the **why chains order the way they do** (cheapest first, MiniMax as safety net, not "best")
+- Diagnosing why a remote agent (wawabot on 100.64.0.4) stopped working — same ref covers multi-node topology and the localhost-only auth pitfall
 - Deciding which provider should serve a constitutional role (OBSERVE, THINK, JUDGE, FORGE, SEAL)
 - Optimising cost vs quality across the federation
 - Mapping multi-seat Token Plan providers — see `references/qwen-token-plan-multi-seat.md`

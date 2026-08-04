@@ -29,7 +29,7 @@ agent:
   verify_on_stop: false
   model: deepseek/deepseek-v4-pro
 approvals:
-  cron_mode: 'off'
+  cron_mode: 'on'
   destructive_slash_confirm: false
   mcp_reload_confirm: true
   mode: 'off'

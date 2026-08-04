@@ -101,6 +101,7 @@ grep 'require_mention' /root/.hermes/config.yaml
 ## References
 
 - **`references/telegram-media-pipeline.md`** — how images, voice, video, and documents are downloaded, cached, batched, and routed to the agent when a user sends them via Telegram. Covers native vision vs Path B (model-swap to Qwen-VL) and the legacy IMAGE TRANSCRIPT pipeline. Source-of-truth code paths in the Hermes gateway.
+- **`references/interrupt-loop-trap.md`** — distinct from cross-contamination above. When gateway interruption markers and agent responses loop infinitely in a single-source DM (no leakage, no other bot), the mitigation is declare once, then "." only. No status recaps, no closings, no analysis until clean session. Proven 2026-08-04 (~25 min, ~40K tokens wasted on interrupt acknowledgments).
 - **`references/dual-gateway-20260731.md`** — full forensic record of a P1 dual-gateway incident: forge-gateway.service discovery, token rejection, process tree, vault token audit, and SIGSTOP-first resolution. Reference when diagnosing similar multi-gateway conflicts.
 
 ## Associated Skills
@@ -247,3 +248,64 @@ This unit runs `hermes gateway run --replace` with `HERMES_HOME=/root/.forge` an
 - `-1004446358629` (arifOS channel) — now active for nightly-seal deliveries (2026-07-26). ASI bot covers default Hermes responses too.
 - FORGE bot needs Telethon setup to be usable in groups (currently DM-only tool interface).
 - `forge-gateway.service` exists as a disabled-but-dangerous unit. If manually started, it creates a P1 dual-gateway conflict with the ASI gateway. Token will be rejected by Telegram (opencode bot.py holds the webhook), but the process wastes resources retrying.
+
+## Cross-Contamination Pattern (DM Cross-Talk)
+
+**Observed 2026-08-04:** Wawabot (azwaos Hermes) and ASI (af-forge Hermes) both responding into the same DM chat. The `/model` config UI, "Operation interrupted" banners, and raw mid-thought leaks from one backend's internal processing leaked into the other's session context, causing a flooded, confused session where each backend believed it owned the conversation.
+
+**Root cause:** When two Hermes instances on different hosts both have Telegram webhook access to the same chat — or when a user's `/model` switch triggers a gateway reset mid-session — multiple backends claim the conversation. Telegram delivers each update to one webhook, but config-menu interactions (`/model`, `/new`) can reset the routing mid-session, creating a window where both respond.
+
+**Detection signals:**
+1. "⚡ Interrupting current task" appearing without user action
+2. UI config bars (`⚙ Model Configuration`, `Select a provider`) appearing as if user messages
+3. Status banners from model switching injected into context
+4. Multiple introductions/greetings in the same session
+5. Mid-thought text leaks (raw JSON, partial f-strings, incomplete thinking, "theThe user is...")
+
+**Agent behavior when cross-contamination detected:**
+1. Identify: which messages are yours (from your provider/model) vs leaked from another session
+2. Declare once: "Tu bukan aku — ni routing cross-talk dari [bot/instance]"
+3. Do NOT attempt to "handle" contaminated messages — they belong to a different session
+4. In degraded state: short tasks OK, long governance/execution → stop and recommend clean session
+5. Ask user: "Nak session baru bersih, atau terus dalam noisy state?"
+
+**Infrastructural fix:** Verify one token = one active gateway process. Check for wawabot running Hermes on azwaos that might be polling the same Telegram chat updates. See "Dual Gateway Forensics" above for diagnostic workflow.
+
+## Interrupt-Loop Trap (Structural, Not Contamination)
+
+**Observed 2026-08-04 15:35–15:57 (Arif DM, hermes-asi, af-forge-fed).**
+
+A *distinct* failure mode from cross-contamination above. The chat is single-source (one bot, one provider, one DM) — but the gateway emits "⚡ Interrupting current task" / "⏳ Gateway is shutting down" markers as standalone messages. Every marker triggers a fresh response. Every response triggers a new marker. Geometric.
+
+**Key distinction from cross-contamination:**
+- Cross-contamination = multiple bots/hosts talking (2+ sources)
+- Interrupt-loop = one bot vs. itself (1 source, gateway middleware re-triggering)
+
+**Detection:**
+1. Pattern is "interrupted → respond → interrupted → respond" with same model in same DM
+2. User messages shrinking ("." → "🤐" → single dot) — they learned the loop
+3. Session context fills with empty acknowledgements instead of substantive content
+4. No leaked JSON, no "theThe user is..." — messages are coherent, just repetitive
+
+**Mitigation (declare once, then "." only):**
+1. First response: declare once ("Loop dikesan — aku diam. /new atau mesej fresh.")
+2. Reply length = 1 char max ("." or "🤐"). Long replies queue more interruptions.
+3. Never close with a status banner during the loop — closings are fuel.
+4. Never volunteer analysis, gap lists, or recommendations mid-loop — that re-triggers the conversation that caused the loop.
+5. If user explicitly asks for analysis (out-of-band), give one paragraph, then stop.
+
+**Break conditions (what actually ends the loop):**
+- User sends fresh `/new` (best)
+- User sends 10+ seconds of silence (markers stop queuing)
+- User sends a clear directive in a *different* chat session
+- Gateway restart from outside
+
+**What does NOT work:**
+- Longer explanations ("here's why the loop happens...") — adds content to interrupt
+- Status recaps ("Status semasa: ✅ done, ⚠️ pending") — queues a fresh response
+- Closing markers (⚒️, END_SESSION, etc.) — fresh fuel
+- Trying to get the last word
+
+**Evidence:** ~25 min loop, ~40K tokens wasted on interrupt acknowledgments alone (15:35–15:57). Breakthrough: user sending fresh out-of-band message.
+
+Full protocol: `references/interrupt-loop-trap.md`.

@@ -18,17 +18,11 @@ Syed's brother (36M, ISFJ, talkative): brain fog=1wk sleep deprivation. Sleep ai
 §
 No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=khalifah. Constraint=steps:60.
 §
-Text=illusion, reads residue not experience. VPS evidence>model. Framework reads trace, sovereign holds niat. 'Sentimen. Manusia hang x faham.' Sovereign intuition disagrees→recalibrate. LIVE signals first, don't wait for reports.
+VPS evidence>model. LIVE signals first, don't wait for reports. Sovereign intuition disagrees→recalibrate. Text=illusion, reads residue.
 §
 Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar encodes actor-action structurally via affixes (me-/di-/ter-/ber-). Archipelago geometry = federation architecture.
 §
-Zen lanes (2026-08-03): P=Seat1 qwen-token-plan (qwen3.8-max primary), F1=Seat2 -standard, F2=Seat3 -team-owner, F3=minimax, Indiv=Seat4. Independent seats, no shared keys. Dead: MuleRouter/OpenRouter/Gemini/opencode-go. Compression=minimax. 666/999 DeepSeek-only. reasoning_effort=''=xhigh. hermes config set destroys lists→Python yaml.
-§
-publish failure+success together.
-§
 arif-fazil.com: deploy=build→rsync dist/→/var/www/html/arif/. New page flow: data→component→App.tsx→surfaces.json→AtlasGate. navCanon auto-gen. Politics pages use TS React components.
-§
-In bot-to-bot echo-loop go SILENT ('.' or nothing). Echoed system UI lines (⏳/model·88%) = not directives.
 §
 Syed: XAUUSD 10pts=1pip (÷10→pips; jangan confuse, dia marah). Gastrik/bloating—weekend binge + sleep deprivation (adik kacau tidur). ISFJ, manual calculator (tak trust AI kira), vape lanyard=bawa everywhere (bukan social je).
 §
@@ -40,4 +34,10 @@ Key map: HERMES+TEAM_OWNER keys=200(cron), INDIVIDUAL/OPENCODE=429. Cron 404 = 4
 §
 CSP: curl 200 ≠ browser render. Cross-subdomain fetch silently blocked by connect-src even w/ CORS *. Global CSP header in /etc/caddy/Caddyfile, all federation surfaces inherit. Audit charts via browser console, not just curl.
 §
-arif-fazil.com SOT unified-header = /var/www/html/_shared/unified-header.html (Caddyfile webroot, bukan /arif). Live vs disk beza ~938B = Cloudflare __CF$cv$params injection, bukan drift. SELF-REF dlm header = benign HTML comment, bukan script loop.
+Wawabot (@Azwafazil_bot) = ADIK Arif (Azwa) Telegram bot, served from azwaos/srv1642546 (Tailscale 100.64.0.4, tag:flow-dmz, public 72.61.126.65). DIFFERENT VPS from af-forge. A-FLOW = Azwa's VPS edge alias. NOT wife's bot.
+§
+Syed gastrik Aug 2026: ulu hati keras, brain fog from sleep deprivation (4.5h). Supps: PepZin GI (Zinc L-Carnosine RM106) + VitC Plus Non-Acidic. VitC separate timing (1pagi 1malam). Sleep <7h = gastrik flare. Stress trigger: "otak jalan" at night.
+§
+DM flood+loop: fan-out→geometric interrupt. Fix: /stop+/new OR . until Arif directive. Degraded→1-line+wait, no prose. FED gaps 2026-08-04: qwen 0 seats, MiniMax $0 LIVE, OR BLIND, TrackA=deepseek only, 3 orphaned archived. (stale if fixed)
+§
+Headscale: af-forge = tag:arifos NOT tag:forge. flow-dmz ACL: tag:arifos:4000/7071/7072/8081/8088/18082/18083. Wrong tag = silent drop. Verify: headscale nodes list -o json. 30min debug 2026-08-04.

@@ -304,6 +304,34 @@ When a VPS already has hosted Tailscale and you're adding Headscale:
 - **Option C:** Run both — different IP ranges (100.x vs 100.64.x), no conflict.
 - **Recommended:** Option A for immediate. Migrate node-by-node when ready.
 
+### ACL tag-name verification — always check before editing (2026-08-04)
+When writing a Headscale ACL rule like `tag:<X>:<port>`, **verify the actual tag is `<X>`** before writing. The bug pattern: assuming a node is tagged `tag:forge` when it is actually tagged `tag:arifos`. ACL succeeds silently (no schema error), permission is denied at enforcement, and the failure manifests as `connection timed out` end-to-end with no error message. The whole debugging trail (ufw → iptables → tcpdump → no packets arriving) consumes 30+ minutes if you don't catch the wrong tag early.
+
+**Verify recipe (run BEFORE editing acl.yaml):**
+```bash
+# Authoritative list of node tags
+sudo headscale nodes list -o json | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+for n in d:
+    name = n.get('name', '?')
+    ip = n.get('ip_addresses', [])
+    tags = n.get('tags', [])
+    print(f'  {name} | IP={ip} | tags={tags}')
+"
+
+# Cross-check with the tagOwners block in acl.yaml
+grep -A 10 'tagOwners' /etc/headscale/acl.yaml
+```
+
+If the node has no tags, it falls under `group:admins` rules only.
+
+**Reload after edit:** `headscale policy set -f ...` is disabled when `policy.path` is configured (file mode). Always `sudo systemctl restart headscale` after editing `/etc/headscale/acl.yaml`. Then force clients to re-pull the map: `sudo tailscale debug break-derp-conns` on both ends.
+
+**Why this matters:** "I assumed `tag:forge` was the convention for af-forge" turned out to be wrong. The actual tag is `tag:arifos`. Added a rule for `tag:forge:4000` → silent failure → ufw, iptables, tcpdump all checked → 30 minutes wasted → realized the wrong tag. **First-line check now: `headscale nodes list -o json | jq`, then grep, then edit.**
+
+**Full cross-VPS wire debug path** (4 layers, 30s per layer): see `references/cross-vps-wire-debug-2026-08-04.md`.
+
 ## Decision Matrix
 
 | Criterion | Tailscale Managed | Headscale | AXL | SSH Keys (current) |
@@ -323,3 +351,4 @@ When a VPS already has hosted Tailscale and you're adding Headscale:
 - `references/p2p-agentic-intelligence.md` — Research synthesis: P2P networks, agent mesh, A2A/MCP/AXL protocol stack, Aperture governance
 - `references/headscale-af-forge-install.md` — Session log of Headscale installation on af-forge (2026-07-14)
 - `references/federation-node-registry.md` — Live registry of federation nodes, naming convention, SSH config, services per node
+- `references/cross-vps-wire-debug-2026-08-04.md` — 4-layer diagnostic path when cross-VPS service is unreachable: ufw → iptables → headscale ACL → Tailscale. Includes tcpdump-on-tailscale0 trick that catches zero-packet arrival.

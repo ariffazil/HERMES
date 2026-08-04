@@ -225,6 +225,34 @@ curl -s "https://api.minimax.io/v1/chat/completions" \
 
 **Prevention:** Any `make vault-generate` target must dedup by grepping `^[A-Z_]*=` and asserting `sort | uniq -d` returns empty before writing. F11: git hook detects duplicate keys in staged changes.
 
+### Curl `-w '%{http_code}'` inside Python f-strings — silent NameError (PROVEN 2026-08-04)
+
+**Problem:** `curl -w '%{http_code}'` format strings use `%{VAR}` syntax. Python f-strings also use `{}` for interpolation. When you embed a curl command inside a Python f-string, the `%{http_code}` triggers Python's format specifier parsing → `NameError: name 'http_code' is not defined`.
+
+```python
+# BROKEN — NameError
+cmd = f"curl -sS --max-time 5 -w 'HTTP:%{http_code}|TIME:%{time_total}s' '{url}'"
+# → NameError: name 'http_code' is not defined
+```
+
+**Fix — build the command as a plain string, not an f-string:**
+
+```python
+# CORRECT — no f-string, use concatenation
+cmd = "curl -sS --max-time 5 -o /tmp/body -w 'HTTP:%{http_code}|TIME:%{time_total}s' '" + url + "'"
+r = terminal(cmd, timeout=10)
+```
+
+```python
+# CORRECT (cleanest) — two-step: curl to file, then inspect separately
+r1 = terminal(f"curl -sS --max-time 5 -o /tmp/fed_body '{url}'", timeout=10)
+r2 = terminal("stat -c '%s' /tmp/fed_body 2>/dev/null || echo 0", timeout=5)
+```
+
+**Rule:** When building shell commands in Python, avoid f-strings when the command uses `{}` or `%{}` syntax. Use string concatenation or split into two `terminal()` calls.
+
+**Proven 2026-08-04:** FED gap audit probe — 7 endpoints batch, first 3 probes hit `NameError` on curl format string. Fix: split curl + inspection into separate `terminal()` calls.
+
 ### Python-on-target for complex remote file patching (shell-quoting escape valve)
 
 When you need to do a complex find-and-replace on a remote file (ssh host) and shell quoting becomes unmanageable — nested variables, JSON in strings, heredocs inside variables — **write a Python script locally, scp it, run it on-target** instead of wrestling inline shell quoting:
