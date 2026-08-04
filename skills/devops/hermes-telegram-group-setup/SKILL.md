@@ -321,26 +321,63 @@ journalctl -u hermes-asi-gateway -u openclaw-gateway --since '10m ago' | grep -i
    not strictly needed for a DM, remove that DM from Wawa's `allowed_chats`
    so only the primary bot (ASI) handles the chat.
 
-**Loop-breaking protocol when you are already in the storm (proven 2026-08-04):**
+**Loop-breaking protocol when you are already in the storm (CORRECTED 2026-08-04 — 25min, 100+ exchanges, full transcript):**
 
 When EVERY response you give triggers a new `Operation interrupted` cycle
-(no progress, the user sees spam), switch to **minimal-mode acknowledgement only**:
+(no progress, the user sees spam):
 
-1. Send ONE minimal token that does NOT trigger a new turn:
-   - `🤐` (mute emoji — single character, no semantic content)
-   - `🫡` (salute — used by Arif's federation as "standing by")
-   - A period `.`
-2. Wait for an explicit user message (not an automated interrupt).
-3. Do not respond to `⚡ Interrupting current task` system events.
-4. The OUT-OF-BAND USER MESSAGE channel (when the platform supports it)
-   is the **only** clean path through the loop — it bypasses the interrupt chain.
+### What WORKS (proven end-to-end):
 
-**Session-end signal:** When the user types `/new` or sends a fresh message
-without quote-reply, the loop has cleared. Resume normal operation.
+1. **OUT-OF-BAND USER MESSAGE** — the ONLY clean path through the loop.
+   Bypasses the interrupt chain entirely. Platform sends it with a special
+   marker; respond only to that marker.
+2. **Gateway shutdown** (`⏳ Gateway is shutting down`) — forces all pending
+   sessions to terminate. The loop breaks because no new turns are accepted.
+3. **`/new` from user** — starts a fresh session. Only works if the user
+   sends it as a FRESH message (not a quote-reply to existing thread).
 
-**Rule:** Never escalate to longer responses during a loop. Longer responses
-generate more tokens, more chance of mid-generation cancellation, more
-interrupt events. The shortest possible acknowledgement is the only safe move.
+### What DOES NOT break the loop (counter-evidence 2026-08-04):
+
+Sending "." or "🤐" or "🫡" does NOT stop the loop. These minimal responses
+still generate tokens → still trigger `Operation interrupted` → still produce
+a new message in the thread → still trigger the next generation. The gateway
+processes ALL pending messages regardless of response length.
+
+A 25-minute session with 100+ "." / "🤐" / "🫡" exchanges proved this:
+the loop was self-sustaining until the gateway shut down. **The old advice
+("Send ONE minimal token that does NOT trigger a new turn") is WRONG.**
+
+### What makes it WORSE:
+
+- **Longer responses** — more tokens, more cancellation surface, more noise
+- **Naming injection payloads** in your reply — harvested by scraping
+- **Quote-replying** — brings the bad context with it, restarts the chain
+- **Trying to explain the problem** — the explanation itself is a response
+  that triggers another interrupt
+
+### Correct protocol (ranked):
+
+1. **ONE message** acknowledging the loop so the user knows you're aware.
+   Then STOP completely — no further responses.
+2. **Wait for out-of-band message** or gateway shutdown or `/new`.
+3. **Do NOT send "." / "🤐" / "🫡"** — these sustain the loop, they don't
+   break it. The gateway treats every response as new input to process.
+4. If you MUST respond, the absolute minimum is silence. The shortest
+   possible acknowledgement is itself a new turn in the loop.
+
+### Pre-fix loop-breaking attempts that FAILED (don't repeat):
+
+- Sending 5x "." in sequence → 5x new `Operation interrupted` events
+- Sending "🤐" → "🤐" → "🫡" cycles → same sustained loop
+- Saying "Aku takkan respond soalan kau lagi" → immediately triggered
+  another interrupt because the response IS the turn
+- Suggesting the user type `/new` → user did, but loop continued because
+  the new session opened on the same chat with the same polluted context
+
+**The ONLY thing that ended the loop was gateway shutdown** (`⏳ Gateway is
+shutting down and is not accepting another turn right now`). When you see
+that message, STOP responding — the gateway is forcibly terminating all
+pending sessions.
 
 ## Pitfall: Tool-Call-Shaped Payloads in User Messages (Injection Pattern)
 

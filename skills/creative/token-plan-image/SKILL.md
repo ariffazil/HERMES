@@ -49,6 +49,8 @@ If the response is HTTP 400 with `code: "Throttling.AllocationQuota"` → token-
 
 If the response is HTTP 400 with `code: "IPInfringementSuspect"` → prompt triggered IP/safety filter. **Fix:** remove brand names (magazine titles, product names), aggressive/violent language ("predatory", "killer gaze"), and overly specific pop-culture references. Simplify the prompt and retry. Proven 2026-08-01: prompt with "Iron Man Magazine", "predatory gaze", "jaw clenched" triggered it; removing those passed.
 
+**Alternative async task pattern** (when OpenAI-compatible image-gen returns 404 or sync errors): See `references/async-task-pattern.md` for the DASHSCOPE-style `/api/v1/services/aigc/text2image/image-synthesis` endpoint with `X-Dashscope-Async: enable` + task polling. Proven 2026-08-04 with `qwen-image-plus` for technical/illustration content.
+
 If the response is HTTP 401 or 200 with `code: "InvalidApiKey"` → key expired. Rotate `QWEN_BAILIAN_KEY` in `/root/.secrets/kunci-mas.env`.
 
 **Pre-flight:** `source /root/.secrets/kunci-mas.env && echo $QWEN_BAILIAN_KEY` should be non-empty.
