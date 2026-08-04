@@ -1,13 +1,29 @@
 model:
   context_length: 1048576
-  default: mimo-v2.5-pro
+  default: hermes-asi
   max_tokens: 131072
-  provider: mimo-token-plan
+  provider: fed
   request_timeout: 90
   supports_vision: true
   timeout: 60
-  _note: "MiMo Token Plan DEFAULT (Qwen quota exhausted). Arif 2026-08-04. Fallback: qwen-token-plan-individual → minimax → groq."
+  _note: "FED FLAME FRAME v2 — LiteLLM :4000. Routes hermes-asi → MiMo (primary) / MiniMax (fallback). Arif 2026-08-04."
 providers:
+  fed:
+    api: http://127.0.0.1:4000/v1
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
+    key_env: LITELLM_MASTER_KEY
+    models:
+      - id: hermes-asi
+        name: FED hermes-asi → MiMo V2.5 Pro (primary) / MiniMax M3 (fallback)
+      - id: asi-555
+        name: FED asi-555 → MiMo V2.5 Pro
+      - id: asi-555-vision
+        name: FED asi-555-vision → MiMo V2.5 (multimodal)
+    name: FED FLAME FRAME v2 — LiteLLM :4000 proxy
+    transport: openai_chat
   dashscope-payg:
     api: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
     capabilities:
