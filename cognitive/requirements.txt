@@ -1,0 +1,10 @@
+# Cognitive Intelligence Upgrade — Phase 1
+# Minimal dependencies: pure Python core, optional sentence-transformers
+# for drift monitoring.
+
+# Optional: high-quality embeddings for drift_monitor
+# sentence-transformers>=2.2.0
+# torch>=2.0.0
+
+# Test dependencies
+pytest>=7.0.0

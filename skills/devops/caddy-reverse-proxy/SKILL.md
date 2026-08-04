@@ -282,6 +282,30 @@ cat /etc/caddy/Caddyfile | sed '/^PATTERN$/i\
 
 Alternative for multi-line inserts — use a heredoc with `cat > /tmp/patch.txt` and apply via `sed -f`.
 
+### Pitfall: Duplicate Named Matcher on Consecutive Lines + `log` Inside `handle` (PROVEN 2026-08-04)
+
+When the same `@matcher` name is defined on consecutive lines with different matcher types (e.g., `path` then `header`), Caddy treats them as duplicate definitions and `caddy validate` fails: `matcher is defined more than once: @matcher_name`.
+
+**Root cause:** Two lines defining the same named matcher:
+```caddyfile
+@static_client_id_mcp path /mcp*
+@static_client_id_mcp header X-MCP-Client-Id "geox-..."
+```
+
+**Fix — combine conditions on a single line (AND logic):**
+```caddyfile
+@static_client_id_mcp path /mcp* header X-MCP-Client-Id "geox-..."
+```
+
+**Second error:** If the resulting `handle @matcher` block contains a `log` directive, Caddy rejects: `directive 'log' is not an ordered HTTP handler`. Fix: wrap in `route { }`:
+```caddyfile
+route @static_client_id_mcp {
+    reverse_proxy 127.0.0.1:8081 { ... }
+    log { output file /var/log/caddy/geox-static-auth.log }
+}
+```
+`route` blocks allow `log` inside; `handle` blocks do not.
+
 ## Reload Sequence
 
 **Always use the safe reload script** instead of bare `systemctl reload caddy`:

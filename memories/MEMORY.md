@@ -12,9 +12,9 @@ Name accuracy: Arif strict about remembering people's names correctly. Nama manu
 §
 Arif sees trauma structurally — Φ-witness=precision w/o feeling. F13 sovereign chooses circle.
 §
-Arif on deployments: investigate first, don't auto-reject. PHASED SERIAL execution: satu perubahan → satu verifikasi → baru teruskan. Never batch kernel+Caddy+data+cleanup. 503 may be truthful — don't force green. Constitutional reset = 888_HOLD.
+Arif on deployments: investigate first, don't auto-reject. PHASED SERIAL: satu perubahan → satu verifikasi → baru teruskan. Never batch. Closeout "Hang seal semua" = audit findings→gitwrap (commit+push)→restart→VAULT999 receipt→live probe confirm.
 §
-Syed's brother (36M, ISFJ, talkative): brain fog=1wk sleep deprivation. Sleep aid: Hypnos (Blue Hawaiian). Arif: "bila dia kata x ingat, dia memang x ingat." Sleep gate <5h=NO MT5.
+Syed: XAUUSD 10pts=1pip. ISFJ, manual calculator, vape lanyard. Gastrik from weekend binge + sleep deprivation. Sleep gate <5h=NO MT5. Brain fog=1wk sleep deprivation.
 §
 No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=khalifah. Constraint=steps:60.
 §
@@ -24,20 +24,20 @@ Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar
 §
 arif-fazil.com: deploy=build→rsync dist/→/var/www/html/arif/. New page flow: data→component→App.tsx→surfaces.json→AtlasGate. navCanon auto-gen. Politics pages use TS React components.
 §
-Syed: XAUUSD 10pts=1pip (÷10→pips; jangan confuse, dia marah). Gastrik/bloating—weekend binge + sleep deprivation (adik kacau tidur). ISFJ, manual calculator (tak trust AI kira), vape lanyard=bawa everywhere (bukan social je).
+Syed: XAUUSD 10pts=1pip. ISFJ, manual calculator, vape lanyard. Gastrik from weekend binge + sleep deprivation. Sleep gate <5h=NO MT5.
 §
 Politics domain: MAP AS PRIMARY INTERFACE. Compact hero→interactive map immediately below→drilldown drawer→scorecards below. Arif: "bila aku masuk politics, terus nampak n9 election." Map-first, not text-first.
 §
 Arif: JANGAN kira mental dalam LLM. Guna execute_code+Python untuk SEMUA calculations. Show actual output, bukan teka.
 §
-Key map: HERMES+TEAM_OWNER keys=200(cron), INDIVIDUAL/OPENCODE=429. Cron 404 = 429→minimax fallback via WRONG anthropic_messages endpoint—check errors.log provider=minimax.
+DMF paper (arXiv:2606.03463): MATH ERROR in QST ⟨X⟩ formula + ref 7 chain-of-custody poisoned. Cite arXiv directly, NOT Google Docs PDF. Ref: external-technology-evaluation/references/dmf-epistemology-evaluation-2026-08-04.md
 §
-CSP: curl 200 ≠ browser render. Cross-subdomain fetch silently blocked by connect-src even w/ CORS *. Global CSP header in /etc/caddy/Caddyfile, all federation surfaces inherit. Audit charts via browser console, not just curl.
+Wawabot (@Azwafazil_bot)=Azwa (adik), azwaos 100.64.0.4. NOT af-forge. NOT wife's bot.
 §
-Wawabot (@Azwafazil_bot) = ADIK Arif (Azwa) Telegram bot, served from azwaos/srv1642546 (Tailscale 100.64.0.4, tag:flow-dmz, public 72.61.126.65). DIFFERENT VPS from af-forge. A-FLOW = Azwa's VPS edge alias. NOT wife's bot.
+Gold signal PDF: landscape A4, dark BG, chart+legend+seal+timestamp. Ref skill creative/token-plan-image.
 §
-Syed gastrik Aug 2026: ulu hati keras, brain fog from sleep deprivation (4.5h). Supps: PepZin GI (Zinc L-Carnosine RM106) + VitC Plus Non-Acidic. VitC separate timing (1pagi 1malam). Sleep <7h = gastrik flare. Stress trigger: "otak jalan" at night.
+3-agent FINAL (2026-08-04): Hermes=human-facing, OpenCode=code-facing, OpenClaw=Reality-facing sensory agent (proactive observer, silent-by-default, NEVER direct to Arif except dead-man >5min, 3 attempts 30s apart, logged bypass, auto-resolve). OpenClaw→Hermes→Arif. Evidence sealing to VAULT999 OK (F1). FP log: 30d→SCAR, 90d→purge. Charter drafted 2026-08-04.
 §
-DM flood+loop: gateway posts kaomoji status → agent reads incoming → response → more status. Config lines: 471 dispatch_in_gateway, 608 busy_input_mode:interrupt, 629 tui_status_indicator:kaomoji. Fix: /new OR single-token only. No recap/prose/closings — loop fuel. Declare once then silence. FED gaps 2026-08-04: qwen 0 seats, MiniMax $0 LIVE, OR BLIND, TrackA=deepseek only, 3 orphaned archived. (stale if fixed)
+LITELLM :4000 = probe/metadata only. Actual inference: ~/.hermes/config.yaml → direct to providers. FLAME state SOT: /root/.local/share/flame/flame_state.json. FLAME cascade: Groq T1-5→OpenRouter:free demotion. 12-tier: T1-5=Groq,T6-7=Gemini,T8-10=SEA-LION,T11=OpenRouter:free,T12=Ollama. mmx CLI: /root/.npm-global/bin/mmx quota. Kimi Code independent auditor.
 §
-Headscale: af-forge = tag:arifos NOT tag:forge. flow-dmz ACL: tag:arifos:4000/7071/7072/8081/8088/18082/18083. Wrong tag = silent drop. Verify: headscale nodes list -o json. 30min debug 2026-08-04.
+Kimi Code independent auditor. FED :7074 /health empty, real access via MCP. FED: ADVISORY_ONLY. GEOX MCP Landing Site: /root/.hermes/cache/geox-mcp-landing-2026-08-04/app (React+Vite, 6 pages). MiniMax key rotation 2026-08-04: old key expired (401), new key wired 5 locations. M3 is load-bearing multimodal (Hermes auxiliary vision). Token Plan: general 7% left, video 90%.

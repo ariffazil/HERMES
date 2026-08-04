@@ -142,6 +142,10 @@ Healthy log shows:
 
 - **`deleteWebhook` then `setWebhook` is the canonical reset.** Don't just call `setWebhook` again with the same URL — it may not update the secret_token. Always delete first, then set fresh.
 
+- **Caddy duplicate matcher blocks webhook route changes.** If `caddy validate --config /etc/caddy/Caddyfile` fails, you CANNOT reload Caddy. This means any Caddy config change (including webhook route updates) is blocked. Common cause: two matchers with the same name (`@name path ...` then `@name header ...`) — Caddy uses block syntax `@name { path; header }` for compound matchers. Fix the duplicate before any reload. **Proven 2026-08-04.** See `agentic-infrastructure-ops` pitfall for full pattern.
+
+- **Orphan gateway from spawn-brain race causes spurious "Connection error" cron failures.** If OpenClaw gateway or Hermes gateway restart leaves two gateways racing, cron children from the stale one (with empty env) fail every LLM call. The webhook itself may still be healthy (delivery to current chat works). Diagnose the gateway race separately — don't confuse webhook health with cron-LLM health. See `agentic-infrastructure-ops` → "Spawn-brain / orphan gateway race".
+
 - **Pending > 0 with no last_error is healthy.** Telegram batches updates. Pending count draining means the webhook is working. Only intervene when pending is growing AND last_error is set.
 
 - **secret_token is stored in vault.env as `TELEGRAM_WEBHOOK_SECRET`.** Always source vault.env before running webhook commands. If `$TELEGRAM_WEBHOOK_SECRET` is empty, the 401 will persist.

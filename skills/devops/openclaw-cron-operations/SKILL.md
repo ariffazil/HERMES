@@ -118,6 +118,22 @@ Note: `next_run_at_ms` is epoch milliseconds — convert before reporting
 - Check `systemctl show openclaw-gateway --property=ActiveEnterTimestamp`
   vs. when you edited the DB — if the gateway started before your edit, the
   fix is NOT live yet.
+- **Spawn-brain / orphan gateway race causes "Connection error".** If two gateway
+  processes are running (one stale from a previous start), cron jobs may spawn
+  under the stale one which has **empty environment** (no QWEN keys). Every LLM
+  call fails with "Connection error" — but direct curls in your shell work
+  because those use your env (with keys sourced). **Detection:** `ps aux | grep
+  gateway` shows two PIDs. Check `tr '\0' '\n' < /proc/<pid>/environ | wc -l` for
+  each — the stale one has ~21 vars (no QWEN_*), the real one has 40+.
+  `~/.hermes/gateway.lock` shows the authoritative PID. **Fix:** `kill -9
+  <stale_pid>`. See `agentic-infrastructure-ops` for full pattern. **Proven
+  2026-08-02:** Gateway 2682212 (Aug 1, empty env) ran alongside 513083 (Aug 2,
+  full env). Every cron LLM call failed until 2682212 was killed.
+- **Manual `cronjob(action='run')` during gateway restart = timing artifact.**
+  If you re-run a failing cron job while the gateway is draining/restarting
+  (180s drain timeout), the run hits the drain window and returns "Connection
+  error" even though it's a restart timing issue, not a real failure. Wait 20s
+  after any gateway process kill/restart before re-testing cron jobs.
 
 ## Related Skills
 

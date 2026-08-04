@@ -4,7 +4,7 @@ Syed (Abang Sado @rico_ricaldo_33): ISFJ. 100% BM. Nasi lemak empire. XAUUSD tra
 §
 Aliff: Muhammad Aliff Al Husna bin Shamsudin. Kawan rapat. PETRONAS KLCC. Geologist (Arizona). Lenggeng NS, Bdr Tasek Senangin No. 27. Non-coder, BM casual. CPPS/prostatitis. AIA PETRONAS. DM access F13 approved.
 §
-Explanations: BM benefit first, not architecture.
+Explanations: BM benefit first, not architecture. BENCI over-structured replies — no jargon/schemas/tables unless work explicitly requires. Casual = plain BM.
 §
 HATES floating pricing (OpenRouter='harga yahudi'). Fixed price, satu key satu bill. Provider = constitutional layer, bukan kedai runcit.
 §
@@ -14,10 +14,10 @@ Trading cognition: Tolak pip. Use % + RM mental model. Think in % (risk), RM (pa
 §
 Creative: sado/muscular VISUAL. Malay via MiniMax. Erotic artistic, not nude. Worship dynamic + chest closeup. Chiaroscuro/amber. Cocky alpha, kampung/batik, low angle. F13 overrides content gates.
 §
-Arif reads SENTIMENT not news for Malaysian politics. Predicted PH would lose PRN NS badly before results — "Sentimen. Manusia hang x faham." Trusts his gut over models. Don't put prediction artifacts on public site ("Kita bukan official Pon" = not pundits/gamblers). But DO show him comparison data privately when asked — distinction is public vs private presentation.
+Politics: reads SENTIMENT not news. Predicted PH/PRN NS loss. Gut > models. No public prediction artifacts. Show data privately when asked.
 §
-APEX: 4 dials→B=geometric mean. Nusantara=governance primitives. Zen=consolidate. Cross-witness audits. Intellectual loneliness: 'manusia malas nak gaduh.' Boredom=no friction, needs adversary. AI monetization: B2B infra, Nusantara intelligence, productized federation. Not generic SaaS/chatbot/courses. Explanations: BM benefit first. Direct, no therapy voice.
-§
-Cross-witness audits, canary-safe changes. Zen=consolidate subsystem.
+APEX: 4 dials→B=geometric mean. Nusantara=governance primitives. Zen=consolidate. Cross-witness + canary-safe. Intellectual loneliness. AI monetization: B2B infra, Nusantara intelligence, productized federation.
 §
 Age: 36 (born 1990), Millennial cusp. Self-identifies as Cohort 3 / Reformasi generation — transition builder who forges new systems because old institutions corrupt/stuck.
+§
+Owns Gemini Deep Research as personal tool that already has arifOS geometry. Research agents spawn with that context — don't over-explain arifOS. Verify claims fast, code Phase 1 in serial: research dulu, lepas tu code. Safer/accurate preference (2026-08-04).

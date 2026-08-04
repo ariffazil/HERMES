@@ -131,3 +131,7 @@ skills/.usage.json
 verification_evidence.db-shm
 verification_evidence.db-wal
 skills/.hub/
+
+# Workspace artifacts (added 2026-08-04 stabilization) — not source
+scratch/
+profiles/default/memories/

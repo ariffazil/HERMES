@@ -24,6 +24,11 @@ triggers:
   - "list all MCP tools"
   - "tool discovery"
   - "catalogue all organs"
+  - "what capabilities does organ X have"
+  - "what databases does organ X integrate"
+  - "organ unreachable / organ down / MCP server down"
+  - "capability inventory offline"
+  - "what can organ X do"
 ---
 
 # Federation Tool Catalogue — MCP Tool Discovery Dashboard
@@ -103,6 +108,53 @@ curl -s http://127.0.0.1:18083/tools
 # Registry files are at:
 /root/A-FORGE/forge_work/2026-07-28/mcp-registry/{organ}.json
 ```
+
+### Step 1b: Local Source-of-Truth Fallback (When MCP Is Down)
+
+When an organ's MCP surface is BOTH governance-blocked AND physically unreachable — probes return `MCP server 'X' is unreachable after 3 consecutive failures` AND `arif_init` cannot mint a valid session (F13 HOLD, actor_verified=false) — **do not retry indefinitely.** Pivot to the organ's local source-of-truth files on disk. These are canonical even when the server is down.
+
+**Discovery pattern:** `search_files` under `/root/<Organ>/` for capability-relevant docs:
+
+| File | What It Contains | Reliability |
+|------|-----------------|-------------|
+| `docs/DATA_SOURCES_REGISTRY.md` | External databases, APIs, coverage, endpoints, license, difficulty | **Authoritative** |
+| `docs/MCP_TRANSPORT_SURFACE.md` | Tool count, 4-lane taxonomy, full tool table with descriptions | **Authoritative** |
+| `docs/MCP_TOOL_REFERENCE.md` | Per-tool descriptions table | **Authoritative** |
+| `contracts/tools.yaml` | Tool contract specs (names, descriptions, parameters) | **Authoritative** |
+| `contracts/mcp_surface.yaml` | MCP surface declaration | **Authoritative** |
+| `CHANGELOG.md` | What was added when, test counts, bug sweeps, e2e coverage | **Authoritative** — audit trail |
+| `resources/capabilities/*.json` | Detailed capability definitions per tool | **Authoritative** |
+| `tools_sot.yaml` | Tool SOT (name, domain) | **Authoritative** |
+| `src/<organ>_mcp/tools_manifest.yaml` or `registry.py` | Source-level tool registration | **Ground truth** for actual tool count |
+| `docs/analysis/*.md` | Domain-specific analysis (e.g., MACROSTRAT_ANALYSIS.md) | **High** — detailed but may be stale |
+| `okf/<organ>.md` | Organ knowledge file — one-line capability summaries | **High** — orientation |
+
+**Efficient search:**
+
+```bash
+# Find capability-relevant docs in one pass
+search_files --path /root/GEOX --pattern "macrostrat|strat|deep_time" --file_glob "*.{md,yaml,yml,json}" --output_mode content --limit 30
+
+# Find the transport surface and data sources docs directly
+search_files --path /root/GEOX/docs --pattern "MCP_TRANSPORT|MCP_TOOL|DATA_SOURCES" --target files
+
+# Read the most informative file for tool surface
+read_file /root/GEOX/docs/MCP_TRANSPORT_SURFACE.md
+```
+
+**What you CAN answer from local docs alone:**
+- What tools exist (names, descriptions, lanes, domains)
+- What external databases are integrated (names, APIs, coverage, license)
+- What capabilities the organ provides
+- What was the organ's evolution (CHANGELOG)
+- What test coverage exists
+
+**What you CANNOT answer from local docs alone:**
+- Whether a specific tool is currently functional (needs live probe)
+- Runtime health / latency / error rates
+- Live data from external APIs (e.g., "what Macrostrat says about lat/lng X,Y")
+
+See `references/geox-capability-probe-offline-2026-08-04.md` for a worked example.
 
 ### Step 2: Handle Auth-Gated MCP Endpoints
 

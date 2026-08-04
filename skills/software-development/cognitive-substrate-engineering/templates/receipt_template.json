@@ -1,0 +1,31 @@
+{
+  "receipt_type": "drift | decay | causal | narrative",
+  "operation": "string (compute / reinforce / classify / check_drift)",
+  "subject_id": "string (memory_id | claim_id | turn_id)",
+  "evidence_type": "OBS | DER | INT | SPEC | UNKNOWN",
+  "confidence": 0.0,
+  "verdict": "SEAL | PARTIAL | SABAR | HOLD | UNKNOWN",
+  "timestamp": "2026-08-04T16:11:00+08:00",
+  "actor_id": "string",
+  "trace_id": "string",
+  "evidence_refs": ["string"],
+  "notes": "string"
+}
+
+# Confidence MUST be ≤ 0.90 per F7 HUMILITY.
+# Receipts are EVIDENCE, not verdicts — judge (888) issues final verdict.
+# Example filled:
+#
+# {
+#   "receipt_type": "causal",
+#   "operation": "classify",
+#   "subject_id": "claim-2026-08-04-001",
+#   "evidence_type": "OBS",
+#   "confidence": 0.87,
+#   "verdict": "SEAL",
+#   "timestamp": "2026-08-04T16:11:23+08:00",
+#   "actor_id": "hermes-causal-tagger-v0.2",
+#   "trace_id": "trc-abc123",
+#   "evidence_refs": ["forge_log:GET /logs/instance-7"],
+#   "notes": "Multi-source trace verification, grounded in instance-7 log chain."
+# }

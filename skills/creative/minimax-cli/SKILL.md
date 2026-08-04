@@ -51,8 +51,52 @@ Files saved to `minimax-output/` in cwd. When using from Hermes, display media d
 
 - Monthly Max: ~5.1B M3 tokens, 3 video/day, 21 video/week
 - General models + video + speech + music + image share one quota bar
-- 5-hour rolling window + weekly window
+- 5-hour rolling window + weekly window (unused quota does NOT carry over)
 - TTS free for limited time (doesn't consume quota)
+
+### Token Plan specifics (proven 2026-08-04)
+
+- **Key prefix:** `sk-cp-` = Token Plan subscription (not pay-as-you-go)
+- **Quota check:** `mmx quota` — returns JSON with per-model 5h + weekly remaining
+- **No balance API endpoint** — use `mmx quota` or `platform.minimax.io` console
+- **Available models (8):** M3, M2.7, M2.7-highspeed, M2.5, M2.5-highspeed, M2.1, M2.1-highspeed, M2
+- **M3 pricing (permanent 50% off):** $0.30/$1.20 per M tokens (input/output, ≤512k input)
+- **M3 pricing (>512k input):** $0.60/$2.40 per M tokens
+- **General quota at 7%** = all LLM agents affected (openclaw, agi-333, apex-888 primary)
+
+### Key rotation workflow (proven 2026-08-04)
+
+When MiniMax key dies (401), update ALL locations:
+
+```bash
+# 1. TEST new key first
+curl -s -X POST https://api.minimax.io/v1/chat/completions \
+  -H "Authorization: Bearer $NEW_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"MiniMax-M3","messages":[{"role":"user","content":"test"}],"max_tokens":10}'
+
+# 2. Update KUNCI-MAS (source of truth)
+sed -i "s|$OLD_KEY|$NEW_KEY|g" /root/.secrets/kunci-mas.env
+
+# 3. Update ALL profile .env files
+for f in /root/.hermes/.env /root/.hermes/profiles/hermes_asi/.env \
+         /root/.hermes/profiles/hermes_apex/.env /root/.hermes/profiles/hermes_forge/.env; do
+  sed -i "s|MINIMAX_API_KEY=.*|MINIMAX_API_KEY=\"$NEW_KEY\"|" "$f"
+done
+
+# 4. Export to system env
+export MINIMAX_API_KEY="$NEW_KEY"
+
+# 5. Restart litellm
+sudo systemctl restart litellm-federation
+
+# 6. Verify
+curl -s -X POST https://api.minimax.io/v1/chat/completions \
+  -H "Authorization: Bearer $NEW_KEY" ... # same test as step 1
+mmx quota  # Token Plan balance check
+```
+
+**Pitfall:** If ANY location is missed, the service that reads from that location will 401. The main Hermes `.env` is often forgotten because profile `.env` files take precedence for per-profile agents.
 
 ---
 
