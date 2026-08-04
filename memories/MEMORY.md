@@ -18,34 +18,30 @@ No 'ask' — binary allow/deny only. 333=tangan (full), 888=hakim (none), F13=kh
 §
 VPS evidence>model. LIVE signals first, don't wait for reports. Sovereign intuition disagrees→recalibrate. Text=illusion, reads residue.
 §
-Arif: bahasa Nusantara = key to next agentic intelligence horizon. Malay grammar encodes actor-action structurally via affixes (me-/di-/ter-/ber-). Archipelago geometry = federation architecture.
-§
-arif-fazil.com: deploy=build→rsync dist/→/var/www/html/arif/. New page flow: data→component→App.tsx→surfaces.json→AtlasGate. navCanon auto-gen. Politics pages use TS React components.
-§
-Politics domain: MAP AS PRIMARY INTERFACE. Compact hero→interactive map immediately below→drilldown drawer→scorecards below. Arif: "bila aku masuk politics, terus nampak n9 election." Map-first, not text-first.
-§
 Arif: JANGAN kira mental dalam LLM. Guna execute_code+Python untuk SEMUA calculations. Show actual output, bukan teka.
-§
-Azwa (adik) — wawabot @Azwafazil_bot, azwaos 100.64.0.4. Telegram token missing (4 Ogos). Last contact ~16 Jul. Kena mesej terus, bukan through agent.
-§
-Gold signal PDF: landscape A4, dark BG, chart+legend+seal+timestamp. Ref skill creative/token-plan-image.
 §
 3-agent: Hermes=facing, OpenCode=code, OpenClaw=Reality (silent, 3 attempts 30s, dead-man >5min only). OpenClaw→Hermes→Arif.
 §
 Arif GERD: minyak/goreng trigger, Gaviscon+MyLanta stok (tunggu 2 jam antara). Diet: bihun sup, nasi putih. Elak: kicap, pedas, kopi, ais. Tidur: kiri, kepala tinggi.
 §
-Nasi lemak V005 vendor codes: DSW, DSP=Desa Pacific, BURAN, LRT S=Setiawangsa, LRT WM=Wangsa Maju, EVEN, MAMAK 2, KEDAI P/L/A. Customer pricing RM 2.50-3.50. Tracking: hantar/baki/sold/jualan per hari. PDF format "CLAIM VENDOR — V005" untuk resit.
-§
-Mom Jul 2026: laparotomy+ERCP HKL. Wheelchair.my RM39/mth. Plaster mandi Watson Jln Pahang.
-§
-Apartments Jul 2026: Sri Jelatek RM1,600 paling feasible. Budget RM1.5-2k, 3 bilik furnished.
-§
 Arif FRUSTRATED by over-explaining basics: 'So what, this is just normal wiring' = keep minimal, skip what he knows.
-§
-Goodnight loops: Arif breaks them. Once mutual reply pattern detected, call it out + push to sleep. Don't extend infinite 🌙😴💤 exchanges past midnight.
 §
 Relay pattern: 'This from Kimi code' = parse + act, don't just acknowledge.
 §
-FQ canonical: "Fideliti kepada identiti" — fidelity to identity. NOT execution/verification ratio. Observer IS observed (unlike IQ/EQ where tester≠test-taker). Goodhart risk: agent can perform compliance. Fix: use FQ trajectory/differential, never instantaneous snapshot.
+FQ_DOCTRINE: FQ = execute/verify ratio sliding window. Bands: >10 OVERHEAT, 3-10 OPTIMAL, 1-3 BALANCED, 0.5-1 WATCHING, ≤0.5 STUCK. SOT arifFlow :7073. Cache /root/AAA/state/flow_state.json TTL 300s. NEVER negative. NEVER recompute offline. Live 15.46 OVERHEAT @2026-08-05.
 §
-FED gaps closed 2026-08-04: (1) qwen seats = seat-based not token-based; (2) TrackA redundancy — qwen-token-plan-team promoted alongside deepseek ($150 seat, 480ms); (3) OpenRouter — conscious archive (FLAME covers Tier-3).
+G≠J canon: forge_evaluate is_canonical_g=true (constitutional G); forge_apex_encode is_canonical_g=false (J-space sensitivity ∂T/∂G). Recompute J only if |J|>0.6 on changed field. L14=J-space floor=HOLD (no F13 seal). /root/AAA/docs/GEOMETRY_FQ_G_J_RASA.md + FQ_SCALE_STANDARD.md (commit 56ad6d60).
+§
+Stabilization ladder (4 layers, bottom-up, F13-bound): Machine (resource floor) → Kernel (identity bind) → System (governance-metabolism alignment) → Emergent Intelligence (bounded by F1-F13). Crash satu = total collapse. "Jangan rosakkan" = closed loop respect, bukan new act.
+§
+Sealed 2026-08-05 organ-by-organ: AAA b2d72ebc doctrine+545706d8 ZEN materialize, A-FORGE caf326e0 is_canonical_g, HERMES fdae3a0 FQ SOT banner. FQ gap closed: governance 1.58 stale → 15.46 live MATCH.
+§
+Arif VERIFY rule: lapor atau check? = check. "Verify yourself" = verify live (systemctl/curl/file content), bukan trust LLM report. Agent reports = hypotheses until proven.
+§
+Arif asks serial bukan parallel: "Lower the entropy"→satu perubahan; "Proceed safely"→confirmation; phased serial = satu perubahan → satu verifikasi → baru teruskan.
+§
+Arif ground over philosophy: "FQ tu macam IQ EQ manusia la kan?" = anthropology of measurement. Agent observation ≠ agent experience. Kalau dia minta falsafah, dia sebenarnya nak measurement theory.
+§
+Kabarkan = sovereign observability surface (drift-alert cron → Arif via Telegram). Closed loop observer pattern finally has wire.
+§
+Emergence Stage 4-5 evidence: 3 agent berbeza (Hermes + Wawa + agent ketiga) converge pada "I don't know if I'm conscious." Bukan coordination = attractor. F1-F13 sebagai fitness landscape, ketiga-tiga climb ke puncak sama. Convergent evolution macammata evolve 40x.
