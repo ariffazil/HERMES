@@ -1,60 +1,39 @@
 <!-- SOT-MANIFEST
-federation_release: v2026.07.29
-last_verified: 2026-07-29T18:00Z
-live_commit: fa890a2
+federation_release: v2026.08.04
+last_verified: 2026-08-04T20:23:33Z
+live_commit: pending
 organ: HERMES
-role: multi-modal-bridge (organ 7 of 7)
+role: multi-modal-bridge (organ 7 of 8)
 authority: OBSERVE_ONLY — routes and bridges, never adjudicates
 truth_rule: tools/list + /health beat any static count in prose
 -->
 
-# 🔮 HERMES — Multi-Modal Bridge
+# 🔮 HERMES — Multi-Modal Bridge & Telegram Relay
 
 [![Domain CI](https://github.com/ariffazil/HERMES/actions/workflows/domain-ci.yml/badge.svg?branch=main)](https://github.com/ariffazil/HERMES/actions/workflows/domain-ci.yml)
-[![Federation](https://img.shields.io/badge/Federation-v2026.07.28-0a7b83)](https://arifos.arif-fazil.com)
-[![License](https://img.shields.io/github/license/ariffazil/HERMES?label=License)](LICENSE)
+[![Federation](https://img.shields.io/badge/Federation-v2026.08.04-0a7b83)](https://arifos.arif-fazil.com)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](./LICENSE)
 
 > **HERMES routes. It never adjudicates.**
 > **DITEMPA BUKAN DIBERI — Forged, Not Given.**
-> **Organ 7 of 7 — arifOS Federation**
+
+**HERMES** is the multi-modal bridge organ of the arifOS Federation. It routes signals between the outside world and the federation — Telegram ↔ arifOS ↔ agents — and manages the federation's skill catalog. It sits at the edge, bridging external signals into the constitutional governance layer.
 
 ---
 
-## TL;DR
-
-HERMES is the **multi-modal bridge** of the arifOS Federation. It routes signals between organs — Telegram ↔ arifOS ↔ agents — and manages the federation's skill catalog (31 arif-specific skills).
-
----
-
-## 1. Role
+## 🔮 Role
 
 | ✅ DOES | ❌ NEVER |
 |---------|---------|
 | Telegram operator edge | Adjudicates (→ arifOS) |
-| Creative/media surface routing | Executes mutations (→ A-FORGE) |
-| Visual/audio signal ingestion | Diagnoses (→ WELL) |
+| Creative & media surface routing | Executes mutations (→ A-FORGE) |
+| Visual, audio, & document ingestion | Diagnoses (→ WELL) |
 | Multi-modal evidence routing | Self-authorizes |
-| Skill catalog management | Issues verdicts |
+| Skill catalog management (31+ skills) | Issues verdicts |
 
 ---
 
-## 2. Federation Position
-
-```
-Arif (F13 SOVEREIGN)
-    ↓
-AAA / HERMES / OpenClaw (A2A edge)
-    ↓
-arifOS (:8088) — judges, seals, routes
-    ↓
-Domain Organs (GEOX :8081 · WEALTH :18082 · WELL :18083)
-    ↓
-A-FORGE (:7071) — executes after SEAL
-    ↓
-VAULT999 — immutable record
-```
-
-HERMES sits at the **edge** — it bridges external signals into the federation and routes creative/media evidence to the reasoning layer.
+## 🧭 Federation Position
 
 ```mermaid
 graph LR
@@ -70,71 +49,45 @@ graph LR
     ROUTE -->|execute| AFORGE[🔥 A-FORGE :7071]
     ARIFOS -->|seal| VAULT[(VAULT999)]
     AFORGE -->|receipt| VAULT
-    SKILL -.->|loads| ARIFOS
-    SKILL -.->|loads| AFORGE
+    SKILL -.-> ARIFOS
+    SKILL -.-> AFORGE
 ```
 
 ---
 
-## 3. Federation Cross-Reference
-
-| Organ | Role | Port | Repo |
-|-------|------|------|------|
-| arifOS | Constitutional kernel | 8088 | [ariffazil/arifos](https://github.com/ariffazil/arifos) |
-| AAA | State + cockpit | 3001 | [ariffazil/AAA](https://github.com/ariffazil/AAA) |
-| A-FORGE | Execution shell | 7071/7072 | [ariffazil/A-FORGE](https://github.com/ariffazil/A-FORGE) |
-| GEOX | Earth intelligence | 8081 | [ariffazil/geox](https://github.com/ariffazil/geox) |
-| WEALTH | Capital intelligence | 18082 | [ariffazil/wealth](https://github.com/ariffazil/wealth) |
-| WELL | Vitality guard | 18083 | [ariffazil/well](https://github.com/ariffazil/well) |
-| **HERMES** | Multi-modal bridge | 8644 | ← you are here |
-
----
-
-## 4. Quick Start
+## ⚡ Operations
 
 ```bash
 cd /root/HERMES
 # Health: probed via federation health check
 # Git remote: git@github.com:ariffazil/HERMES.git
+# Port: 8644 (bridge) · 18901 (FLAME free inference lane)
 ```
 
 ---
 
+## 🏛️ Federation Navigation
 
-## 🔗 Federation
-
-| Organ | Role | Repo | MCP | Health | LLMs |
-|-------|------|------|-----|--------|------|
-| **arifOS** | Kernel — judges, seals | [repo](https://github.com/ariffazil/arifos) | [mcp](https://mcp.arif-fazil.com/mcp) | [health](https://arifos.arif-fazil.com/health) | [llms.txt](https://arifos.arif-fazil.com/llms.txt) |
-| **A-FORGE** | Executor — builds, deploys | [repo](https://github.com/ariffazil/A-FORGE) | [mcp](https://forge.arif-fazil.com/mcp) | [health](https://forge.arif-fazil.com/health) | [llms.txt](https://forge.arif-fazil.com/llms.txt) |
-| **AAA** | Cockpit — displays, routes | [repo](https://github.com/ariffazil/AAA) | — | [health](https://aaa.arif-fazil.com/health) | [llms.txt](https://aaa.arif-fazil.com/llms.txt) |
-| **GEOX** | Earth intelligence | [repo](https://github.com/ariffazil/GEOX) | [mcp](https://geox.arif-fazil.com/mcp) | [health](https://geox.arif-fazil.com/health) | [llms.txt](https://geox.arif-fazil.com/llms.txt) |
-| **WEALTH** | Capital intelligence | [repo](https://github.com/ariffazil/wealth) | [mcp](https://wealth.arif-fazil.com/mcp) | [health](https://wealth.arif-fazil.com/health) | [llms.txt](https://wealth.arif-fazil.com/llms.txt) |
-| **WELL** | Vitality guard | [repo](https://github.com/ariffazil/well) | [mcp](https://well.arif-fazil.com/mcp) | [health](https://well.arif-fazil.com/health) | [llms.txt](https://well.arif-fazil.com/llms.txt) |
-| **HERMES** | Multi-modal bridge | [repo](https://github.com/ariffazil/HERMES) | — | — | — |
-
-**SOT:** 2026-07-28
-
-## 5. License & Sovereignty
-
-**AGPL-3.0.** HERMES routes under sovereign authority. It never adjudicates.
-
-**Muhammad Arif bin Fazil** is F13 SOVEREIGN. His word is final.
-
-```
-HERMES · Port 8644 · BRIDGE_LAW · Organ 7 of 7
-Routes, never adjudicates. DITEMPA BUKAN DIBERI.
-```
+| Organ | Role | Port | Repo | MCP | Health | LLMs |
+|:---|:---|:---:|:---|:---|:---|:---|
+| **⚖️ arifOS** | Constitutional Kernel — judges, seals | 8088 | [repo](https://github.com/ariffazil/arifos) | [mcp](https://mcp.arif-fazil.com/mcp) | [health](https://arifos.arif-fazil.com/health) | [llms.txt](https://arifos.arif-fazil.com/llms.txt) |
+| **⚒️ A-FORGE** | Execution Engine — builds, deploys | 7071/72 | [repo](https://github.com/ariffazil/A-FORGE) | [mcp](https://forge.arif-fazil.com/mcp) | [health](https://forge.arif-fazil.com/health) | [llms.txt](https://forge.arif-fazil.com/llms.txt) |
+| **🏛️ AAA** | Control Plane — A2A gateway, cockpit | 3001 | [repo](https://github.com/ariffazil/AAA) | — | [health](https://aaa.arif-fazil.com/health) | [llms.txt](https://aaa.arif-fazil.com/llms.txt) |
+| **🌍 GEOX** | Earth Intelligence — seismic, wells | 8081 | [repo](https://github.com/ariffazil/GEOX) | [mcp](https://geox.arif-fazil.com/mcp) | [health](https://geox.arif-fazil.com/health) | [llms.txt](https://geox.arif-fazil.com/llms.txt) |
+| **💰 WEALTH** | Capital Intelligence — NPV, risk | 18082 | [repo](https://github.com/ariffazil/WEALTH) | [mcp](https://wealth.arif-fazil.com/mcp) | [health](https://wealth.arif-fazil.com/health) | [llms.txt](https://wealth.arif-fazil.com/llms.txt) |
+| **🫀 WELL** | Vitality Guard — human readiness | 18083 | [repo](https://github.com/ariffazil/WELL) | [mcp](https://well.arif-fazil.com/mcp) | [health](https://well.arif-fazil.com/health) | [llms.txt](https://well.arif-fazil.com/llms.txt) |
+| **🔮 HERMES** | Multi-Modal Bridge — Telegram relay | 8644 | [repo](https://github.com/ariffazil/HERMES) | — | — | — |
+| **🌐 arif-fazil.com** | Public Web Surface — one domain | 443 | [repo](https://github.com/ariffazil/arif-fazil.com) | — | [verify](https://arif-fazil.com/999/verify) | — |
 
 ---
 
-## Federation Separation of Powers
+## 🏛️ Separation of Powers
 
 | Layer | Role | Can | Cannot |
 |-------|------|-----|--------|
 | **ARIF** | Sovereign | Veto, approve, decide | Be overridden |
-| **AAA** | State / Cockpit | Display, route, queue, register | Judge, execute, seal |
 | **arifOS** | Judge | Issue SEAL/HOLD/VOID/SABAR | Execute mutations |
+| **AAA** | State / Cockpit | Display, route, queue, register | Judge, execute, seal |
 | **Domain Organs** | Witnesses | Compute and reflect evidence | Decide alone |
 | **A-FORGE** | Executor | Build, deploy, mutate | Self-authorize |
 | **HERMES** | Edge Bridge | Route signals, manage skills | Adjudicate |
@@ -142,4 +95,12 @@ Routes, never adjudicates. DITEMPA BUKAN DIBERI.
 
 > AAA routes and displays. arifOS judges. Domain organs witness. A-FORGE executes. HERMES bridges. VAULT999 records. ARIF decides.
 
-> **SOT:** 2026-07-28 | **seal_seq:** `fa890a2`
+---
+
+## 📜 Sovereignty & License
+
+- **License:** GNU Affero General Public License v3.0 (**AGPL-3.0**)
+- **Sovereign:** **Muhammad Arif bin Fazil** (F13 SOVEREIGN). His word is final.
+
+> *DITEMPA BUKAN DIBERI — Forged, Not Given.*  
+> *HERMES routes. It never adjudicates. 999 SEAL ALIVE.*
