@@ -49,6 +49,17 @@ The `# shellcheck source=/dev/null` suppresses shellcheck warnings about sourced
 
 ## Pitfalls
 
+### Hermes redaction corrupts inline scripts that spell secret var names (PROVEN 2026-08-04)
+
+**Problem:** Hermes has a secret-redaction layer. When a script is created via `terminal` heredoc or inline `python3 -`, any line spelling out a vault key's variable name can be rewritten to `***` — corrupting the code (`KEY = ***` → SyntaxError; in Python the injected ellipsis `…` U+2026 becomes an invalid character). Workarounds that make it WORSE: dynamic name construction via string concatenation (`'QWEN_' + 'TEAM_' + ...`) also got corrupted mid-write.
+
+**Proven 2026-08-04:** three consecutive write attempts at an inline Python Token-Plan video script died with `SyntaxError: invalid character '…' (U+2026)` / `KEY = ***`. The fix: write a proper `.sh` file (via `write_file`) that does `source /root/.secrets/kunci-mas.env` at runtime and references the var normally (`AK="${QWEN_TEAM_OWNER_API_KEY:-$QWEN_API_KEY}"`) — the literal var name in a plain `.sh` passed through uncorrupted and ran first try.
+
+**Rules:**
+1. Never inline scripts that name vault keys via `python3 - <<EOF` / terminal heredocs. Write a `.sh` file, source the vault, reference vars normally.
+2. After writing any script that references secrets, verify before executing: `grep -n '\*\*\*' /tmp/script.sh` — if corrupted, rewrite as `.sh`; do not try to patch the `***` line in place.
+3. The secret VALUE never needs to appear in the script — only the variable name, resolved at runtime via `source`.
+
 ### `grep -c` + `set -euo pipefail` — the double-value trap
 
 **Problem:** `grep -c` exits with code 1 when it finds 0 matches. With `set -euo pipefail`, this causes the entire pipeline to fail. The naive fix `|| echo 0` doubles the captured value because `grep -c` already printed "0" to stdout:
@@ -99,6 +110,20 @@ WEBZEN_OUT=$(python3 probe.py 2>&1) || WEBZEN_EXIT=$?
 **Better — don't use `set -e` for multi-check health probes at all.** A probe that must report ALL failures is the opposite shape of a linear fail-fast script: accumulate failures explicitly (`FAILS=$((FAILS+1))`) and let the report block at the end decide the exit code. `set -e` belongs in scripts where ANY failure should abort immediately.
 
 **Diagnosis:** silent exit-1 + `set -euo pipefail` + no stdout = died at the first non-zero command. Reproduce with `bash -x script.sh 2>&1 | tail` to see the exact dying line.
+
+### Functions returning sentinel codes under `set -e` (PROVEN 2026-08-04)
+
+Same trap family as command substitution, but for **function calls**: a `poll()` that deliberately returns `2` for "retryable failure" kills a `set -e` script at the call line — the retry branch after it never executes. Bracket it:
+
+```bash
+set +e
+poll
+RC=$?
+set -e
+if [ $RC -eq 2 ]; then ...retry...; fi
+```
+
+**Rule:** any function that returns non-zero *on purpose* (sentinel codes: 0=ok, 1=fatal, 2=retryable) must be called under `set +e` or with `|| RC=$?`. Hit during the Token Plan video Green Net auto-retry script — the retry branch was dead code until the poll call was bracketed.
 
 ### Health probe hardening — transient tolerance + signal-vs-noise threshold (PROVEN 2026-08-03)
 

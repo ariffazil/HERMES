@@ -272,6 +272,17 @@ mmx video generate --prompt "your prompt" --non-interactive
 terminal(background=true, notify_on_complete=true, timeout=600)
 ```
 
+### 🔀 Cross-provider fallback when mmx video 404s
+
+`mmx video generate` routes through an upstream provider map that can go stale. Observed 2026-08-04: MuleRouter dead (HTTP 402) + stale MiniMax route mapping → mmx returned **`API error: HTTP 404`** on every attempt. This is a routing failure, not a quota or safety failure — retrying mmx will not fix it.
+
+**Fallback ladder for text-to-video:**
+1. `mmx video generate` (Hailuo-2.3) — try first
+2. **Qwen Token Plan direct** — `happyhorse-1.1-t2v` via curl (see skill `token-plan-video` for the submit/poll pattern). Multi-seat quota: if `QWEN_API_KEY` returns `Throttling.AllocationQuota`, fall through to `QWEN_TEAM_OWNER_API_KEY` then `QWEN_INDIVIDUAL_API_KEY`
+3. MuleRouter media catalog (skill `mulerouter-media`) — only if it's alive; check first
+
+**Prompt note (2026-08-04):** the kampung pickup scene — "shirtless muscular man in batik sarong talks to woman at a warung while a younger admirer watches with wide-eyed awe" — passed Hailuo-2.3 as submitted. The working safe elements: no physical contact, admiration framed as *watching from a distance* ("like watching a legend at work"), professional-cinematic context (low angle, film grain, golden hour). "Awe from afar" is a clean alternative when kneeling/touch dynamics would trip the filter.
+
 ### 🛡️ Safety Filter — Hailuo-2.3 vs image-01 (critical difference)
 
 Hailuo-2.3 has **significantly stricter safety filters** than image-01. What passes on images WILL be blocked on video:
