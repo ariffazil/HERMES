@@ -1,0 +1,68 @@
+# MINIMAL CONFIG — Telegram-only, no MCP, no other platforms
+# Used to isolate the initialize() hang
+
+model:
+  context_length: 1048576
+  default: hermes-asi
+  max_tokens: 131072
+  provider: fed
+  request_timeout: 90
+  supports_vision: true
+  timeout: 60
+
+providers:
+  fed:
+    api: http://127.0.0.1:4000/v1
+    capabilities:
+      - chat
+      - function_calling
+      - reasoning
+    key_env: LITELLM_MASTER_KEY
+    models:
+      - id: hermes-asi
+        name: FED hermes-asi
+    name: FED FLAME
+    transport: openai_chat
+  ollama:
+    api: http://127.0.0.1:11434/v1
+    key_env: OLLAMA_API_KEY
+    models:
+      - id: qwen2.5-coder:3b
+        name: Qwen 2.5 Coder 3B
+    name: Ollama Local Recovery
+    transport: openai_chat
+
+terminal:
+  backend: local
+  cwd: /root
+  timeout: 300
+  persistent_shell: true
+
+network:
+  force_ipv4: true
+
+telegram:
+  enabled: true
+  bot_token_env: ASI_ARIFOS_BOT_TOKEN
+  bot_username: '@ASI_arifos_bot'
+  require_mention: false
+  reactions: false
+
+mcp_servers: {}
+
+compression:
+  enabled: false
+
+approvals:
+  mode: 'off'
+
+gateway:
+  strict: false
+
+agent:
+  max_turns: 150
+  gateway_timeout: 1800
+  restart_drain_timeout: 180
+
+logging:
+  level: INFO
