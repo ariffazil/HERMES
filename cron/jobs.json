@@ -460,7 +460,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-24T01:32:18.689018+08:00",
-      "next_run_at": "2026-08-05T10:00:00+08:00",
+      "next_run_at": "2026-08-05T03:00:00+00:00",
       "last_run_at": "2026-08-05T09:00:24.902492+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -895,7 +895,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-05T09:35:00+08:00",
+      "next_run_at": "2026-08-05T02:45:00+00:00",
       "last_run_at": "2026-08-05T09:30:09.536008+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -1127,7 +1127,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-05T09:45:00+08:00",
+      "next_run_at": "2026-08-05T02:45:00+00:00",
       "last_run_at": "2026-08-05T09:30:18.062195+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -1276,7 +1276,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T21:24:35.097352+08:00",
-      "next_run_at": "2026-08-05T09:45:00+08:00",
+      "next_run_at": "2026-08-05T02:45:00+00:00",
       "last_run_at": "2026-08-05T09:30:09.439593+08:00",
       "last_status": "ok",
       "last_error": null,
@@ -1395,15 +1395,15 @@
       "schedule_display": "every 60m",
       "repeat": {
         "times": null,
-        "completed": 65
+        "completed": 66
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-02T08:30:00+08:00",
-      "next_run_at": "2026-08-05T09:39:08.224947+08:00",
-      "last_run_at": "2026-08-05T08:39:08.224947+08:00",
+      "next_run_at": "2026-08-05T03:40:26.289104+00:00",
+      "last_run_at": "2026-08-05T02:40:26.289104+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1454,5 +1454,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-05T09:30:18.063468+08:00"
+  "updated_at": "2026-08-05T02:40:26.289311+00:00"
 }

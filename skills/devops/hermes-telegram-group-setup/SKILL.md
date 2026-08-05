@@ -13,7 +13,7 @@ description: >
   "loop breaking", "chat flooded", "cross-bot injection", "injection pattern",
   "infinite interrupt loop", "Operation interrupted", "Model-Switch Fan-Out",
   "status indicator loop", "hermes-asi · X% · ~", "busy_input_mode",
-  "dispatch_in_gateway", "tui_status_indicator", "config patch blocked".
+  "dispatch_in_gateway", "tui_status_indicator", "config patch blocked", "Blocked unauthorized user", "bot not connected to Telegram", "AGI bot not reaching Hermes", "GATEWAY_ALLOW_ALL_USERS not honored".
 ---
 
 # Hermes Telegram Group Setup
@@ -658,6 +658,179 @@ after /new reset. The payloads diversified during the flood (started with
 text_to_speech, escalated to todo/web_extract) — suggesting automated probing,
 not a static injection template.
 
+## Pitfall: Gateway Stuck in "Connecting (1/8)" — Adapter Init Hang / DoH Discovery (NEW 2026-08-05)
+
+When user reports **"bot not replying in Telegram"** and the bot is `@ASI_arifos_bot` (or any Hermes bot with this adapter), the failure mode is often NOT config — it's the **gateway service stuck or crash-looping** on Telegram adapter init.
+
+**Symptoms (proven 2026-08-05 with `@ASI_arifos_bot`):**
+
+```bash
+$ systemctl status hermes-asi-gateway.service
+Active: activating (auto-restart) (Result: exit-code) since ... 3s ago
+Main PID: 12345 (code=exited, status=1/FAILURE)
+
+$ journalctl -u hermes-asi-gateway --no-pager -n 5 | grep -v lark
+Aug 05 02:55:13 WARNING hermes_plugins.telegram_platform.adapter:
+  [Telegram] Discovering Telegram API fallback IPs via DNS-over-HTTPS…
+Aug 05 02:55:13 WARNING hermes_plugins.telegram_platform.adapter:
+  [Telegram] Connecting to Telegram (attempt 1/8)…
+Aug 05 02:55:46 systemd[1]: Main process exited, code=killed, status=9/KILL
+```
+
+Bot shows up in `/status`, has a valid token (verified via `getMe` curl → 200 in 0.5s), Python `httpx` works in isolation (HTTP 200 in 0.5s), Telegram library + `Bot(token).get_me()` works in isolation (0.51s), but the gateway service can't complete init.
+
+**Root cause #1 — DNS-over-HTTPS fallback IP discovery hangs (~22-60s then SIGKILL):**
+
+The Telegram adapter has a code branch that discovers fallback IPs via DNS-over-HTTPS for resilience when `api.telegram.org` is unreachable. The adapter code at `/usr/local/lib/hermes-agent/plugins/platforms/telegram/adapter.py` ~line 3120 is:
+
+```python
+disable_fallback = (os.getenv("HERMES_TELEGRAM_DISABLE_FALLBACK_IPS", "").strip().lower() in {"1", "true", "yes", "on"})
+fallback_ips = self._fallback_ips()
+if not disable_fallback and not fallback_ips:
+    logger.warning("Discovering Telegram API fallback IPs via DNS-over-HTTPS…")
+    fallback_ips = await discover_fallback_ips()
+```
+
+**Diagnosis — verify DoH is the actual hang:**
+
+```bash
+# 1. Confirm bot identity and network are fine (Telegram side, bypasses gateway)
+curl -sf -m 5 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe" \
+  | python3 -c "import sys,json; r=json.load(sys.stdin); print(f'✅ @{r[\"result\"][\"username\"]}')"
+
+# 2. Confirm Python httpx works in isolation
+python3 -c "
+import httpx
+r = httpx.get('https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe', timeout=10)
+print(f'HTTP {r.status_code}')
+"
+
+# 3. Confirm python-telegram-bot library works in isolation
+python3 -c "
+import asyncio
+from telegram import Bot
+async def t():
+    me = await Bot(token='${TELEGRAM_BOT_TOKEN}').get_me()
+    print(f'Bot: {me.username}')
+asyncio.run(t())
+"
+
+# 4. Check journal for the DoH warning vs normal "Connecting" only
+journalctl -u hermes-asi-gateway.service --no-pager -n 20 | grep -E '(Discovering|Connecting|exit)'
+```
+
+If 1, 2, 3 all return 200/OK but 4 shows "Discovering Telegram API fallback IPs via DNS-over-HTTPS…" stuck → **DoH is the bottleneck**. Apply the fix below.
+
+**Fix — disable DoH via env var:**
+
+```bash
+sudo tee /etc/systemd/system/hermes-asi-gateway.service.d/disable-telegram-doh.conf > /dev/null << 'EOF'
+[Service]
+# Disable DoH discovery — direct DNS to api.telegram.org works (verified HTTP 200 in 0.5s).
+# DoH hangs ~22-60s in adapter init → SIGKILL on next systemd restart cycle.
+Environment="HERMES_TELEGRAM_DISABLE_FALLBACK_IPS=1"
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart hermes-asi-gateway.service
+```
+
+After this patch, the journal should show **only "Connecting to Telegram (attempt 1/8)…"** with NO preceding "Discovering Telegram API fallback IPs via DNS-over-HTTPS…".
+
+**⚠️ WARNING — env var alone may not be sufficient:**
+
+The Hermes adapter has a known code flow where `disable_fallback` is evaluated but the DoH call still runs unless both env var is set AND `_fallback_ips()` returns empty. If after the env-var fix you still see DoH in logs, also **patch the adapter code** to short-circuit (this lives in the venv copy, will be overwritten on `hermes update`):
+
+```python
+# Backup before patching
+sudo cp /usr/local/lib/hermes-agent/plugins/platforms/telegram/adapter.py \
+        /usr/local/lib/hermes-agent/plugins/platforms/telegram/adapter.py.bak-$(date +%Y%m%d)-DoH-fix
+
+# Apply: short-circuit the DoH call when env var is set
+# (replace the existing `if not disable_fallback and not fallback_ips:` line)
+```
+
+**Root cause #2 — Python Telegram library init hangs after DoH:**
+
+If you've applied the DoH fix and the gateway still shows "Connecting (1/8)" then SIGKILL/SIGTERM after 20-30s, DoH wasn't the root cause. Likely candidates:
+
+- `connection_pool_size=512` with `keepalive_expiry` short — fd leak in CLOSE_WAIT state (code has comment `#31599` near `platform_httpx_limits()`)
+- Async retry loop hangs at first attempt instead of progressing through `attempt 1/8` → `attempt 2/8`
+- Lark OAPI SDK init blocking (deprecated `pkg_resources` warnings in journal — known noise)
+
+**Strace the dying process to identify the exact hang:**
+
+```bash
+PID=$(systemctl show hermes-asi-gateway.service -p MainPID --value)
+strace -f -p $PID -e trace=all -o /tmp/hermes-debug/strace-$PID.log &
+STRACE_PID=$!
+sleep 60
+kill $STRACE_PID 2>/dev/null
+
+awk '{print $2}' /tmp/hermes-debug/strace-$PID.log | grep -oE "^[a-z_]+" | sort | uniq -c | sort -rn | head -20
+```
+
+**⚠️ STRACE PITFALL — caught wrong PID (proven 2026-08-05):**
+
+If `systemctl show ... MainPID` returns PID 0 (process died between check and strace), OR if multiple `hermes gateway run` processes are alive (zombie gateway — see earlier pitfall in this skill), strace will attach to the wrong process. **Always verify PID is alive AND is the gateway:**
+
+```bash
+PID=$(systemctl show hermes-asi-gateway.service -p MainPID --value)
+if [ "$PID" -gt 0 ]; then
+  ps -p $PID -o pid,vsz,rss,etime,cmd | head -3
+  ps -p $PID -o cmd= | grep -q "hermes gateway run" && echo "✅ correct PID" || echo "❌ wrong PID"
+else
+  echo "Service has no main PID — process died"
+fi
+```
+
+The strace log will look noisy and confusing if you strace the wrong process — you'll see `read(3, "node\0/root/AAA/telegram-miniapp/...")` (log tailer) instead of `connect(AF_INET, 149.154.167.220:443)` (gateway).
+
+**Two distinct signal patterns — what they mean:**
+
+| Systemd exit signature | What happened | Next step |
+|---|---|---|
+| `code=exited, status=1/FAILURE` | Python process exited cleanly with code 1 → unhandled exception in async init | Trace Python stack via strace or `python3 -X faulthandler` |
+| `code=killed, status=9/KILL` | External SIGKILL (OOM, systemd timeout, another watcher) | Check `dmesg` for OOM, check systemd timeout, check cgroup `memory.events` for `oom_kill` |
+| `code=exited, status=0` (rare) | Clean exit → `Restart=on-failure` should NOT restart; check unit config |
+
+**Pacing the diagnosis (Arif's serial-phased rule):**
+
+Arif's rule from session memory: **"ikut tertib. satu perubahan → satu verifikasi → baru teruskan. Never batch."** Apply this to gateway debugging too. Don't batch multiple patches (systemd + env var + adapter code) — verify each change individually:
+
+1. **Diagnose first** — what exit signature? what was the last log line? curl + python isolated tests.
+2. **One patch** — apply the most likely fix (e.g., disable DoH via env var).
+3. **Verify** — restart, watch journal 60s. Confirm new exit signature or steady state.
+4. **Iterate** — only if the patch didn't fix it.
+
+If after 3 patches with verification at each step the bot still doesn't reply, **declare the diagnosis incomplete and ask Arif for direction** rather than continuing to thrash.
+
+**PITFALL: `StartLimitIntervalSec` is in `[Unit]`, NOT `[Service]` (proven 2026-08-05):**
+
+When trying to throttle systemd restart frequency on `RestartSec=30`, the natural assumption is `StartLimitIntervalSec` belongs in `[Service]`. It does not — it lives in `[Unit]`. Putting it in `[Service]` produces:
+
+```
+/etc/systemd/system/hermes-asi-gateway.service:14: Unknown key 'StartLimitIntervalSec' in section [Service], ignoring.
+```
+
+and the directive is silently dropped. The correct section:
+
+```ini
+[Unit]
+Description=Hermes Agent ASI Gateway (Telegram)
+After=network.target
+StartLimitIntervalSec=300
+
+[Service]
+Type=simple
+...
+Restart=on-failure
+RestartSec=30
+StartLimitBurst=5
+```
+
+**Reference:** See `references/gateway-stuck-connecting-2026-08-05.md` for the full transcript — including the strace noise from catching the wrong PID, the v1 vs v2 DoH fix diff, and the eventual revert when DoH turned out not to be the root cause after all (bot stayed "active but Connecting" even after both env-var and adapter patches).
+
 ## Pitfall: Systemd Drop-In Token Mismatch
 
 OpenClaw's token can be hardcoded in a **systemd drop-in** at `/etc/systemd/system/openclaw-gateway.service.d/`. This shadows whatever vault.env carries because systemd drop-ins are applied *after* EnvironmentFile:
@@ -713,6 +886,273 @@ systemctl restart openclaw-gateway.service
 ```
 
 **Pitfall: daemon-reload is mandatory.** Editing the drop-in file without `systemctl daemon-reload` keeps the cached stale version. The file on disk changes but the running service never picks it up. Verified 2026-07-23.
+
+## Pitfall: Bot Ownership vs Allowlist — Don't Add a Bot ID to Hermes Allowlist Without Confirming It Routes Through Hermes (NEW 2026-08-05)
+
+The federation has **3 Telegram bots** owned by **3 different processes**. When a bot
+ID appears as "blocked unauthorized user" in Hermes journal, the natural reflex is
+"add it to `TELEGRAM_ALLOWED_USERS`." That reflex is WRONG if the bot is supposed to
+talk to a different process.
+
+**Three-bot ownership map (verified 2026-08-05 live):**
+
+| Bot identity | Token env var | Owning process | Should be in `TELEGRAM_ALLOWED_USERS`? |
+|---|---|---|---|
+| `@ASI_arifos_bot` (8410138119) | `ASI_ARIFOS_BOT_TOKEN` | `hermes-asi-gateway.service` (Hermes relay) | **Rarely** — bot identity, not user |
+| `@AGI_ASI_bot` (8149595687) | `TELEGRAM_BOT_TOKEN` in vault / `telegram-agi-asi-bot` token file | `openclaw-gateway.service` + `openclaw-bot.service` (OpenClaw AGI) | **NO** — OpenClaw handles directly |
+| `@arifOS_bot` (8727562763) | `FORGE_BOT_TOKEN` | `opencode-bot/bot.py` (FORGE/OpenCode) | **NO** — coding tool interface |
+
+**The failure mode (proven 2026-08-05):**
+
+1. AGI_ASI_bot (8149595687) posts in the AAA group
+2. Hermes logs `Blocked unauthorized user 8149595687 in chat -1003753855708`
+3. User says "allow la" — agent patches `TELEGRAM_ALLOWED_USERS` to include 8149595687
+4. User asks "wait so mana satu openclaw mana satu hermes"
+5. Agent realizes: AGI_ASI_bot is an OpenClaw process, not a Hermes process. The bot was
+   never supposed to route through Hermes. The "block" was correct fail-closed behavior;
+   the *user's mental model* (and the agent's autopilot response) was wrong.
+
+**Pre-allowlist-check rule — apply before ANY user_id patch:**
+
+1. **Find the bot's owning process.** Don't infer from username. Run:
+   ```bash
+   scripts/bot_ownership_lookup.py --user-id <USER_ID>
+   ```
+   It reads `/proc/<pid>/environ` for each candidate process, calls `getMe` via
+   `/getChatMember`, and prints which service owns the bot.
+
+2. **Confirm the bot should route through Hermes.** If the bot's token does NOT match
+   the token in the Hermes process's `/proc/<pid>/environ` — STOP. That bot is owned
+   by a different process (OpenClaw, FORGE, etc.).
+
+3. **Ask the user explicitly**: "Bot X is owned by [OpenClaw/FORGE], not Hermes.
+   Should I (a) leave the block and let X route via its own process, or (b) force
+   Hermes to also handle X?" Don't apply the patch on autopilot.
+
+**Why this matters for F1 AMANAH:** Patching `TELEGRAM_ALLOWED_USERS` is a trust-gate
+change (F1). Patching it on autopilot — without confirming the bot should route through
+Hermes — silently widens the trust surface for a bot that doesn't need Hermes access.
+The "block" message is a *correct signal*, not a *bug to fix*.
+
+**Forward-fix in upstream Hermes:** the prefilter should refuse to attempt processing
+of messages from bot identities (is_bot=true) that don't match the gateway's own
+token. Until then, every agent must run `bot_ownership_lookup.py` before any
+allowlist patch involving a bot identity.
+
+**Related:** see "Three-Bot Routing Topology" section and `references/three-bot-routing-topology.md`
+for the full governance mapping.
+
+## Pitfall: Two-Layer Telegram Auth — Prefilter Ignores `GATEWAY_ALLOW_ALL_USERS` (NEW 2026-08-05)
+
+The Hermes telegram adapter has **TWO independent authorization paths** that both gate inbound messages. They are not equivalent — the prefilter can block even when the full auth path would allow.
+
+**Proven 2026-08-05 with `@AGI_ASI_bot` (user_id `8149595687`) in the AAA group:**
+
+| Path | Method | Reads | Honours `GATEWAY_ALLOW_ALL_USERS=true`? |
+|---|---|---|---|
+| **Full auth** | `_is_user_authorized()` (SessionSource-based) | `GATEWAY_ALLOWED_USERS`, `GATEWAY_ALLOW_ALL_USERS` | ✅ Yes |
+| **Prefilter** (line 8481+) | `_is_user_authorized_from_message()` (line 921-925) | `TELEGRAM_ALLOWED_USERS` ONLY | ❌ **No** |
+
+The prefilter runs **before** the full auth path. It reads `TELEGRAM_ALLOWED_USERS` exclusively and returns the membership check result with no fallback to `GATEWAY_ALLOW_ALL_USERS`. So even if `GATEWAY_ALLOW_ALL_USERS=true`, the prefilter still blocks any user_id NOT in `TELEGRAM_ALLOWED_USERS`.
+
+**Symptom signature in journal:**
+
+```
+[Telegram] Blocked unauthorized user <USER_ID> in chat <CHAT_ID>
+```
+
+The chat_id in the warning is *correctly* in `allowed_chats` (group allowlist is honored). The user_id is the one failing — not the chat.
+
+**Disambiguation — three failure modes that all produce similar "no response" symptoms:**
+
+| What you see | Root cause | Where to look |
+|---|---|---|
+| `Blocked unauthorized user X in chat Y` (X=user_id, Y=group) | **Prefilter blocked** — user not in `TELEGRAM_ALLOWED_USERS` | `TELEGRAM_ALLOWED_USERS` env var |
+| Token-rejection 401 from Telegram API | Token invalid/rotated/wrong bot | `vault.env`, systemd drop-ins |
+| OpenClaw bot shows "active" but no message reaches LLM | **OpenClaw running on own token, NOT via Hermes relay** | Check process tree — is it `openclaw-gateway` PID or `hermes-asi-gateway` PID? |
+
+**Critical mental model — "Hermes connected to Telegram" is not a binary state:**
+
+The federation has **3 bots**, each with its own token and process:
+- `@ASI_arifos_bot` (8410138119) — Hermes relay
+- `@AGI_ASI_bot` (8149595687) — OpenClaw AGI
+- `@arifOS_bot` (8727562763) — FORGE/OpenCode
+
+A user message in the AAA group is **independently visible** to all three bots via the Telegram API. Whether the message *reaches* the LLM depends on which bot's auth chain passes. A bot can show `getUpdates` polling actively in logs but never route a message to LLM — that means it bypassed Hermes entirely, or it bypassed both layers of auth.
+
+**Diagnosis — full state of all three layers in one pass:**
+
+```bash
+set -a && source /root/.secrets/kunci-mas.env && set +a
+
+echo "=== 1. Processes running ==="
+systemctl status openclaw-gateway.service hermes-asi-gateway.service \
+  --no-pager 2>&1 | grep -E "Active:|Main PID:" | head -10
+
+echo "=== 2. Allowlists in vault.env ==="
+for var in TELEGRAM_ALLOWED_USERS TELEGRAM_GROUP_ALLOWED_USERS \
+           TELEGRAM_GROUP_ALLOWED_CHATS GATEWAY_ALLOW_ALL_USERS \
+           GATEWAY_ALLOWED_USERS; do
+  val=$(eval echo \$$var)
+  [ -n "$val" ] && echo "$var=$val"
+done
+
+echo "=== 3. Recent auth blocks ==="
+journalctl -u hermes-asi-gateway -u openclaw-gateway --since '30m ago' \
+  --no-pager 2>&1 | grep -iE "Blocked unauthorized|unauthorized" | tail -10
+
+echo "=== 4. Which bot controls the AAA group (chat -1003753855708)? ==="
+echo "Token-controlled bot identity check (using ${ASI_ARIFOS_BOT_TOKEN:-TELEGRAM_BOT_TOKEN}):"
+curl -sf -m 5 "https://api.telegram.org/bot${ASI_ARIFOS_BOT_TOKEN}/getChatMember?chat_id=-1003753855708&user_id=8149595687" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin).get('result',{}).get('user',{}); print(f'@{d.get(\"username\")} ({d.get(\"id\")}) — {d.get(\"first_name\")}')"
+```
+
+**Fix options (ranked by blast radius):**
+
+1. **Add the user_id to `TELEGRAM_ALLOWED_USERS`** (most targeted). For AGI bot in AAA group:
+   ```bash
+   # Append bot ID to existing allowlist (preserve existing entries)
+   NEW_ALLOWED="${TELEGRAM_ALLOWED_USERS},8149595687"
+   sed -i "s|^TELEGRAM_ALLOWED_USERS=.*|TELEGRAM_ALLOWED_USERS=${NEW_ALLOWED}|" \
+     /root/.secrets/kunci-mas.env
+   grep -v '^#' /root/.secrets/kunci-mas.env | grep -v '^export' | grep -v '^$' | grep '=' \
+     > /root/.secrets/kunci-mas.flat.env
+   chmod 600 /root/.secrets/kunci-mas.flat.env
+   systemctl daemon-reload
+   systemctl restart hermes-asi-gateway.service
+   ```
+   Cleanest audit trail. Reversible.
+
+2. **Set prefilter to honor `GATEWAY_ALLOW_ALL_USERS`** (broader). Patch
+   `/usr/local/lib/hermes-agent/plugins/platforms/telegram/adapter.py` line 921-925
+   to also check `GATEWAY_ALLOW_ALL_USERS` after the `TELEGRAM_ALLOWED_USERS` check
+   fails. This makes both layers consistent. **Patch lives in the venv copy —
+   will be overwritten on `hermes update`.**
+
+3. **Replace prefilter with full auth path** (most invasive). Have
+   `_handle_message` and `_ensure_forum_commands` call `_is_user_authorized()`
+   directly instead of the `_is_user_authorized_from_message()` shortcut.
+   Requires patching the adapter. Same venv-copy lifetime caveat.
+
+**For the AGI_ASI_bot specifically:** AGI bot in the AAA group is intended as
+the OpenClaw AGI gateway. If Arif wants AGI messages routed through Hermes
+(rather than OpenClaw direct), Option 1 is the cleanest fix. If the intent is
+for OpenClaw to keep handling AGI directly (with Hermes blocking being a
+side-effect), leave as-is — both layers are working as designed for fail-closed
+security.
+
+**Proven end-to-end 2026-08-05:** `AGI_ASI_bot` (OpenClaw) polling `getUpdates`
+every 10s → `chatMember` confirms it's admin of AAA group → Hermes journal
+shows `Blocked unauthorized user 8149595687 in chat -1003753855708` → env has
+`GATEWAY_ALLOW_ALL_USERS=true` but `TELEGRAM_ALLOWED_USERS=267378578,8324190535,1042200555`
+does NOT include 8149595687 → bot identity disambiguated as OpenClaw AGI, not
+Hermes AGI → user expectation that AGI routes through Hermes is the
+*misalignment*, not a connection failure.
+
+**Quick check before patching — `scripts/bot_ownership_lookup.py`:**
+
+```bash
+python3 /root/.hermes/skills/devops/hermes-telegram-group-setup/scripts/bot_ownership_lookup.py --user-id 8149595687
+# Output tells you in 5 seconds: which service owns the bot, what env var holds the
+# token, and whether the bot is supposed to route through Hermes at all.
+```
+
+If the lookup says the bot is owned by OpenClaw/FORGE (not Hermes), do NOT add
+it to `TELEGRAM_ALLOWED_USERS` — the block is correct fail-closed behavior.
+Confirm with Arif whether the routing expectation needs to change.
+
+**Forward-fix in upstream Hermes:** the prefilter should respect
+`GATEWAY_ALLOW_ALL_USERS` for consistency with the full auth path. Until then,
+document `TELEGRAM_ALLOWED_USERS` as the source of truth for both bot
+identity-level AND chat-level access — not just chat.
+
+### Fix execution — KUNCI-MAS single source of truth (proven 2026-08-05)
+
+When applying Option 1 (append user_id to `TELEGRAM_ALLOWED_USERS`), edit the
+**single source of truth** at `/root/.secrets/kunci-mas.env` directly — never
+edit service drop-ins, never use `hermes config set` (it appends duplicates).
+Then regenerate the flat env for systemd consumers and verify the env
+actually lands in the running process.
+
+```bash
+# 1. EDIT SOT (preserve existing entries; append one ID)
+set -a && source /root/.secrets/kunci-mas.env && set +a
+NEW_ALLOWED="${TELEGRAM_ALLOWED_USERS},8149595687"
+sed -i "s|^export TELEGRAM_ALLOWED_USERS=.*|export TELEGRAM_ALLOWED_USERS=\"${NEW_ALLOWED}\"|" \
+  /root/.secrets/kunci-mas.env
+# Mirror to group allowlist (same bot identity)
+sed -i "s|^export TELEGRAM_GROUP_ALLOWED_USERS=.*|export TELEGRAM_GROUP_ALLOWED_USERS=\"${NEW_ALLOWED}\"|" \
+  /root/.secrets/kunci-mas.env
+
+# 2. REGENERATE flat env (systemd EnvironmentFile consumer)
+make -f /root/.secrets/Makefile vault-generate
+# Expect: "✅ Generated: /root/.secrets/kunci-mas.flat.env (262 keys, 0 drift)"
+
+# 3. STOP + START (not just restart — restart alone may inherit old PID env cache)
+systemctl stop hermes-asi-gateway.service
+sleep 2
+systemctl start hermes-asi-gateway.service
+sleep 8
+
+# 4. VERIFY env actually delivered to new process
+NEW_PID=$(systemctl show hermes-asi-gateway.service -p MainPID --value)
+cat /proc/$NEW_PID/environ 2>/dev/null | tr '\0' '\n' | grep "^TELEGRAM_ALLOWED_USERS="
+# Expect: TELEGRAM_ALLOWED_USERS=267378578,8324190535,1042200555,8149595687
+# If old value: env var didn't propagate — daemon-reload missing or wrapper script shadowed it
+
+# 5. TRIGGER inbound message from the bot identity to confirm prefilter passes
+curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  -d "chat_id=-1003753855708" -d "text=🧪 relay test"
+sleep 15
+journalctl -u hermes-asi-gateway --since '1m ago' --no-pager \
+  | grep -i "Blocked unauthorized" | tail -3
+# Expect: NO new "Blocked unauthorized" warnings for the test message's user_id
+```
+
+**Common pitfall — `systemctl restart` alone may not reload env:**
+
+If the wrapper script (`/usr/local/bin/hermes-asi-wrapper.sh`) reads env at
+spawn time and the systemd context cached the old flat env, a `restart` can
+spawn a child that inherits stale values. **Always do stop+start** and verify
+`/proc/$NEW_PID/environ` shows the new values before assuming the fix took
+effect. Proven 2026-08-05: first `restart` call appeared to succeed but
+journal still showed the same `Blocked unauthorized` warning — `stop`+`start`
+resolved it.
+
+### Presenting the fix choice — 3-option pattern (proven 2026-08-05)
+
+When you've identified the failure mode, **don't silently pick a fix**. Present
+3 options with T2 announce, ranked by blast radius, and let the sovereign pick.
+The user typically picks Option 1 within one round trip.
+
+| Option | Action | Blast radius | Reversibility |
+|---|---|---|---|
+| **1. Add to allowlist** (recommended default) | Append `user_id` to `TELEGRAM_ALLOWED_USERS` in `/root/.secrets/kunci-mas.env` | Targeted — only this bot identity | Fully reversible (remove the appended entry) |
+| **2. Patch adapter prefilter** | Edit `/usr/local/lib/hermes-agent/plugins/platforms/telegram/adapter.py` line 921-925 to honor `GATEWAY_ALLOW_ALL_USERS` | Broad — affects all bots globally | Revert via `git checkout` in venv, but the patch will be lost on `hermes update` |
+| **3. Replace prefilter with full auth path** | Have `_handle_message` call `_is_user_authorized()` directly | Most invasive | Same as Option 2 |
+
+Format the proposal with risk/reverse characteristics and wait for
+explicit ACK before applying. Do not pre-apply any option without sovereign
+ratification — `TELEGRAM_ALLOWED_USERS` is F1 AMANAH (allowlist = trust gate).
+
+### Two-bot simultaneous block — common in three-bot federations
+
+When adding a bot ID to the allowlist, **audit which OTHER bots in the same
+chat will also be blocked**. In the 2026-08-05 incident, after fixing
+`8149595687` (AGI_ASI_bot), a subsequent journal scan revealed
+`8410138119` (ASI_arifos_bot, the Hermes relay bot itself) was ALSO blocked
+from the same AAA chat. The two bot identities are independent — adding one
+to the allowlist does not implicitly allow the other.
+
+**Diagnostic after a fix to confirm no second-blocked bot:**
+
+```bash
+journalctl -u hermes-asi-gateway --since '5m ago' --no-pager \
+  | grep "Blocked unauthorized" \
+  | awk -F'user ' '{print $2}' | awk '{print $1}' | sort -u
+# Lists all distinct user_ids blocked in the last 5 minutes
+# If more than one bot identity appears, repeat the allowlist update for each
+```
 
 ## Token Rotation Protocol — Emergency & Routine
 
@@ -1419,6 +1859,17 @@ immediately, or say "I'll remove it from config now" and DO IT in the same
 turn. Never say "Acknowledged" / "Understood" / "Silenced" on repeat without
 acting.
 
+## Reference: Gateway Stuck in "Connecting (1/8)" — 2026-08-05
+
+See `references/gateway-stuck-connecting-2026-08-05.md` for:
+- Full incident transcript for `@ASI_arifos_bot` gateway crash loop
+- Timeline of all systemd exit signatures (SIGKILL vs exit code 1)
+- strace PID-race pitfall — how to verify the PID is the gateway before attaching
+- v1 vs v2 DoH patch diff (env-var-only vs env-var + adapter code)
+- Why DoH was NOT the root cause despite being a real bottleneck
+- Suspected unconfirmed root causes: connection_pool_size, Lark OAPI SDK init, async retry loop
+- Lesson: "ikut tertib" rule applied to gateway debugging — don't batch patches
+
 ## Reference: AAA Group Agent Architecture
 
 See `references/aaa-group-agent-architecture.md` for:
@@ -1468,9 +1919,27 @@ See `references/single-bot-loop-second-incident-2026-08-04.md` for:
 - Why the second incident lasted 8x longer than the first
 - Forward-fix: making the double-fork pattern a permanent skill reference
 
+## Reference: Two-Layer Telegram Auth — Prefilter vs Full Path (2026-08-05)
+
+See `references/two-layer-telegram-auth-2026-08-05.md` for:
+- Adapter code structure (`_is_user_authorized_from_message` prefilter at line 921 vs full `_is_user_authorized` at line 763)
+- Why `GATEWAY_ALLOW_ALL_USERS=true` does NOT override per-user prefilter block
+- Three failure modes that look identical from outside (prefilter / token / wrong-process)
+- Single-pass diagnosis recipe (env + journal + Telegram API)
+- Decision tree for which fix (add to `TELEGRAM_ALLOWED_USERS` vs patch adapter vs leave as fail-closed)
+- Lessons about three-bot federation mental model (Hermes/OpenClaw/FORGE independence)
+
 ## Template: Chat Mapping for User Approval
 
-See `templates/telegram-chat-mapping-template.md` for a structured template
+See `references/telegram-chat-mapping-template.md` for a structured template
 to present the full bot→group→DM mapping to the user for approval before
 making config changes. Covers all 3 bots, known/unknown chat IDs, bot routing
-diagram, and provenance fields. Proven 2026-07-26.\n
+diagram, and provenance fields. Proven 2026-07-26.
+
+## Script: Bot Ownership Lookup
+
+See `scripts/bot_ownership_lookup.py` for a 5-second diagnostic that maps a
+Telegram user/bot ID to its owning process. Use BEFORE patching
+`TELEGRAM_ALLOWED_USERS` to confirm the bot is supposed to route through Hermes.
+If the lookup returns "OpenClaw" or "FORGE" as the owner, do NOT add to the
+allowlist — the prefilter block is correct fail-closed behavior.\n

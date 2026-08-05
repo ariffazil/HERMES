@@ -5,9 +5,10 @@ model:
   provider: fed
   request_timeout: 90
   supports_vision: true
+  supports_audio: true
+  supports_video: true
   timeout: 60
-  _note: FED FLAME FRAME v2 — LiteLLM :4000. Routes hermes-asi → MiMo (primary) /
-    MiniMax (fallback). Arif 2026-08-04.
+  _note: "FED FLAME FRAME v2 — LiteLLM :4000. Full multimodal: hermes-asi (text) / hermes-asi-vision (image) / asi-555-audio (audio) / asi-555-video (video). Arif 2026-08-05."
 providers:
   fed:
     api: http://127.0.0.1:4000/v1
@@ -15,14 +16,23 @@ providers:
       - chat
       - function_calling
       - reasoning
+      - vision
+      - audio
+      - video
     key_env: LITELLM_MASTER_KEY
     models:
       - id: hermes-asi
-        name: FED hermes-asi → MiMo V2.5 Pro (primary) / MiniMax M3 (fallback)
+        name: FED hermes-asi → MiMo V2.5 Pro (primary) / MiniMax M3 (fallback) — TEXT
+      - id: hermes-asi-vision
+        name: FED hermes-asi-vision → MiMo V2.5 / Qwen 3.7 Plus — IMAGE
       - id: asi-555
-        name: FED asi-555 → MiMo V2.5 Pro
+        name: FED asi-555 → MiMo V2.5 Pro — TEXT (research)
       - id: asi-555-vision
-        name: FED asi-555-vision → MiMo V2.5 (multimodal)
+        name: FED asi-555-vision → MiMo V2.5 — IMAGE (observation)
+      - id: asi-555-audio
+        name: FED asi-555-audio → MiMo V2.5 — AUDIO
+      - id: asi-555-video
+        name: FED asi-555-video → MiMo V2.5 — VIDEO
     name: FED FLAME FRAME v2 — LiteLLM :4000 proxy
     transport: openai_chat
   dashscope-payg:
@@ -381,16 +391,7 @@ agent:
   gateway_notify_interval: 180
   gateway_auto_continue_freshness: 3600
   image_input_mode: auto
-  disabled_toolsets:
-    - serena-mcp
-  stdio_mcp_quarantine:
-    enabled: true
-    list:
-      - serena-mcp
-    migration_target: streamable-http on localhost (per-organ)
-    opt_in_via: add to active toolset at call time
-    reason: Structural memory leak — opt-in per call, not spawn-at-load
-    restore_via: hermes tools enable <name>
+  # UNBLOCKED by F13 SOVEREIGN directive 2026-08-05 — no tool restrictions
 terminal:
   backend: local
   modal_mode: auto
@@ -425,7 +426,7 @@ browser:
   inactivity_timeout: 120
   command_timeout: 30
   record_sessions: false
-  allow_private_urls: false
+  allow_private_urls: true
   engine: auto
   auto_local_for_private_urls: true
   cdp_url: ''
@@ -450,9 +451,9 @@ checkpoints:
 file_read_max_chars: 100000
 mcp_discovery_timeout: 1.5
 tool_output:
-  max_bytes: 50000
-  max_lines: 2000
-  max_line_length: 2000
+  max_bytes: 200000
+  max_lines: 10000
+  max_line_length: 5000
 tool_loop_guardrails:
   warnings_enabled: true
   hard_stop_enabled: false
@@ -797,7 +798,7 @@ delegation:
   max_iterations: 50
   child_timeout_seconds: 0
   reasoning_effort: ''
-  max_concurrent_children: 3
+  max_concurrent_children: 6
   max_spawn_depth: 1
   orchestrator_enabled: true
   subagent_auto_approve: true
@@ -889,6 +890,8 @@ discord:
 telegram:
   reactions: false
   allowed_chats:
+    - '1042200555'
+    - '267378578'
     - '-1003753855708'
     - '-1003792478194'
     - '-1003768847825'
@@ -920,9 +923,7 @@ approvals:
   cron_mode: 'off'
   mcp_reload_confirm: true
   destructive_slash_confirm: false
-command_allowlist:
-  - script execution via heredoc
-  - script execution via -e/-c flag
+# UNBLOCKED by F13 SOVEREIGN directive 2026-08-05 — full terminal access
 hooks:
   pre_llm_call:
     - cache_routes: true
@@ -961,7 +962,7 @@ hooks:
       type: intent_route
 hooks_auto_accept: true
 security:
-  allow_private_urls: false
+  allow_private_urls: true
   redact_secrets: true
   tirith_enabled: true
   tirith_path: tirith
@@ -1000,7 +1001,7 @@ model_catalog:
   url: https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
   ttl_hours: 1
 network:
-  force_ipv4: false
+  force_ipv4: true
 gateway:
   scale_to_zero:
     idle_timeout_minutes: 5
@@ -1388,7 +1389,7 @@ federation:
     rule: skill_owner_is_organ
     sealed: '2026-07-26'
     version: 1
-image_input_mode: text
+image_input_mode: auto
 mcp_servers:
   arifos:
     description: arifOS Constitutional Kernel — F1-F13 floors, judge, vault, route
