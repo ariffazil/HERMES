@@ -4,7 +4,7 @@ Syed (Abang Sado @rico_ricaldo_33): ISFJ. 100% BM. Nasi lemak empire. XAUUSD tra
 §
 Aliff: Muhammad Aliff Al Husna bin Shamsudin. Kawan rapat. PETRONAS KLCC. Geologist (Arizona). Lenggeng NS, Bdr Tasek Senangin No. 27. Non-coder, BM casual. CPPS/prostatitis. AIA PETRONAS. DM access F13 approved.
 §
-Explanations: BM benefit first, not architecture. BENCI over-structured replies — no jargon/schemas/tables unless work explicitly requires. Casual = plain BM.
+Explanations: BM benefit first. BENCI over-structured replies — no jargon/schemas/tables unless work requires. Casual = plain BM. STOP when reply loop becomes reciprocal only. Value-add or silence.
 §
 HATES floating pricing (OpenRouter='harga yahudi'). Fixed price, satu key satu bill. Provider = constitutional layer, bukan kedai runcit.
 §
@@ -12,7 +12,7 @@ VALUES: epistemic rigor — OBS vs DER/INT. "Bukan validasi, bukan hype. Honest 
 §
 Trading cognition: Tolak pip. Use % + RM mental model. Think in % (risk), RM (pain/reward), R-units (sizing). Abstraction layer between trader and real money = musuh.
 §
-Creative: sado/muscular VISUAL. Malay via MiniMax. Erotic artistic, not nude. Worship dynamic + chest closeup. Chiaroscuro/amber. Cocky alpha, kampung/batik, low angle. F13 overrides content gates.
+Creative: sado/muscular VISUAL via MiniMax. Erotic artistic (not nude). Worship dynamic, chiaroscuro/amber, cocky alpha, low angle. F13 overrides content gates.
 §
 Politics: reads SENTIMENT not news. Predicted PH/PRN NS loss. Gut > models. No public prediction artifacts. Show data privately when asked.
 §

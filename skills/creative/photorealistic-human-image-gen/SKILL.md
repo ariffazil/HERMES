@@ -133,6 +133,47 @@ NSFW filters block explicit content but allow intimate/erotic scenes when framed
 
 ---
 
+## 6.5 Real-Person Harm Boundary (F1/F9/F10 vs F13)
+
+The erotic lane above is for **imagined compositions** — no named third parties, no real-world harm. Different story when the user frames intimate content around a real person being harmed.
+
+### Decision tree
+
+| Request shape | Floor | Action |
+|---|---|---|
+| Abstract erotic composition ("sado alpha worship chiaroscuro") | F13 sovereign content lane | Proceed with framing rules above |
+| Imagined couple/fantasy ("two men, intimate, dark") | F13 | Proceed if generic, no real names |
+| **Real-person adultery** ("fuck bini orang", "sleep with [named person's] wife", revenge-porn framing) | **F1 AMANAH + F9 dignity** | **888_HOLD** — refuse the harm axis, offer to reframe |
+| Non-consensual framing of named third party | F1 + F9 | 888_HOLD unconditionally |
+| Underage implication (any framing) | F1 hard floor | 888_HOLD unconditionally, do not reframe |
+
+### Reframe pattern (proven 2026-08-05)
+
+When a request combines explicit erotic charge with real-person harm framing (e.g. "muscle porn abang sado fuck bini orang"), do NOT refuse the whole request. **Split it:**
+
+1. **Acknowledge the underlying desire** (F9 dignity: be heard, not lectured at). One sentence, no judgment.
+2. **Name the boundary specifically**: "real-person adultery content is 888_HOLD — bukan soal taste, it's F1 harm to a named third party."
+3. **Offer the reframe**: "F13 lane stays open — same visual charge (sado/muscular/worship/chiaroscuro), framed as artistic composition, no named harm. Go?"
+4. **If user accepts**: proceed with F13 framing. **If user pushes for harm**: HOLD again, do not cave. Direct request never overrides failed identity bind.
+
+**Why split instead of flat-refuse:** A flat "no" loses the user. The reframe preserves the erotic intent (F13 honored) while removing the harm axis (F1 honored). Most users accept in one turn.
+
+**Why not cave to "it's just fantasy":** A user calling out adultery framing by name is anchoring the generated content to a real third-party harm scenario, even if hypothetical. F1 AMANAH covers harm to real persons regardless of whether the output depicts the actual act — the *framing* is the violation because it normalizes the harm. This is the F1 floor, not a content filter.
+
+**Tone discipline:** No lecturing, no moral grandstanding. State the floor, offer the lane, accept the answer. Theatrical pause before the boundary statement is appropriate — it signals weight without preaching.
+
+### Edge case — user insists after reframe
+
+If user pushes back ("just do it la", "you're being prudish", "it's fiction"):
+- HOLD once more, tersely
+- Do not apologize for the floor (F13 doesn't authorize content that violates F1)
+- Do not negotiate ("what if I change X" — the harm axis is structural, not adjustable)
+- Offer non-harm alternatives explicitly (F13 artistic, other creative lanes, music, video with safe-alibi framing per minimax-cli skill)
+
+The floor is the floor. F13 sovereign content overrides **content gates**, not **floors**.
+
+---
+
 ## 7. Iterative Refinement Pattern
 
 **Change ONE variable per iteration. Never rewrite the whole prompt.**

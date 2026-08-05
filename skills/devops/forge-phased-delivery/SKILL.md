@@ -109,10 +109,50 @@ because `DecayAwareResult` is not subscriptable like a dict.
 
 ### 4. Do not lower global params to fix local problems
 If one memory type (REINFORCED) decays too fast, do not lower λ globally; that affects
-all memory types. Instead, fix the specific mechanism (boost Ω on reinforcement).
+all memory types. Instead, fix the specific mechanism (boost Ω on reinforcement events).
 
 **Caught in session:** λ changed from 0.10 to 0.05 globally, but REINFORCED still failed.
 Correct fix is to increase score-dependent inertia μ(Ω) on reinforcement events.
+
+### 6. "Code is draft/unbuilt" claims need multi-root verification before delivery
+Before declaring "no code exists" or "X is draft only" from a `find` or `ls`, verify across
+ALL plausible roots in the federation estate. The arifOS federation has overlapping
+directory trees where the SAME capability lives at different paths:
+
+- `/root/.hermes/` — Hermes Agent **runtime** (config, skills, plugins, cron, memories)
+- `/root/HERMES/` — Hermes Agent **source** (cognitive modules, integration layer)
+- Six git roots: `/root/arifOS/`, `/root/A-FORGE/`, `/root/AAA/`, `/root/GEOX/`,
+  `/root/WEALTH/`, `/root/WELL/`
+- Three-way site split for `arif-fazil.com`: source repo → `/var/www/html/<app>/` →
+  engine copy (see `deployment-claim-verification` pitfall #50)
+
+A single-path probe (`ls /root/.hermes/cognitive/`) returns empty → false claim
+"draft only" → sovereign corrects with actual 5,949 LOC at `/root/HERMES/cognitive/`.
+
+**Detection recipe before any "exists / doesn't exist" claim:**
+
+```bash
+# 1. Search across all plausible roots, not just the guessed one
+find /root -maxdepth 4 -name "<target>" 2>/dev/null
+find /root -maxdepth 4 -path "*<substring>*" -type d 2>/dev/null
+
+# 2. For source-vs-runtime roots specifically, check both .hermes and HERMES variants
+ls -d /root/.hermes/*/ /root/HERMES/*/ 2>/dev/null
+
+# 3. For git-tracked code, verify the actual git worktree, not a stale snapshot
+git -C /root/<repo> rev-parse --show-toplevel
+git -C /root/<repo> log --oneline -1
+```
+
+**Companion to pitfall #3** ("Wired ≠ Tested end-to-end"): pitfall #3 catches
+false-positive "wired" claims; this catches false-NEGATIVE "doesn't exist" claims.
+A probe that hits the wrong path produces a false negative — the most dangerous
+kind of "verification" because it masquerades as evidence.
+
+**Rule:** every "code is X" or "code is missing" claim in any phase report MUST be
+backed by a multi-root probe in the same response. If `find` only hits one root,
+state explicitly "checked only /root/X — alternate roots not probed" so the sovereign
+knows the verification surface.
 
 ### 5. Semantic similarity is not causal syntax detection
 Sentence-transformers (semantic embedding) are great for topic drift detection but
@@ -121,6 +161,48 @@ are syntactic patterns, not semantic similarities.
 
 **Caught in session:** Causal Tagger accuracy dropped 78 to 57 percent after switching
 to sentence-transformers. Correct fix is a regex-only approach for causal cues.
+
+### 7. Schema-field inconsistencies → fix the read-side adapter, not the writers
+When historical records carry inconsistent field names for the same concept
+(`session_id` vs `session` vs `agent_session`), DO NOT migrate the legacy writers
+to a canonical field — there are too many writers, the migration breaks
+provenance, and rewriting receipts mutates immutable artifacts.
+
+The correct fix is at the READ side: a normalizer/adapter that resolves
+canonical fields from any of the historical names in priority order.
+
+```python
+# WRONG — migrates writers, breaks provenance, mutates immutable artifacts
+"session_id": record["session"]  # forces all writers to use session_id
+
+# RIGHT — read-side adapter with ordered fallbacks
+"session_id": (
+    record.get("session_id")
+    or record.get("agent_session")
+    or record.get("session")
+),
+```
+
+**Three reasons read-side wins:**
+
+1. **Writers are usually out of scope** — they may be in archived crons,
+   sealed receipts, external producers you don't control.
+2. **Migrating immutable artifacts violates F1 AMANAH** — VAULT999 records are
+   append-only; rewriting them changes the historical truth.
+3. **The receiver cares about the canonical name** — legacy field names in
+   upstream data don't change the downstream requirement.
+
+**When to use this pattern:**
+
+- VAULT999 / sealed records with mixed-version writers (v0, v1, v2 schemas)
+- Legacy config files where field names drifted across deploys
+- Cross-organ data ingestion where each organ uses its own naming
+- API responses where consumers need a stable contract despite upstream drift
+
+**Companion:** prefer the lowest blast-radius fix. Schema reconciliation at the
+adapter layer is reversible (revert the adapter, originals unchanged). Schema
+migration at the writer layer is irreversible (rewritten records can't be
+restored). When in doubt, fix downstream.
 
 ## User Preference: Real Numbers
 
