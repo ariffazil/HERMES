@@ -79,7 +79,6 @@ provider_models_cache.json
 pairing/
 platforms/
 plugins/
-mcp_servers/
 bin/
 hooks/
 pastes/
