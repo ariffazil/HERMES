@@ -135,3 +135,4 @@ skills/.hub/
 # Workspace artifacts (added 2026-08-04 stabilization) — not source
 scratch/
 profiles/default/memories/
+.clean_shutdown
