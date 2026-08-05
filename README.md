@@ -1,7 +1,7 @@
 <!-- SOT-MANIFEST
 federation_release: v2026.08.04
 last_verified: 2026-08-04T20:23:33Z
-live_commit: pending
+live_commit: cea953c (FEDERATION.md restoration + 15 new skills + skill patches)
 organ: HERMES
 role: multi-modal-bridge (organ 7 of 8)
 authority: OBSERVE_ONLY — routes and bridges, never adjudicates
@@ -94,6 +94,20 @@ cd /root/HERMES
 | **VAULT999** | Ledger | Record immutable seals | Edit or delete history |
 
 > AAA routes and displays. arifOS judges. Domain organs witness. A-FORGE executes. HERMES bridges. VAULT999 records. ARIF decides.
+
+---
+
+## 📡 Federation Registries
+
+HERMES operates the multi-modal bridge layer — Telegram edge + signal routing. Discovery metadata is exposed at the federation manifest endpoints.
+
+| Registry | Endpoint |
+|----------|----------|
+| **Telegram** | `@arifOS_bot` (forge-bot gateway) |
+| **Federation Discovery** | `GET https://arifos.arif-fazil.com/.well-known/federation/agents.json` |
+| **Skill Catalog** | `GET https://hermes.arif-fazil.com/.well-known/skills.json` |
+
+Federation surface: [hermes.arif-fazil.com](https://hermes.arif-fazil.com)
 
 ---
 
