@@ -53,7 +53,7 @@ For each layer, the test must answer: "is THIS layer broken?" If all layers fast
 
 ### Phase 3 — Propose fix and get review BEFORE apply
 
-CRITICAL: Show the patch in chat. Wait for Arif's "go"/"apply"/"yes". Do NOT apply based on inference.
+- **Phase 3 — Propose fix and get review BEFORE apply — non-negotiable.** This is the gateway/edge failure-mode workhorse (telegram-gateway-ipv6-hang-fix, hermes-telegram-group-setup) where every patch has edge blast radius. The format must always be: show diff in chat, ask Arif, wait for "go"/"apply"/"yes". NEVER apply based on inference even when hypothesis is strong. Per Arif 2026-08-05: "Arif VERIFY rule: lapor atau check? = check. 'Verify yourself' = verify live (systemctl/curl/file content), bukan trust LLM report." So review-before-apply AND verify-after-apply are both gates.
 
 Format:
 ```diff
@@ -143,6 +143,10 @@ Single yes/no is bad UX for irreversible changes. Three options lets Arif pick a
 
 Even if diagnosis suggests 3 causes, apply 1 patch → verify → apply next. Batching hides which patch worked and which broke something else.
 
+### NEVER skip Phase 2 layer isolation just because layer 1 looks fine
+
+The Telegram IPv6 hang case (2026-08-05) is the canonical trap: `curl` to api.telegram.org was <1s, Python `httpx` was <1s, `telegram.Bot` library was <1s — but the gateway itself was stuck on `Connecting (1/8)`. The bug lived in the adapter's async DoH discovery, NOT in any layer the textbook Layer 1-4 sequence tests. **Phase 2 must include adapter-level probes**, not just protocol-level probes. Add: `ss -tnp | grep <pid>` and `strace -f -p <pid> -e trace=network` before declaring "all layers green".
+
 ### NEVER modify live code without knowing the rollback path
 
 Before any patch: "If this breaks everything, how do I revert?" Answer must be one command, ideally the backup file copy.
@@ -162,6 +166,7 @@ Before any patch: "If this breaks everything, how do I revert?" Answer must be o
 - **Strace on the wrong PID wastes a debugging cycle.** Multiple instances restart in seconds; always re-fetch `MainPID` immediately before `strace -p`.
 
 - **Dead-code patches feel productive but waste time.** Apply, observe no effect, revert, repeat — that's not debugging, that's thrashing. After 2 no-effect patches, escalate the diagnosis methodology itself (e.g., switch from journalctl to strace, or from env-var to OS-level).
+- **Layer 1-4 protocol probes miss adapter-level faults.** When all protocol layers green but app still stuck, you're in adapter land (DoH discovery, async DNS fallback, custom resolve, connection pool). Don't declare "layers fine" — escalate to `strace` or `tcpdump` on the actual service PID. (Arif 2026-08-05: 3 patches applied, bot still hung, only `strace`/`gai.conf` revealed the truth.)
 
 ### KILL/DESTROY decisions need QQQ + FFF BEFORE action (Arif 2026-08-05)
 

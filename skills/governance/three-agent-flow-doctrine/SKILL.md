@@ -714,6 +714,10 @@ Bila ada multiple path (A/B/C/D) dan satu jelas dari faktanya — execute autono
 5. **3+ factors point same path** = consensus. Move.
 6. **Factors split evenly** = signal to ask. Jangan teka.
 
+### Sub-rule: Don't Ask the Sovereign Coding Questions
+
+2026-08-05 correction — Arif is not a coder, and was visibly frustrated when Hermes asked him a coding-spec question. Hard rule: never ask Arif anything a coder agent (OpenClaw / OpenCode) can decide. Route the question to the right agent in the tri-agent flow, not to the human. Full profile + routing table + anti-patterns: `references/sovereign-routing-no-coding-questions-2026-08-05.md`.
+
 ### Example
 
 ```

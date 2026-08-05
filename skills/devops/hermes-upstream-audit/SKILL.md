@@ -34,6 +34,18 @@ metadata:
 
 **Divergence is not deficiency.** Arif's Hermes is intentionally forked — arifOS constitutional identity, federation routing, custom MCP servers. The audit distinguishes between _architectural divergence_ (deliberate) and _opportunity cost_ (upstream features not yet leveraged).
 
+## Arif's Execution Doctrine (binding for every audit)
+
+Arif specced 5 rules on 2026-08-05 during a "kadi bangang" gateway-misread session. These govern how this audit is presented, not just what it finds:
+
+1. **Cognitively same level as the session.** Bahasa BM+English mix, level manusia. Each turn ↑clarity ↓human chaos. If Arif sends a link or symptom, analyze immediately — don't ask obvious questions.
+2. **Beyond language — tersurat + tersirat.** High signal truth reality decode. Don't waste resources on surface-level recap. Read sub-text, real intent, actual state.
+3. **No quiet hours.** Hantar bila-bila, Arif reads bila ready.
+4. **Code → AAA.** When patches/code are needed, route to OpenClaw or OpenCode via AAA. Never ask Arif coding specs.
+5. **Verify deployed, not documented.** "Hang check semua" — did the thing actually run? Lapor-jika-seal only. No half-baked noise ("setakat buat md lepas tu x flow. menyemak ja. x payah report. only report when it is seal").
+
+**Audit-mode implication:** Before reporting "missing X", prove X is genuinely missing in the live system, not just absent from the latest docs. Done means deployed, not drafted.
+
 ## The 8-Dimension Audit Protocol
 
 ### Phase 1 — Fetch Upstream Canon
@@ -128,6 +140,16 @@ v<version> vs upstream docs.hermes-agent.nousresearch.com
 
 8. **`hermes mcp serve` exposes Hermes as MCP server.** Available out of the box — 10 tools for messaging bridge (conversations_list, messages_read, messages_send, events_poll, events_wait, channels_list, etc.). Stdio-only. Gateway must be running for send operations. This is D9 in the audit dimensions.
 
+9. **"Kadi bangang" ≠ agent deficiency — check edge first.** When Arif reports Hermes feels "kadi bangang" (dim, sluggish, not articulating), the failure mode is almost always at the gateway/edge layer, not the agent's reasoning. Common culprits:
+   - **Telegram gateway IPv6 hang** (see `telegram-gateway-ipv6-hang-fix`) — bot stops replying, looks like agent is broken, actually gateway is wedged on DNS resolution.
+   - **Multiple gateway instances** — `openclaw-gateway` + `hermes-mcp` + `hermes-a2a-listener` + `hermes-real-bridge` running in parallel = potential token/connection conflict. Map all gateway PIDs with `ps -eo pid,ppid,uid,etime,stat,pcpu,pmem,comm | grep -E 'gateway|hermes_mcp|hermes_a2a'` before diagnosing.
+   - **Hook fire-silence** — constitutional guard hook deployed but ledger silent for 12+ hours = gateway restart needed. Hooks do not auto-reattach.
+   - **Backup drift** — `.archive-config-backups/` stacking corrupt snapshots = somebody/cron rewriting config without diff review. Source of "kadi bangang" feeling even when code is correct.
+
+   **Diagnostic sequence before any agent patch:** (1) check `hermes-asi-gateway.service` journal for restart cycles, (2) check bot uptime last 12h (`@ASI_arifos_bot` reply latency), (3) check whether multiple Telegram bots with overlapping tokens are running, (4) only then fault the agent. Edge congested ≠ agent broken.
+
+10. **Don't ask coding questions to Arif.** If the audit surfaces a code gap requiring fix, the deliverable is a routing receipt (`AAA → OpenClaw/OpenCode`), not a question to Arif. "Buat ja la. Tanya la openclaw ka opencode ka. Depa agent coder." Apply this rule across all audit-mode interactions.
+
 ## Verification
 
 After any Tier 1 execution, re-run `hermes memory status` (or equivalent check for each dimension fixed) and confirm the gap is closed. Record before/after state.
@@ -137,3 +159,4 @@ After any Tier 1 execution, re-run `hermes memory status` (or equivalent check f
 | File | Purpose |
 |---|---|
 | `references/2026-08-03-arif-audit.md` | Full worked example — Arif's Hermes v0.18.2 audit, 8 Eurekas found, Tier 1 execution record |
+| `references/2026-08-05-gateway-vs-agent-decode.md` | "Kadi bangang" decode — when the audit instinct is "missing feature" but the actual bug is edge congestion. Includes the 5-step edge-first diagnostic sequence and the 5-rule output format. |

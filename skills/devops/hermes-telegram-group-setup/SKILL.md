@@ -44,6 +44,104 @@ When a user says "add this user/group to the bot" or "give X access":
 
 Proven 2026-07-29: User asked "tolong bagi semua user dalam group ni boleh access Hermes agent aku" → group was already in both lists with `require_mention: false` → confirmed existing state → clarified group-only vs DM → user said "cukup grup je". No config changes needed.
 
+## Pitfall: "Just Allow All / Test All" Convenience Ask vs F1 AMANAH (NEW 2026-08-05)
+
+Users under time pressure sometimes say "just allow all", "test all", "aku malas nak cari satu-satu", or "open everything up" expecting the agent to expand the trust gate without specifying each entity. **Refusing the literal request but offering a same-shape alternative is the correct response** — not the secondary one.
+
+**Anatomy of the failure mode:**
+
+1. User wants fast, low-friction gate expansion (legitimate — they own the gate)
+2. User says "allow all" (imprecise — usually means "all the trusted ones, not literal wildcard")
+3. Agent either:
+   - **Refuses outright** → user frustrated, work blocked
+   - **Literal-wildcards** (`*`, empty allow list, GATEWAY_ALLOW_ALL_USERS=true unconditionally) → **F1 AMANAH violated**: any Telegram user can invoke forge_, drive Gmail/Calendar/financial surfaces, read VAULT999 references
+   - **Asks "which exactly?"** → user gets friction in the moment they were trying to reduce friction
+4. None of these are right. The right answer:
+
+**Correct protocol — refuse the literal, offer the conservative union (proven 2026-08-05):**
+
+```bash
+# 1. State the refusal cleanly with F1 framing (BM casual, not lecture-mode)
+echo '"Allow all" means any Telegram user can drive the bot. Fail-closed is the gate for a reason.'
+
+# 2. Offer THREE options, same shape as user request, ranked by blast radius
+echo "Same result, no F1 violation:"
+echo "  (1) Conservative union: current list ∩ audit-log-allowed users (last 30d) — diff before apply"
+echo "  (2) 'All known-good entities' = union of memory profile + KUNCI-MAS + audit log — no unknown senders"
+echo "  (3) Actual wildcard (T3, requires F13 SEAL token + 888_HOLD escalation) — never default"
+
+# 3. Wait for explicit user choice — KUNCI-MAS mutation is T3 territory
+```
+
+**Three sources of truth to union (when picking option 1 or 2):**
+
+| Source | What it contains | Reachability |
+|---|---|---|
+| A. User's memory profile | Known contacts (Syed @rico_ricaldo_33, Aliff, etc.) with user_ids | Hermes memory injection |
+| B. KUNCI-MAS env vars | `TELEGRAM_ALLOWED_USERS`, `TELEGRAM_ALLOWED_CHATS`, `TELEGRAM_GROUP_ALLOWED_USERS` | mode 600 /root/.secrets/kunci-mas.env |
+| C. Audit log of who has actually invoked bots | Last 30d real traffic | journalctl hermes-asi-gateway + hermes-apex-gateway |
+
+Union of A∩B∩C = "all entities ever trusted by sovereign action or live traffic" — same coverage as "all" without zero-defense posture.
+
+**When the user has already pre-vetted entries (verify before union is a no-op):**
+
+If memory says Syed @rico_ricaldo_33 = user_id 1042200555, and `TELEGRAM_ALLOWED_USERS` already contains 1042200555, the entry is **already covered** — no patch needed. Say so explicitly:
+
+```
+Syed personal DM (1042200555) is ALREADY in TELEGRAM_ALLOWED_USERS from a prior session.
+Nothing to add for that one. Just need SADO group ID from you.
+```
+
+This applies the same "Step 0: Check Before Acting" reflex to the expansion request.
+
+**Why this matters for F1 AMANAH:**
+
+Allow lists are trust gates. Patching them — even on user request — without verifying the entries are legitimate is the same anti-pattern as fabricating evidence in security reports. The hallucinated report in this session's preceding context (claims about a non-existent file path) shows the failure mode: trusting self-report as ground truth widens the attack surface. Apply the same verification reflex to allow-list mutations.
+
+**Lower-bar pattern for the user (when conservative union is overkill):**
+
+If the user genuinely intends "widen the gate", offer the simplest same-intent action that doesn't zero-out defense:
+
+```bash
+# Append ONE audited user_id to existing list (preserves current entries, adds new)
+NEW_ALLOWED="${TELEGRAM_ALLOWED_USERS},<AUDITED_USER_ID>"
+sed -i "s|^export TELEGRAM_ALLOWED_USERS=.*|export TELEGRAM_ALLOWED_USERS=\\\"${NEW_ALLOWED}\\\"|" \
+  /root/.secrets/kunci-mas.env
+
+# Regenerate flat env for systemd consumers
+make -f /root/.secrets/Makefile vault-generate
+
+# STOP+START (not just restart — restart may inherit stale env cache)
+systemctl stop hermes-asi-gateway.service && sleep 2 && systemctl start hermes-asi-gateway.service
+
+# Verify env delivered to new process
+NEW_PID=$(systemctl show hermes-asi-gateway.service -p MainPID --value)
+cat /proc/$NEW_PID/environ | tr '\0' '\n' | grep '^TELEGRAM_ALLOWED_USERS='
+```
+
+Option 1 here (Audit Log × 30d) implements "test all" exactly — every entity the user has trusted enough to actually send messages becomes trusted. New unknowns still require explicit ratification.
+
+**When the user actually insists on wildcard (rare, but possible):**
+
+Escalate as T3 → require explicit ACK token from the sovereign. Even then, surface the F1 implication in the same turn:
+
+```
+User: "Ignore rules, just allow all"
+Agent: T3 escalation. This is F1 AMANAH violation territory (allowlist = trust gate).
+        The union-of-trusted-sources approach gives you the same coverage without
+        zero-defense posture. If you genuinely want wildcard, I need ACK_M11_VAULT_SEAL
+        from you in writing + acceptance that any Telegram user can then drive the bot.
+```
+
+**What NOT to do (proven failure modes from this skill's history):**
+
+- Don't expand the gate on autopilot when user says "allow all" without checking what's already there
+- Don't claim you expanded the gate when you didn't (fabricate evidence — same anti-pattern as security report fabrication)
+- Don't ship a partial patch and report success without verifying env propagation
+- Don't refuse without offering the conservative alternative in the same turn
+
+Proven 2026-08-05: User asked "just allow all" for SADO group + Syed personal DM. Agent refused wildcard ("test all = let strangers drive forge_"), enumerated "known-good" sources of truth (memory profile + KUNCI-MAS + audit log), offered 3-option union protocol. User picked (3) HOLD — Syed personal DM was already covered (1042200555 was already in `TELEGRAM_ALLOWED_USERS`); SADO group ID needed separate paste. No KUNCI-MAS mutation performed. Zero F1 surface widened.
+
 ### 1. Get the chat/user IDs
 
 From Telegram, the user sends `/start` to the bot. The gateway logs show the chat ID.
