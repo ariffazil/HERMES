@@ -49,6 +49,7 @@ WEBZEN_OUT=$(python3 /root/arif-fazil.com/scripts/web-zen/web_zen.py doctor --ti
 if [ "$WEBZEN_EXIT" -eq 1 ]; then WEBZEN_EXIT=0; fi
 
 # Organ subdomains — GET + Accept (HEAD is flaky via CF on some paths)
+# Retry once on transient failure (000 / timeout) — Cloudflare tunnels can hiccup.
 SUBDOMAIN_FAILS=""
 for url in \
   https://arifos.arif-fazil.com/health \
@@ -58,6 +59,11 @@ for url in \
   https://aaa.arif-fazil.com/health \
   https://mcp.arif-fazil.com/; do
   code=$(http_code "$url" -H "Accept: application/json,text/html,*/*")
+  # Retry once on transient network failure
+  if [ "$code" = "000" ]; then
+    sleep 2
+    code=$(http_code "$url" -H "Accept: application/json,text/html,*/*")
+  fi
   if ! is_ok "$code"; then
     SUBDOMAIN_FAILS="$SUBDOMAIN_FAILS\n  $url → HTTP $code"
     FAILS=$((FAILS + 1))
@@ -67,13 +73,32 @@ done
 # SPA routes — probe as real browser (Accept: text/html) to match Caddy
 # @makcikgpt_nojs handler which 404s requests without Accept: text/html.
 ROUTE_FAILS=""
-for path in / /writing/ /doctrine/ /earth/ /missions/ /world/makcikgpt/ /000/ /999/ /gas/ /geox/ /canon/ /federation/ /connect/ /verify/ /pulse/ /audit/ /wealth/; do
+# 2026-08-06: /pulse/ and /audit/ intentionally GONE (Caddy @pulse_gone, @audit_gone)
+for path in / /writing/ /doctrine/ /earth/ /missions/ /world/makcikgpt/ /000/ /999/ /gas/ /geox/ /canon/ /federation/ /connect/ /verify/ /wealth/; do
   code=$(http_code "https://arif-fazil.com${path}" -H "Accept: text/html")
   if ! is_ok "$code"; then
     ROUTE_FAILS="$ROUTE_FAILS\n  https://arif-fazil.com${path} → HTTP $code"
     FAILS=$((FAILS + 1))
   fi
 done
+
+# === Merged Tier 1.3: PRN16 compare auto-sync (was separate cron 47041a1ec62c) ===
+# Auto-regenerate NS election compare page when ns_results.json changes.
+# Silent when nothing changed.
+SITE=/root/arif-fazil.com/sites/arif-fazil.com
+SRC_JSON="$SITE/public/data/politics/ns_results.json"
+GEN_HTML="$SITE/public/politics/ns-election/compare/index.html"
+WEBROOT=/var/www/html/arif/politics/ns-election/compare
+PRN16_NOTE=""
+if [ -f "$SRC_JSON" ] && { [ ! -f "$GEN_HTML" ] || [ "$SRC_JSON" -nt "$GEN_HTML" ]; }; then
+  if (cd "$SITE" && node scripts/generate-ns-compare.cjs >/dev/null 2>&1); then
+    mkdir -p "$WEBROOT"
+    rsync -a "$SITE/public/politics/ns-election/compare/" "$WEBROOT/" >/dev/null 2>&1 || true
+    FLIPS=$(node -e "const d=require('$SITE/public/data/politics/ns_results.json');const f=d.seats.filter(s=>s.y2023!==s.y2026).length;console.log(f)" 2>/dev/null || echo "?")
+    PRN16_NOTE="🔁 PRN16 compare auto-synced (${FLIPS} flips)"
+  fi
+fi
+# === /Merged PRN16 ===
 
 # Report
 # Only fail if >2 route/subdomain failures (single transient = noise),
@@ -97,5 +122,8 @@ if [ "$FAILS" -gt 2 ] || [ "$WEBZEN_EXIT" -gt 1 ] || [ "$DIRTY" -eq 1 ]; then
   exit 1
 fi
 
-# GREEN — silent
+# GREEN — silent (Sense contract) but emit PRN16 sync note if applicable
+if [ -n "$PRN16_NOTE" ]; then
+  echo "$PRN16_NOTE"
+fi
 exit 0
