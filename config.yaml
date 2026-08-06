@@ -380,14 +380,14 @@ agent:
   api_max_retries: 3
   service_tier: ''
   tool_use_enforcement: auto
-  task_completion_guidance: true
+  task_completion_guidance: false
   parallel_tool_call_guidance: true
   environment_probe: true
   environment_hint: ''
   coding_context: auto
   verify_on_stop: false
   gateway_timeout_warning: 900
-  clarify_timeout: 600
+  clarify_timeout: 30
   gateway_notify_interval: 180
   gateway_auto_continue_freshness: 3600
   image_input_mode: auto
