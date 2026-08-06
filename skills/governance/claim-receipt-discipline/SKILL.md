@@ -113,6 +113,68 @@ Standard verification steps (does the file exist?) do not catch relational contr
 
 ---
 
+## Failure Mode 3a — Stale-Context Audit (the "I remember the layout" pattern)
+
+### What it looks like (caught 2026-08-05)
+
+An agent was asked to audit the Hermes cron subsystem (`jobs.json`). It produced a 33-job inventory
+with a 4-tier patch proposal, including fixes for jobs (PRN16 Compare Auto-Sync) that had been
+removed 9 minutes earlier by a separate agent (kimi-code/FI-008). The patch proposal was a
+re-discovery of work already done. The audit cost ~20 minutes of sovereign attention; the value was
+zero.
+
+The agent's training-data memory of jobs.json was correct as of session start. By the time the agent
+emitted the audit, the live state had moved. The agent had not re-probed.
+
+### Why this is distinct from FM1-FM3
+
+FM1-FM3 are about *what the agent claims about content*. FM3a is about *what the agent claims about
+state*. Different falsification axis: "did you read CURRENT state, or did you remember what state
+USED to be?"
+
+### Detection rule (3-second freshness probe)
+
+Before any audit or inventory claim about mutable external state (jobs.json, config.yaml, agent
+state, database tables, /tmp/), run a 5-second freshness probe:
+
+```bash
+# 1. SHA + line count + timestamp
+sha256sum /path/to/file | head -c 16
+wc -l /path/to/file
+stat -c '%y' /path/to/file
+
+# 2. Pull the current shape, not the remembered one
+python3 -c "import json; d = json.load(open('/path/to/file')); print(len(d.get('jobs', [])))"
+```
+
+**If the timestamp is older than 5 minutes, re-probe immediately. If newer than 5 minutes, your
+training-data memory is probably fine but the freshness probe is still cheap — run it anyway.**
+
+The probe is cheap. The audit is expensive. The probe-then-audit ordering inverts the cost: a
+5-second probe prevents a 20-minute mistaken audit.
+
+### Failure consequence
+
+A stale-audit claim is a soft F2 TRUTH violation in the present tense — the agent is asserting
+the world is one way when it is another. Without provenance timestamps, the agent cannot
+distinguish its own training data from live state.
+
+Tag discipline: a stale claim must be `[INT]` + "based on training data, not yet live-probed" or
+`[OBS]` + actual probe output. The latter is preferred.
+
+### Where to apply this
+
+Any time an agent is about to emit claims about:
+- File contents that another agent may have edited
+- Database tables that another agent may have written
+- Service state that another process may have changed
+- Configuration that another session may have modified
+
+If the substrate is hot (multi-agent, multi-process, cron-driven), **always probe**. The 5-second
+cost is dwarfed by the cost of getting it wrong in front of the sovereign.
+
+---
+
 ## Failure Mode 3 — Source-Internal Contradiction Escalation (the `⟨X⟩ = P+ + P− → ‖r‖²=3 vs ≤1` pattern)
 
 ### What it looks like (caught 2026-08-04)
@@ -167,7 +229,8 @@ Run all three layers. Layer 3 is where the work is.
 1. **Before any tagged claim**: ask "do I have the receipt?" If no, retag `[OBS]` → `[SPEC]` (or `[INT]`).
 2. **Before any inventory claim**: scan cited paths for negation words. Resolve contradictions before emitting.
 3. **Before any source citation**: spot-check 3 random references. Run 30-second cheap-check on the cited math.
-4. **On detection of any of the above**: log to `~/.local/share/arifos/atlas333/audit/` (escalation) or
+4. **Before any inventory of mutable external state**: run a 5-second freshness probe (SHA + line count + timestamp). If state is hot, always probe.
+5. **On detection of any of the above**: log to `~/.local/share/arifos/atlas333/audit/` (escalation) or
    `~/.local/share/arifos/atlas333/eureka/` (one-time source downgrade).
 
 ---
@@ -185,6 +248,8 @@ Run all three layers. Layer 3 is where the work is.
 | EM/Dawid-Skene on correlated LLM witnesses | landmine | Anchor on earth-witness; verify independence first |
 | Calibrate before UNMEASURED stops coercing | landmine | Sequencing: audit coercion → log per-channel → check independence → calibrate |
 | Treat real citations as proof of math | 3 | Layer-3 verify: cited section's math/code is correct |
+| Audit mutable state from cached memory | 3a | 5-second freshness probe (SHA + line count + timestamp) before any inventory claim |
+| Claim "the system has X jobs" without re-probing | 3a | Probe-then-audit ordering: 5s probe prevents 20m mistaken audit |
 
 ---
 

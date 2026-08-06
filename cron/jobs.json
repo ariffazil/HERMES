@@ -410,15 +410,15 @@
       "schedule_display": "0 * * * *",
       "repeat": {
         "times": null,
-        "completed": 603
+        "completed": 606
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-24T01:32:18.689018+08:00",
-      "next_run_at": "2026-08-06T02:00:00+00:00",
-      "last_run_at": "2026-08-06T00:00:21.135226+00:00",
+      "next_run_at": "2026-08-06T04:00:00+00:00",
+      "last_run_at": "2026-08-06T03:00:37.643518+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -542,15 +542,15 @@
       "schedule_display": "every 120m",
       "repeat": {
         "times": null,
-        "completed": 127
+        "completed": 128
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-26T02:40:15.117573+08:00",
-      "next_run_at": "2026-08-06T02:50:10.307653+00:00",
-      "last_run_at": "2026-08-06T00:50:10.307653+00:00",
+      "next_run_at": "2026-08-06T04:50:23.650026+00:00",
+      "last_run_at": "2026-08-06T02:50:23.650026+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -845,15 +845,15 @@
       "schedule_display": "*/5 * * * *",
       "repeat": {
         "times": null,
-        "completed": 2453
+        "completed": 2481
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-07-28T05:08:45.482572+08:00",
-      "next_run_at": "2026-08-06T01:05:00+00:00",
-      "last_run_at": "2026-08-06T00:55:10.195227+00:00",
+      "next_run_at": "2026-08-06T03:20:00+00:00",
+      "last_run_at": "2026-08-06T03:15:23.822956+00:00",
       "last_status": "error",
       "last_error": "Script exited with code 127\nstderr:\n/root/HERMES/scripts/quiet-hours-arbiter.sh: line 40: /root/HERMES/scripts/syedos-receipt-watcher.sh: No such file or directory",
       "last_delivery_error": null,
@@ -982,7 +982,7 @@
       "schedule_display": "0 1 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
@@ -990,7 +990,7 @@
       "paused_reason": null,
       "created_at": "2026-07-31T12:29:22.175840+08:00",
       "next_run_at": "2026-08-07T01:00:00+00:00",
-      "last_run_at": "2026-08-05T01:01:22.327923+08:00",
+      "last_run_at": "2026-08-06T01:00:29.275318+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1028,18 +1028,18 @@
       "schedule_display": "*/15 * * * *",
       "repeat": {
         "times": null,
-        "completed": 432
+        "completed": 442
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-01T06:03:11.360938+08:00",
-      "next_run_at": "2026-08-06T01:15:00+00:00",
-      "last_run_at": "2026-08-06T00:45:18.542960+00:00",
-      "last_status": "error",
-      "last_error": "Script exited with code 1\nstdout:\n\ud83d\udd34 Sense FAILURES:\n  Routes:\n  https://arif-fazil.com/pulse/ \u2192 HTTP 410\n  https://arif-fazil.com/audit/ \u2192 HTTP 410\n  Repo: 1 untracked files (commit or gitignore)\n?? sites/arif-fazil.com/public/data/wealth/archive/2026-08-05.json",
-      "last_delivery_error": "delivery error: Telegram send failed: You must pass the token you received from https://t.me/Botfather!",
+      "next_run_at": "2026-08-06T03:30:00+00:00",
+      "last_run_at": "2026-08-06T03:15:31.879626+00:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
         "platform": "telegram",
@@ -1257,15 +1257,15 @@
       "schedule_display": "every 60m",
       "repeat": {
         "times": null,
-        "completed": 75
+        "completed": 77
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-02T08:30:00+08:00",
-      "next_run_at": "2026-08-06T01:51:10.365136+00:00",
-      "last_run_at": "2026-08-06T00:51:10.365136+00:00",
+      "next_run_at": "2026-08-06T03:51:23.780346+00:00",
+      "last_run_at": "2026-08-06T02:51:23.780346+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1337,15 +1337,15 @@
       "schedule_display": "every 30m",
       "repeat": {
         "times": null,
-        "completed": 15
+        "completed": 19
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-08-05T17:53:38.746958+00:00",
-      "next_run_at": "2026-08-06T01:26:10.352671+00:00",
-      "last_run_at": "2026-08-06T00:56:10.352671+00:00",
+      "next_run_at": "2026-08-06T03:26:23.678954+00:00",
+      "last_run_at": "2026-08-06T02:56:23.678954+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -1356,5 +1356,5 @@
       "fire_claim": null
     }
   ],
-  "updated_at": "2026-08-06T01:00:10.213264+00:00"
+  "updated_at": "2026-08-06T03:15:31.880179+00:00"
 }

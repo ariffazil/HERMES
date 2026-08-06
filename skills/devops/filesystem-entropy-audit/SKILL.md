@@ -217,6 +217,48 @@ Before deleting a large venv, verify that `requirements.txt` or `pyproject.toml`
 ### User may not know Python ecosystem terms
 Arif is a geologist/capital strategist, not a Python developer. When referencing `.venv`, `pip`, `node_modules`, etc., explain what they are in one line before proceeding. Don't assume familiarity with Python/Node dependency management.
 
+### "Empty" skill dirs are rarely empty (2026-08-05)
+
+**Trap:** Skill directories that look empty by the obvious test (no `SKILL.md`) may still hold real artifacts — `DESCRIPTION.md`, subdirs of stubs, partial scaffolds, or scripts. Calling them "empty" and `rmdir`-ing them destroys work that the curator or a future agent would have finished.
+
+**Detection protocol (always run before any "empty dir" claim):**
+```bash
+# Never trust a single signal. Run all four:
+for d in <candidate_dirs>; do
+  echo "=== $d ==="
+  ls -la "$d"                         # full contents incl. hidden
+  find "$d" -type f | head -20        # file inventory
+  if [ -f "$d/DESCRIPTION.md" ]; then
+    head -5 "$d/DESCRIPTION.md"       # intent of the stub
+  fi
+  # git status if it's a tracked dir
+  git -C "$d" status -s 2>/dev/null | head -5
+done
+```
+
+**Classification after inspection:**
+| Looks like | Actually is | Action |
+|---|---|---|
+| No `SKILL.md`, no other files | Truly empty | Safe to rmdir |
+| No `SKILL.md`, has `DESCRIPTION.md` | Stub awaiting curator | **Do not delete** — leave for curator or hand to user |
+| No `SKILL.md`, has subdirs (scripts/, fixtures/) | Partial scaffold | **Do not delete** — escalate to user |
+| Has `SKILL.md` but content is placeholder | Broken skill | Curator work, not deletion |
+| Has `SKILL.md` and content is real | Live | Skip |
+
+**Real failure case (2026-08-05):** Listed 4 skill dirs in `~/.hermes/skills/` (`apple/`, `dream-engine/`, `mlops/`, `smart-home/`) as "empty" because `find -name 'SKILL.md'` returned 0. Wrote a T1 plan to `rmdir` them. `rmdir` correctly refused all 4. Re-running `ls -la` showed each held `DESCRIPTION.md` + in some cases subdirs (`scripts/`, `evaluation/`, `inference/`, `models/`). All 4 were stubs awaiting curator work, not garbage. The `rmdir` failure saved them; if the audit had gone straight to `rm -rf` the artifacts would have been lost.
+
+**Trigger:** Any skill-dir cleanup, any "delete empty dirs" plan, any "X skills are broken" claim. Run the four-line detection protocol BEFORE classifying.
+
+See `references/empty-skill-dir-detection.md` for a worked example with before/after classification.
+
+### Hardening patches on forked install dirs (2026-08-05)
+
+When `git status -s` on a forked-but-tracked install dir (`/usr/local/lib/hermes-agent`, `/usr/local/lib/openclaw`, etc.) returns >3 modified files, those files are usually either intentional fork patches (doctrine encoded as code) or accidental dirty-tree (merge leftovers). The fix is the same regardless: commit them as a themed patch set BEFORE the next destructive operation (`hermes update`, rebase, etc.) so they survive and are recoverable.
+
+Pattern: identify → classify → stage intentional-only → commit with `arifos/<theme>` prefix → never push → use the commit SHA as a recovery anchor on future rebase.
+
+See `references/arifos-hardening-commit-pattern.md` for the full 5-step pattern with a worked example (commit `d681b73d1`, the hermes-hardening patch series).
+
 ### Cross-organ AGENTS.md boilerplate duplication
 
 AGENTS.md files across federation organs (GEOX, WEALTH, WELL) often carry identical sections — Dual-Lane CI Architecture (~30 lines), Steel Security Layer (~35 lines), Constitution cross-references, Humour disciplines. These are copy-paste carried from organ to organ during initialization and drift independently.

@@ -55,6 +55,26 @@ Dual write into `/root/.openclaw/state/openclaw.sqlite`:
   the current openclaw.json, suggesting config churn; re-validate before
   relying on the CLI.
 
+## Recurrence (2026-08-05)
+
+Same job `a4301644` failed AGAIN on 2026-08-05 — but the live diagnosis differed:
+`payload_model` was **EMPTY** (not `minimax/deepseek-v4-flash` as the old error string
+claimed). The allowlist rejection error text is STALE — it quotes the allowlist state
+at last failure time, not current.
+
+Fix applied (dual write, same as before):
+1. `payload_model` → `deepseek/deepseek-v4-flash`
+2. `job_json.payload.model` → same (python json rewrite, preserve all fields)
+3. DB backup first: `cp openclaw.sqlite openclaw.sqlite.bak-weekly-gov-<ts>`
+
+**Why `deepseek/deepseek-v4-flash`, NOT `minimax/…`:** the `minimax` provider catalog
+only has MiniMax-M2.7/M2.7-highspeed/M3 — it does NOT define `deepseek-v4-flash`.
+The allowlist entry `minimax/deepseek-v4-flash` exists (added 08-01) but a runtime call
+would fail "model not found". Check the provider catalog, not just the allowlist.
+
+Also verified: `deepseek` provider has `deepseek-v4-flash`; next run 2026-08-08 11:00 UTC.
+If it fails again on Sunday, restart `openclaw-gateway` so the scheduler re-reads the DB.
+
 ## Reference Data
 
 - Cron store schema: `cron_jobs` table — key columns: store_key, job_id, name,

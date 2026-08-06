@@ -132,6 +132,42 @@ they stay UNKNOWN until classified. Never guess an organ's name from its port.
 
 ## Pitfalls
 
+- **HTTP probe to a non-HTTP port reports false DEAD (PROVEN 2026-08-05).**
+  `curl :5432/health` on Postgres, `:6379/health` on Redis, `:6380/health` on FalkorDB,
+  or `:11434/` on Ollama returns nothing because those services don't speak HTTP. A naive
+  probe loop then declares the entire data plane "down" when Docker has them up and
+  healthy (`docker ps` shows `Up 4 days (healthy)`). Three corrections, in order:
+  1. **Probe by transport, not by habit.** HTTP services (`/health` → JSON) are different
+     from DB services (TCP-only / custom protocol / binary line protocol). Don't loop one
+     curl shape across all ports and call the negative space "down."
+  2. **Cross-check with `docker ps` and `ss -tlnp`.** If the port is in LISTEN state and
+     the container says `healthy`, the service IS up — your probe is wrong, not the service.
+  3. **Per-organ probe table.** Maintain a `probes: {http: [...], tcp: [...], custom: [...]}`
+     map. Each row names its protocol + expected response shape. Never iterate a single
+     pattern over a heterogeneous port list.
+  Lesson: a probe that lies is worse than no probe. A false DEAD verdict triggers human
+  attention, an unnecessary restart, and possibly a SEAL-grade commitment — all from a
+  category error in the probe script. The checkup loop's first move must be
+  `for port in $PORTS: do curl -sf http://127.0.0.1:$port/ || check_tcp_$port || docker_inspect_$container; done` —
+  HTTP-or-fallback, not HTTP-or-DOWN.
+
+- **Ollama is not dead when systemd says `inactive` (PROVEN 2026-08-05).**
+  `/root/scripts/ollama-idle-shutdown.sh` is a deliberate idle-killer: stops Ollama when
+  there are no active connections AND swap > 50%. It is triggered by cron/systemd timer
+  and logs "freed ~656MB swap." This is **DORMANT, not DEAD** by the verdict grammar
+  above — the binary is installed, the unit is enabled, the service simply has no work.
+  `systemctl start ollama.service` brings it back in <1s when needed. Witness pattern:
+  1. `systemctl is-active ollama` returns `inactive`
+  2. `ls /opt/arifos/data/ollama/models/` shows manifest blobs
+  3. `cat /root/scripts/ollama-idle-shutdown.sh` exists and matches the design
+  → verdict is DORMANT, not DEAD. Restarting without demand wastes ~656MB swap.
+  Lesson: `systemctl is-active inactive` is one of five bits, not a verdict. An organ
+  designed to sleep when idle must be classified DORMANT, not DEAD, and must not be
+  restarted without demand. If memory says "Ollama is part of the stack" but the daemon
+  is inactive, check for `*-idle-shutdown.sh` and the models dir before recommending
+  `systemctl enable --now`. Same pattern applies to any organ with `*idle-shutdown*` or
+  `*sleep*` scripts in `/root/scripts/` or `/usr/local/bin/`.
+
 - **Auto-generated telemetry files dirty the repo → false RED (PROVEN 2026-08-01).** If a liveness/sense probe includes a "repo clean" check (`git status --porcelain | wc -l`), build-generated files (e.g. `ns_live_telemetry.json` rewritten by the prebuild script on every `npm run build`) will trip it repeatedly. Each cron run of Sense then emits 🔴 "Repo: N uncommitted files" even though everything is healthy. Fixes, in order of preference:
   1. `.gitignore` the generated file(s) — the build output is derived state, not source.
   2. Patch the probe script to exclude the generated path from the dirty count (e.g. filter `git status --porcelain` through a path ignore list).
@@ -154,3 +190,5 @@ they stay UNKNOWN until classified. Never guess an organ's name from its port.
 ## Files
 
 - `scripts/federation-watchdog.sh` — the deployed probe script (canonical copy)
+- `references/probe-transport-taxonomy.md` — port-class table + correct probe pattern
+  (HTTP vs TCP vs designed-dormant). Use before writing any multi-port probe loop.
